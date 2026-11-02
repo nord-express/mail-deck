@@ -2526,6 +2526,87 @@
     "opt_aiFast": {
         "message": "el més ràpid i barat"
     },
+    "opt_aiYourKey": {
+        "message": "La teva clau d’API"
+    },
+    "opt_aiOnComputer": {
+        "message": "En aquest ordinador"
+    },
+    "opt_aiLocalText": {
+        "message": "Els teus propis models, sense clau"
+    },
+    "opt_aiServer": {
+        "message": "Servidor en aquest ordinador"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio o un altre servidor que parli l’API d’OpenAI."
+    },
+    "opt_aiServerOther": {
+        "message": "Un altre"
+    },
+    "opt_aiServerAddress": {
+        "message": "Adreça del servidor"
+    },
+    "opt_aiKeyOptional": {
+        "message": "Clau d’API, si el servidor en demana"
+    },
+    "opt_aiLocalBad": {
+        "message": "Fes servir una adreça d’aquest ordinador, com ara http://localhost:11434/v1 o http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "Per defecte, un servidor dona 4.096 tokens a un model, així que Mail Deck li envia parts més curtes del correu llarg, una sol·licitud cada vegada."
+    },
+    "opt_aiNoServer": {
+        "message": "No respon res a $1. Inicia Ollama, o el servidor de la pestanya Developer de LM Studio, i torna a connectar."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama ha rebutjat Mail Deck. Tanca Ollama, posa OLLAMA_ORIGINS a chrome-extension://* (en un Mac, executa launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" al Terminal; a Windows o Linux, afegeix-la com a variable d’entorn), inicia Ollama i torna a connectar."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio ha rebutjat Mail Deck. A la pestanya Developer de LM Studio, activa Enable CORS a Server Settings i torna a connectar."
+    },
+    "opt_aiServerOrigin": {
+        "message": "El servidor ha rebutjat Mail Deck. Permet les sol·licituds de chrome-extension://* a la seva configuració i torna a connectar."
+    },
+    "opt_aiFolder": {
+        "message": "ID de la carpeta"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "Enganxa també l’ID de la carpeta."
+    },
+    "opt_aiYandexHint": {
+        "message": "Fes servir una clau d’API d’un compte de servei amb el rol ai.languageModels.user i l’ID de la seva carpeta a Yandex Cloud. Yandex la factura al teu compte de facturació."
+    },
+    "opt_aiGeminiHint": {
+        "message": "Crea una clau a Google AI Studio. Al nivell gratuït, Google pot fer servir el que envia Mail Deck per millorar els seus productes; amb la facturació activada, no."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "Una sola clau obre centenars de models de molts proveïdors, alguns de gratuïts."
+    },
+    "opt_aiGroqHint": {
+        "message": "El pla gratuït de Groq accepta uns 8.000 tokens per minut, així que Mail Deck envia parts més curtes del correu llarg, una sol·licitud cada vegada."
+    },
+    "opt_aiQwenHint": {
+        "message": "Fes servir una clau del lloc internacional d’Alibaba Cloud Model Studio: una clau només funciona a la regió on es va crear."
+    },
+    "opt_aiKimiHint": {
+        "message": "Fes servir una clau de platform.kimi.ai: les claus de la plataforma de Moonshot per a la Xina continental aquí no funcionen."
+    },
+    "opt_aiModelSearch": {
+        "message": "Cerca models"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "Cap model coincideix amb «$1»"
+    },
+    "opt_aiPrices": {
+        "message": "Preus en dòlars dels EUA per milió de tokens: entrada / sortida."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "Les sol·licituds van del teu navegador al servidor d’aquest ordinador a $1. Mail Deck no té servidors; el teu correu només surt d’aquest ordinador si aquell servidor l’envia més enllà."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "encara no hi ha adreça"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck s’ha actualitzat però encara no s’ha tornat a carregar. Torna’l a carregar a chrome://extensions i torna-ho a provar."
     },

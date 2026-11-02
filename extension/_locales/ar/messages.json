@@ -2522,6 +2522,87 @@
     "opt_aiFast": {
         "message": "الأسرع والأرخص"
     },
+    "opt_aiYourKey": {
+        "message": "مفتاح API الخاص بك"
+    },
+    "opt_aiOnComputer": {
+        "message": "على هذا الكمبيوتر"
+    },
+    "opt_aiLocalText": {
+        "message": "نماذجك الخاصة، دون مفتاح"
+    },
+    "opt_aiServer": {
+        "message": "خادم على هذا الكمبيوتر"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama أو LM Studio أو أي خادم آخر يتحدث بواجهة OpenAI البرمجية."
+    },
+    "opt_aiServerOther": {
+        "message": "آخر"
+    },
+    "opt_aiServerAddress": {
+        "message": "عنوان الخادم"
+    },
+    "opt_aiKeyOptional": {
+        "message": "مفتاح API، إن طلبه الخادم"
+    },
+    "opt_aiLocalBad": {
+        "message": "استخدم عنوانًا على هذا الكمبيوتر، مثل http://localhost:11434/v1 أو http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "يمنح الخادم النموذج 4096 رمزًا افتراضيًا، لذا يرسل Mail Deck أجزاء أقصر من البريد الطويل، طلبًا واحدًا في كل مرة."
+    },
+    "opt_aiNoServer": {
+        "message": "لا شيء يجيب على $1. شغّل Ollama، أو الخادم من تبويب Developer في LM Studio، ثم اربط مرة أخرى."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "رفض Ollama الاتصال بـ Mail Deck. أغلق Ollama، واضبط OLLAMA_ORIGINS على chrome-extension://* (على Mac شغّل launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" في Terminal؛ وعلى Windows أو Linux أضفه كمتغير بيئة)، ثم شغّل Ollama واربط مرة أخرى."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "رفض LM Studio الاتصال بـ Mail Deck. في تبويب Developer في LM Studio، فعّل Enable CORS ضمن Server Settings، ثم اربط مرة أخرى."
+    },
+    "opt_aiServerOrigin": {
+        "message": "رفض الخادم الاتصال بـ Mail Deck. اسمح بالطلبات من chrome-extension://* في إعداداته، ثم اربط مرة أخرى."
+    },
+    "opt_aiFolder": {
+        "message": "معرّف المجلد"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "الصق معرّف المجلد أيضًا."
+    },
+    "opt_aiYandexHint": {
+        "message": "استخدم مفتاح API لحساب خدمة بدور ai.languageModels.user، ومعرّف مجلده في Yandex Cloud. تحاسب Yandex عليه حساب الفوترة الخاص بك."
+    },
+    "opt_aiGeminiHint": {
+        "message": "أنشئ مفتاحًا في Google AI Studio. في الفئة المجانية قد تستخدم Google ما يرسله Mail Deck لتحسين منتجاتها؛ ومع تفعيل الفوترة لا تفعل ذلك."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "مفتاح واحد يفتح مئات النماذج من مزوّدين كثيرين، وبعضها مجاني."
+    },
+    "opt_aiGroqHint": {
+        "message": "تقبل الخطة المجانية في Groq نحو 8000 رمز في الدقيقة، لذا يرسل Mail Deck أجزاء أقصر من البريد الطويل، طلبًا واحدًا في كل مرة."
+    },
+    "opt_aiQwenHint": {
+        "message": "استخدم مفتاحًا من الموقع الدولي لـ Alibaba Cloud Model Studio: يعمل المفتاح في المنطقة التي أُنشئ فيها فقط."
+    },
+    "opt_aiKimiHint": {
+        "message": "استخدم مفتاحًا من platform.kimi.ai: مفاتيح منصة Moonshot الخاصة بالصين القارية لا تعمل هنا."
+    },
+    "opt_aiModelSearch": {
+        "message": "ابحث في النماذج"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "لا يوجد نموذج يطابق «$1»"
+    },
+    "opt_aiPrices": {
+        "message": "الأسعار بالدولار الأمريكي لكل مليون رمز: الإدخال / الإخراج."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "تذهب الطلبات من متصفحك إلى الخادم على هذا الكمبيوتر على $1. ليس لدى Mail Deck خوادم؛ ولا يغادر بريدك هذا الكمبيوتر إلا إذا أرسله ذلك الخادم."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "لا يوجد عنوان بعد"
+    },
     "opt_reloadNeeded": {
         "message": "تم تحديث Mail Deck ولكن لم تتم إعادة تحميله بعد. أعد تحميله من chrome://extensions، ثم أعد المحاولة."
     },

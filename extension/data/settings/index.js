@@ -76,6 +76,16 @@ const DEFAULTS = {
   'ai.openai.model': '',
   'ai.anthropic.model': '',
   'ai.zai.model': '',
+  'ai.gemini.model': '',
+  'ai.xai.model': '',
+  'ai.deepseek.model': '',
+  'ai.mistral.model': '',
+  'ai.openrouter.model': '',
+  'ai.groq.model': '',
+  'ai.qwen.model': '',
+  'ai.kimi.model': '',
+  'ai.yandex.model': '',
+  'ai.local.model': '',
   'ai.summary': 'click',
   'ai.reply': true,
   // a quicker, cheaper model of the engine for sorting and searching the mail (data/ai/ai.js)
@@ -84,8 +94,10 @@ const DEFAULTS = {
   'ai.buttons': true,
   'sync.settings': false
 };
-const AI_ENGINES = ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai'];
-// the providers of a key: its page, the subscription that does not give one (plan), a word under the field (hint)
+const AI_ENGINES = ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek', 'mistral', 'openrouter',
+  'groq', 'qwen', 'kimi', 'yandex', 'local'];
+// the providers of a key: its page, the subscription that does not give one (plan), a word under
+// the field (hint); Yandex's folder; a server on this computer, whose site and name are its address's
 const AI_PROVIDERS = {
   openai: {
     name: 'OpenAI', plan: 'ChatGPT Plus', hint: 'aiOpenAIHint', origin: 'https://api.openai.com/*', host: 'api.openai.com',
@@ -98,15 +110,45 @@ const AI_PROVIDERS = {
   zai: {
     name: 'Z.ai', hint: 'aiZaiHint', origin: 'https://api.z.ai/*', host: 'api.z.ai',
     keys: 'https://z.ai/manage-apikey/apikey-list', placeholder: ''
-  }
+  },
+  gemini: {
+    name: 'Gemini', hint: 'aiGeminiHint', origin: 'https://generativelanguage.googleapis.com/*', host: 'generativelanguage.googleapis.com',
+    keys: 'https://aistudio.google.com/apikey', placeholder: ''
+  },
+  xai: {name: 'xAI', origin: 'https://api.x.ai/*', host: 'api.x.ai', keys: 'https://console.x.ai', placeholder: 'xai-…'},
+  deepseek: {
+    name: 'DeepSeek', origin: 'https://api.deepseek.com/*', host: 'api.deepseek.com',
+    keys: 'https://platform.deepseek.com/api_keys', placeholder: 'sk-…'
+  },
+  mistral: {name: 'Mistral', origin: 'https://api.mistral.ai/*', host: 'api.mistral.ai', keys: 'https://console.mistral.ai/api-keys', placeholder: ''},
+  openrouter: {
+    name: 'OpenRouter', hint: 'aiOpenRouterHint', origin: 'https://openrouter.ai/*', host: 'openrouter.ai',
+    keys: 'https://openrouter.ai/settings/keys', placeholder: 'sk-or-…'
+  },
+  groq: {name: 'Groq', hint: 'aiGroqHint', origin: 'https://api.groq.com/*', host: 'api.groq.com', keys: 'https://console.groq.com/keys', placeholder: 'gsk_…'},
+  qwen: {
+    name: 'Qwen', hint: 'aiQwenHint', origin: 'https://dashscope-intl.aliyuncs.com/*', host: 'dashscope-intl.aliyuncs.com',
+    keys: 'https://modelstudio.console.alibabacloud.com/', placeholder: 'sk-…'
+  },
+  kimi: {name: 'Kimi', hint: 'aiKimiHint', origin: 'https://api.moonshot.ai/*', host: 'api.moonshot.ai', keys: 'https://platform.kimi.ai/console/api-keys', placeholder: 'sk-…'},
+  yandex: {
+    name: 'Yandex', hint: 'aiYandexHint', origin: 'https://ai.api.cloud.yandex.net/*', host: 'ai.api.cloud.yandex.net',
+    keys: 'https://console.yandex.cloud/', placeholder: '', folder: true
+  },
+  local: {name: 'Ollama', hint: 'aiLocalHint', origin: 'http://localhost/*', host: 'localhost', keys: '', placeholder: '', local: true}
 };
+// a server on this computer: Ollama's and LM Studio's own addresses, or one the user writes
+const AI_SERVERS = {ollama: 'http://localhost:11434/v1', lmstudio: 'http://localhost:1234/v1'};
 // the ChatGPT plan: a sign-in instead of a key, which needs OpenAI's API, its sign-in site and,
 // while it is underway, the loopback address it comes back to (data/ai/ai.js)
 const AI_PLAN = {
   name: 'ChatGPT', origins: ['https://api.openai.com/*', 'https://auth.openai.com/*'], host: 'api.openai.com',
   loopback: 'http://127.0.0.1/*', usage: 'https://chatgpt.com/settings/usage'
 };
-const AI_KEYS = Object.keys(AI_PROVIDERS).map(id => `ai.${id}.key`);
+// what stays on this computer alone, as the keys do: Yandex's folder, the local server's address
+const AI_FOLDER = 'ai.yandex.folder';
+const AI_BASE = 'ai.local.base';
+const AI_KEYS = [...Object.keys(AI_PROVIDERS).map(id => `ai.${id}.key`), AI_FOLDER, AI_BASE];
 const AI_SECRETS = [...AI_KEYS, 'ai.chatgpt.auth', 'ai.chatgpt.client', 'ai.chatgpt.host'];
 const AI_ORIGINS = [...new Set([...Object.values(AI_PROVIDERS).map(p => p.origin), ...AI_PLAN.origins, AI_PLAN.loopback])];
 const SERVICES = Object.values(self.MailServices || {});
@@ -133,8 +175,9 @@ const int = (min, max) => v => Number.isInteger(v) && v >= min && v <= max;
 const oneOf = (...list) => v => list.includes(v);
 const upTo = n => v => v.length <= n;
 const TIME = v => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
-// a model id as the providers write them (gpt-5-mini, claude-opus-5-5, glm-5.3, o4-mini); empty: not picked yet
-const MODEL = v => /^([\w][\w.:\/-]{0,99})?$/.test(v);
+// a model id as the providers and servers write them (gpt-5-mini, claude-opus-5-5, glm-5.3, o4-mini,
+// google/gemma-4-31b-it:free, ~openai/gpt-luna-latest, aliceai-llm/latest, qwen3:8b); empty: not picked yet
+const MODEL = v => /^([\w~][\w.:\/@~+-]{0,99})?$/.test(v);
 const VALID = {
   'period': int(30, 3600), // seconds; Chrome's alarms come no faster than every 30 s
   'initialPeriod': int(0, 600),
@@ -158,8 +201,7 @@ const VALID = {
   'ai.summary': oneOf('off', 'click', 'auto'),
   'ai.chatgpt.model': MODEL,
   'ai.openai.model': MODEL,
-  'ai.anthropic.model': MODEL,
-  'ai.zai.model': MODEL
+  ...Object.fromEntries(Object.keys(AI_PROVIDERS).map(id => [`ai.${id}.model`, MODEL]))
 };
 for (const m of MEDIA.slice(1)) {
   VALID[m + '.selector'] = oneOf(0, 1, 2);
@@ -353,6 +395,9 @@ document.addEventListener('change', ({target}) => {
   }
   else if (target.name === 'ai.engine') {
     pickEngine(target.value);
+  }
+  else if (target.name === 'ai-server') {
+    pickServer(target.value);
   }
 });
 
@@ -848,8 +893,22 @@ let builtinLang = '';
 let builtinShown = '';
 const aiKeyOf = engine => aiKeys[`ai.${engine}.key`] || '';
 const aiModelKey = engine => `ai.${engine}.model`;
+// a provider set up: its key (and Yandex's folder), or a server on this computer's address
+const aiConnected = engine => engine === 'local' ? Boolean(aiKeys[AI_BASE]) :
+  Boolean(aiKeyOf(engine)) && (engine !== 'yandex' || Boolean(aiKeys[AI_FOLDER]));
 // an engine with what it needs to list its models: a key, or the plan signed in
-const aiReady = engine => AI_PROVIDERS[engine] ? Boolean(aiKeyOf(engine)) : engine === 'chatgpt' && Boolean(aiAccount);
+const aiReady = engine => AI_PROVIDERS[engine] ? aiConnected(engine) : engine === 'chatgpt' && Boolean(aiAccount);
+// what the module asks with: a key, or with Yandex's folder or the server's address all of it
+const aiAuth = (engine, key = aiKeyOf(engine), more = {}) => engine === 'yandex' ? {key, folder: aiKeys[AI_FOLDER] || '', ...more} :
+  engine === 'local' ? {key, base: aiKeys[AI_BASE] || '', ...more} : key;
+// a server on this computer: its site, by the address (localhost or 127.0.0.1), and its name, by its port
+const localOrigin = base => /^http:\/\/127\.0\.0\.1[:/]/.test(base + '/') ? 'http://127.0.0.1/*' : 'http://localhost/*';
+const localName = base => {
+  const port = /^http:\/\/[^/]+:(\d+)/.exec(base || '')?.[1];
+  return !base || port === '11434' ? 'Ollama' : port === '1234' ? 'LM Studio' : base.replace(/^http:\/\//, '').replace(/\/.*$/, '');
+};
+// a provider's name in the page's words: a server on this computer's own
+const aiName = engine => engine === 'local' ? localName(aiKeys[AI_BASE] || aiTypedBase()) : AI_PROVIDERS[engine]?.name || '';
 const readAIKeys = () => store.get(Object.fromEntries(AI_KEYS.map(k => [k, '']))).then(r => {
   aiKeys = r;
 });
@@ -860,15 +919,23 @@ const readAccount = () => Promise.resolve().then(() => aiModule()?.chatgpt?.acco
   }
   aiAccount = a && typeof a === 'object' ? a : null;
 });
-// the sites another engine still needs: a key kept, or the plan signed in
+// The sites another engine still needs: a key kept, a server on this computer set up, the plan
+// signed in, or a sign-in under way, which comes back to the loopback address that a server on
+// this computer may be at as well. Only a site none of them needs is given back to Chrome.
 const aiNeeded = except => new Set([
-  ...Object.keys(AI_PROVIDERS).filter(id => id !== except && aiKeyOf(id)).map(id => AI_PROVIDERS[id].origin),
-  ...(except !== 'chatgpt' && aiAccount ? AI_PLAN.origins : [])
+  ...Object.keys(AI_PROVIDERS).filter(id => id !== except && aiConnected(id)).flatMap(aiOrigins),
+  ...(except !== 'chatgpt' && aiAccount ? AI_PLAN.origins : []),
+  ...(except !== 'chatgpt' && aiSigning ? [AI_PLAN.loopback] : [])
 ]);
-const aiOrigins = engine => AI_PROVIDERS[engine] ? [AI_PROVIDERS[engine].origin] : AI_PLAN.origins;
+const aiOrigins = engine => engine === 'local' ? [localOrigin(aiKeys[AI_BASE] || '')] :
+  AI_PROVIDERS[engine] ? [AI_PROVIDERS[engine].origin] : AI_PLAN.origins;
+// the sites of an engine that no other one needs
+const aiSpare = (engine, origins = aiOrigins(engine)) => origins.filter(o => !aiNeeded(engine).has(o));
 const syncAIAccess = async () => {
   const ids = [...Object.keys(AI_PROVIDERS), 'chatgpt'];
-  const granted = await Promise.all(ids.map(id => chrome.permissions.contains({origins: aiOrigins(id)}).catch(() => false)));
+  // a server on this computer not set up has no site of its own yet
+  const granted = await Promise.all(ids.map(id => id === 'local' && !aiKeys[AI_BASE] ? false :
+    chrome.permissions.contains({origins: aiOrigins(id)}).catch(() => false)));
   ids.forEach((id, i) => {
     // access given again (or taken) asks for the list anew
     if (aiAccess[id] !== granted[i]) {
@@ -897,19 +964,35 @@ const aiErrorText = (e, engine) => {
   if (engine === 'chatgpt' && (code === 'auth' || code === 'no-access' || code === 'model' || code === 'no-models')) {
     return code === 'auth' ? e.message || t('aiErrOther') : code === 'no-access' ? t('aiPlanAccess') : t('aiPlanNoModels');
   }
+  // a server on this computer: what to start, or what to allow in it (OLLAMA_ORIGINS, LM Studio's CORS)
+  if (code === 'no-server') {
+    return t('aiNoServer', aiTypedBase() || aiKeys[AI_BASE] || AI_SERVERS.ollama);
+  }
+  if (code === 'origin') {
+    const name = aiName('local');
+    return t(name === 'Ollama' ? 'aiOllamaOrigins' : name === 'LM Studio' ? 'aiLmStudioCors' : 'aiServerOrigin');
+  }
+  if (code === 'auth' && e.detail === 'no folder') {
+    return t('aiFolderEmpty');
+  }
   if (code === 'auth') {
-    return t('aiErrAuth', p ? p.name : '');
+    return t('aiErrAuth', p ? aiName(engine) : '');
   }
   if (code === 'no-access') {
-    return t('aiErrAccess', p ? p.host : '');
+    return t('aiErrAccess', p ? engine === 'local' ? localOrigin(aiTypedBase() || aiKeys[AI_BASE] || '').slice(7, -2) : p.host : '');
   }
   if (code === 'model' || code === 'no-models') {
     return t('aiNoModels');
   }
   return (typeof code === 'string' && chrome.i18n.getMessage('ai_err_' + code.replace(/-/g, '_'))) || t('aiErrOther');
 };
-// the provider a key's form names: Anthropic's start with sk-ant-, OpenAI's with sk- (sk-proj-…)
-const aiKeyProvider = key => /^sk-ant-/.test(key) ? 'anthropic' : /^sk-/.test(key) ? 'openai' : '';
+// The provider a key's form names: Anthropic's start with sk-ant-, OpenRouter's with sk-or-,
+// Groq's with gsk_, xAI's with xai-, OpenAI's with sk-proj- (and older ones with sk-). DeepSeek's,
+// Qwen's and Kimi's start with sk- as well: a plain sk- key is theirs where one of them is picked.
+const SK_KEYS = ['openai', 'deepseek', 'qwen', 'kimi'];
+const aiKeyProvider = (key, engine) => engine === 'local' ? '' : /^sk-ant-/.test(key) ? 'anthropic' : /^sk-or-/.test(key) ? 'openrouter' :
+  /^gsk_/.test(key) ? 'groq' : /^xai-/.test(key) ? 'xai' : /^sk-(proj|svcacct|admin)-/.test(key) ? 'openai' :
+  /^sk-/.test(key) && !SK_KEYS.includes(engine) ? 'openai' : '';
 // the model a key gets until one is picked: the one data/ai/ai.js marks, else as it picks one
 // (the lists come newest first)
 const aiDefaultModel = (engine, list) => {
@@ -925,7 +1008,9 @@ const aiDefaultModel = (engine, list) => {
 };
 const aiPrefsFor = engine => ({
   engine, model: prefs[aiModelKey(engine)] || '', summary: prefs['ai.summary'], reply: prefs['ai.reply'],
-  ...(AI_PROVIDERS[engine] ? {key: aiKeyOf(engine)} : {})
+  ...(AI_PROVIDERS[engine] ? {key: aiKeyOf(engine)} : {}),
+  ...(engine === 'yandex' ? {folder: aiKeys[AI_FOLDER] || ''} : {}),
+  ...(engine === 'local' ? {base: aiKeys[AI_BASE] || ''} : {})
 });
 // a setting the page sets on its own, as a model picked for a new key: saved without a toast
 const keep = values => {
@@ -1056,18 +1141,21 @@ $('ai-download').onclick = () => {
 };
 
 /* a provider: its key, Chrome's access to its site, its models */
-const aiError = text => {
+// what went wrong, under the field it is about: the key, a server's address, Yandex's folder
+const aiError = (text, field = 'ai-key') => {
   $('ai-error').textContent = text || '';
   $('ai-error').hidden = !text;
-  $('ai-key').setAttribute('aria-invalid', text ? 'true' : 'false');
+  for (const id of ['ai-key', 'ai-base', 'ai-folder']) {
+    $(id).setAttribute('aria-invalid', text && id === field ? 'true' : 'false');
+  }
 };
 const listModels = engine => {
-  const key = aiKeyOf(engine);
+  const auth = aiAuth(engine);
   if (aiListing.has(engine) || !aiReady(engine)) {
     return;
   }
   aiListing.add(engine);
-  Promise.resolve().then(() => aiModule().models(engine, key)).then(list => {
+  Promise.resolve().then(() => aiModule().models(engine, auth)).then(list => {
     list = (Array.isArray(list) ? list : []).filter(m => m && typeof m.id === 'string');
     aiLists[engine] = list.length ? list : {error: {code: 'no-models'}};
     // a key without a model picked (a backup from before, a model removed) gets the module's own
@@ -1083,15 +1171,30 @@ const listModels = engine => {
     }
   });
 };
+// a model's price, a million tokens in and out, in US dollars as the page's language writes them
+const priceOf = m => {
+  if (!Array.isArray(m.price) || m.tag === 'free') {
+    return '';
+  }
+  const f = new Intl.NumberFormat(uiLang(), {style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2});
+  return m.price.map(x => f.format(x)).join(' / ');
+};
+// a list longer than this (OpenRouter's hundreds) gets a search above it; what it is looking for
+const MODELS_SEARCH = 30;
+let aiModelQuery = '';
+const folded = s => String(s ?? '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 const paintModels = engine => {
   const select = $('ai-model');
   const note = $('ai-model-note');
   const stored = prefs[aiModelKey(engine)];
   const list = aiLists[engine];
-  // a model says what it is for: the best summaries, the fastest and cheapest, or no cost at all
+  // a model says what it is for: the best summaries, the fastest and cheapest, or no cost at all; and its price
   const TAGS = {best: 'aiBest', fast: 'aiFast', free: 'aiFree'};
-  const option = (m, label = [m.name || m.id, TAGS[m.tag] && t(TAGS[m.tag])].filter(Boolean).join(' · ')) =>
+  const option = (m, label = [m.name || m.id, TAGS[m.tag] && t(TAGS[m.tag]), priceOf(m)].filter(Boolean).join(' · ')) =>
     h('option', {value: m.id, textContent: label, selected: m.id === stored});
+  const long = Array.isArray(list) && list.length > MODELS_SEARCH;
+  $('ai-model-find').hidden = !long;
+  $('ai-model-prices').hidden = true;
   if (!Array.isArray(list)) {
     // the model stored shows at once; the provider's list follows, or why it did not come
     select.replaceChildren(option({id: stored}, stored || '…'));
@@ -1102,22 +1205,34 @@ const paintModels = engine => {
     }
     return;
   }
-  // recommended first (data/ai/ai.js marks them), the rest under them
+  // recommended first (data/ai/ai.js marks them), the rest under them; a list by maker
+  // (OpenRouter's) in a group for each, in the page's alphabet
   const group = (label, models) => {
     const g = h('optgroup', {label});
     g.append(...models.map(m => option(m)));
     return g;
   };
-  const best = list.filter(m => m.recommended);
-  const rest = list.filter(m => !m.recommended);
+  const q = long ? folded(aiModelQuery.trim()) : '';
+  const shown = q ? list.filter(m => folded([m.id, m.name, m.group].join(' ')).includes(q)) : list;
+  const best = shown.filter(m => m.recommended);
+  const rest = shown.filter(m => !m.recommended);
+  const makers = rest.some(m => m.group) ?
+    [...new Set(rest.map(m => m.group || ''))].sort((a, b) => a.localeCompare(b, uiLang(), {sensitivity: 'base'})) : null;
+  const others = makers ? makers.map(g => group(g || t('aiOtherModels'), rest.filter(m => (m.group || '') === g))) :
+    !rest.length ? [] : best.length ? [group(t('aiOtherModels'), rest)] : rest.map(m => option(m));
   const gone = Boolean(stored) && !list.some(m => m.id === stored);
+  // the model picked stays in the list, whatever the search
+  const kept = stored && !gone && !shown.some(m => m.id === stored) ? [option(list.find(m => m.id === stored))] : [];
   select.replaceChildren(
-    ...(gone ? [option({id: stored}, stored)] : []),
-    ...(best.length ? [group(t('aiRecommended'), best), rest.length && group(t('aiOtherModels'), rest)].filter(Boolean) : rest.map(m => option(m))));
+    ...(gone ? [option({id: stored}, stored)] : kept),
+    ...(best.length ? [group(t('aiRecommended'), best)] : []),
+    ...others,
+    ...(q && !shown.length ? [h('option', {value: '', disabled: true, textContent: t('aiNoModelMatch', aiModelQuery.trim())})] : []));
   select.value = stored;
-  // a model the account no longer has stays shown, with a word to pick another
+  // a model the account no longer has stays shown, with a word to pick another; prices, what they are
   note.textContent = gone ? t('aiModelGone', stored) : '';
   note.hidden = !gone;
+  $('ai-model-prices').hidden = !list.some(m => Array.isArray(m.price));
 };
 // The ChatGPT plan: the offer to sign in, or the account signed in with its usage. A note says
 // why it does not work now: no access, a plan that is not this account's, its usage limit.
@@ -1166,20 +1281,41 @@ const paintBadges = () => {
   badge('builtin', builtinShown === 'available' ? t('aiReady') : '');
   badge('chatgpt', !aiAccount ? '' : aiAccess.chatgpt ? t('aiSignedInBadge') : t('aiNeedsAccess'), Boolean(aiAccount) && !aiAccess.chatgpt);
   for (const id of Object.keys(AI_PROVIDERS)) {
-    badge(id, !aiKeyOf(id) ? '' : aiAccess[id] ? t('aiConnectedBadge') : t('aiNeedsAccess'), Boolean(aiKeyOf(id)) && !aiAccess[id]);
+    badge(id, !aiConnected(id) ? '' : aiAccess[id] ? t('aiConnectedBadge') : t('aiNeedsAccess'), aiConnected(id) && !aiAccess[id]);
+  }
+};
+/* a server on this computer: Ollama, LM Studio, or another at the address written */
+// the server the address is: Ollama's or LM Studio's own, or another
+const serverOf = base => Object.keys(AI_SERVERS).find(id => AI_SERVERS[id] === base) || 'other';
+// the address in the field, made one by the module (http://localhost:11434/v1), or none
+const aiTypedBase = () => {
+  const text = $('ai-base').value;
+  try {
+    return aiModule()?.localBase?.(text) || '';
+  }
+  catch (e) {
+    return '';
+  }
+};
+// the server picked: Ollama's or LM Studio's own address, or another the user writes
+let aiServer = 'ollama';
+const paintServer = () => {
+  for (const radio of document.querySelectorAll('input[name="ai-server"]')) {
+    radio.checked = radio.value === aiServer;
   }
 };
 const paintCloud = () => {
   const engine = prefs['ai.engine'];
   const p = AI_PROVIDERS[engine];
-  const key = p ? aiKeyOf(engine) : '';
+  const on = p ? aiConnected(engine) : false;
+  const name = aiName(engine);
   paintBadges();
   self.UI?.status();
-  $('ai-key-row').hidden = !p || Boolean(key);
-  $('ai-connected').hidden = !p || !key;
+  $('ai-key-row').hidden = !p || on;
+  $('ai-connected').hidden = !p || !on;
   // the models of a key Chrome lets Mail Deck use, or of the plan signed in
   const plan = engine === 'chatgpt' && Boolean(aiAccount?.plan) && aiAccess.chatgpt === true;
-  $('ai-model-row').hidden = !(p ? key && aiAccess[engine] : plan);
+  $('ai-model-row').hidden = !(p ? on && aiAccess[engine] : plan);
   $('ai-model-text').textContent = t(engine === 'chatgpt' ? 'aiPlanModelText' : 'aiModelText');
   paintPlan();
   if (plan) {
@@ -1188,26 +1324,53 @@ const paintCloud = () => {
   if (!p) {
     return;
   }
-  if (!key) {
-    $('ai-key-label').textContent = t('aiKey', p.name);
-    $('ai-key-plan').textContent = p.plan ? t('aiKeyText', p.plan, p.name) : '';
+  if (!on) {
+    // a server on this computer: which one and its address, and a key only if it asks for one;
+    // Yandex: the folder with the key
+    $('ai-server').hidden = !p.local;
+    $('ai-base-field').hidden = !p.local;
+    $('ai-folder-field').hidden = !p.folder;
+    $('ai-key-label').textContent = p.local ? t('aiServer') : t('aiKey', name);
+    $('ai-key-plan').textContent = p.local ? t('aiServerText') : p.plan ? t('aiKeyText', p.plan, name) : '';
+    $('ai-key-link').hidden = !p.keys;
     $('ai-key-hint').textContent = p.hint ? t(p.hint) : '';
     $('ai-key-hint').hidden = !p.hint || aiConnecting;
     // while the provider checks the key, the word under the field says so
-    $('ai-key-wait').textContent = aiConnecting ? t('aiCheckingKey', p.name) : '';
+    $('ai-key-wait').textContent = aiConnecting ? t('aiCheckingKey', name) : '';
     $('ai-key-wait').hidden = !aiConnecting;
-    $('ai-key-link').href = p.keys;
-    $('ai-key').placeholder = p.placeholder;
-    $('ai-key').readOnly = aiConnecting;
+    $('ai-key-link').href = p.keys || '#';
+    // a server's key is no "API key" of its name: the field says what it is itself
+    $('ai-key').placeholder = p.local ? t('aiKeyOptional') : p.placeholder;
+    if (p.local) {
+      $('ai-key').removeAttribute('aria-labelledby');
+      $('ai-key').setAttribute('aria-label', t('aiKeyOptional'));
+    }
+    else {
+      $('ai-key').setAttribute('aria-labelledby', 'ai-key-label');
+      $('ai-key').removeAttribute('aria-label');
+    }
+    for (const id of ['ai-key', 'ai-base', 'ai-folder']) {
+      $(id).readOnly = aiConnecting;
+    }
     // the button keeps the focus while it works: aria-disabled, not disabled
     $('ai-connect').setAttribute('aria-disabled', aiConnecting ? 'true' : 'false');
     $('ai-connect').textContent = t(aiConnecting ? 'aiConnecting' : 'aiConnect');
+    if (p.local) {
+      if (!$('ai-base').value) {
+        aiServer = 'ollama';
+        $('ai-base').value = AI_SERVERS.ollama;
+      }
+      paintServer();
+    }
     return;
   }
   const access = aiAccess[engine];
-  $('ai-connected-title').textContent = t('aiConnected', p.name);
+  $('ai-connected-title').textContent = t('aiConnected', name);
   $('ai-connected-title').dataset.state = access ? 'ok' : 'bad';
-  $('ai-access').textContent = access ? '' : aiAllowNote || t('aiNoAccess', p.host);
+  // a server on this computer: where it is; a key: that it stays here
+  $('ai-connected-text').textContent = p.local ? aiKeys[AI_BASE] : t('aiConnectedText');
+  $('ai-connected-text').dir = p.local ? 'ltr' : '';
+  $('ai-access').textContent = access ? '' : aiAllowNote || t('aiNoAccess', p.local ? aiOrigins(engine)[0].slice(7, -2) : p.host);
   $('ai-access').hidden = access;
   $('ai-allow').hidden = access;
   if (access) {
@@ -1227,13 +1390,18 @@ const paintAI = () => {
     row.querySelectorAll('input, select').forEach(el => el.disabled = off);
   }
   $('ai-buttons-row').hidden = !off;
-  const p = AI_PROVIDERS[engine];
-  $('ai-privacy').textContent = p ? t('aiPrivacy', p.name) : engine === 'builtin' ? t('aiPrivacyLocal') :
-    engine === 'chatgpt' ? t('aiPrivacyPlan') : '';
-  $('ai-privacy-note').hidden = !$('ai-privacy').textContent;
   $('ai-builtin').hidden = engine !== 'builtin';
   paintBuiltin();
   paintCloud();
+  paintPrivacy();
+};
+// where the requests go: the provider, Chrome's own model, OpenAI with the plan, or the server here
+const paintPrivacy = () => {
+  const engine = prefs['ai.engine'];
+  const p = AI_PROVIDERS[engine];
+  $('ai-privacy').textContent = p?.local ? t('aiPrivacyServer', aiKeys[AI_BASE] || aiTypedBase() || AI_SERVERS.ollama) :
+    p ? t('aiPrivacy', aiName(engine)) : engine === 'builtin' ? t('aiPrivacyLocal') : engine === 'chatgpt' ? t('aiPrivacyPlan') : '';
+  $('ai-privacy-note').hidden = !$('ai-privacy').textContent;
 };
 // the key in the field shown as text, or hidden again; the eye button says which
 const showKey = show => {
@@ -1245,6 +1413,10 @@ const showKey = show => {
 };
 const resetKeyField = () => {
   $('ai-key').value = '';
+  $('ai-folder').value = '';
+  $('ai-base').value = '';
+  aiModelQuery = '';
+  $('ai-model-search').value = '';
   showKey(false);
   aiError('');
 };
@@ -1261,27 +1433,37 @@ const pickEngine = engine => {
   paintAI();
 };
 // Connect: Chrome's access to the provider's site, asked from the click; then the key, checked
-// with the provider; then its models. Only a key that passed is kept.
+// with the provider; then its models. Only a key that passed is kept. A server on this computer:
+// its address first, checked here, then the same with the key it may ask for; Yandex: its folder.
 const connect = () => {
   const engine = prefs['ai.engine'];
   const p = AI_PROVIDERS[engine];
   const field = $('ai-key');
   const key = field.value.trim();
+  const folder = $('ai-folder').value.trim();
   if (!p || aiConnecting) {
     return Promise.resolve(false);
   }
-  const other = aiKeyProvider(key);
-  if (!key || (other && other !== engine)) {
-    aiError(key ? t('aiKeyOther', AI_PROVIDERS[other].name, p.name) : t('aiKeyEmpty'));
-    field.focus();
+  const base = p.local ? aiTypedBase() : '';
+  const other = aiKeyProvider(key, engine);
+  const wrong = p.local && !base ? ['ai-base', t('aiLocalBad')] :
+    !p.local && !key ? ['ai-key', t('aiKeyEmpty')] :
+    other && other !== engine ? ['ai-key', t('aiKeyOther', AI_PROVIDERS[other].name, aiName(engine))] :
+    p.folder && !/^[\w-]{1,100}$/.test(folder) ? ['ai-folder', t('aiFolderEmpty')] : null;
+  if (wrong) {
+    aiError(wrong[1], wrong[0]);
+    $(wrong[0]).focus();
     return Promise.resolve(false);
   }
-  const had = aiAccess[engine] === true;
+  const origin = p.local ? localOrigin(base) : p.origin;
+  const had = p.local ? aiAccess.local === true && aiOrigins('local')[0] === origin : aiAccess[engine] === true;
   // Chrome asks only from the click itself, before anything is awaited
-  const asked = askAccess({origins: [p.origin]});
+  const asked = askAccess({origins: [origin]});
+  const auth = p.local ? {key, base} : p.folder ? {key, folder} : key;
   aiConnecting = true;
   aiError('');
   paintCloud();
+  let failed = null;
   return asked.then(async r => {
     if (!r.granted) {
       throw {code: 'no-access', reason: r.reason, detail: r.message};
@@ -1291,84 +1473,130 @@ const connect = () => {
     if (!AI?.check || !AI.models) {
       throw {code: 'unavailable'};
     }
-    await AI.check(engine, key);
-    const list = ((await AI.models(engine, key)) || []).filter(m => m && typeof m.id === 'string');
+    await AI.check(engine, auth);
+    const list = ((await AI.models(engine, auth)) || []).filter(m => m && typeof m.id === 'string');
     if (list.length === 0) {
       throw {code: 'no-models'};
     }
     const stored = prefs[aiModelKey(engine)];
     const model = list.some(m => m.id === stored) ? stored : aiDefaultModel(engine, list);
+    // what the engine is set up with: the key (none for a server that asks for none), the folder, the address
+    const values = {[`ai.${engine}.key`]: key, ...(p.folder ? {[AI_FOLDER]: folder} : {}), ...(p.local ? {[AI_BASE]: base} : {})};
+    const before = {...aiKeys};
+    Object.assign(aiKeys, values);
     aiLists[engine] = list;
-    aiKeys[`ai.${engine}.key`] = key;
     prefs[aiModelKey(engine)] = model;
     try {
-      await store.set({[`ai.${engine}.key`]: key, [aiModelKey(engine)]: model});
+      await Promise.all([
+        store.set({...Object.fromEntries(Object.entries(values).filter(([, v]) => v)), [aiModelKey(engine)]: model}),
+        ...(p.local && !key ? [store.remove(`ai.${engine}.key`)] : [])
+      ]);
     }
     catch (e) {
-      aiKeys[`ai.${engine}.key`] = '';
+      aiKeys = before;
       throw e;
     }
-    field.value = '';
-    showKey(false);
-    toast(t('aiConnected', p.name));
+    resetKeyField();
+    toast(t('aiConnected', aiName(engine)));
     if (prefs['sync.settings']) {
       pushSync();
     }
     return true;
   }).catch(e => {
-    // a key that did not connect leaves Chrome's access as it found it
+    // a key that did not connect leaves Chrome's access as it found it, and every site another
+    // engine still needs (127.0.0.1: a server there and the ChatGPT sign-in's way back)
     if (!had && e?.code !== 'no-access') {
       aiAccess[engine] = false;
-      chrome.permissions.remove({origins: [p.origin]}).catch(() => false);
+      const spare = aiSpare(engine, [origin]);
+      if (spare.length) {
+        chrome.permissions.remove({origins: spare}).catch(() => false);
+      }
     }
-    aiError(aiErrorText(e, engine));
+    failed = e;
+    aiError(aiErrorText(e, engine), p.local && e?.code !== 'auth' ? 'ai-base' : p.folder && e?.detail === 'no folder' ? 'ai-folder' : 'ai-key');
     return false;
   }).then(ok => {
     aiConnecting = false;
     paintCloud();
+    // what to put right: the key it refused, else a server's address
     if (prefs['ai.engine'] === engine) {
-      (ok ? ($('ai-model-row').hidden ? $('ai-disconnect') : $('ai-model')) : field).focus();
+      (ok ? ($('ai-model-row').hidden ? $('ai-disconnect') : $('ai-model')) : p.local && failed?.code !== 'auth' ? $('ai-base') : field).focus();
     }
     return ok;
   });
 };
-// Disconnect: the key and the model forgotten, the provider's site given back to Chrome (but
-// not OpenAI's while the ChatGPT plan, signed in, uses it too)
+// Disconnect: the key, the folder or the address, and the model forgotten; the provider's site
+// given back to Chrome, unless another engine still needs it (OpenAI's API while the ChatGPT plan,
+// signed in, uses it; 127.0.0.1 while a server there or a sign-in to ChatGPT does)
 const disconnect = () => {
   const engine = prefs['ai.engine'];
   const p = AI_PROVIDERS[engine];
   if (!p) {
     return Promise.resolve();
   }
+  const name = aiName(engine);
+  const spare = aiSpare(engine);
+  const secrets = [`ai.${engine}.key`, ...(p.folder ? [AI_FOLDER] : []), ...(p.local ? [AI_BASE] : [])];
   delete aiLists[engine];
-  aiKeys[`ai.${engine}.key`] = '';
+  for (const k of secrets) {
+    aiKeys[k] = '';
+  }
   prefs[aiModelKey(engine)] = '';
   aiAccess[engine] = false;
-  const origins = [p.origin].filter(o => !aiNeeded(engine).has(o));
   return Promise.all([
-    store.remove([`ai.${engine}.key`, aiModelKey(engine)]),
-    origins.length ? chrome.permissions.remove({origins}).catch(() => false) : true
+    store.remove([...secrets, aiModelKey(engine)]),
+    spare.length ? chrome.permissions.remove({origins: spare}).catch(() => false) : true
   ]).then(() => {
-    toast(t('aiDisconnected', p.name));
+    toast(t('aiDisconnected', name));
     if (prefs['sync.settings']) {
       pushSync();
     }
   }, e => toast(e.message)).then(() => {
     resetKeyField();
     paintCloud();
-    $('ai-key').focus();
+    (p.local ? $('ai-base') : $('ai-key')).focus();
   });
 };
 $('ai-connect').onclick = () => connect();
-$('ai-key').onkeydown = ev => {
-  if (ev.key === 'Enter') {
-    ev.preventDefault();
-    connect();
-  }
-};
-$('ai-key').oninput = () => aiError('');
+for (const id of ['ai-key', 'ai-base', 'ai-folder']) {
+  $(id).onkeydown = ev => {
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      connect();
+    }
+  };
+  $(id).oninput = () => {
+    aiError('');
+    // an address written is Ollama's, LM Studio's, or another's
+    if (id === 'ai-base') {
+      aiServer = serverOf(aiTypedBase());
+      paintServer();
+      paintPrivacy();
+    }
+  };
+}
 $('ai-key-show').onclick = () => showKey($('ai-key').type === 'password');
 $('ai-disconnect').onclick = () => disconnect();
+// a server on this computer: Ollama's or LM Studio's own address, or the field to write another
+const pickServer = server => {
+  aiServer = AI_SERVERS[server] ? server : 'other';
+  if (AI_SERVERS[server]) {
+    $('ai-base').value = AI_SERVERS[server];
+  }
+  else {
+    // another's address is written over the one there
+    $('ai-base').focus();
+    $('ai-base').select?.();
+  }
+  aiError('');
+  paintServer();
+  paintPrivacy();
+};
+// the models searched by name, maker or id, as the list is typed down
+$('ai-model-search').oninput = () => {
+  aiModelQuery = $('ai-model-search').value;
+  paintModels(prefs['ai.engine']);
+};
 // a key kept while Chrome's access was taken (on chrome://extensions, say): asked for again
 $('ai-allow').onclick = () => {
   const engine = prefs['ai.engine'];
@@ -1376,7 +1604,7 @@ $('ai-allow').onclick = () => {
   if (!p) {
     return;
   }
-  return askAccess({origins: [p.origin]}).then(r => {
+  return askAccess({origins: aiOrigins(engine)}).then(r => {
     aiAccess[engine] = r.granted;
     aiAllowNote = accessNote(r);
     delete aiLists[engine];
@@ -1478,9 +1706,9 @@ const followPlan = () => readAccount().then(() => {
   paintCloud();
   return welcome();
 });
-// The panel's links to an engine (#ai-chatgpt, #ai-openai, #ai-anthropic, #ai-zai, #ai-builtin):
-// that engine picked, the card in view, and its next step focused: the sign-in or the key while
-// there is none, then the model
+// The panel's links to an engine (#ai-chatgpt, #ai-openai, #ai-gemini, #ai-local, #ai-builtin, …):
+// that engine picked, the card in view, and its next step focused: the sign-in, the key or the
+// server's address while there is none, then the model
 const followHash = () => {
   const engine = /^#ai-([a-z]+)$/.exec(location.hash)?.[1];
   if (!engine || engine === 'off' || !AI_ENGINES.includes(engine)) {
@@ -1490,7 +1718,7 @@ const followHash = () => {
   const shown = (...ids) => ids.map($).find(el => !el.hidden);
   const next = engine === 'builtin' ? document.querySelector('input[name="ai.engine"][value="builtin"]') :
     engine === 'chatgpt' ? ($('ai-model-row').hidden ? shown('ai-signin', 'ai-plan-allow', 'ai-signout') : $('ai-model')) :
-    !aiKeyOf(engine) ? $('ai-key') : $('ai-model-row').hidden ? shown('ai-allow', 'ai-disconnect') : $('ai-model');
+    !aiConnected(engine) ? $(engine === 'local' ? 'ai-base' : 'ai-key') : $('ai-model-row').hidden ? shown('ai-allow', 'ai-disconnect') : $('ai-model');
   $('ai').scrollIntoView({block: 'start'});
   next?.focus();
 };
@@ -1528,6 +1756,10 @@ const followAI = changes => {
   if (changed) {
     paintFields(k => k.startsWith('ai.'));
     paintAI();
+  }
+  // a server on this computer at another address: Chrome's access to that one
+  if (AI_BASE in changes) {
+    syncAIAccess().then(paintCloud);
   }
 };
 // What a reset leaves of the AI: no key, no ChatGPT sign-in (revoked first, while its site is
@@ -1838,17 +2070,23 @@ const aiDiag = () => check('ai', async () => {
     const {status} = await within(builtinStatus());
     return [status === 'available', `${t('aiBuiltin')}: ${t(AI_BUILTIN[status].title)}`];
   }
+  // as stored now, never shown: the key, Yandex's folder, the server's address
   const name = `ai.${engine}.key`;
-  const {[name]: key} = await store.get({[name]: ''});
-  if (!key) {
-    return [false, `${p.name}: ${t('aiDiagNoKey')}`];
+  const kept = await store.get({[name]: '', [AI_FOLDER]: '', [AI_BASE]: ''});
+  const key = kept[name];
+  const base = kept[AI_BASE];
+  const label = p.local ? localName(base) : p.name;
+  if (p.local ? !base : !key || (p.folder && !kept[AI_FOLDER])) {
+    return [false, `${label}: ${t(p.local ? 'aiDiagNoAddress' : 'aiDiagNoKey')}`];
   }
-  if (!await chrome.permissions.contains({origins: [p.origin]}).catch(() => false)) {
-    return [false, `${p.name}: ${t('aiDiagNoAccess', p.host)}`];
+  const origin = p.local ? localOrigin(base) : p.origin;
+  if (!await chrome.permissions.contains({origins: [origin]}).catch(() => false)) {
+    return [false, `${label}: ${t('aiDiagNoAccess', p.local ? origin.slice(7, -2) : p.host)}`];
   }
-  return within(Promise.resolve().then(() => aiModule().check(engine, key))).then(
-    () => [true, [p.name, prefs[aiModelKey(engine)]].filter(Boolean).join(' · ')],
-    e => [false, `${p.name}: ${aiErrorText(e, engine)}`]);
+  const auth = p.local ? {key, base} : p.folder ? {key, folder: kept[AI_FOLDER]} : key;
+  return within(Promise.resolve().then(() => aiModule().check(engine, auth))).then(
+    () => [true, [label, prefs[aiModelKey(engine)]].filter(Boolean).join(' · ')],
+    e => [false, `${label}: ${aiErrorText(e, engine)}`]);
 });
 const diagMark = ok => ok ? 'done' : ok === null ? 'dash' : 'close';
 const diagBlock = (title, lines) => h('div', {className: 'diag-block'},
@@ -1992,9 +2230,10 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   };
   chrome.permissions.onAdded?.addListener(followAccess);
   chrome.permissions.onRemoved?.addListener(followAccess);
-  // the AI card: the keys and the plan's account as stored and Chrome's access first, so it
-  // shows as it is at once; then the engine a link names, and the word after a first sign-in
-  Promise.all([readAIKeys(), syncAIAccess(), readAccount()]).then(paintAI).then(followHash).then(welcome);
+  // the AI card: the keys and the plan's account as stored and Chrome's access first (a server on
+  // this computer's by its address), so it shows as it is at once; then the engine a link names,
+  // and the word after a first sign-in
+  Promise.all([readAIKeys().then(syncAIAccess), readAccount()]).then(paintAI).then(followHash).then(welcome);
   addEventListener('hashchange', followHash);
   addEventListener('hashchange', followSection);
   // a link to another part of the page, once the inboxes above it are drawn

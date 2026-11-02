@@ -2354,6 +2354,87 @@
   "opt_aiFast": {
     "message": "le plus rapide et le moins cher"
   },
+  "opt_aiYourKey": {
+    "message": "Votre clé API"
+  },
+  "opt_aiOnComputer": {
+    "message": "Sur cet ordinateur"
+  },
+  "opt_aiLocalText": {
+    "message": "Vos propres modèles, sans clé"
+  },
+  "opt_aiServer": {
+    "message": "Serveur sur cet ordinateur"
+  },
+  "opt_aiServerText": {
+    "message": "Ollama, LM Studio ou un autre serveur qui parle l’API d’OpenAI."
+  },
+  "opt_aiServerOther": {
+    "message": "Autre"
+  },
+  "opt_aiServerAddress": {
+    "message": "Adresse du serveur"
+  },
+  "opt_aiKeyOptional": {
+    "message": "Clé API, si le serveur en demande une"
+  },
+  "opt_aiLocalBad": {
+    "message": "Utilisez une adresse de cet ordinateur, comme http://localhost:11434/v1 ou http://127.0.0.1:1234/v1."
+  },
+  "opt_aiLocalHint": {
+    "message": "Un serveur donne par défaut 4 096 jetons à un modèle : Mail Deck lui envoie donc des parties plus courtes des longs messages, une requête à la fois."
+  },
+  "opt_aiNoServer": {
+    "message": "Rien ne répond à $1. Lancez Ollama, ou le serveur de l’onglet Developer de LM Studio, puis reconnectez-vous."
+  },
+  "opt_aiOllamaOrigins": {
+    "message": "Ollama a refusé Mail Deck. Quittez Ollama, réglez OLLAMA_ORIGINS sur chrome-extension://* (sur Mac, lancez launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" dans Terminal ; sous Windows ou Linux, ajoutez-la comme variable d’environnement), relancez Ollama, puis reconnectez-vous."
+  },
+  "opt_aiLmStudioCors": {
+    "message": "LM Studio a refusé Mail Deck. Dans l’onglet Developer de LM Studio, activez Enable CORS dans Server Settings, puis reconnectez-vous."
+  },
+  "opt_aiServerOrigin": {
+    "message": "Le serveur a refusé Mail Deck. Autorisez dans ses réglages les requêtes de chrome-extension://*, puis reconnectez-vous."
+  },
+  "opt_aiFolder": {
+    "message": "ID du dossier"
+  },
+  "opt_aiFolderEmpty": {
+    "message": "Collez aussi l’ID du dossier."
+  },
+  "opt_aiYandexHint": {
+    "message": "Utilisez une clé API d’un compte de service ayant le rôle ai.languageModels.user, et l’ID de son dossier dans Yandex Cloud. Yandex la facture sur votre compte de facturation."
+  },
+  "opt_aiGeminiHint": {
+    "message": "Créez une clé dans Google AI Studio. Avec l’offre gratuite, Google peut utiliser ce qu’envoie Mail Deck pour améliorer ses produits ; avec la facturation activée, non."
+  },
+  "opt_aiOpenRouterHint": {
+    "message": "Une seule clé ouvre des centaines de modèles de nombreux fournisseurs, dont quelques-uns gratuits."
+  },
+  "opt_aiGroqHint": {
+    "message": "L’offre gratuite de Groq accepte environ 8 000 jetons par minute : Mail Deck envoie donc des parties plus courtes des longs messages, une requête à la fois."
+  },
+  "opt_aiQwenHint": {
+    "message": "Utilisez une clé du site international d’Alibaba Cloud Model Studio : une clé ne fonctionne que dans la région où elle a été créée."
+  },
+  "opt_aiKimiHint": {
+    "message": "Utilisez une clé de platform.kimi.ai : les clés de la plateforme de Moonshot pour la Chine continentale ne fonctionnent pas ici."
+  },
+  "opt_aiModelSearch": {
+    "message": "Rechercher des modèles"
+  },
+  "opt_aiNoModelMatch": {
+    "message": "Aucun modèle ne correspond à « $1 »"
+  },
+  "opt_aiPrices": {
+    "message": "Prix en dollars américains par million de jetons : entrée / sortie."
+  },
+  "opt_aiPrivacyServer": {
+    "message": "Les requêtes partent de votre navigateur vers le serveur de cet ordinateur, à $1. Mail Deck n’a pas de serveurs ; vos messages ne quittent cet ordinateur que si ce serveur les transmet."
+  },
+  "opt_aiDiagNoAddress": {
+    "message": "pas encore d’adresse"
+  },
   "opt_reloadNeeded": {
     "message": "Mail Deck a été mis à jour mais pas encore rechargé. Rechargez-le dans chrome://extensions, puis réessayez."
   },

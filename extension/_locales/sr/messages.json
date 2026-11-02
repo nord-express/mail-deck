@@ -2526,6 +2526,87 @@
     "opt_aiFast": {
         "message": "најбржи и најјефтинији"
     },
+    "opt_aiYourKey": {
+        "message": "Ваш API кључ"
+    },
+    "opt_aiOnComputer": {
+        "message": "На овом рачунару"
+    },
+    "opt_aiLocalText": {
+        "message": "Ваши сопствени модели, без кључа"
+    },
+    "opt_aiServer": {
+        "message": "Сервер на овом рачунару"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio или други сервер са API-јем у формату OpenAI."
+    },
+    "opt_aiServerOther": {
+        "message": "Други"
+    },
+    "opt_aiServerAddress": {
+        "message": "Адреса сервера"
+    },
+    "opt_aiKeyOptional": {
+        "message": "API кључ, ако га сервер тражи"
+    },
+    "opt_aiLocalBad": {
+        "message": "Користите адресу на овом рачунару, нпр. http://localhost:11434/v1 или http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "Сервер подразумевано даје моделу 4096 токена, па му Mail Deck шаље краће делове дугих порука, један по један захтев."
+    },
+    "opt_aiNoServer": {
+        "message": "На адреси $1 ништа не одговара. Покрените Ollama или сервер на картици Developer у LM Studio, па се поново повежите."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama је одбио Mail Deck. Затворите Ollama, поставите OLLAMA_ORIGINS на chrome-extension://* (на Mac-у у Terminal-у покрените launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\"; на Windows-у или Linux-у додајте га као променљиву окружења), покрените Ollama и поново се повежите."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio је одбио Mail Deck. На картици Developer у LM Studio укључите Enable CORS у Server Settings, па се поново повежите."
+    },
+    "opt_aiServerOrigin": {
+        "message": "Сервер је одбио Mail Deck. Дозволите у његовим подешавањима захтеве са chrome-extension://*, па се поново повежите."
+    },
+    "opt_aiFolder": {
+        "message": "ID фасцикле"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "Налепите и ID фасцикле."
+    },
+    "opt_aiYandexHint": {
+        "message": "Користите API кључ сервисног налога са улогом ai.languageModels.user и ID његове фасцикле у Yandex Cloud-у. Yandex га наплаћује са вашег налога за наплату."
+    },
+    "opt_aiGeminiHint": {
+        "message": "Направите кључ у Google AI Studio. На бесплатном нивоу Google може да користи оно што Mail Deck шаље за побољшање својих производа; са укљученом наплатом — не."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "Један кључ отвара стотине модела многих добављача, неке од њих бесплатно."
+    },
+    "opt_aiGroqHint": {
+        "message": "Бесплатни план Groq-а прима око 8000 токена у минути, па Mail Deck шаље краће делове дугих порука, један по један захтев."
+    },
+    "opt_aiQwenHint": {
+        "message": "Користите кључ са међународног сајта Alibaba Cloud Model Studio: кључ ради само у региону у ком је направљен."
+    },
+    "opt_aiKimiHint": {
+        "message": "Користите кључ са platform.kimi.ai: кључеви са Moonshot платформе за континенталну Кину овде не раде."
+    },
+    "opt_aiModelSearch": {
+        "message": "Претрага модела"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "Ниједан модел не одговара упиту „$1“"
+    },
+    "opt_aiPrices": {
+        "message": "Цене у америчким доларима за милион токена: улаз / излаз."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "Захтеви иду из вашег прегледача до сервера на овом рачунару, на адреси $1. Mail Deck нема сервере; ваша пошта напушта овај рачунар само ако је тај сервер проследи даље."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "адреса још не постоји"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck је ажуриран, али још није поново учитан. Поново га учитајте на chrome://extensions, па покушајте поново."
     },

@@ -30,6 +30,9 @@ const UI = (() => {
     help: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M9.8 9.3a2.3 2.3 0 1 1 3.1 2.1c-.5.2-.9.7-.9 1.2v.6', 'M12 16.2v.1'],
     key: ['M14.5 14a5 5 0 1 0-4.6-3L3.5 17.4v3.1h3v-2h2v-2h2l1.3-1.3A5 5 0 0 0 14.5 14Z', 'M16 8h.01'],
     chip: ['M8 6h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z', 'M10 10h4v4h-4Z', 'M9.5 3v3M14.5 3v3M9.5 18v3M14.5 18v3M3 9.5h3M3 14.5h3M18 9.5h3M18 14.5h3'],
+    server: ['M5 4.5h14A1.5 1.5 0 0 1 20.5 6v3a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 9V6A1.5 1.5 0 0 1 5 4.5Z',
+      'M5 13.5h14a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18v-3A1.5 1.5 0 0 1 5 13.5Z', 'M7.5 7.5h.01M7.5 16.5h.01'],
+    folder: ['M3.5 7A1.5 1.5 0 0 1 5 5.5h4l2 2h8A1.5 1.5 0 0 1 20.5 9v8.5A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5Z'],
     off: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M6 6l12 12'],
     alert: ['M10.3 4.6a2 2 0 0 1 3.4 0l7.4 12.9a2 2 0 0 1-1.7 3H4.6a2 2 0 0 1-1.7-3Z', 'M12 10v4', 'M12 17v.1'],
     eye: ['M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12Z', 'M12 14.75a2.75 2.75 0 1 0 0-5.5a2.75 2.75 0 0 0 0 5.5Z'],
@@ -537,7 +540,7 @@ const UI = (() => {
     if (engine === 'chatgpt') {
       return aiAccount?.plan && aiAccess.chatgpt && !aiAccount.limit ? {text: model() || t('aiPlan'), icon: 'sparkle', href: '#ai'} : setup;
     }
-    return aiKeyOf(engine) && aiAccess[engine] ? {text: model() || AI_PROVIDERS[engine].name, icon: 'sparkle', href: '#ai'} : setup;
+    return aiConnected(engine) && aiAccess[engine] ? {text: model() || aiName(engine), icon: 'sparkle', href: '#ai'} : setup;
   };
   // the link of a chip goes there even when it is the address already
   const go = hash => {

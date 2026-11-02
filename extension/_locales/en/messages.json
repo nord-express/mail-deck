@@ -2384,6 +2384,87 @@
   "opt_aiFast": {
     "message": "fastest, cheapest"
   },
+  "opt_aiYourKey": {
+    "message": "Your API key"
+  },
+  "opt_aiOnComputer": {
+    "message": "On this computer"
+  },
+  "opt_aiLocalText": {
+    "message": "Your own models, no key"
+  },
+  "opt_aiServer": {
+    "message": "Server on this computer"
+  },
+  "opt_aiServerText": {
+    "message": "Ollama, LM Studio, or another server that speaks OpenAI’s API."
+  },
+  "opt_aiServerOther": {
+    "message": "Other"
+  },
+  "opt_aiServerAddress": {
+    "message": "Server address"
+  },
+  "opt_aiKeyOptional": {
+    "message": "API key, if the server asks for one"
+  },
+  "opt_aiLocalBad": {
+    "message": "Use an address on this computer, like http://localhost:11434/v1 or http://127.0.0.1:1234/v1."
+  },
+  "opt_aiLocalHint": {
+    "message": "A server gives a model 4,096 tokens by default, so Mail Deck sends it shorter parts of long mail, one request at a time."
+  },
+  "opt_aiNoServer": {
+    "message": "Nothing answers at $1. Start Ollama, or the server in LM Studio’s Developer tab, then connect again."
+  },
+  "opt_aiOllamaOrigins": {
+    "message": "Ollama refused Mail Deck. Quit Ollama, set OLLAMA_ORIGINS to chrome-extension://* (on a Mac, run launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" in Terminal; on Windows or Linux, add it as an environment variable), start Ollama, then connect again."
+  },
+  "opt_aiLmStudioCors": {
+    "message": "LM Studio refused Mail Deck. In LM Studio’s Developer tab, turn on Enable CORS in Server Settings, then connect again."
+  },
+  "opt_aiServerOrigin": {
+    "message": "The server refused Mail Deck. Allow requests from chrome-extension://* in its settings, then connect again."
+  },
+  "opt_aiFolder": {
+    "message": "Folder ID"
+  },
+  "opt_aiFolderEmpty": {
+    "message": "Paste the folder ID as well."
+  },
+  "opt_aiYandexHint": {
+    "message": "Use an API key of a service account with the ai.languageModels.user role, and the ID of its folder in Yandex Cloud. Yandex bills it to your billing account."
+  },
+  "opt_aiGeminiHint": {
+    "message": "Make a key in Google AI Studio. On the free tier, Google may use what Mail Deck sends to improve its products; with billing on, it does not."
+  },
+  "opt_aiOpenRouterHint": {
+    "message": "One key opens hundreds of models from many providers, a few of them free."
+  },
+  "opt_aiGroqHint": {
+    "message": "Groq’s free plan takes about 8,000 tokens a minute, so Mail Deck sends shorter parts of long mail, one request at a time."
+  },
+  "opt_aiQwenHint": {
+    "message": "Use a key from Alibaba Cloud Model Studio’s international site: a key works only in the region it was made in."
+  },
+  "opt_aiKimiHint": {
+    "message": "Use a key from platform.kimi.ai: keys from Moonshot’s platform for mainland China don’t work here."
+  },
+  "opt_aiModelSearch": {
+    "message": "Search models"
+  },
+  "opt_aiNoModelMatch": {
+    "message": "No model matches “$1”"
+  },
+  "opt_aiPrices": {
+    "message": "Prices in US dollars per million tokens, input / output."
+  },
+  "opt_aiPrivacyServer": {
+    "message": "Requests go from your browser to the server on this computer at $1. Mail Deck has no servers; your mail leaves this computer only if that server sends it on."
+  },
+  "opt_aiDiagNoAddress": {
+    "message": "no address yet"
+  },
   "opt_reloadNeeded": {
     "message": "Mail Deck was updated but not reloaded yet. Reload it on chrome://extensions, then try again."
   },

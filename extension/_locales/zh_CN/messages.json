@@ -2526,6 +2526,87 @@
     "opt_aiFast": {
         "message": "最快、最便宜"
     },
+    "opt_aiYourKey": {
+        "message": "你自己的 API 密钥"
+    },
+    "opt_aiOnComputer": {
+        "message": "在这台电脑上"
+    },
+    "opt_aiLocalText": {
+        "message": "你自己的模型，无需密钥"
+    },
+    "opt_aiServer": {
+        "message": "这台电脑上的服务器"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama、LM Studio，或其他兼容 OpenAI API 的服务器。"
+    },
+    "opt_aiServerOther": {
+        "message": "其他"
+    },
+    "opt_aiServerAddress": {
+        "message": "服务器地址"
+    },
+    "opt_aiKeyOptional": {
+        "message": "API 密钥（如果服务器要求）"
+    },
+    "opt_aiLocalBad": {
+        "message": "请使用这台电脑上的地址，例如 http://localhost:11434/v1 或 http://127.0.0.1:1234/v1。"
+    },
+    "opt_aiLocalHint": {
+        "message": "服务器默认只给模型 4,096 个 token，所以 Mail Deck 会把长邮件分成较短的部分发送，一次一个请求。"
+    },
+    "opt_aiNoServer": {
+        "message": "$1 没有响应。请启动 Ollama，或 LM Studio 的 Developer 标签页中的服务器，然后重新连接。"
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama 拒绝了 Mail Deck。请退出 Ollama，把 OLLAMA_ORIGINS 设为 chrome-extension://*（Mac 上在终端运行 launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\"；Windows 或 Linux 上将其添加为环境变量），再启动 Ollama 并重新连接。"
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio 拒绝了 Mail Deck。请在 LM Studio 的 Developer 标签页中打开 Server Settings 里的 Enable CORS，然后重新连接。"
+    },
+    "opt_aiServerOrigin": {
+        "message": "服务器拒绝了 Mail Deck。请在它的设置中允许来自 chrome-extension://* 的请求，然后重新连接。"
+    },
+    "opt_aiFolder": {
+        "message": "文件夹 ID"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "也请粘贴文件夹 ID。"
+    },
+    "opt_aiYandexHint": {
+        "message": "请使用拥有 ai.languageModels.user 角色的服务账号的 API 密钥，以及它在 Yandex Cloud 中所在文件夹的 ID。费用由 Yandex 从你的结算账户扣除。"
+    },
+    "opt_aiGeminiHint": {
+        "message": "请在 Google AI Studio 中创建密钥。在免费层级，Google 可能会用 Mail Deck 发送的内容改进其产品；开启结算后则不会。"
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "一个密钥即可使用众多服务商的数百个模型，其中一些免费。"
+    },
+    "opt_aiGroqHint": {
+        "message": "Groq 免费套餐每分钟约可处理 8,000 个 token，所以 Mail Deck 会把长邮件分成较短的部分发送，一次一个请求。"
+    },
+    "opt_aiQwenHint": {
+        "message": "请使用阿里云 Model Studio 国际站的密钥：密钥只能在创建它的地域使用。"
+    },
+    "opt_aiKimiHint": {
+        "message": "请使用 platform.kimi.ai 的密钥：Moonshot 中国大陆平台的密钥在这里无法使用。"
+    },
+    "opt_aiModelSearch": {
+        "message": "搜索模型"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "没有与“$1”匹配的模型"
+    },
+    "opt_aiPrices": {
+        "message": "价格以美元计，每百万 token：输入 / 输出。"
+    },
+    "opt_aiPrivacyServer": {
+        "message": "请求从你的浏览器发送到这台电脑上 $1 的服务器。Mail Deck 没有服务器；只有当该服务器转发时，你的邮件才会离开这台电脑。"
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "尚未设置地址"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck 已更新但尚未重新加载。请在 chrome://extensions 中重新加载，然后重试。"
     },

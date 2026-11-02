@@ -64,7 +64,9 @@ const removed = [];
 const forgotten = [];
 const synced = [];
 // the AI providers' sites: given only when a check gives them; every other site is given
-const AI_SITES = ['https://api.openai.com/*', 'https://api.anthropic.com/*', 'https://api.z.ai/*', 'https://auth.openai.com/*', 'http://127.0.0.1/*'];
+const AI_SITES = ['https://api.openai.com/*', 'https://api.anthropic.com/*', 'https://api.z.ai/*', 'https://auth.openai.com/*', 'http://127.0.0.1/*',
+  'https://generativelanguage.googleapis.com/*', 'https://api.x.ai/*', 'https://api.deepseek.com/*', 'https://api.mistral.ai/*', 'https://openrouter.ai/*',
+  'https://api.groq.com/*', 'https://dashscope-intl.aliyuncs.com/*', 'https://api.moonshot.ai/*', 'https://ai.api.cloud.yandex.net/*', 'http://localhost/*'];
 const PLAN_SITES = ['https://api.openai.com/*', 'https://auth.openai.com/*'];
 const granted = new Set();
 const requested = [];
@@ -165,7 +167,13 @@ const ai = {
   downloaded: null
 };
 ctx.AI = {
-  ENGINES: ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai'],
+  ENGINES: ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek', 'mistral', 'openrouter', 'groq', 'qwen',
+    'kimi', 'yandex', 'local'],
+  // as data/ai/ai.js makes an address one (tested there)
+  localBase: text => {
+    const m = /^(?:http:\/\/)?(localhost|127\.0\.0\.1)(:\d{1,5})?(\/[^?#\s]*)?$/i.exec(String(text ?? '').trim());
+    return m ? `http://${m[1].toLowerCase()}${m[2] || ''}${(m[3] || '').replace(/\/+$/, '') || '/v1'}` : '';
+  },
   state: async p => {
     asked.push(['state', p.engine]);
     return ai.state || {ok: ai.availability === 'available', reason: ai.availability, lang: 'en'};
@@ -615,12 +623,12 @@ const freshAI = (values = {}) => {
   Object.assign(ai, {availability: 'available', state: null, checkError: null, modelsError: null, progress: [], downloaded: null,
     account: null, revoked: true});
   page(`prefs = {...DEFAULTS, ...${JSON.stringify(values)}}; aiKeys = {}; aiConnecting = false; aiDownload = null;
-    aiAccount = null; aiSigning = false; aiPlanNote = ''; aiAllowNote = '';
+    aiAccount = null; aiSigning = false; aiPlanNote = ''; aiAllowNote = ''; aiServer = 'ollama'; aiModelQuery = '';
     for (const id of Object.keys(aiLists)) delete aiLists[id];
     for (const id of Object.keys(aiAccess)) delete aiAccess[id];
     clearTimeout(aiPoll);`);
   for (const id of ['ai-key', 'ai-error', 'ai-model', 'ai-model-note', 'ai-builtin-error', 'ai-builtin-lang', 'ai-plan-note', 'ai-plan-wait',
-    'ai-plan-text', 'ai-key-hint']) {
+    'ai-plan-text', 'ai-key-hint', 'ai-base', 'ai-folder', 'ai-model-search', 'ai-access', 'ai-connected-text', 'ai-model-prices', 'ai-model-find']) {
     Object.assign(element(id), {value: '', textContent: '', hidden: false, kids: []});
   }
   element('ai-key').type = 'password';
@@ -632,6 +640,8 @@ const freshAI = (values = {}) => {
   });
 };
 const has = (value, secret) => JSON.stringify(value).includes(secret);
+// objects of the page's realm compared as plain data
+const plain = x => JSON.parse(JSON.stringify(x));
 
 check('the AI settings default as the module does; a backup keeps them and never a key', () => {
   const defaults = page('DEFAULTS');
@@ -648,7 +658,7 @@ check('the AI settings default as the module does; a backup keeps them and never
   }
   assert.deepStrictEqual({...sanitize({'ai.engine': 'builtin', 'ai.summary': 'off', 'ai.openai.model': ''})},
     {'ai.engine': 'builtin', 'ai.summary': 'off', 'ai.openai.model': ''});
-  const bad = {'ai.engine': 'gemini', 'ai.summary': 'always', 'ai.reply': 'yes', 'ai.openai.model': 'gpt 5',
+  const bad = {'ai.engine': 'cohere', 'ai.summary': 'always', 'ai.reply': 'yes', 'ai.openai.model': 'gpt 5',
     'ai.anthropic.model': 'c'.repeat(101), 'ai.openai.key': OPENAI_KEY, 'ai.anthropic.key': ANTHROPIC_KEY,
     'ai.zai.key': ZAI_KEY, 'ai.zai.model': 'glm 5', 'ai.buttons': 'no', 'ai.chatgpt.auth': {access_token: PLAN_TOKEN},
     'ai.chatgpt.client': {id: 'oaiapp_x'}, 'ai.chatgpt.host': 'urn:uuid:x', 'ai.chatgpt.welcomed': true,
@@ -724,7 +734,7 @@ check('the engine and what the AI does are saved as they change, and the keys lo
   listeners.change({target: {dataset: {key: 'ai.summary'}, type: 'select-one', value: 'auto', hasAttribute: () => false}});
   listeners.change({target: {dataset: {key: 'ai.reply'}, type: 'checkbox', checked: false, hasAttribute: () => false}});
   // an engine the page does not offer is not saved
-  listeners.change({target: {name: 'ai.engine', value: 'gemini', dataset: {}}});
+  listeners.change({target: {name: 'ai.engine', value: 'cohere', dataset: {}}});
   await tick();
   assert.deepStrictEqual(set.map(v => ({...v})), [{'ai.engine': 'anthropic'}, {'ai.summary': 'auto'}, {'ai.reply': false}]);
   // a key stored, its site not given: connected, with a word and a button to give it again
@@ -1361,7 +1371,7 @@ check('a link to an engine (#ai-chatgpt, #ai-openai, …) picks it and focuses i
     assert.strictEqual(await go('#ai-chatgpt', {}, {...ACCOUNT}, PLAN_SITES), 'ai-model');
     assert.strictEqual(await go('#ai-chatgpt', {}, {...ACCOUNT, plan: false}, PLAN_SITES), 'ai-signin', 'no plan: sign in again');
     // nothing for an engine there is none of, or the AI off
-    for (const hash of ['#ai-gemini', '#ai-off', '#ai', '#services', '']) {
+    for (const hash of ['#ai-cohere', '#ai-off', '#ai', '#services', '']) {
       await go(hash, {'ai.engine': 'openai'});
       assert.strictEqual(page(`prefs['ai.engine']`), 'openai', hash);
       assert.strictEqual(set.length, 0, hash);
@@ -1373,6 +1383,289 @@ check('a link to an engine (#ai-chatgpt, #ai-openai, …) picks it and focuses i
   const code = fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8');
   assert.ok(/\.then\(paintAI\)\.then\(followHash\)/.test(code) && /addEventListener\('hashchange', followHash\)/.test(code));
 });
+/* the providers of a key, a server on this computer */
+const LOCAL_SITES = ['http://localhost/*', 'http://127.0.0.1/*'];
+check('the picker: the three cards, then the providers of a key, most used first, then a server on this computer; a link to each', async () => {
+  const engines = [...html.matchAll(/name="ai\.engine" value="([^"]+)"/g)].map(m => m[1]);
+  assert.deepStrictEqual(engines, [...ctx.AI.ENGINES]);
+  assert.deepStrictEqual(plain(page('AI_ENGINES')), [...ctx.AI.ENGINES]);
+  // every provider a tile of its own with its badge, its name the page's; Z.ai and the rest after DeepSeek
+  const tiles = [...html.matchAll(/<label class="engine pick( later)?">\s*<input type="radio" name="ai\.engine" value="(\w+)"[^>]*aria-describedby="ai-badge-\2">\s*<b id="ai-\2-name">([^<]+)<\/b><span class="badge" id="ai-badge-\2" hidden><\/span>/g)]
+    .map(m => [m[2], m[3], Boolean(m[1])]);
+  assert.deepStrictEqual(tiles.map(([id]) => id), ['openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek', 'mistral', 'openrouter', 'groq', 'qwen', 'kimi', 'yandex']);
+  assert.deepStrictEqual(tiles.filter(([, , later]) => !later).map(([id]) => id), ['openai', 'anthropic', 'gemini', 'xai', 'deepseek']);
+  for (const [id, name] of tiles) {
+    assert.strictEqual(page('AI_PROVIDERS')[id].name, name, id);
+  }
+  assert.ok(/<p class="engine-group" data-i18n="aiYourKey">[\s\S]*<p class="engine-group" data-i18n="aiOnComputer">[\s\S]*value="local"/.test(html));
+  // each provider's site is an optional one of the manifest, its keys page one of https
+  for (const [id, p] of Object.entries(page('AI_PROVIDERS'))) {
+    assert.ok(MANIFEST.optional_host_permissions.includes(p.origin), id);
+    assert.ok(!p.keys || /^https:\/\//.test(p.keys), id);
+  }
+  // a link to each engine picks it and focuses its first step: the key, or a server's address
+  const go = async (hash, values = {}) => {
+    await freshAI(values);
+    ctx.location.hash = hash;
+    page('followHash()');
+    return focused;
+  };
+  try {
+    for (const engine of ['gemini', 'xai', 'deepseek', 'mistral', 'openrouter', 'groq', 'qwen', 'kimi', 'yandex']) {
+      assert.strictEqual(await go('#ai-' + engine), 'ai-key', engine);
+      assert.strictEqual(local['ai.engine'], engine);
+      assert.strictEqual(element('ai-key-label').textContent, msg('opt_aiKey', page('AI_PROVIDERS')[engine].name));
+      assert.strictEqual(element('ai-folder-field').hidden, engine !== 'yandex', engine);
+      assert.strictEqual(element('ai-base-field').hidden, true);
+    }
+    assert.strictEqual(await go('#ai-local'), 'ai-base');
+    assert.deepStrictEqual([element('ai-key-label').textContent, element('ai-base-field').hidden, element('ai-server').hidden, element('ai-key-link').hidden],
+      [msg('opt_aiServer'), false, false, true]);
+    assert.strictEqual(element('ai-base').value, 'http://localhost:11434/v1', 'Ollama\'s own address to start with');
+    assert.strictEqual(element('ai-key').placeholder, msg('opt_aiKeyOptional'));
+    assert.strictEqual(element('ai-privacy').textContent, msg('opt_aiPrivacyServer', 'http://localhost:11434/v1'));
+    granted.add('http://127.0.0.1/*');
+    assert.strictEqual(await go('#ai-local', {'ai.local.base': 'http://127.0.0.1:1234/v1'}), 'ai-allow', 'set up, its site not given');
+    granted.add('http://127.0.0.1/*');
+    await page('syncAIAccess()');
+    page('paintCloud(); followHash()');
+    assert.strictEqual(focused, 'ai-model');
+    assert.strictEqual(element('ai-connected-title').textContent, msg('opt_aiConnected', 'LM Studio'));
+    assert.strictEqual(element('ai-connected-text').textContent, 'http://127.0.0.1:1234/v1');
+  }
+  finally {
+    ctx.location.hash = '';
+  }
+  // a backup takes any engine and a model of any form a provider gives
+  const sanitize = page('sanitize');
+  for (const engine of ctx.AI.ENGINES) {
+    assert.deepStrictEqual({...sanitize({'ai.engine': engine})}, {'ai.engine': engine});
+  }
+  const models = {'ai.openrouter.model': '~openai/gpt-luna-latest', 'ai.local.model': 'hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF:Q4_K_M',
+    'ai.yandex.model': 'aliceai-llm/latest', 'ai.groq.model': 'openai/gpt-oss-20b', 'ai.gemini.model': 'gemini-3.8-flash'};
+  assert.deepStrictEqual({...sanitize(models)}, models);
+  assert.deepStrictEqual({...sanitize({'ai.local.model': 'llama 3', 'ai.xai.model': 'g'.repeat(101)})}, {});
+});
+
+check('Yandex: the key with its folder, both checked, both kept on this computer alone', async () => {
+  await freshAI({'ai.engine': 'yandex'});
+  const claude = ai.models;
+  ai.models = [{id: 'aliceai-llm-flash/latest', name: 'aliceai-llm-flash/latest', default: true, recommended: true, tag: 'fast'}];
+  try {
+    element('ai-key').value = 'AQVN-SECRET-yandex';
+    assert.strictEqual(await element('ai-connect').onclick(), false);
+    assert.deepStrictEqual([element('ai-error').textContent, focused, requested.length], [msg('opt_aiFolderEmpty'), 'ai-folder', 0]);
+    assert.strictEqual(element('ai-folder').attrs['aria-invalid'], 'true');
+    element('ai-folder').value = ' b1gfolder01 ';
+    const done = element('ai-connect').onclick();
+    assert.deepStrictEqual(requested.map(o => [...o]), [['https://ai.api.cloud.yandex.net/*']]);
+    assert.strictEqual(await done, true);
+    assert.deepStrictEqual(plain(asked), [['check', 'yandex', {key: 'AQVN-SECRET-yandex', folder: 'b1gfolder01'}],
+      ['models', 'yandex', {key: 'AQVN-SECRET-yandex', folder: 'b1gfolder01'}]]);
+    assert.deepStrictEqual([local['ai.yandex.key'], local['ai.yandex.folder'], local['ai.yandex.model']],
+      ['AQVN-SECRET-yandex', 'b1gfolder01', 'aliceai-llm-flash/latest']);
+    assert.strictEqual(element('ai-folder').value, '', 'the fields forget what was typed');
+    // its models asked again with both
+    asked.length = 0;
+    page(`delete aiLists.yandex`);
+    page('listModels("yandex")');
+    await tick();
+    assert.deepStrictEqual(plain(asked[0]), ['models', 'yandex', {key: 'AQVN-SECRET-yandex', folder: 'b1gfolder01'}]);
+    await tick();
+    // Disconnect: key, folder and model gone, its site given back
+    granted.add('https://ai.api.cloud.yandex.net/*');
+    await page('syncAIAccess()');
+    await element('ai-disconnect').onclick();
+    assert.ok(!['ai.yandex.key', 'ai.yandex.folder', 'ai.yandex.model'].some(k => k in local));
+    assert.deepStrictEqual(removed, ['https://ai.api.cloud.yandex.net/*']);
+  }
+  finally {
+    ai.models = claude;
+  }
+});
+
+check('a server on this computer: Ollama, LM Studio or another address; a key only if it asks; what to do when it refuses', async () => {
+  const llama = [{id: 'llama3.2:latest', name: 'llama3.2:latest', default: true, recommended: true}];
+  const claude = ai.models;
+  ai.models = llama;
+  try {
+    await freshAI({'ai.engine': 'local'});
+    page('paintAI()');
+    // an address not on this computer: said at once, Chrome not asked
+    element('ai-base').value = 'http://192.168.1.5:11434/v1';
+    assert.strictEqual(await element('ai-connect').onclick(), false);
+    assert.deepStrictEqual([element('ai-error').textContent, focused, requested.length], [msg('opt_aiLocalBad'), 'ai-base', 0]);
+    // LM Studio's own: its site, no key, its models
+    page(`pickServer('lmstudio')`);
+    assert.strictEqual(element('ai-base').value, 'http://localhost:1234/v1');
+    assert.strictEqual(await element('ai-connect').onclick(), true);
+    assert.deepStrictEqual(requested.map(o => [...o]), [['http://localhost/*']]);
+    assert.deepStrictEqual(plain(asked), [['check', 'local', {key: '', base: 'http://localhost:1234/v1'}], ['models', 'local', {key: '', base: 'http://localhost:1234/v1'}]]);
+    assert.deepStrictEqual([local['ai.local.base'], local['ai.local.model'], 'ai.local.key' in local], ['http://localhost:1234/v1', 'llama3.2:latest', false]);
+    assert.strictEqual(page(`aiName('local')`), 'LM Studio');
+    // another, at 127.0.0.1, with the key it asks for
+    await freshAI({'ai.engine': 'local'});
+    page('paintAI()');
+    element('ai-base').value = '127.0.0.1:8080';
+    element('ai-key').value = 'lm-SECRET';
+    assert.strictEqual(await element('ai-connect').onclick(), true);
+    assert.deepStrictEqual(requested.map(o => [...o]), [['http://127.0.0.1/*']]);
+    assert.deepStrictEqual([local['ai.local.base'], local['ai.local.key']], ['http://127.0.0.1:8080/v1', 'lm-SECRET']);
+    assert.strictEqual(page(`aiName('local')`), '127.0.0.1:8080');
+    // not running; the origin refused: what to start, what to allow, by the server
+    const fails = async (code, base) => {
+      await freshAI({'ai.engine': 'local'});
+      ai.checkError = {code};
+      element('ai-base').value = base;
+      assert.strictEqual(await element('ai-connect').onclick(), false);
+      assert.ok(!granted.has('http://localhost/*') && !granted.has('http://127.0.0.1/*'), 'its site given back');
+      assert.strictEqual(focused, 'ai-base');
+      return element('ai-error').textContent;
+    };
+    assert.strictEqual(await fails('no-server', 'http://localhost:11434/v1'), msg('opt_aiNoServer', 'http://localhost:11434/v1'));
+    assert.strictEqual(await fails('origin', 'http://localhost:11434/v1'), msg('opt_aiOllamaOrigins'));
+    assert.ok(/OLLAMA_ORIGINS/.test(msg('opt_aiOllamaOrigins')) && /launchctl setenv OLLAMA_ORIGINS "chrome-extension:\/\/\*"/.test(msg('opt_aiOllamaOrigins')));
+    assert.strictEqual(await fails('origin', 'http://localhost:1234/v1'), msg('opt_aiLmStudioCors'));
+    assert.ok(/Enable CORS/.test(msg('opt_aiLmStudioCors')));
+    assert.strictEqual(await fails('origin', 'http://localhost:5000/v1'), msg('opt_aiServerOrigin'));
+    ai.checkError = {code: 'auth'};
+    element('ai-key').value = 'wrong';
+    assert.strictEqual(await element('ai-connect').onclick(), false);
+    assert.deepStrictEqual([element('ai-error').textContent, focused], [msg('opt_aiErrAuth', 'localhost:5000'), 'ai-key']);
+    ai.checkError = null;
+    // the diagnostics: the server by its name, never the key
+    await freshAI({'ai.engine': 'local', 'ai.local.base': 'http://localhost:11434/v1', 'ai.local.key': 'lm-SECRET', 'ai.local.model': 'llama3.2:latest'});
+    assert.deepStrictEqual([...await page('aiDiag()')], ['ai', false, 'Ollama: ' + msg('opt_aiDiagNoAccess', 'localhost')]);
+    granted.add('http://localhost/*');
+    assert.deepStrictEqual([...await page('aiDiag()')], ['ai', true, 'Ollama · llama3.2:latest']);
+    assert.deepStrictEqual(plain(asked.at(-1)), ['check', 'local', {key: 'lm-SECRET', base: 'http://localhost:11434/v1'}]);
+    delete local['ai.local.base'];
+    assert.deepStrictEqual([...await page('aiDiag()')], ['ai', false, 'Ollama: ' + msg('opt_aiDiagNoAddress')]);
+  }
+  finally {
+    ai.models = claude;
+  }
+});
+
+check('127.0.0.1 is shared: a server there and the ChatGPT sign-in each keep it while the other one goes', async () => {
+  // Ollama at 127.0.0.1, then the plan signed in and out: the server keeps its site
+  await freshAI({'ai.engine': 'chatgpt', 'ai.local.base': 'http://127.0.0.1:11434/v1', 'ai.local.model': 'llama3.2:latest'});
+  ai.account = {...ACCOUNT};
+  [...PLAN_SITES, ...LOCAL_SITES].forEach(o => granted.add(o));
+  await Promise.all([page('readAccount()'), page('syncAIAccess()')]);
+  await element('ai-signout').onclick();
+  assert.deepStrictEqual(removed.sort(), PLAN_SITES.slice().sort());
+  assert.ok(granted.has('http://127.0.0.1/*'));
+  // the server disconnected while a sign-in waits for its way back to 127.0.0.1: kept for it
+  await freshAI({'ai.engine': 'local', 'ai.local.base': 'http://127.0.0.1:11434/v1'});
+  granted.add('http://127.0.0.1/*');
+  page('aiSigning = true');
+  await element('ai-disconnect').onclick();
+  assert.deepStrictEqual(removed, []);
+  assert.ok(!('ai.local.base' in local));
+  // and with none: given back
+  await freshAI({'ai.engine': 'local', 'ai.local.base': 'http://127.0.0.1:11434/v1'});
+  granted.add('http://127.0.0.1/*');
+  await element('ai-disconnect').onclick();
+  assert.deepStrictEqual(removed, ['http://127.0.0.1/*']);
+  // localhost: Ollama's alone, given back when it goes
+  await freshAI({'ai.engine': 'local', 'ai.local.base': 'http://localhost:11434/v1', 'ai.chatgpt.auth': PLAN_AUTH});
+  ai.account = {...ACCOUNT};
+  await page('readAccount()');
+  await element('ai-disconnect').onclick();
+  assert.deepStrictEqual(removed, ['http://localhost/*']);
+  // a reset gives back every site, both of this computer's
+  assert.ok(LOCAL_SITES.every(o => page('AI_ORIGINS').includes(o)));
+});
+
+check('a key, Yandex\'s folder and a server\'s address are never in an export, in Chrome sync or in the diagnostics', async () => {
+  await freshAI({'ai.engine': 'yandex', 'ai.yandex.key': 'AQVN-SECRET', 'ai.yandex.folder': 'b1gSECRET', 'ai.yandex.model': 'aliceai-llm/latest',
+    'ai.local.base': 'http://localhost:11434/v1', 'ai.local.key': 'lm-SECRET', 'ai.gemini.key': 'AIza-SECRET', 'ai.openrouter.key': 'sk-or-SECRET',
+    'sync.settings': true});
+  const secret = v => ['SECRET', 'localhost:11434'].some(s => has(v, s));
+  for (const files of [true, false]) {
+    const out = await page(`collect(${files})`);
+    assert.strictEqual(out['ai.yandex.model'], 'aliceai-llm/latest');
+    assert.ok(!secret(out));
+  }
+  ctx.setTimeout = fn => fn();
+  try {
+    page('pushSync()');
+    await tick();
+    await tick();
+  }
+  finally {
+    ctx.setTimeout = later;
+  }
+  assert.ok(synced.length && synced.every(v => !secret(v)));
+  granted.add('https://ai.api.cloud.yandex.net/*');
+  const line = await page('aiDiag()');
+  assert.deepStrictEqual([...line], ['ai', true, 'Yandex · aliceai-llm/latest']);
+  assert.ok(!secret(line));
+  // a backup that carries them brings none
+  assert.deepStrictEqual({...page('sanitize')({'ai.yandex.folder': 'b1g', 'ai.local.base': 'http://localhost:1/v1', 'ai.local.key': 'x', 'ai.kimi.key': 'sk-x'})}, {});
+  // a reset forgets them all
+  await element('reset').onclick();
+  assert.ok(!['ai.yandex.key', 'ai.yandex.folder', 'ai.local.base', 'ai.local.key', 'ai.gemini.key', 'ai.openrouter.key'].some(k => k in local));
+});
+
+check('a key\'s form names its provider: DeepSeek\'s, Qwen\'s and Kimi\'s sk- keys are theirs; another\'s is said to be one', async () => {
+  const which = page('aiKeyProvider');
+  const cases = [
+    ['sk-0123456789abcdef', 'deepseek', ''], ['sk-0123456789abcdef', 'qwen', ''], ['sk-0123456789abcdef', 'kimi', ''], ['sk-0123456789abcdef', 'openai', ''],
+    ['sk-0123456789abcdef', 'gemini', 'openai'], ['sk-proj-abc', 'deepseek', 'openai'], ['gsk_abc', 'openai', 'groq'], ['xai-abc', 'groq', 'xai'],
+    ['sk-or-v1-abc', 'anthropic', 'openrouter'], ['sk-ant-api03-abc', 'openrouter', 'anthropic'], ['sk-lm-abc', 'local', ''], ['AIzaSyabc', 'gemini', '']
+  ];
+  for (const [key, engine, want] of cases) {
+    assert.strictEqual(which(key, engine), want, `${key} for ${engine}`);
+  }
+  await freshAI({'ai.engine': 'deepseek'});
+  element('ai-key').value = 'sk-proj-SECRET';
+  assert.strictEqual(await element('ai-connect').onclick(), false);
+  assert.strictEqual(element('ai-error').textContent, msg('opt_aiKeyOther', 'OpenAI', 'DeepSeek'));
+  element('ai-key').value = 'sk-0123456789abcdef0123456789abcdef';
+  assert.strictEqual(await element('ai-connect').onclick(), true);
+  assert.deepStrictEqual(requested.map(o => [...o]), [['https://api.deepseek.com/*']]);
+});
+
+check('OpenRouter\'s hundreds of models: recommended first, then by maker, each with its price; a search finds them, the one picked stays', async () => {
+  await freshAI({'ai.engine': 'openrouter', 'ai.openrouter.key': 'sk-or-SECRET', 'ai.openrouter.model': 'google/gemini-3.8-flash'});
+  granted.add('https://openrouter.ai/*');
+  await page('syncAIAccess()');
+  const list = [
+    {id: 'google/gemini-3.8-flash', name: 'Gemini 3.8 Flash', group: 'Google', price: [0.83, 4.13], default: true, recommended: true},
+    {id: 'openrouter/free', name: 'Free Models Router', group: 'openrouter', price: [0, 0], tag: 'free', recommended: true},
+    ...Array.from({length: 40}, (_, i) => ({id: `zeta/model-${i}`, name: `Model ${i}`, group: 'Zeta', price: [1, 2]})),
+    {id: 'anthropic/claude-opus-5.5', name: 'Claude Opus 5.5', group: 'Anthropic', price: [4, 20]},
+    {id: 'google/gemma-4-31b-it:free', name: 'Gemma 4 31B (free)', group: 'Google', price: [0, 0], tag: 'free'}
+  ];
+  page(`aiLists.openrouter = ${JSON.stringify(list)}`);
+  page('paintCloud()');
+  const groups = element('ai-model').kids;
+  assert.deepStrictEqual(groups.map(g => g.label), [msg('opt_aiRecommended'), 'Anthropic', 'Google', 'Zeta']);
+  assert.deepStrictEqual(groups[0].kids.map(o => o.textContent), ['Gemini 3.8 Flash · $0.83 / $4.13', 'Free Models Router · ' + msg('opt_aiFree')]);
+  assert.deepStrictEqual(groups[1].kids.map(o => o.textContent), ['Claude Opus 5.5 · $4 / $20']);
+  assert.deepStrictEqual(groups[2].kids.map(o => o.value), ['google/gemma-4-31b-it:free']);
+  assert.strictEqual(element('ai-model-find').hidden, false, 'a search above a long list');
+  assert.strictEqual(element('ai-model-prices').hidden, false);
+  assert.strictEqual(msg('opt_aiPrices'), 'Prices in US dollars per million tokens, input / output.');
+  // the search: by name, maker or id, without case or accents; the model picked stays
+  element('ai-model-search').value = 'CLAUDÉ';
+  element('ai-model-search').oninput();
+  const found = element('ai-model').kids;
+  assert.deepStrictEqual(found.map(k => k.label || k.value), ['google/gemini-3.8-flash', 'Anthropic']);
+  element('ai-model-search').value = 'nothing like it';
+  element('ai-model-search').oninput();
+  const none = element('ai-model').kids;
+  assert.deepStrictEqual([none.length, none[1].disabled, none[1].textContent], [2, true, msg('opt_aiNoModelMatch', 'nothing like it')]);
+  // another engine: the search starts over; a short list has none
+  page(`pickEngine('gemini')`);
+  assert.strictEqual(page('aiModelQuery'), '');
+  page(`aiLists.gemini = [{id: 'gemini-3.8-flash', name: 'gemini-3.8-flash', default: true, recommended: true}]`);
+  page(`prefs['ai.gemini.model'] = 'gemini-3.8-flash'; aiKeys['ai.gemini.key'] = 'AIza-SECRET'; aiAccess.gemini = true; paintCloud()`);
+  assert.deepStrictEqual([element('ai-model-find').hidden, element('ai-model-prices').hidden], [true, true]);
+});
+
 check('the AI buttons switch: on by default, saved, in a backup, and offered in place of the AI\'s rows while it is off', async () => {
   assert.strictEqual(page('DEFAULTS')['ai.buttons'], true);
   const row = /<label class="row"( data-ai)? id="ai-buttons-row">\s*<span class="text"><b data-i18n="aiButtons">[^<]*<\/b><small data-i18n="aiButtonsText">[^<]*<\/small><\/span>\s*<input type="checkbox" role="switch" data-key="ai\.buttons">/.exec(html);
@@ -1537,7 +1830,10 @@ check('a link to a setting under More options opens them for this visit, then br
     assert.strictEqual(go('#ai-chatgpt'), null);
     assert.strictEqual(go('#ai-builtin'), null);
     assert.strictEqual(go('#ai-off'), 'ai');
-    assert.strictEqual(go('#ai-gemini'), 'ai');
+    assert.strictEqual(go('#ai-cohere'), 'ai');
+    for (const engine of ctx.AI.ENGINES.filter(e => e !== 'off')) {
+      assert.strictEqual(go('#ai-' + engine), null, engine);
+    }
     assert.strictEqual(go('#nothing-here'), null);
     assert.strictEqual(go(''), null);
   }

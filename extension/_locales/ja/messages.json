@@ -1698,10 +1698,10 @@
     "message": "モデルがこの依頼を断りました。"
   },
   "ai_err_no_server": {
-    "message": "このコンピュータの AI サーバーから応答がありません。起動していますか？"
+    "message": "このパソコンの AI サーバーから応答がありません。起動していますか？"
   },
   "ai_err_origin": {
-    "message": "このコンピュータの AI サーバーが Mail Deck を拒否しました。設定 → AI アシスタントをご覧ください。"
+    "message": "このパソコンの AI サーバーが Mail Deck を拒否しました。設定 → AI アシスタントをご覧ください。"
   },
   "ai_err_limit": {
     "message": "ChatGPT の利用上限に達しました。"
@@ -2353,6 +2353,87 @@
   },
   "opt_aiFast": {
     "message": "最速・最安"
+  },
+  "opt_aiYourKey": {
+    "message": "お持ちの API キー"
+  },
+  "opt_aiOnComputer": {
+    "message": "このパソコン上で"
+  },
+  "opt_aiLocalText": {
+    "message": "自分のモデル、キー不要"
+  },
+  "opt_aiServer": {
+    "message": "このパソコン上のサーバー"
+  },
+  "opt_aiServerText": {
+    "message": "Ollama、LM Studio、または OpenAI の API 形式に対応した他のサーバー。"
+  },
+  "opt_aiServerOther": {
+    "message": "その他"
+  },
+  "opt_aiServerAddress": {
+    "message": "サーバーのアドレス"
+  },
+  "opt_aiKeyOptional": {
+    "message": "API キー（サーバーが求める場合）"
+  },
+  "opt_aiLocalBad": {
+    "message": "このパソコン上のアドレスを使ってください（例: http://localhost:11434/v1、http://127.0.0.1:1234/v1）。"
+  },
+  "opt_aiLocalHint": {
+    "message": "サーバーは既定でモデルに 4,096 トークンしか与えないため、Mail Deck は長いメールを短く分けて、1 件ずつリクエストします。"
+  },
+  "opt_aiNoServer": {
+    "message": "$1 から応答がありません。Ollama、または LM Studio の Developer タブのサーバーを起動してから、もう一度接続してください。"
+  },
+  "opt_aiOllamaOrigins": {
+    "message": "Ollama が Mail Deck を拒否しました。Ollama を終了し、OLLAMA_ORIGINS を chrome-extension://* に設定してから（Mac ではターミナルで launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" を実行、Windows や Linux では環境変数として追加）、Ollama を起動してもう一度接続してください。"
+  },
+  "opt_aiLmStudioCors": {
+    "message": "LM Studio が Mail Deck を拒否しました。LM Studio の Developer タブで Server Settings の Enable CORS をオンにしてから、もう一度接続してください。"
+  },
+  "opt_aiServerOrigin": {
+    "message": "サーバーが Mail Deck を拒否しました。サーバーの設定で chrome-extension://* からのリクエストを許可してから、もう一度接続してください。"
+  },
+  "opt_aiFolder": {
+    "message": "フォルダ ID"
+  },
+  "opt_aiFolderEmpty": {
+    "message": "フォルダ ID も貼り付けてください。"
+  },
+  "opt_aiYandexHint": {
+    "message": "ai.languageModels.user ロールを持つサービスアカウントの API キーと、Yandex Cloud にあるそのフォルダの ID を使ってください。料金はお持ちの請求先アカウントに請求されます。"
+  },
+  "opt_aiGeminiHint": {
+    "message": "Google AI Studio でキーを作成してください。無料枠では、Google が Mail Deck の送信内容を製品の改善に使うことがあります。課金を有効にすると使われません。"
+  },
+  "opt_aiOpenRouterHint": {
+    "message": "1 つのキーで多くのプロバイダの数百のモデルが使えます。一部は無料です。"
+  },
+  "opt_aiGroqHint": {
+    "message": "Groq の無料プランは 1 分あたり約 8,000 トークンまでのため、Mail Deck は長いメールを短く分けて、1 件ずつリクエストします。"
+  },
+  "opt_aiQwenHint": {
+    "message": "Alibaba Cloud Model Studio の国際版サイトのキーを使ってください。キーは作成したリージョンでしか使えません。"
+  },
+  "opt_aiKimiHint": {
+    "message": "platform.kimi.ai のキーを使ってください。中国本土向けの Moonshot プラットフォームのキーはここでは使えません。"
+  },
+  "opt_aiModelSearch": {
+    "message": "モデルを検索"
+  },
+  "opt_aiNoModelMatch": {
+    "message": "「$1」に一致するモデルはありません"
+  },
+  "opt_aiPrices": {
+    "message": "価格は 100 万トークンあたりの米ドル（入力 / 出力）です。"
+  },
+  "opt_aiPrivacyServer": {
+    "message": "リクエストはブラウザから、このパソコン上の $1 のサーバーに送られます。Mail Deck にはサーバーがありません。メールがこのパソコンの外に出るのは、そのサーバーが転送する場合だけです。"
+  },
+  "opt_aiDiagNoAddress": {
+    "message": "アドレスがまだありません"
   },
   "opt_reloadNeeded": {
     "message": "Mail Deck は更新されましたが、まだ再読み込みされていません。chrome://extensions で再読み込みしてから、もう一度お試しください。"

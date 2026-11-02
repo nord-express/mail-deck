@@ -2522,6 +2522,87 @@
     "opt_aiFast": {
         "message": "en hızlı ve en ucuz"
     },
+    "opt_aiYourKey": {
+        "message": "Kendi API anahtarınız"
+    },
+    "opt_aiOnComputer": {
+        "message": "Bu bilgisayarda"
+    },
+    "opt_aiLocalText": {
+        "message": "Kendi modelleriniz, anahtar gerekmez"
+    },
+    "opt_aiServer": {
+        "message": "Bu bilgisayardaki sunucu"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio ya da OpenAI API’siyle konuşan başka bir sunucu."
+    },
+    "opt_aiServerOther": {
+        "message": "Diğer"
+    },
+    "opt_aiServerAddress": {
+        "message": "Sunucu adresi"
+    },
+    "opt_aiKeyOptional": {
+        "message": "Sunucu isterse API anahtarı"
+    },
+    "opt_aiLocalBad": {
+        "message": "Bu bilgisayardaki bir adres kullanın; örneğin http://localhost:11434/v1 ya da http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "Bir sunucu varsayılan olarak modele 4.096 token verir; bu yüzden Mail Deck uzun postaların daha kısa kısımlarını, her seferinde tek istekle gönderir."
+    },
+    "opt_aiNoServer": {
+        "message": "$1 adresinde yanıt veren yok. Ollama’yı ya da LM Studio’nun Developer sekmesindeki sunucuyu başlatın, sonra yeniden bağlanın."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama, Mail Deck’i reddetti. Ollama’dan çıkın, OLLAMA_ORIGINS değerini chrome-extension://* yapın (Mac’te Terminal’de launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" komutunu çalıştırın; Windows ya da Linux’ta ortam değişkeni olarak ekleyin), Ollama’yı başlatın ve yeniden bağlanın."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio, Mail Deck’i reddetti. LM Studio’nun Developer sekmesinde Server Settings altında Enable CORS’u açın, sonra yeniden bağlanın."
+    },
+    "opt_aiServerOrigin": {
+        "message": "Sunucu, Mail Deck’i reddetti. Ayarlarından chrome-extension://* isteklerine izin verin, sonra yeniden bağlanın."
+    },
+    "opt_aiFolder": {
+        "message": "Klasör kimliği"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "Klasör kimliğini de yapıştırın."
+    },
+    "opt_aiYandexHint": {
+        "message": "ai.languageModels.user rolüne sahip bir hizmet hesabının API anahtarını ve Yandex Cloud’daki klasörünün kimliğini kullanın. Yandex ücreti faturalandırma hesabınıza yansıtır."
+    },
+    "opt_aiGeminiHint": {
+        "message": "Google AI Studio’da bir anahtar oluşturun. Ücretsiz katmanda Google, Mail Deck’in gönderdiklerini ürünlerini geliştirmek için kullanabilir; faturalandırma açıkken kullanmaz."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "Tek bir anahtar, birçok sağlayıcının yüzlerce modelini açar; bazıları ücretsizdir."
+    },
+    "opt_aiGroqHint": {
+        "message": "Groq’un ücretsiz planı dakikada yaklaşık 8.000 token kabul eder; bu yüzden Mail Deck uzun postaların daha kısa kısımlarını, her seferinde tek istekle gönderir."
+    },
+    "opt_aiQwenHint": {
+        "message": "Alibaba Cloud Model Studio’nun uluslararası sitesinden bir anahtar kullanın: anahtar yalnızca oluşturulduğu bölgede çalışır."
+    },
+    "opt_aiKimiHint": {
+        "message": "platform.kimi.ai adresinden bir anahtar kullanın: Moonshot’ın Çin anakarası platformunun anahtarları burada çalışmaz."
+    },
+    "opt_aiModelSearch": {
+        "message": "Model ara"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "“$1” ile eşleşen model yok"
+    },
+    "opt_aiPrices": {
+        "message": "Fiyatlar milyon token başına ABD doları cinsindendir: girdi / çıktı."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "İstekler tarayıcınızdan bu bilgisayardaki $1 sunucusuna gider. Mail Deck’in sunucusu yoktur; postanız bu bilgisayardan yalnızca o sunucu başka yere gönderirse çıkar."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "henüz adres yok"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck güncellendi ama henüz yeniden yüklenmedi. chrome://extensions sayfasında yeniden yükleyin, sonra yeniden deneyin."
     },

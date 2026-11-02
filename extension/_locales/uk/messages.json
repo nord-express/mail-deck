@@ -2522,6 +2522,87 @@
     "opt_aiFast": {
         "message": "найшвидша й найдешевша"
     },
+    "opt_aiYourKey": {
+        "message": "Ваш ключ API"
+    },
+    "opt_aiOnComputer": {
+        "message": "На цьому комп’ютері"
+    },
+    "opt_aiLocalText": {
+        "message": "Ваші власні моделі, без ключа"
+    },
+    "opt_aiServer": {
+        "message": "Сервер на цьому комп’ютері"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio або інший сервер з API у форматі OpenAI."
+    },
+    "opt_aiServerOther": {
+        "message": "Інший"
+    },
+    "opt_aiServerAddress": {
+        "message": "Адреса сервера"
+    },
+    "opt_aiKeyOptional": {
+        "message": "Ключ API, якщо сервер його вимагає"
+    },
+    "opt_aiLocalBad": {
+        "message": "Вкажіть адресу на цьому комп’ютері, наприклад http://localhost:11434/v1 або http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "Типово сервер дає моделі 4096 токенів, тому Mail Deck надсилає їй коротші частини довгих листів, по одному запиту."
+    },
+    "opt_aiNoServer": {
+        "message": "За адресою $1 ніхто не відповідає. Запустіть Ollama або сервер на вкладці Developer у LM Studio і підключіться знову."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama не пускає Mail Deck. Закрийте Ollama, задайте OLLAMA_ORIGINS значення chrome-extension://* (на Mac виконайте в Терміналі launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\"; у Windows або Linux додайте змінну середовища), запустіть Ollama і підключіться знову."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio не пускає Mail Deck. На вкладці Developer у LM Studio увімкніть Enable CORS у Server Settings і підключіться знову."
+    },
+    "opt_aiServerOrigin": {
+        "message": "Сервер не пускає Mail Deck. Дозвольте в його налаштуваннях запити з chrome-extension://* і підключіться знову."
+    },
+    "opt_aiFolder": {
+        "message": "ID каталогу"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "Вставте також ID каталогу."
+    },
+    "opt_aiYandexHint": {
+        "message": "Використовуйте ключ API сервісного акаунта з роллю ai.languageModels.user і ID його каталогу в Yandex Cloud. Yandex списує оплату з вашого платіжного акаунта."
+    },
+    "opt_aiGeminiHint": {
+        "message": "Створіть ключ у Google AI Studio. На безкоштовному тарифі Google може використовувати те, що надсилає Mail Deck, для покращення своїх продуктів; з увімкненою оплатою — ні."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "Один ключ відкриває сотні моделей від багатьох провайдерів, деякі з них безкоштовні."
+    },
+    "opt_aiGroqHint": {
+        "message": "Безкоштовний тариф Groq приймає близько 8000 токенів за хвилину, тому Mail Deck надсилає коротші частини довгих листів, по одному запиту."
+    },
+    "opt_aiQwenHint": {
+        "message": "Використовуйте ключ із міжнародного сайту Alibaba Cloud Model Studio: ключ працює лише в регіоні, де його створено."
+    },
+    "opt_aiKimiHint": {
+        "message": "Використовуйте ключ із platform.kimi.ai: ключі з платформи Moonshot для материкового Китаю тут не працюють."
+    },
+    "opt_aiModelSearch": {
+        "message": "Пошук моделей"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "Немає моделей за запитом «$1»"
+    },
+    "opt_aiPrices": {
+        "message": "Ціни в доларах США за мільйон токенів: введення / виведення."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "Запити йдуть із вашого браузера на сервер на цьому комп’ютері за адресою $1. У Mail Deck немає серверів; пошта залишає цей комп’ютер, лише якщо її пересилає сам цей сервер."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "адреси поки немає"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck оновлено, але ще не перезавантажено. Перезавантажте його на сторінці chrome://extensions і спробуйте ще раз."
     },

@@ -1648,7 +1648,7 @@ html body {
     box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--ink);
   }
 
-  /* the AI: six engines, what the one picked needs, then what it does */
+  /* the AI: the engines, what the one picked needs, then what it does */
   .engines {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1693,7 +1693,7 @@ html body {
     font-size: 12px;
     line-height: 16px;
   }
-  /* the radio itself is the ring at the top end: the arrow keys move through the six */
+  /* the radio itself is the ring at the top end: the arrow keys move through them all */
   .engine input {
     appearance: none;
     position: absolute;
@@ -1752,6 +1752,74 @@ html body {
   .badge[data-tone="warn"] {
     color: var(--warn);
   }
+  /* The providers of a key and a server on this computer, each under a word of its own: radios of
+     the same group as the cards above. A provider is a small tile, its name and its ring; the
+     ones after DeepSeek move after it (later), the order the radios keep being the module's. */
+  .engine-group {
+    grid-column: 1 / -1;
+    margin: 8px 4px -2px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: .01em;
+  }
+  .providers {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .engine.pick {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding-block: 0;
+    padding-inline: 12px 36px;
+  }
+  .engine.pick.later {
+    order: 1;
+  }
+  .engine.pick b {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .engine.pick input,
+  .engine.wide input {
+    top: calc(50% - 9px);
+  }
+  .engine.pick input {
+    inset-inline-end: 10px;
+  }
+  /* on a tile the word goes, its dot stays: read out with the provider's name */
+  .engine.pick .badge {
+    position: static;
+    flex: none;
+    max-width: none;
+    font-size: 0;
+  }
+  .engine.wide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: center;
+    min-height: 0;
+    padding-inline-end: 40px;
+  }
+  .engine.wide .tile {
+    grid-row: span 2;
+    margin: 0;
+  }
+  .engine.wide .badge {
+    top: calc(50% - 8px);
+  }
+  .engine.wide:has(.badge:not([hidden])) {
+    padding-inline-end: 140px;
+  }
   .detail {
     margin: 0 16px 16px;
     border-radius: var(--r-inner);
@@ -1799,7 +1867,8 @@ html body {
     flex-wrap: wrap;
     gap: 8px;
   }
-  .key .field {
+  .key .field,
+  .models .field {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1812,18 +1881,26 @@ html body {
     box-shadow: inset 0 0 0 1px var(--line-strong);
     transition: box-shadow var(--t-hover);
   }
-  .key .field:focus-within {
+  .key .field:focus-within,
+  .models .field:focus-within {
     box-shadow: inset 0 0 0 1px var(--focus), 0 0 0 4px color-mix(in srgb, var(--focus) 18%, transparent);
   }
   .key .field:has([aria-invalid="true"]) {
     box-shadow: inset 0 0 0 1px var(--danger);
   }
-  .key .field > svg {
+  .key .field > svg,
+  .models .field > svg {
     width: 16px;
     height: 16px;
+    flex: none;
     color: var(--faint);
   }
-  .key input {
+  /* a server's address on a line of its own, the key it may ask for under it */
+  .key .field.whole {
+    flex-basis: 100%;
+  }
+  .key input,
+  .models input {
     flex: 1;
     min-width: 0;
     height: 100%;
@@ -1886,6 +1963,32 @@ html body {
   }
   #ai-model {
     max-width: 300px;
+  }
+  /* the model, with a search above a long list */
+  .models {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 300px;
+    max-width: 100%;
+  }
+  .models .field {
+    flex: none;
+    padding-inline-end: 10px;
+  }
+  .models input {
+    font: inherit;
+  }
+  /* what a field is for, in the page's words and their direction, whatever the field's own */
+  .key input::placeholder {
+    font-family: var(--font);
+    unicode-bidi: plaintext;
+  }
+  .models #ai-model {
+    max-width: none;
+  }
+  #ai-server {
+    align-self: flex-start;
   }
   /* a status with its buttons: on a narrow page the buttons go under the words, not beside a sliver */
   #ai-connected,
@@ -2309,6 +2412,13 @@ html body {
     .engines {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       padding: 12px;
+    }
+    .providers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .row > .models {
+      flex: 1 0 100%;
+      width: auto;
     }
     .detail {
       margin: 0 12px 12px;

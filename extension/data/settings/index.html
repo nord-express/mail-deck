@@ -334,20 +334,63 @@
               <span class="tile"><i data-icon="spark"></i></span><span class="badge" id="ai-badge-chatgpt" hidden></span>
               <b id="ai-chatgpt-name" data-i18n="aiPlan">ChatGPT plan</b><small id="ai-chatgpt-text" data-i18n="aiPlanText">Your plan, no API key</small>
             </label>
-            <label class="engine">
-              <input type="radio" name="ai.engine" value="openai" aria-labelledby="ai-openai-name" aria-describedby="ai-openai-text ai-badge-openai">
-              <span class="tile"><i data-icon="key"></i></span><span class="badge" id="ai-badge-openai" hidden></span>
-              <b id="ai-openai-name">OpenAI</b><small id="ai-openai-text" data-i18n="aiCloudText" data-i18n-arg="GPT">GPT · API key</small>
-            </label>
-            <label class="engine">
-              <input type="radio" name="ai.engine" value="anthropic" aria-labelledby="ai-anthropic-name" aria-describedby="ai-anthropic-text ai-badge-anthropic">
-              <span class="tile"><i data-icon="key"></i></span><span class="badge" id="ai-badge-anthropic" hidden></span>
-              <b id="ai-anthropic-name">Anthropic</b><small id="ai-anthropic-text" data-i18n="aiCloudText" data-i18n-arg="Claude">Claude · API key</small>
-            </label>
-            <label class="engine">
-              <input type="radio" name="ai.engine" value="zai" aria-labelledby="ai-zai-name" aria-describedby="ai-zai-text ai-badge-zai">
-              <span class="tile"><i data-icon="key"></i></span><span class="badge" id="ai-badge-zai" hidden></span>
-              <b id="ai-zai-name">Z.ai</b><small id="ai-zai-text" data-i18n="aiZaiText">GLM · API key, some free</small>
+            <!-- a provider with the user's own key: the most used first (Z.ai's comes after DeepSeek's), then the rest -->
+            <p class="engine-group" data-i18n="aiYourKey">Your API key</p>
+            <div class="providers">
+              <label class="engine pick">
+                <input type="radio" name="ai.engine" value="openai" aria-labelledby="ai-openai-name" aria-describedby="ai-badge-openai">
+                <b id="ai-openai-name">OpenAI</b><span class="badge" id="ai-badge-openai" hidden></span>
+              </label>
+              <label class="engine pick">
+                <input type="radio" name="ai.engine" value="anthropic" aria-labelledby="ai-anthropic-name" aria-describedby="ai-badge-anthropic">
+                <b id="ai-anthropic-name">Anthropic</b><span class="badge" id="ai-badge-anthropic" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="zai" aria-labelledby="ai-zai-name" aria-describedby="ai-badge-zai">
+                <b id="ai-zai-name">Z.ai</b><span class="badge" id="ai-badge-zai" hidden></span>
+              </label>
+              <label class="engine pick">
+                <input type="radio" name="ai.engine" value="gemini" aria-labelledby="ai-gemini-name" aria-describedby="ai-badge-gemini">
+                <b id="ai-gemini-name">Gemini</b><span class="badge" id="ai-badge-gemini" hidden></span>
+              </label>
+              <label class="engine pick">
+                <input type="radio" name="ai.engine" value="xai" aria-labelledby="ai-xai-name" aria-describedby="ai-badge-xai">
+                <b id="ai-xai-name">xAI</b><span class="badge" id="ai-badge-xai" hidden></span>
+              </label>
+              <label class="engine pick">
+                <input type="radio" name="ai.engine" value="deepseek" aria-labelledby="ai-deepseek-name" aria-describedby="ai-badge-deepseek">
+                <b id="ai-deepseek-name">DeepSeek</b><span class="badge" id="ai-badge-deepseek" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="mistral" aria-labelledby="ai-mistral-name" aria-describedby="ai-badge-mistral">
+                <b id="ai-mistral-name">Mistral</b><span class="badge" id="ai-badge-mistral" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="openrouter" aria-labelledby="ai-openrouter-name" aria-describedby="ai-badge-openrouter">
+                <b id="ai-openrouter-name">OpenRouter</b><span class="badge" id="ai-badge-openrouter" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="groq" aria-labelledby="ai-groq-name" aria-describedby="ai-badge-groq">
+                <b id="ai-groq-name">Groq</b><span class="badge" id="ai-badge-groq" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="qwen" aria-labelledby="ai-qwen-name" aria-describedby="ai-badge-qwen">
+                <b id="ai-qwen-name">Qwen</b><span class="badge" id="ai-badge-qwen" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="kimi" aria-labelledby="ai-kimi-name" aria-describedby="ai-badge-kimi">
+                <b id="ai-kimi-name">Kimi</b><span class="badge" id="ai-badge-kimi" hidden></span>
+              </label>
+              <label class="engine pick later">
+                <input type="radio" name="ai.engine" value="yandex" aria-labelledby="ai-yandex-name" aria-describedby="ai-badge-yandex">
+                <b id="ai-yandex-name">Yandex</b><span class="badge" id="ai-badge-yandex" hidden></span>
+              </label>
+            </div>
+            <p class="engine-group" data-i18n="aiOnComputer">On this computer</p>
+            <label class="engine wide">
+              <input type="radio" name="ai.engine" value="local" aria-labelledby="ai-local-name" aria-describedby="ai-local-text ai-badge-local">
+              <span class="tile"><i data-icon="server"></i></span><span class="badge" id="ai-badge-local" hidden></span>
+              <b id="ai-local-name">Ollama · LM Studio</b><small id="ai-local-text" data-i18n="aiLocalText">Your own models, no key</small>
             </label>
           </div>
           <!-- what the engine picked needs: its status, a key or a sign-in, its model -->
@@ -378,17 +421,31 @@
                 <button type="button" class="btn" id="ai-signout" data-i18n="aiSignOut" hidden>Sign out</button>
               </span>
             </div>
-            <!-- a provider without a key: the key, its page, and what it costs -->
+            <!-- a provider without a key: the key, its page, and what it costs; Yandex's folder; a
+                 server on this computer: which one, its address, and a key only if it asks for one -->
             <div class="row stack" id="ai-key-row" hidden>
               <span class="text">
                 <b id="ai-key-label">API key</b>
                 <small id="ai-key-text"><span id="ai-key-plan"></span> <a id="ai-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" data-i18n="aiGetKey">Get a key</a></small>
               </span>
+              <span class="segmented" id="ai-server" role="radiogroup" aria-labelledby="ai-key-label" hidden>
+                <label><input type="radio" name="ai-server" value="ollama"><span>Ollama</span></label>
+                <label><input type="radio" name="ai-server" value="lmstudio"><span>LM Studio</span></label>
+                <label><input type="radio" name="ai-server" value="other"><span data-i18n="aiServerOther">Other</span></label>
+              </span>
               <span class="key">
+                <span class="field whole" id="ai-base-field" hidden>
+                  <i data-icon="server"></i>
+                  <input type="url" id="ai-base" autocomplete="off" spellcheck="false" autocapitalize="off" dir="ltr" placeholder="http://localhost:11434/v1" aria-label="Server address" data-i18n-label="aiServerAddress" aria-describedby="ai-key-hint ai-error">
+                </span>
                 <span class="field">
                   <i data-icon="key"></i>
                   <input type="password" id="ai-key" autocomplete="off" spellcheck="false" autocapitalize="off" dir="ltr" aria-labelledby="ai-key-label" aria-describedby="ai-key-text ai-key-hint ai-error">
                   <button type="button" class="icon-btn" id="ai-key-show" aria-controls="ai-key" aria-pressed="false" aria-label="Show" data-i18n-label="aiShow" title="Show"><i data-icon="eye" class="eye"></i><i data-icon="eyeOff" class="eye-off"></i></button>
+                </span>
+                <span class="field" id="ai-folder-field" hidden>
+                  <i data-icon="folder"></i>
+                  <input type="text" id="ai-folder" autocomplete="off" spellcheck="false" autocapitalize="off" dir="ltr" placeholder="Folder ID" data-i18n-placeholder="aiFolder" aria-label="Folder ID" data-i18n-label="aiFolder" aria-describedby="ai-key-hint ai-error">
                 </span>
                 <button type="button" class="btn primary" id="ai-connect" data-i18n="aiConnect">Connect</button>
               </span>
@@ -408,10 +465,17 @@
                 <button type="button" class="btn" id="ai-disconnect" data-i18n="aiDisconnect">Disconnect</button>
               </span>
             </div>
-            <label class="row" id="ai-model-row" hidden>
-              <span class="text"><b data-i18n="aiModel">Model</b><small id="ai-model-text" data-i18n="aiModelText">Larger models summarize better; smaller ones answer faster and cost less.</small><small class="note" id="ai-model-note" hidden></small></span>
-              <select id="ai-model" aria-describedby="ai-model-text ai-model-note"></select>
-            </label>
+            <!-- the model; a list of hundreds (OpenRouter's) with a search above it -->
+            <div class="row" id="ai-model-row" hidden>
+              <span class="text"><b id="ai-model-label" data-i18n="aiModel">Model</b><small id="ai-model-text" data-i18n="aiModelText">Larger models summarize better; smaller ones answer faster and cost less.</small><small class="note" id="ai-model-note" hidden></small><small id="ai-model-prices" data-i18n="aiPrices" hidden>Prices in US dollars per million tokens, input / output.</small></span>
+              <span class="models">
+                <span class="field" id="ai-model-find" hidden>
+                  <i data-icon="search"></i>
+                  <input type="search" id="ai-model-search" autocomplete="off" spellcheck="false" placeholder="Search models" data-i18n-placeholder="aiModelSearch" aria-label="Search models" data-i18n-label="aiModelSearch" aria-controls="ai-model">
+                </span>
+                <select id="ai-model" aria-labelledby="ai-model-label" aria-describedby="ai-model-text ai-model-note ai-model-prices"></select>
+              </span>
+            </div>
           </div>
           <label class="row" data-ai>
             <span class="text"><b data-i18n="aiSummary">Summary in the reader</b><small data-i18n="aiSummaryText">Key points, things to do and dates, above the message.</small></span>

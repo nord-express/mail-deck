@@ -2522,6 +2522,87 @@
     "opt_aiFast": {
         "message": "המהיר והזול ביותר"
     },
+    "opt_aiYourKey": {
+        "message": "מפתח ה-API שלך"
+    },
+    "opt_aiOnComputer": {
+        "message": "במחשב הזה"
+    },
+    "opt_aiLocalText": {
+        "message": "המודלים שלך, בלי מפתח"
+    },
+    "opt_aiServer": {
+        "message": "שרת במחשב הזה"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio או שרת אחר שמדבר ב-API של OpenAI."
+    },
+    "opt_aiServerOther": {
+        "message": "אחר"
+    },
+    "opt_aiServerAddress": {
+        "message": "כתובת השרת"
+    },
+    "opt_aiKeyOptional": {
+        "message": "מפתח API, אם השרת מבקש"
+    },
+    "opt_aiLocalBad": {
+        "message": "השתמש בכתובת במחשב הזה, כמו http://localhost:11434/v1 או http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "כברירת מחדל שרת נותן למודל 4,096 טוקנים, ולכן Mail Deck שולח לו חלקים קצרים יותר מדואר ארוך, בקשה אחת בכל פעם."
+    },
+    "opt_aiNoServer": {
+        "message": "שום דבר לא עונה בכתובת $1. הפעל את Ollama, או את השרת בלשונית Developer של LM Studio, ואז התחבר שוב."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama דחה את Mail Deck. סגור את Ollama, הגדר את OLLAMA_ORIGINS ל-chrome-extension://* (ב-Mac הרץ ב-Terminal את launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\"; ב-Windows או ב-Linux הוסף אותו כמשתנה סביבה), הפעל את Ollama ואז התחבר שוב."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio דחה את Mail Deck. בלשונית Developer של LM Studio, הפעל את Enable CORS תחת Server Settings, ואז התחבר שוב."
+    },
+    "opt_aiServerOrigin": {
+        "message": "השרת דחה את Mail Deck. אפשר בהגדרות שלו בקשות מ-chrome-extension://*, ואז התחבר שוב."
+    },
+    "opt_aiFolder": {
+        "message": "מזהה התיקייה"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "הדבק גם את מזהה התיקייה."
+    },
+    "opt_aiYandexHint": {
+        "message": "השתמש במפתח API של חשבון שירות עם התפקיד ai.languageModels.user, ובמזהה התיקייה שלו ב-Yandex Cloud. Yandex מחייבת עליו את חשבון החיוב שלך."
+    },
+    "opt_aiGeminiHint": {
+        "message": "צור מפתח ב-Google AI Studio. ברמה החינמית Google עשויה להשתמש במה ש-Mail Deck שולח כדי לשפר את המוצרים שלה; כשהחיוב מופעל, לא."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "מפתח אחד פותח מאות מודלים מספקים רבים, וכמה מהם חינמיים."
+    },
+    "opt_aiGroqHint": {
+        "message": "התוכנית החינמית של Groq מקבלת כ-8,000 טוקנים בדקה, ולכן Mail Deck שולח חלקים קצרים יותר מדואר ארוך, בקשה אחת בכל פעם."
+    },
+    "opt_aiQwenHint": {
+        "message": "השתמש במפתח מהאתר הבינלאומי של Alibaba Cloud Model Studio: מפתח עובד רק באזור שבו נוצר."
+    },
+    "opt_aiKimiHint": {
+        "message": "השתמש במפתח מ-platform.kimi.ai: מפתחות מהפלטפורמה של Moonshot לסין היבשתית לא עובדים כאן."
+    },
+    "opt_aiModelSearch": {
+        "message": "חיפוש מודלים"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "אין מודל שתואם ל״$1״"
+    },
+    "opt_aiPrices": {
+        "message": "מחירים בדולר אמריקאי למיליון טוקנים: קלט / פלט."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "הבקשות עוברות מהדפדפן שלך לשרת במחשב הזה בכתובת $1. ל-Mail Deck אין שרתים; הדואר שלך יוצא מהמחשב הזה רק אם השרת הזה מעביר אותו הלאה."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "אין עדיין כתובת"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck עודכן אך עדיין לא נטען מחדש. טען אותו מחדש ב-chrome://extensions ונסה שוב."
     },

@@ -2522,6 +2522,87 @@
     "opt_aiFast": {
         "message": "ταχύτερο και φθηνότερο"
     },
+    "opt_aiYourKey": {
+        "message": "Το κλειδί API σας"
+    },
+    "opt_aiOnComputer": {
+        "message": "Σε αυτόν τον υπολογιστή"
+    },
+    "opt_aiLocalText": {
+        "message": "Τα δικά σας μοντέλα, χωρίς κλειδί"
+    },
+    "opt_aiServer": {
+        "message": "Διακομιστής σε αυτόν τον υπολογιστή"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio ή άλλος διακομιστής που μιλά το API του OpenAI."
+    },
+    "opt_aiServerOther": {
+        "message": "Άλλος"
+    },
+    "opt_aiServerAddress": {
+        "message": "Διεύθυνση διακομιστή"
+    },
+    "opt_aiKeyOptional": {
+        "message": "Κλειδί API, αν το ζητά ο διακομιστής"
+    },
+    "opt_aiLocalBad": {
+        "message": "Χρησιμοποιήστε μια διεύθυνση σε αυτόν τον υπολογιστή, όπως http://localhost:11434/v1 ή http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "Ένας διακομιστής δίνει σε ένα μοντέλο 4.096 tokens από προεπιλογή, οπότε το Mail Deck του στέλνει μικρότερα κομμάτια από τα μεγάλα μηνύματα, ένα αίτημα τη φορά."
+    },
+    "opt_aiNoServer": {
+        "message": "Τίποτα δεν απαντά στο $1. Ξεκινήστε το Ollama ή τον διακομιστή στην καρτέλα Developer του LM Studio και συνδεθείτε ξανά."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Το Ollama απέρριψε το Mail Deck. Κλείστε το Ollama, ορίστε το OLLAMA_ORIGINS σε chrome-extension://* (σε Mac εκτελέστε στο Terminal launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\"· σε Windows ή Linux προσθέστε το ως μεταβλητή περιβάλλοντος), ξεκινήστε το Ollama και συνδεθείτε ξανά."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "Το LM Studio απέρριψε το Mail Deck. Στην καρτέλα Developer του LM Studio, ενεργοποιήστε το Enable CORS στις Server Settings και συνδεθείτε ξανά."
+    },
+    "opt_aiServerOrigin": {
+        "message": "Ο διακομιστής απέρριψε το Mail Deck. Επιτρέψτε στις ρυθμίσεις του αιτήματα από chrome-extension://* και συνδεθείτε ξανά."
+    },
+    "opt_aiFolder": {
+        "message": "Αναγνωριστικό φακέλου"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "Επικολλήστε και το αναγνωριστικό φακέλου."
+    },
+    "opt_aiYandexHint": {
+        "message": "Χρησιμοποιήστε κλειδί API ενός λογαριασμού υπηρεσίας με τον ρόλο ai.languageModels.user και το αναγνωριστικό του φακέλου του στο Yandex Cloud. Η Yandex το χρεώνει στον λογαριασμό χρέωσής σας."
+    },
+    "opt_aiGeminiHint": {
+        "message": "Δημιουργήστε κλειδί στο Google AI Studio. Στο δωρεάν επίπεδο η Google μπορεί να χρησιμοποιεί ό,τι στέλνει το Mail Deck για να βελτιώνει τα προϊόντα της· με ενεργή χρέωση, όχι."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "Ένα κλειδί ανοίγει εκατοντάδες μοντέλα από πολλούς παρόχους, μερικά από αυτά δωρεάν."
+    },
+    "opt_aiGroqHint": {
+        "message": "Το δωρεάν πρόγραμμα της Groq δέχεται περίπου 8.000 tokens το λεπτό, οπότε το Mail Deck στέλνει μικρότερα κομμάτια από τα μεγάλα μηνύματα, ένα αίτημα τη φορά."
+    },
+    "opt_aiQwenHint": {
+        "message": "Χρησιμοποιήστε κλειδί από τον διεθνή ιστότοπο του Alibaba Cloud Model Studio: ένα κλειδί λειτουργεί μόνο στην περιοχή όπου δημιουργήθηκε."
+    },
+    "opt_aiKimiHint": {
+        "message": "Χρησιμοποιήστε κλειδί από το platform.kimi.ai: τα κλειδιά της πλατφόρμας της Moonshot για την ηπειρωτική Κίνα δεν λειτουργούν εδώ."
+    },
+    "opt_aiModelSearch": {
+        "message": "Αναζήτηση μοντέλων"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "Κανένα μοντέλο δεν ταιριάζει με «$1»"
+    },
+    "opt_aiPrices": {
+        "message": "Τιμές σε δολάρια ΗΠΑ ανά εκατομμύριο tokens: είσοδος / έξοδος."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "Τα αιτήματα πηγαίνουν από το πρόγραμμα περιήγησής σας στον διακομιστή σε αυτόν τον υπολογιστή, στο $1. Το Mail Deck δεν έχει διακομιστές· η αλληλογραφία σας φεύγει από τον υπολογιστή μόνο αν τη στείλει παραπέρα αυτός ο διακομιστής."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "δεν υπάρχει ακόμη διεύθυνση"
+    },
     "opt_reloadNeeded": {
         "message": "Το Mail Deck ενημερώθηκε αλλά δεν έχει φορτωθεί ξανά. Φορτώστε το ξανά στο chrome://extensions και δοκιμάστε ξανά."
     },

@@ -2526,6 +2526,87 @@
     "opt_aiFast": {
         "message": "snelst en goedkoopst"
     },
+    "opt_aiYourKey": {
+        "message": "Je eigen API-sleutel"
+    },
+    "opt_aiOnComputer": {
+        "message": "Op deze computer"
+    },
+    "opt_aiLocalText": {
+        "message": "Je eigen modellen, geen sleutel"
+    },
+    "opt_aiServer": {
+        "message": "Server op deze computer"
+    },
+    "opt_aiServerText": {
+        "message": "Ollama, LM Studio of een andere server die de API van OpenAI spreekt."
+    },
+    "opt_aiServerOther": {
+        "message": "Andere"
+    },
+    "opt_aiServerAddress": {
+        "message": "Serveradres"
+    },
+    "opt_aiKeyOptional": {
+        "message": "API-sleutel, als de server erom vraagt"
+    },
+    "opt_aiLocalBad": {
+        "message": "Gebruik een adres op deze computer, zoals http://localhost:11434/v1 of http://127.0.0.1:1234/v1."
+    },
+    "opt_aiLocalHint": {
+        "message": "Een server geeft een model standaard 4.096 tokens, dus Mail Deck stuurt het kortere delen van lange mail, één verzoek tegelijk."
+    },
+    "opt_aiNoServer": {
+        "message": "Op $1 antwoordt niets. Start Ollama, of de server op het tabblad Developer van LM Studio, en verbind opnieuw."
+    },
+    "opt_aiOllamaOrigins": {
+        "message": "Ollama weigerde Mail Deck. Sluit Ollama af, zet OLLAMA_ORIGINS op chrome-extension://* (op een Mac: voer launchctl setenv OLLAMA_ORIGINS \"chrome-extension://*\" uit in Terminal; op Windows of Linux: voeg het toe als omgevingsvariabele), start Ollama en verbind opnieuw."
+    },
+    "opt_aiLmStudioCors": {
+        "message": "LM Studio weigerde Mail Deck. Zet op het tabblad Developer van LM Studio onder Server Settings Enable CORS aan en verbind opnieuw."
+    },
+    "opt_aiServerOrigin": {
+        "message": "De server weigerde Mail Deck. Sta in de instellingen verzoeken van chrome-extension://* toe en verbind opnieuw."
+    },
+    "opt_aiFolder": {
+        "message": "Map-ID"
+    },
+    "opt_aiFolderEmpty": {
+        "message": "Plak ook de map-ID."
+    },
+    "opt_aiYandexHint": {
+        "message": "Gebruik een API-sleutel van een serviceaccount met de rol ai.languageModels.user, en de ID van zijn map in Yandex Cloud. Yandex rekent die af via je factuuraccount."
+    },
+    "opt_aiGeminiHint": {
+        "message": "Maak een sleutel in Google AI Studio. Op het gratis niveau mag Google wat Mail Deck stuurt gebruiken om zijn producten te verbeteren; met facturering aan niet."
+    },
+    "opt_aiOpenRouterHint": {
+        "message": "Eén sleutel opent honderden modellen van veel aanbieders, een paar ervan gratis."
+    },
+    "opt_aiGroqHint": {
+        "message": "Het gratis abonnement van Groq neemt zo’n 8.000 tokens per minuut aan, dus Mail Deck stuurt kortere delen van lange mail, één verzoek tegelijk."
+    },
+    "opt_aiQwenHint": {
+        "message": "Gebruik een sleutel van de internationale site van Alibaba Cloud Model Studio: een sleutel werkt alleen in de regio waar hij gemaakt is."
+    },
+    "opt_aiKimiHint": {
+        "message": "Gebruik een sleutel van platform.kimi.ai: sleutels van het Moonshot-platform voor het Chinese vasteland werken hier niet."
+    },
+    "opt_aiModelSearch": {
+        "message": "Modellen zoeken"
+    },
+    "opt_aiNoModelMatch": {
+        "message": "Geen model komt overeen met ‘$1’"
+    },
+    "opt_aiPrices": {
+        "message": "Prijzen in Amerikaanse dollars per miljoen tokens: invoer / uitvoer."
+    },
+    "opt_aiPrivacyServer": {
+        "message": "Verzoeken gaan vanuit je browser naar de server op deze computer, op $1. Mail Deck heeft geen servers; je mail verlaat deze computer alleen als die server hem doorstuurt."
+    },
+    "opt_aiDiagNoAddress": {
+        "message": "nog geen adres"
+    },
     "opt_reloadNeeded": {
         "message": "Mail Deck is bijgewerkt maar nog niet opnieuw geladen. Laad het opnieuw via chrome://extensions en probeer het dan opnieuw."
     },
