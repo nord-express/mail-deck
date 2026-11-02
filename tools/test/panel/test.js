@@ -1254,7 +1254,8 @@
       window.__set = [];
       key(document.activeElement, 'Digit2');
       await wait(250);
-      const until = () => window.__set.find(o => o['remind.links'])?.['remind.links']?.at(-1)?.until;
+      // the worker keeps the reminders: the time is the one the panel asks it for
+      const until = () => sent('remind.add').at(-1)?.until;
       out.remindByKey = Math.abs(until() - second) < 60000;
       key(document, 'KeyZ');
       await wait(100);
