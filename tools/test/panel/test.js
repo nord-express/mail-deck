@@ -1616,6 +1616,71 @@
       out.consoleClean = window.__errors.length === 0 || window.__errors;
     }
 
+    if (scenario === 'rate') {
+      // after real use, one line at the end of the list asks for a rating
+      const $ = id => document.getElementById(id);
+      const line = () => $('list').querySelector('.rate-ask');
+      const DAY = 24 * 60 * 60 * 1000;
+      out.counted = state.rate.days === 13 && window.__set.some(o => o.rate?.days === 13);
+      out.shown = line()?.querySelector('.rate-text')?.textContent === t('rateAsk') && line().nextElementSibling?.classList.contains('list-foot');
+      out.buttons = [...line().querySelectorAll('button')].map(b => b.getAttribute('aria-label') || b.textContent);
+      // Later: gone, and back once three months on; the second Later is the last
+      line().querySelector('[data-focus="rate-later"]').click();
+      await wait(30);
+      out.later = !line() && state.rate.later > 0 && !state.rate.done && window.__set.at(-1).rate?.later === state.rate.later;
+      state.rate.later = Date.now() - 89 * DAY;
+      render();
+      out.notYet = !line();
+      state.rate.later = Date.now() - 91 * DAY;
+      render();
+      out.again = Boolean(line());
+      line().querySelector('[data-focus="rate-later"]').click();
+      await wait(30);
+      out.lastLater = !line() && state.rate.done === true;
+      state.rate.later = Date.now() - 400 * DAY;
+      render();
+      out.never = !line();
+      // × ends it; so does Rate, which opens the store's reviews
+      const due = {first: Date.now() - 15 * DAY, days: 10, day: state.rate.day};
+      state.rate = {...due};
+      render();
+      line().querySelector('.icon-btn').click();
+      await wait(30);
+      out.closed = !line() && state.rate.done === true;
+      state.rate = {...due};
+      render();
+      line().querySelector('[data-focus="rate"]').click();
+      await wait(30);
+      out.rated = !line() && state.rate.done === true &&
+        window.__tabsCreated?.at(-1) === 'https://chromewebstore.google.com/detail/mail-deck/hjlkjemogfgkpbbnogihekjcdmafecff/reviews';
+      // not before two weeks, nor before ten days of use; never over the pinning hint
+      state.rate = {first: Date.now() - 13 * DAY, days: 12, day: due.day};
+      render();
+      out.tooEarly = !line();
+      state.rate = {first: Date.now() - 30 * DAY, days: 9, day: due.day};
+      render();
+      out.tooFew = !line();
+      state.rate = {...due};
+      state.unpinned = true;
+      render();
+      out.pinFirst = !line() && Boolean($('list').querySelector('.pin-hint'));
+      state.unpinned = false;
+      // nor over a search
+      openSearch();
+      await wait(30);
+      out.notInSearch = !line();
+      closeSearch();
+      out.back = Boolean(line());
+      // a day counts once
+      state.rate = null;
+      countDay();
+      countDay();
+      out.firstDay = state.rate.days === 1 && state.rate.first > Date.now() - 1000;
+      state.rate.day = 'yesterday';
+      countDay();
+      out.nextDay = state.rate.days === 2;
+    }
+
     if (scenario === 'wide') {
       // a 700px newsletter fits the reader without a sideways scroll
       document.querySelector('#list .row').click();

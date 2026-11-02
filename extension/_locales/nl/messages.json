@@ -1377,6 +1377,18 @@
     "panel_categoryTip": {
         "message": "Gesorteerd door Gmail"
     },
+    "panel_rateAsk": {
+        "message": "Bevalt Mail Deck je? Een beoordeling helpt anderen het te vinden."
+    },
+    "panel_rateGo": {
+        "message": "Beoordelen"
+    },
+    "panel_rateLater": {
+        "message": "Later"
+    },
+    "panel_rateNever": {
+        "message": "Niet meer vragen"
+    },
     "panel_mailboxes": {
         "message": "Postvakken"
     },

@@ -1373,6 +1373,18 @@
     "panel_categoryTip": {
         "message": "Von Gmail sortiert"
     },
+    "panel_rateAsk": {
+        "message": "Gefällt Ihnen Mail Deck? Eine Bewertung hilft anderen, es zu finden."
+    },
+    "panel_rateGo": {
+        "message": "Bewerten"
+    },
+    "panel_rateLater": {
+        "message": "Später"
+    },
+    "panel_rateNever": {
+        "message": "Nicht mehr fragen"
+    },
     "panel_mailboxes": {
         "message": "Postfächer"
     },

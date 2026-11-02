@@ -1373,6 +1373,18 @@
     "panel_categoryTip": {
         "message": "Classificat per Gmail"
     },
+    "panel_rateAsk": {
+        "message": "T'agrada Mail Deck? Una valoració ajuda altres persones a trobar-lo."
+    },
+    "panel_rateGo": {
+        "message": "Valora"
+    },
+    "panel_rateLater": {
+        "message": "Més tard"
+    },
+    "panel_rateNever": {
+        "message": "No ho tornis a preguntar"
+    },
     "panel_mailboxes": {
         "message": "Bústies"
     },

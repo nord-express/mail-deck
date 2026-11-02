@@ -1377,6 +1377,18 @@
     "panel_categoryTip": {
         "message": "Posortowane przez Gmaila"
     },
+    "panel_rateAsk": {
+        "message": "Podoba ci się Mail Deck? Ocena pomoże innym go znaleźć."
+    },
+    "panel_rateGo": {
+        "message": "Oceń"
+    },
+    "panel_rateLater": {
+        "message": "Później"
+    },
+    "panel_rateNever": {
+        "message": "Nie pytaj więcej"
+    },
     "panel_mailboxes": {
         "message": "Skrzynki"
     },

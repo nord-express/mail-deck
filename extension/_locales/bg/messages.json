@@ -1369,6 +1369,18 @@
     "panel_categoryTip": {
         "message": "Сортирано от Gmail"
     },
+    "panel_rateAsk": {
+        "message": "Харесвате ли Mail Deck? Оценката помага и на други да го открият."
+    },
+    "panel_rateGo": {
+        "message": "Оценете"
+    },
+    "panel_rateLater": {
+        "message": "По-късно"
+    },
+    "panel_rateNever": {
+        "message": "Да не се пита повече"
+    },
     "panel_mailboxes": {
         "message": "Пощенски кутии"
     },

@@ -112,7 +112,8 @@ const state = {
   booting: false,
   unpinned: false, // the toolbar button is not pinned, and the hint about it not closed (pinHint)
   categories: true, // Gmail's own categories as chips over the list (Settings → Panel)
-  saved: [] // the searches saved in the settings, a chip each: [{name, query, account}]
+  saved: [], // the searches saved in the settings, a chip each: [{name, query, account}]
+  rate: null // the days the panel was opened on, and what became of the rating it asked for (rateLine)
 };
 let refreshing = false;
 // the list drawn as one types in the search: nothing it draws may ask the network (searchList)
@@ -1547,6 +1548,43 @@ const pinned = async () => {
   }
 };
 chrome.action?.onUserSettingsChanged?.addListener(pinned);
+// A rating, asked for once the panel has been in use: two weeks since it was first opened, on ten
+// days of them. Rate and × end it for good; Later asks once more, three months on. The same line
+// for everyone, with nothing offered for it: the store allows nothing else.
+const RATE = 'rate';
+const RATE_URL = 'https://chromewebstore.google.com/detail/mail-deck/hjlkjemogfgkpbbnogihekjcdmafecff/reviews';
+const DAY_MS = 24 * 60 * 60 * 1000;
+const rateDue = (r, now = Date.now()) => Boolean(r) && !r.done && r.days >= 10 && now - r.first >= 14 * DAY_MS &&
+  (!r.later || now - r.later >= 90 * DAY_MS);
+// a day the panel was opened on, counted once; nothing before what was counted so far is read
+let rateRead = false;
+const countDay = () => {
+  const d = new Date();
+  const day = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  const r = state.rate || {};
+  if (rateRead && r.day !== day) {
+    state.rate = {...r, first: Number(r.first) || Date.now(), days: (Number(r.days) || 0) + 1, day};
+    chrome.storage.local.set({[RATE]: state.rate});
+  }
+};
+const rated = values => {
+  state.rate = {...state.rate, ...values};
+  chrome.storage.local.set({[RATE]: state.rate});
+  render();
+};
+const rateLine = () => rateDue(state.rate) && h('div', {class: 'rate-ask'}, icon('star'), h('span', {class: 'rate-text'}, t('rateAsk')),
+  h('span', {class: 'rate-acts'},
+    h('button', {'class': 'text-btn', 'type': 'button', 'data-focus': 'rate', 'onclick': () => {
+      rated({done: true});
+      chrome.tabs.create({url: RATE_URL});
+      if (!SIDE) {
+        window.close();
+      }
+    }}, t('rateGo')),
+    // the second Later is the last
+    h('button', {'class': 'text-btn quiet', 'type': 'button', 'data-focus': 'rate-later', 'onclick': () => rated(state.rate.later ? {done: true} : {later: Date.now()})},
+      t('rateLater')),
+    btn('close', t('rateNever'), () => rated({done: true}))));
 // under the list: another Google account, and the way to the keys
 const listFoot = () => h('div', {class: 'list-foot'},
   h('button', {'class': 'text-btn', 'type': 'button', 'data-focus': 'add-account', 'onclick': () => openUrl(ADD_ACCOUNT)}, icon('plus'), t('addAccount')),
@@ -1790,7 +1828,8 @@ const renderList = objs => {
   ].filter(Boolean) : state.booting ? [skeleton()] : [
     ...(!objs.length ? [signIn()] : objs.some(o => o.xml.fullcount) ? shown.map(o => section(o)) : [caughtUp(objs)]),
     !state.only && signedOut(),
-    objs.length > 0 && pinHint(),
+    // one line of the kind at a time: pinning the button comes first
+    objs.length > 0 && (pinHint() || rateLine()),
     objs.length > 0 && listFoot()
   ].filter(Boolean)));
   paintSite(objs, false);
@@ -4318,6 +4357,10 @@ const prefsChanged = prefs => {
     state.saved = (Array.isArray(prefs.savedSearches) ? prefs.savedSearches : []).filter(x => typeof x?.query === 'string')
       .map(x => ({name: typeof x.name === 'string' ? x.name : '', query: x.query, account: typeof x.account === 'string' ? x.account : ''}));
   }
+  if (RATE in prefs) {
+    state.rate = prefs[RATE] && typeof prefs[RATE] === 'object' ? prefs[RATE] : null;
+    rateRead = true;
+  }
 };
 // what the panel reads of Settings → AI (the keys stay with ai.js)
 const AI_PREFS = {'ai.engine': 'off', 'ai.summary': 'click', 'ai.reply': true, 'ai.buttons': true};
@@ -4330,9 +4373,11 @@ const markSeen = () => {
   }
 };
 document.addEventListener('visibilitychange', markSeen);
+// a side panel stays open for days: each day it is looked at counts
+document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && countDay());
 chrome.storage.onChanged.addListener((ps, area) => {
   const changed = Object.fromEntries(['panelScale', 'readOnOpen', 'accounts', 'accountOrder', 'senderLogos', 'avatars', 'autoAdvance', 'badge.count',
-    'gmailCategories', 'savedSearches'].filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
+    'gmailCategories', 'savedSearches', RATE].filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
   if (Object.keys(changed).length) {
     prefsChanged(changed);
     render();
@@ -4372,7 +4417,7 @@ const endBoot = () => {
 };
 Promise.all([
   chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, avatars: {},
-    autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true, savedSearches: []}),
+    autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true, savedSearches: [], [RATE]: null}),
   // no default for the accounts: none at all is not the same as none read yet
   chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos', SAVED]),
   // the files the session knows, for the first lines to show theirs
@@ -4380,6 +4425,7 @@ Promise.all([
 ]).then(([local, session]) => {
   prefsChanged(local);
   markSeen();
+  countDay();
   Object.entries(session.logos || {}).forEach(([domain, has]) => logos.set(domain, has));
   Object.entries(session[SAVED] || {}).forEach(([key, found]) => savedFound.set(key, found));
   const cached = session['cached-objects'];

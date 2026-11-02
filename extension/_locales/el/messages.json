@@ -1369,6 +1369,18 @@
     "panel_categoryTip": {
         "message": "Ταξινόμηση από το Gmail"
     },
+    "panel_rateAsk": {
+        "message": "Σας αρέσει το Mail Deck; Μια βαθμολογία βοηθά και άλλους να το βρουν."
+    },
+    "panel_rateGo": {
+        "message": "Βαθμολογήστε"
+    },
+    "panel_rateLater": {
+        "message": "Αργότερα"
+    },
+    "panel_rateNever": {
+        "message": "Να μην ερωτηθώ ξανά"
+    },
     "panel_mailboxes": {
         "message": "Γραμματοκιβώτια"
     },

@@ -1205,6 +1205,18 @@
   "panel_categoryTip": {
     "message": "Trié par Gmail"
   },
+  "panel_rateAsk": {
+    "message": "Vous aimez Mail Deck ? Une note aide d’autres personnes à le trouver."
+  },
+  "panel_rateGo": {
+    "message": "Noter"
+  },
+  "panel_rateLater": {
+    "message": "Plus tard"
+  },
+  "panel_rateNever": {
+    "message": "Ne plus demander"
+  },
   "panel_mailboxes": {
     "message": "Boîtes"
   },

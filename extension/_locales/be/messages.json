@@ -1229,6 +1229,18 @@
   "panel_categoryTip": {
     "message": "Па сартаванні Gmail"
   },
+  "panel_rateAsk": {
+    "message": "Падабаецца Mail Deck? Ацэнка дапаможа іншым яго знайсці."
+  },
+  "panel_rateGo": {
+    "message": "Ацаніць"
+  },
+  "panel_rateLater": {
+    "message": "Пазней"
+  },
+  "panel_rateNever": {
+    "message": "Больш не пытаць"
+  },
   "panel_mailboxes": {
     "message": "Скрыні"
   },

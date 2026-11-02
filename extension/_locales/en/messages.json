@@ -1238,6 +1238,18 @@
   "panel_categoryTip": {
     "message": "Sorted by Gmail"
   },
+  "panel_rateAsk": {
+    "message": "Enjoying Mail Deck? A rating helps others find it."
+  },
+  "panel_rateGo": {
+    "message": "Rate it"
+  },
+  "panel_rateLater": {
+    "message": "Later"
+  },
+  "panel_rateNever": {
+    "message": "Don’t ask again"
+  },
   "panel_mailboxes": {
     "message": "Mailboxes"
   },

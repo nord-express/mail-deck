@@ -1369,6 +1369,18 @@
     "panel_categoryTip": {
         "message": "حسب تصنيف Gmail"
     },
+    "panel_rateAsk": {
+        "message": "هل يعجبك Mail Deck؟ يساعد التقييم الآخرين على العثور عليه."
+    },
+    "panel_rateGo": {
+        "message": "قيّمه"
+    },
+    "panel_rateLater": {
+        "message": "لاحقًا"
+    },
+    "panel_rateNever": {
+        "message": "عدم السؤال مجددًا"
+    },
     "panel_mailboxes": {
         "message": "صناديق البريد"
     },

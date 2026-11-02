@@ -1187,6 +1187,18 @@
   "panel_categoryTip": {
     "message": "A Gmail rendezése szerint"
   },
+  "panel_rateAsk": {
+    "message": "Tetszik a Mail Deck? Egy értékelés segít másoknak megtalálni."
+  },
+  "panel_rateGo": {
+    "message": "Értékelés"
+  },
+  "panel_rateLater": {
+    "message": "Később"
+  },
+  "panel_rateNever": {
+    "message": "Ne kérdezze többet"
+  },
   "panel_mailboxes": {
     "message": "Postafiókok"
   },

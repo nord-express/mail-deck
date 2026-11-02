@@ -1373,6 +1373,18 @@
     "panel_categoryTip": {
         "message": "Gmail’in sıralaması"
     },
+    "panel_rateAsk": {
+        "message": "Mail Deck’i beğendiniz mi? Bir puan, başkalarının onu bulmasına yardımcı olur."
+    },
+    "panel_rateGo": {
+        "message": "Puan verin"
+    },
+    "panel_rateLater": {
+        "message": "Daha sonra"
+    },
+    "panel_rateNever": {
+        "message": "Bir daha sorma"
+    },
     "panel_mailboxes": {
         "message": "Posta kutuları"
     },

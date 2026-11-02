@@ -72,7 +72,9 @@
     ...(q.get('cats') === 'off' ? {gmailCategories: false} : {}),
     // ?saved=1: searches saved in the settings, one of them for an account not signed in, one empty
     ...(q.get('saved') ? {savedSearches: [{name: 'Invoices', query: 'invoice', account: ''}, {name: 'Work invoices', query: ' invoice ', account: 'work@arbitron.example'},
-      {name: '', query: 'from:gone', account: 'gone@example.com'}, {name: 'Empty', query: '  ', account: ''}]} : {})};
+      {name: '', query: 'from:gone', account: 'gone@example.com'}, {name: 'Empty', query: '  ', account: ''}]} : {}),
+    // ?rate=due: the panel opened on twelve days since three weeks ago, nothing asked yet
+    ...(q.get('rate') === 'due' ? {rate: {first: now - 21 * 24 * 60 * 60 * 1000, days: 12, day: '2026-1-1'}} : {})};
   window.__sent = []; window.__set = []; window.__objs = objs;
   window.__tabUrl = q.get('url') || ''; window.__tabEvents = {};
   // what the panel copies (__copied): a page under test has no clipboard of its own to ask

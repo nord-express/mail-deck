@@ -1373,6 +1373,18 @@
     "panel_categoryTip": {
         "message": "За сортуванням Gmail"
     },
+    "panel_rateAsk": {
+        "message": "Подобається Mail Deck? Оцінка допоможе іншим його знайти."
+    },
+    "panel_rateGo": {
+        "message": "Оцінити"
+    },
+    "panel_rateLater": {
+        "message": "Пізніше"
+    },
+    "panel_rateNever": {
+        "message": "Більше не питати"
+    },
     "panel_mailboxes": {
         "message": "Скриньки"
     },

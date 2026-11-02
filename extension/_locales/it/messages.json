@@ -1205,6 +1205,18 @@
   "panel_categoryTip": {
     "message": "Smistato da Gmail"
   },
+  "panel_rateAsk": {
+    "message": "Ti piace Mail Deck? Una valutazione aiuta altri a trovarlo."
+  },
+  "panel_rateGo": {
+    "message": "Valuta"
+  },
+  "panel_rateLater": {
+    "message": "Più tardi"
+  },
+  "panel_rateNever": {
+    "message": "Non chiedere più"
+  },
   "panel_mailboxes": {
     "message": "Caselle"
   },

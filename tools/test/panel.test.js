@@ -372,6 +372,14 @@ const checks = {
     'typed words let go of the chip; Esc closes the search': r.typedLetGo && r.esc,
     'nothing goes wrong unseen': r.consoleClean === true
   }),
+  rate: r => ({
+    'after two weeks and ten days of use, one line at the end of the list asks for a rating: Rate, Later, Don\'t ask again':
+      r.counted && r.shown && JSON.stringify(r.buttons) === JSON.stringify([T('rateGo'), T('rateLater'), T('rateNever')]),
+    'Later: back once, three months on; the second Later is the last': r.later && r.notYet && r.again && r.lastLater && r.never,
+    '× and Rate end it for good; Rate opens the store\'s reviews': r.closed && r.rated,
+    'not before two weeks, nor ten days of use; not over the pinning hint or a search': r.tooEarly && r.tooFew && r.pinFirst && r.notInSearch && r.back,
+    'a day of use counts once': r.firstDay && r.nextDay
+  }),
   narrow: r => ({
     'a 320px side panel: the mailbox line keeps whole buttons, without copy and Meet, and a readable address':
       r.width === 320 && JSON.stringify(r.buttons) === '["readAll:32","archive:32","open:32"]' && r.addr >= 60,
@@ -388,7 +396,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ux', ''], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

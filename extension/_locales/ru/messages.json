@@ -1377,6 +1377,18 @@
     "panel_categoryTip": {
         "message": "По сортировке Gmail"
     },
+    "panel_rateAsk": {
+        "message": "Нравится Mail Deck? Оценка поможет другим его найти."
+    },
+    "panel_rateGo": {
+        "message": "Оценить"
+    },
+    "panel_rateLater": {
+        "message": "Позже"
+    },
+    "panel_rateNever": {
+        "message": "Больше не спрашивать"
+    },
     "panel_mailboxes": {
         "message": "Ящики"
     },

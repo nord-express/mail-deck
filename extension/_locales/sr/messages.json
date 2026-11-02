@@ -1373,6 +1373,18 @@
     "panel_categoryTip": {
         "message": "Разврстао Gmail"
     },
+    "panel_rateAsk": {
+        "message": "Свиђа вам се Mail Deck? Оцена помаже другима да га пронађу."
+    },
+    "panel_rateGo": {
+        "message": "Оцените"
+    },
+    "panel_rateLater": {
+        "message": "Касније"
+    },
+    "panel_rateNever": {
+        "message": "Не питај више"
+    },
     "panel_mailboxes": {
         "message": "Сандучићи"
     },

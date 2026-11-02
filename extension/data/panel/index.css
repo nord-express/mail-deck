@@ -2891,6 +2891,47 @@ button.cite:hover {
   width: 15px;
   height: 15px;
 }
+/* a rating, asked for once after real use: a line as quiet as the one about pinning */
+.rate-ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 14px;
+  padding-block: 6px;
+  padding-inline: 12px 6px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--soft);
+  font-size: var(--fs-sm);
+}
+.rate-ask > svg {
+  width: 16px;
+  height: 16px;
+  color: #e8a317;
+}
+.rate-text {
+  flex: 1 1 14em;
+  min-width: 0;
+}
+.rate-acts {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: auto;
+}
+.rate-acts .text-btn:not(.quiet) {
+  color: var(--accent);
+}
+.rate-acts .icon-btn {
+  width: 28px;
+  height: 28px;
+}
+.rate-acts .icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
 
 /* the panel's first moments after a browser start, before the background has read any mail */
 .skel-head {

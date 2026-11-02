@@ -1377,6 +1377,18 @@
     "panel_categoryTip": {
         "message": "由 Gmail 分类"
     },
+    "panel_rateAsk": {
+        "message": "喜欢 Mail Deck 吗？评分能帮助更多人找到它。"
+    },
+    "panel_rateGo": {
+        "message": "去评分"
+    },
+    "panel_rateLater": {
+        "message": "以后再说"
+    },
+    "panel_rateNever": {
+        "message": "不再询问"
+    },
     "panel_mailboxes": {
         "message": "邮箱"
     },
