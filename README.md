@@ -33,7 +33,7 @@ Gmail, Yahoo Mail, AOL Mail, Proton Mail, Yandex Mail and Mail.ru. Read, archive
 - **Trackers stay out.** Before a message loads, the pictures that only report that you opened it (known tracking pixels, hidden one-pixel images) are kept out, and the reader says how many and whose. Gmail's pictures can wait for **Show pictures** too.
 - **Who really sent it.** A calm warning when the sender's name claims a well-known brand its address does not belong to, when its domain imitates another (`paypa1.com`), or when replies would go somewhere else.
 - **Unsubscribe in one click.** A newsletter's ⋯ menu offers **Unsubscribe**, the way its header asks: one request, an email to send, or the sender's page, always after you confirm; its unread mail can go to the archive at once. The Newsletters chip lists its senders to leave.
-- **AI assistant, if you want one.** Ask your mail anything in plain words (“when is my flight?”, “invoices from October”), get what is important in your unread mail, have replies and new mail drafted, mail translated and summarized, and unread mail sorted into waiting for your reply, important and newsletters to clear at once. It runs with Chrome's built-in model on this computer, your ChatGPT plan, or your own Anthropic, OpenAI or Z.ai API key, and stays off until you turn it on. [More below](#ai-assistant).
+- **AI assistant, if you want one.** Ask your mail anything in plain words (“when is my flight?”, “invoices from October”), get what is important in your unread mail, have replies and new mail drafted, mail translated and summarized, and unread mail sorted into waiting for your reply, important and newsletters to clear at once. It runs with Chrome's built-in model or a model of your own on this computer (Ollama, LM Studio), your ChatGPT plan, or your own API key from Anthropic, OpenAI, Google Gemini, xAI, DeepSeek, Mistral, Qwen, Kimi, Z.ai, Groq, OpenRouter or Yandex, and stays off until you turn it on. [More below](#ai-assistant).
 - **Search as you type.** The list narrows at once while you type; <kbd>Enter</kbd> searches all your Google accounts. Save searches you run often ("Invoices": `has:attachment invoice newer_than:30d`) as chips.
 - **Gmail's categories as chips.** Promotions, Social and Updates, each with its count, narrow the list, with **Mark all read** and **Archive all** over it; no AI needed.
 - **Later.** Put a message away until this evening, tomorrow or next week; it comes back with a notification.
@@ -88,11 +88,37 @@ Choose where it runs:
 |---|---|---|
 | **On this computer**: Chrome's built-in model | free | nothing: the model runs in Chrome, offline. Chrome downloads it once (a few gigabytes) from your click, in the panel or in Settings. It needs Chrome 138 or newer and a computer that can run it; Mail Deck says whether yours can. Where it does not support your language yet, it answers in English. |
 | **ChatGPT plan**: Plus or Pro | included in your plan | **Continue with ChatGPT** signs in with OpenAI's official [Sign in with ChatGPT](https://developers.openai.com/siwc) for open-source apps; requests then use the usage included in your plan (on Plus, its five-hour limit is shared with ChatGPT's other apps; **Manage usage** opens it). What a request needs goes to `api.openai.com`. |
-| **Anthropic**, **OpenAI** or **Z.ai** (GLM), with your own API key | billed by the provider, per use | what a request needs, straight from your browser to `api.anthropic.com`, `api.openai.com` or `api.z.ai`. |
+| **On this computer**: a model you run with Ollama or LM Studio | free | nothing: requests go to the model server on your own computer, at `localhost` or `127.0.0.1`. See [below](#a-model-on-this-computer) for what it needs. |
+| **Your own API key** from one of the providers below | billed by the provider, per use; some have a free tier | what a request needs, straight from your browser to that provider's API. |
+
+With your own key:
+
+| Provider | Cost | Requests go to | The key |
+|---|---|---|---|
+| **Anthropic** (Claude) | per use | `api.anthropic.com` | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
+| **OpenAI** | per use | `api.openai.com` | [platform.openai.com](https://platform.openai.com/api-keys) |
+| **Google Gemini** | per use, or a free tier on which Google may use what you send to improve its products, and people may read it | `generativelanguage.googleapis.com` | [aistudio.google.com](https://aistudio.google.com/apikey) |
+| **xAI** (Grok) | per use | `api.x.ai` | [console.x.ai](https://console.x.ai) |
+| **DeepSeek** | per use | `api.deepseek.com` | [platform.deepseek.com](https://platform.deepseek.com/api_keys) |
+| **Mistral** | per use | `api.mistral.ai` | [console.mistral.ai](https://console.mistral.ai/api-keys) |
+| **Qwen** (Alibaba Cloud Model Studio, international) | per use, with free tokens for new accounts | `dashscope-intl.aliyuncs.com` | [Model Studio](https://modelstudio.console.alibabacloud.com/) |
+| **Kimi** (Moonshot AI) | per use | `api.moonshot.ai` | [platform.kimi.ai](https://platform.kimi.ai/console/api-keys) |
+| **Z.ai** (GLM) | per use | `api.z.ai` | [z.ai](https://docs.z.ai/guides/overview/quick-start) |
+| **Groq** | per use, or a free plan with tight limits | `api.groq.com` | [console.groq.com](https://console.groq.com/keys) |
+| **OpenRouter**: hundreds of models with one key | each model's own price; some models are free | `openrouter.ai`, which passes the request on to the company that runs the model you chose | [openrouter.ai](https://openrouter.ai/settings/keys) |
+| **Yandex AI Studio** (YandexGPT) | per use, through a Yandex Cloud billing account | `ai.api.cloud.yandex.net` | [Yandex Cloud console](https://console.yandex.cloud/): a service account's API key and your folder id |
 
 What a request needs: a summary, a reply, a translation or a question about a mail sends that conversation's text and subject; a question to the assistant sends your words, then the sender, subject, date and text of the first few mails the search found (the rest by their preview); “what's important” sends the sender, subject and preview of your unread mail; sorting sends the sender, subject and preview of unread mail, 20 at a time.
 
-A Claude Pro or Max subscription cannot be used here: Anthropic allows it only in its own apps, so Claude takes an API key from [console.anthropic.com](https://console.anthropic.com/settings/keys). A Z.ai key comes from [z.ai](https://docs.z.ai/guides/overview/quick-start) (a GLM Coding Plan key works only in coding tools). **Connect** asks Chrome for that provider's site alone, checks the key and lists its models, the recommended ones first; **Disconnect** forgets the key, or signs out of ChatGPT, and gives the access back. Keys and the ChatGPT sign-in stay in this browser's extension storage: never in a backup, in Chrome sync or in diagnostics. There are no servers of ours in between, and answers are shown as plain text. The details are in the [privacy policy](PRIVACY.md#ai-assistant).
+A Claude Pro or Max subscription cannot be used here: Anthropic allows it only in its own apps, so Claude takes an API key. A GLM Coding Plan key from Z.ai works only in coding tools, and a Gemini key on the free tier has small daily limits. **Connect** asks Chrome for that provider's site alone, checks the key and lists its models, the recommended ones first; **Disconnect** forgets the key, or signs out of ChatGPT, and gives the access back. Keys and the ChatGPT sign-in stay in this browser's extension storage: never in a backup, in Chrome sync or in diagnostics. There are no servers of ours in between, and answers are shown as plain text. The details are in the [privacy policy](PRIVACY.md#ai-assistant).
+
+### A model on this computer
+
+Install [Ollama](https://ollama.com) or [LM Studio](https://lmstudio.ai), download a model and start its server (Ollama's runs by itself, at `http://localhost:11434`; LM Studio's is in its Developer tab, at `http://localhost:1234`). In Settings → AI, connect it at that address: Chrome asks you to allow it, and Mail Deck lists the server's models. Nothing leaves your computer, and nothing is paid.
+
+Ollama turns away requests from browser extensions unless they come with its own address as their origin, so Mail Deck sets that origin on its own requests to it (a Chrome rule for those requests alone); nothing needs changing. If an older Ollama still refuses, allow extensions with the `OLLAMA_ORIGINS` environment variable, `chrome-extension://*`: on a Mac, `launchctl setenv OLLAMA_ORIGINS "chrome-extension://*"` and restart Ollama; on Windows, a user environment variable; on Linux, `Environment="OLLAMA_ORIGINS=chrome-extension://*"` in the service's settings (`systemctl edit ollama.service`). In LM Studio, turn on **Enable CORS** in the server's settings.
+
+A model on a laptop answers slower and less well than the providers' large models. Ollama reads 4096 tokens at a time unless told more (`OLLAMA_CONTEXT_LENGTH`), so a long thread is read in part.
 
 ## Other mail services
 
@@ -240,4 +266,4 @@ tools/package.sh      # dist/mail-deck-<version>.zip
 
 [Mozilla Public License 1.1](LICENSE). Mail Deck grew out of Notifier for Gmail by InBasic; see [NOTICE.md](extension/NOTICE.md). The mail services in `extension/core/services/` adapt code from other open-source projects under MPL-2.0, MIT and Apache-2.0; each file names its sources and their licence at the top.
 
-Mail Deck is not made by or affiliated with Google, Yahoo, AOL, Proton, Yandex, VK, OpenAI, Anthropic or Z.ai. Gmail is a trademark of Google LLC; the other names belong to their owners.
+Mail Deck is not made by or affiliated with Google, Yahoo, AOL, Proton, Yandex, VK, OpenAI, Anthropic, xAI, DeepSeek, Mistral AI, Alibaba Cloud, Moonshot AI, Z.ai, Groq, OpenRouter, Ollama or LM Studio. Gmail is a trademark of Google LLC; the other names belong to their owners.

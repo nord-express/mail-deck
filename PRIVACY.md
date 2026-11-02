@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-03
 
-Mail Deck has no servers, no analytics and no tracking. Nothing it reads leaves your browser except the requests it sends to the mail services themselves: to Google for Gmail, and to each other mail service you turn on. If you turn on the AI assistant with your ChatGPT plan or your own Anthropic, OpenAI or Z.ai key, the mail it works on also goes to that provider, as described below.
+Mail Deck has no servers, no analytics and no tracking. Nothing it reads leaves your browser except the requests it sends to the mail services themselves: to Google for Gmail, and to each other mail service you turn on. If you turn on the AI assistant with your ChatGPT plan or your own key from an AI provider, the mail it works on also goes to that provider, as described below; with a model on your own computer, it stays there.
 
 ## What it reads from Gmail
 
@@ -47,8 +47,21 @@ A draft only ever opens in your mail service's compose window, or is copied: the
 You choose where it runs:
 
 - **On this computer.** Chrome's built-in model runs on your device, and nothing is sent anywhere. Chrome downloads the model from Google once, from your click.
+- **A model server on this computer** (Ollama or LM Studio). When you connect it, Chrome asks you to allow its address on your computer (`localhost` or `127.0.0.1`); requests go only there, and nothing leaves your computer. So that Ollama accepts them, Mail Deck sets their Origin header to the server's own address with a Chrome session rule (`declarativeNetRequest`) that matches only Mail Deck's own requests to it.
 - **Your ChatGPT plan.** **Continue with ChatGPT** signs in with OpenAI's official "Sign in with ChatGPT" for open-source apps (OAuth with PKCE). Chrome first asks you to allow `auth.openai.com` and `api.openai.com`, and `127.0.0.1`; until then Mail Deck sends OpenAI nothing. OpenAI sends you back to `http://127.0.0.1:1455/auth/callback` after you sign in, an address on your own computer where nothing listens: a Chrome rule (`declarativeNetRequest`, for that one address, removed when the sign-in ends or after 15 minutes) takes that visit to Mail Deck's own page instead, so the sign-in code never reaches the network or any program on your computer, and Mail Deck then gives back its access to `127.0.0.1`. Mail Deck checks the identity token against OpenAI's published keys and keeps the tokens OpenAI issues (an access token renewed every hour, a refresh token and the identity token), with your account's email address, shown to say which account is signed in, and an account id it does not show. Requests then go to `api.openai.com` with them, and use the usage included in your ChatGPT plan, which you manage in ChatGPT's settings. Signing out revokes the sign-in at OpenAI, deletes the tokens here and gives back Chrome's access to `auth.openai.com` (and to `api.openai.com`, unless an OpenAI key still uses it); if OpenAI does not confirm the revocation, Mail Deck says so, and you can disconnect it in your ChatGPT settings.
-- **Anthropic, OpenAI or Z.ai, with your own API key.** When you connect a provider, Chrome asks you to allow its site (`api.anthropic.com`, `api.openai.com` or `api.z.ai`); until then Mail Deck sends it nothing.
+- **Your own API key.** When you connect a provider, Chrome asks you to allow its site; until then Mail Deck sends it nothing. Each handles what it receives under its own privacy policy:
+  - Anthropic (Claude): `api.anthropic.com`, [privacy policy](https://www.anthropic.com/legal/privacy);
+  - OpenAI: `api.openai.com`, [privacy policy](https://openai.com/policies/row-privacy-policy/);
+  - Google (Gemini): `generativelanguage.googleapis.com`, [privacy policy](https://policies.google.com/privacy). On the Gemini API's free tier, Google may use what you send to improve its products, and people may read it; on a paid plan it does not ([Gemini API terms](https://ai.google.dev/gemini-api/terms));
+  - xAI (Grok): `api.x.ai`, [privacy policy](https://x.ai/legal/privacy-policy);
+  - DeepSeek: `api.deepseek.com`, [privacy policy](https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html). DeepSeek is based in China and keeps the data there;
+  - Mistral AI: `api.mistral.ai`, [privacy policy](https://legal.mistral.ai/terms/privacy-policy);
+  - Alibaba Cloud (Qwen): `dashscope-intl.aliyuncs.com`, [privacy policy](https://www.alibabacloud.com/help/en/legal/latest/alibaba-cloud-international-website-privacy-policy). Alibaba Cloud is based in China; this international service keeps the data in its Singapore region;
+  - Moonshot AI (Kimi): `api.moonshot.ai`, [privacy policy](https://platform.kimi.ai/docs/agreement/userprivacy). Moonshot AI is based in China; its international platform is run from Singapore and keeps the data there;
+  - Z.ai (GLM): `api.z.ai`, [privacy policy](https://docs.z.ai/legal-agreement/privacy-policy);
+  - Groq: `api.groq.com`, [privacy policy](https://groq.com/privacy-policy);
+  - OpenRouter: `openrouter.ai`, [privacy policy](https://openrouter.ai/privacy). OpenRouter passes each request on to the company that runs the model you chose, which handles it under its own terms;
+  - Yandex AI Studio (YandexGPT): `ai.api.cloud.yandex.net`, [privacy policy](https://yandex.com/legal/confidential/en/).
 
 Requests go from your browser straight to that provider; Mail Deck has no servers in between. Each request sends only what it needs, with the current date, time and time zone so that dates such as "tomorrow at 3" can be read:
 
@@ -57,7 +70,7 @@ Requests go from your browser straight to that provider; Mail Deck has no server
 - "what's important": the sender, subject and preview of your unread mail, up to 60;
 - sorting: the sender, subject and preview of unread mail from the last 14 days, 20 messages at a time, from senders other than your own addresses.
 
-The provider handles this data under its own terms: [OpenAI](https://openai.com/policies/row-privacy-policy/), [Anthropic](https://www.anthropic.com/legal/privacy), [Z.ai](https://docs.z.ai/legal-agreement/privacy-policy).
+The provider handles this data under its own terms, linked above.
 
 Your API keys and the ChatGPT sign-in (its tokens, the app id OpenAI issued to this browser, an anonymous random id of this browser that OpenAI asks for, and your account's email address) are kept only in this browser's extension storage on your device (`chrome.storage.local`). They are never part of a settings backup or of Chrome sync, never shown in diagnostics, and sent only to their own provider. Disconnect removes them and Chrome's access to the provider. A summary (its key points, what it asks of you, its dates and details, not the mail itself) is kept on your device for 7 days, at most 200 of them, so a mail opened again shows it at once; the assistant's conversation is kept in session storage, in memory only, until the browser closes. How a mail was sorted (waiting for a reply, important or newsletter, and a few words why) is kept on your device for 30 days, so the same mail is not sent again.
 
