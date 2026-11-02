@@ -1463,6 +1463,48 @@
     "panel_markAllRead": {
         "message": "Tümünü okundu olarak işaretle"
     },
+    "panel_markUnread": {
+        "message": "Okunmadı olarak işaretle"
+    },
+    "panel_doneUnread": {
+        "message": "Okunmadı olarak işaretlendi"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail okunmadı olarak işaretlemedi"
+    },
+    "panel_labelAs": {
+        "message": "Etiketle…"
+    },
+    "panel_moveTo": {
+        "message": "Taşı…"
+    },
+    "panel_labelTitle": {
+        "message": "Etiketle"
+    },
+    "panel_moveTitle": {
+        "message": "Şuraya taşı"
+    },
+    "panel_labelFilter": {
+        "message": "Etiket adı"
+    },
+    "panel_labelNew": {
+        "message": "“$1” etiketini ekle"
+    },
+    "panel_moveNew": {
+        "message": "“$1” etiketine taşı"
+    },
+    "panel_labelling": {
+        "message": "Etiket ekleniyor…"
+    },
+    "panel_doneLabel": {
+        "message": "“$1” etiketi eklendi"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail etiketi eklemedi"
+    },
+    "panel_doneMove": {
+        "message": "“$1” etiketine taşındı"
+    },
     "panel_unsubscribe": {
         "message": "Abonelikten çık"
     },

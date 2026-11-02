@@ -1295,6 +1295,48 @@
   "panel_markAllRead": {
     "message": "すべて既読にする"
   },
+  "panel_markUnread": {
+    "message": "未読にする"
+  },
+  "panel_doneUnread": {
+    "message": "未読にしました"
+  },
+  "panel_unreadFailed": {
+    "message": "Gmail が未読にしませんでした"
+  },
+  "panel_labelAs": {
+    "message": "ラベルを付ける…"
+  },
+  "panel_moveTo": {
+    "message": "移動…"
+  },
+  "panel_labelTitle": {
+    "message": "ラベルを付ける"
+  },
+  "panel_moveTitle": {
+    "message": "移動先"
+  },
+  "panel_labelFilter": {
+    "message": "ラベル名"
+  },
+  "panel_labelNew": {
+    "message": "「$1」ラベルを付ける"
+  },
+  "panel_moveNew": {
+    "message": "「$1」に移動"
+  },
+  "panel_labelling": {
+    "message": "ラベルを付けています…"
+  },
+  "panel_doneLabel": {
+    "message": "「$1」ラベルを付けました"
+  },
+  "panel_labelFailed": {
+    "message": "Gmail がラベルを付けませんでした"
+  },
+  "panel_doneMove": {
+    "message": "「$1」に移動しました"
+  },
   "panel_unsubscribe": {
     "message": "配信停止"
   },

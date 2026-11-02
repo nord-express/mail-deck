@@ -1454,7 +1454,8 @@
     }
 
     if (scenario === 'acting') {
-      // acting on mail: unsubscribing; the assistant on for its Newsletters (a4, Notion's digest, one click; a2, GitHub's, by mail; a1 has no way)
+      // acting on mail: unsubscribing, unread, labels; read on open (?read=1), the assistant on for
+      // its Newsletters (a4, Notion's digest, one click; a2, GitHub's, by mail; a1 has no way)
       const $ = id => document.getElementById(id);
       const id = link => link.match(/message_id=([^&]*)/)[1];
       const rowOf = x => [...document.querySelectorAll('#list .row')].find(r => id(r.dataset.link) === x);
@@ -1497,6 +1498,58 @@
       out.noPost = sent('gmail.unsubscribe').length === 0;
       key(document, 'Escape');
       await wait(50);
+
+      // U in the reader: back to the list, the mail read on opening listed again, Gmail asked
+      rowOf('a1').click();
+      await until(() => $('app').classList.contains('reading') && actions().includes('rd:a1'));
+      await wait(50);
+      out.readHidden = state.hidden.has(state.reading.e.link);
+      key(document, 'KeyU');
+      await wait(60);
+      out.unread = {back: !$('app').classList.contains('reading'), listed: Boolean(rowOf('a1')), focused: document.activeElement === rowOf('a1'),
+        asked: actions().includes('ur:a1'), toast: $('toast').textContent};
+      // a refusal takes it back, and says so
+      window.__actionFails = links => links.filter(l => l.includes('message_id=a1'));
+      key(document, 'KeyU');
+      await wait(60);
+      out.unreadFailed = $('toast').textContent === t('unreadFailed') && $('toast').classList.contains('error');
+      window.__actionFails = null;
+
+      // L on a line: a field for the label's name, a name not listed offered as it stands
+      rowOf('a1').focus();
+      key(document, 'KeyL');
+      await until(() => $('menu')?.querySelector('.menu-filter input'));
+      const field = () => $('menu').querySelector('.menu-filter input');
+      out.labelMenu = {title: $('menu').querySelector('.menu-title').textContent, focused: document.activeElement === field()};
+      field().value = 'Work/Projects';
+      field().dispatchEvent(new Event('input'));
+      out.labelNew = items().map(b => b.textContent);
+      field().dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', code: 'Enter', bubbles: true, cancelable: true}));
+      await wait(80);
+      out.labelled = {asked: actions().at(-1), toast: $('toast').textContent, listed: Boolean(rowOf('a1'))};
+      // again: the label used is listed; a letter typed on an item goes to the field; Esc gives the line its focus back
+      rowOf('a1').focus();
+      key(document, 'KeyL');
+      await until(() => $('menu')?.querySelector('.menu-filter input'));
+      await wait(20);
+      out.usedListed = items().map(b => b.textContent);
+      key(field(), 'ArrowDown', {key: 'ArrowDown'});
+      out.downToItem = document.activeElement === items()[0];
+      press('KeyW', {key: 'w'});
+      out.letterToField = document.activeElement === field();
+      field().dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', code: 'Escape', bubbles: true, cancelable: true}));
+      await wait(30);
+      out.labelEsc = !$('menu') && document.activeElement === rowOf('a1');
+      // V moves it there: out of the list with the Undo, as an archive; Z brings it back
+      key(document, 'KeyV');
+      await until(() => $('menu')?.querySelector('.menu-filter input'));
+      out.moveTitle = $('menu').querySelector('.menu-title').textContent;
+      items()[0]?.click();
+      await wait(250);
+      out.moved = {asked: actions().at(-1), gone: !rowOf('a1'), toast: $('toast').querySelector('span')?.textContent, undo: Boolean($('toast').querySelector('.undo'))};
+      key(document, 'KeyZ');
+      await wait(100);
+      out.moveUndone = Boolean(rowOf('a1')) && sent('gmail.action.cancel').length === 1;
 
       // Newsletters: each sender with how, from its header; one click asks first, then the background sends it
       await until(() => $('chips').querySelector('.bulk-chip'), 3000);

@@ -1463,6 +1463,48 @@
     "panel_markAllRead": {
         "message": "Alle als gelesen markieren"
     },
+    "panel_markUnread": {
+        "message": "Als ungelesen markieren"
+    },
+    "panel_doneUnread": {
+        "message": "Als ungelesen markiert"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail hat sie nicht als ungelesen markiert"
+    },
+    "panel_labelAs": {
+        "message": "Label hinzufügen…"
+    },
+    "panel_moveTo": {
+        "message": "Verschieben nach…"
+    },
+    "panel_labelTitle": {
+        "message": "Label hinzufügen"
+    },
+    "panel_moveTitle": {
+        "message": "Verschieben nach"
+    },
+    "panel_labelFilter": {
+        "message": "Labelname"
+    },
+    "panel_labelNew": {
+        "message": "Label „$1“ hinzufügen"
+    },
+    "panel_moveNew": {
+        "message": "Nach „$1“ verschieben"
+    },
+    "panel_labelling": {
+        "message": "Label wird hinzugefügt…"
+    },
+    "panel_doneLabel": {
+        "message": "Label „$1“ hinzugefügt"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail hat das Label nicht hinzugefügt"
+    },
+    "panel_doneMove": {
+        "message": "Nach „$1“ verschoben"
+    },
     "panel_unsubscribe": {
         "message": "Abbestellen"
     },

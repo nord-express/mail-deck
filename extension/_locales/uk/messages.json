@@ -1463,6 +1463,48 @@
     "panel_markAllRead": {
         "message": "Позначити всі як прочитані"
     },
+    "panel_markUnread": {
+        "message": "Позначити як непрочитане"
+    },
+    "panel_doneUnread": {
+        "message": "Позначено як непрочитане"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail не позначив лист як непрочитаний"
+    },
+    "panel_labelAs": {
+        "message": "Додати мітку…"
+    },
+    "panel_moveTo": {
+        "message": "Перемістити в…"
+    },
+    "panel_labelTitle": {
+        "message": "Додати мітку"
+    },
+    "panel_moveTitle": {
+        "message": "Перемістити в"
+    },
+    "panel_labelFilter": {
+        "message": "Назва мітки"
+    },
+    "panel_labelNew": {
+        "message": "Додати мітку «$1»"
+    },
+    "panel_moveNew": {
+        "message": "Перемістити в «$1»"
+    },
+    "panel_labelling": {
+        "message": "Додавання мітки…"
+    },
+    "panel_doneLabel": {
+        "message": "Додано мітку «$1»"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail не додав мітку"
+    },
+    "panel_doneMove": {
+        "message": "Переміщено в «$1»"
+    },
     "panel_unsubscribe": {
         "message": "Відписатися"
     },

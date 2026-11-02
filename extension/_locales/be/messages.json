@@ -1319,6 +1319,48 @@
   "panel_markAllRead": {
     "message": "Пазначыць усе як прачытаныя"
   },
+  "panel_markUnread": {
+    "message": "Пазначыць як непрачытанае"
+  },
+  "panel_doneUnread": {
+    "message": "Пазначана як непрачытанае"
+  },
+  "panel_unreadFailed": {
+    "message": "Gmail не пазначыў ліст як непрачытаны"
+  },
+  "panel_labelAs": {
+    "message": "Дадаць ярлык…"
+  },
+  "panel_moveTo": {
+    "message": "Перамясціць у…"
+  },
+  "panel_labelTitle": {
+    "message": "Дадаць ярлык"
+  },
+  "panel_moveTitle": {
+    "message": "Перамясціць у"
+  },
+  "panel_labelFilter": {
+    "message": "Назва ярлыка"
+  },
+  "panel_labelNew": {
+    "message": "Дадаць ярлык «$1»"
+  },
+  "panel_moveNew": {
+    "message": "Перамясціць у «$1»"
+  },
+  "panel_labelling": {
+    "message": "Дадаецца ярлык…"
+  },
+  "panel_doneLabel": {
+    "message": "Дададзены ярлык «$1»"
+  },
+  "panel_labelFailed": {
+    "message": "Gmail не дадаў ярлык"
+  },
+  "panel_doneMove": {
+    "message": "Перамешчана ў «$1»"
+  },
   "panel_unsubscribe": {
     "message": "Адпісацца"
   },

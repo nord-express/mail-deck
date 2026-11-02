@@ -1459,6 +1459,48 @@
     "panel_markAllRead": {
         "message": "Отбелязване на всички като прочетени"
     },
+    "panel_markUnread": {
+        "message": "Маркиране като непрочетено"
+    },
+    "panel_doneUnread": {
+        "message": "Маркирано като непрочетено"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail не маркира писмото като непрочетено"
+    },
+    "panel_labelAs": {
+        "message": "Поставяне на етикет…"
+    },
+    "panel_moveTo": {
+        "message": "Преместване в…"
+    },
+    "panel_labelTitle": {
+        "message": "Поставяне на етикет"
+    },
+    "panel_moveTitle": {
+        "message": "Преместване в"
+    },
+    "panel_labelFilter": {
+        "message": "Име на етикет"
+    },
+    "panel_labelNew": {
+        "message": "Етикет „$1“"
+    },
+    "panel_moveNew": {
+        "message": "Преместване в „$1“"
+    },
+    "panel_labelling": {
+        "message": "Етикетът се добавя…"
+    },
+    "panel_doneLabel": {
+        "message": "Добавен е етикет „$1“"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail не добави етикета"
+    },
+    "panel_doneMove": {
+        "message": "Преместено в „$1“"
+    },
     "panel_unsubscribe": {
         "message": "Отписване"
     },

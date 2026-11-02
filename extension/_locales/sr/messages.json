@@ -1463,6 +1463,48 @@
     "panel_markAllRead": {
         "message": "Означи све као прочитано"
     },
+    "panel_markUnread": {
+        "message": "Означи као непрочитано"
+    },
+    "panel_doneUnread": {
+        "message": "Означено као непрочитано"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail није означио поруку као непрочитану"
+    },
+    "panel_labelAs": {
+        "message": "Додај ознаку…"
+    },
+    "panel_moveTo": {
+        "message": "Премести у…"
+    },
+    "panel_labelTitle": {
+        "message": "Додај ознаку"
+    },
+    "panel_moveTitle": {
+        "message": "Премести у"
+    },
+    "panel_labelFilter": {
+        "message": "Назив ознаке"
+    },
+    "panel_labelNew": {
+        "message": "Додај ознаку „$1“"
+    },
+    "panel_moveNew": {
+        "message": "Премести у „$1“"
+    },
+    "panel_labelling": {
+        "message": "Додавање ознаке…"
+    },
+    "panel_doneLabel": {
+        "message": "Додата ознака „$1“"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail није додао ознаку"
+    },
+    "panel_doneMove": {
+        "message": "Премештено у „$1“"
+    },
     "panel_unsubscribe": {
         "message": "Откажи пријаву"
     },

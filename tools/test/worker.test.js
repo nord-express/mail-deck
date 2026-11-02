@@ -149,6 +149,18 @@ const tests = [
     await w.send({method: 'gmail.action', cmd: 'st', links: [feedLink(0, 's1')]});
     assert.deepStrictEqual([w.dispatched.length, w.hidden()], [1, []]);
   }],
+  ['mail marked unread counts again, the feed\'s copy too, though it was read on opening; a label changes no count; a move does', async () => {
+    const w = start();
+    await w.send({method: 'gmail.action', cmd: 'rd', links: [searchLink(1, 'u1')]});
+    assert.strictEqual(w.hidden().length, 2);
+    await w.send({method: 'gmail.action', cmd: 'ur', links: [searchLink(1, 'u1')]});
+    assert.deepStrictEqual(w.hidden(), []);
+    await w.send({method: 'gmail.action', cmd: 'ac_Work', links: [feedLink(0, 'l1')]});
+    assert.deepStrictEqual(w.hidden(), []);
+    await w.send({method: 'gmail.action', cmd: 'mv_Work', links: [feedLink(0, 'l1')]});
+    assert.deepStrictEqual(w.hidden(), [feedLink(0, 'l1')]);
+    assert.deepStrictEqual(w.dispatched.map(d => d.cmd), ['rd', 'ur', 'ac_Work', 'mv_Work']);
+  }],
   ['one click: the background posts RFC 8058\'s request to the header\'s own address, with nothing of the browser', async () => {
     const link = feedLink(0, 'n1');
     const w = start({heads: {[link]: {messageId: 'm@x', unsubscribe: {post: 'https://news.example/one?u=1', web: 'https://news.example/one?u=1', mailto: null}}}});

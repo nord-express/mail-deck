@@ -1467,6 +1467,48 @@
     "panel_markAllRead": {
         "message": "Alles markeren als gelezen"
     },
+    "panel_markUnread": {
+        "message": "Markeren als ongelezen"
+    },
+    "panel_doneUnread": {
+        "message": "Gemarkeerd als ongelezen"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail heeft het niet als ongelezen gemarkeerd"
+    },
+    "panel_labelAs": {
+        "message": "Labelen als…"
+    },
+    "panel_moveTo": {
+        "message": "Verplaatsen naar…"
+    },
+    "panel_labelTitle": {
+        "message": "Labelen als"
+    },
+    "panel_moveTitle": {
+        "message": "Verplaatsen naar"
+    },
+    "panel_labelFilter": {
+        "message": "Labelnaam"
+    },
+    "panel_labelNew": {
+        "message": "Labelen als ‘$1’"
+    },
+    "panel_moveNew": {
+        "message": "Verplaatsen naar ‘$1’"
+    },
+    "panel_labelling": {
+        "message": "Label toevoegen…"
+    },
+    "panel_doneLabel": {
+        "message": "Gelabeld als ‘$1’"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail heeft het label niet toegevoegd"
+    },
+    "panel_doneMove": {
+        "message": "Verplaatst naar ‘$1’"
+    },
     "panel_unsubscribe": {
         "message": "Afmelden"
     },

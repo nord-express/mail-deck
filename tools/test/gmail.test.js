@@ -1,5 +1,6 @@
 // core/offscreen/gmail/core.js against a fake Gmail: a mail's header read from its raw message
-// and no further, and how List-Unsubscribe says to unsubscribe (RFC 2369, RFC 8058).
+// and no further, how List-Unsubscribe says to unsubscribe (RFC 2369, RFC 8058), and the action
+// calls for unread and labels (time runs a hundred times faster there).
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -26,6 +27,9 @@ const stream = chunks => {
   }, {highWaterMark: 0});
   return out;
 };
+// Gmail's search answer: its parts, the threads (subject, thread) in the third
+const searchAnswer = threads => '4&[[]]9&' + JSON.stringify([null, [[null, null, [null, null, null, null, null,
+  threads.map(([subject, thread]) => [null, null, null, subject, '', 'x@y.z', null, Date.now(), ['^u'], null, [null, null, 0], thread])]]]]);
 
 // answer(url, options) gives a Response (or a {stream} of one) for each request; requests lists them
 const start = answer => {
@@ -52,6 +56,7 @@ const start = answer => {
   return {gmail: ctx.gmail, requests};
 };
 const ok = (text, type = 'text/plain') => new Response(text, {status: 200, headers: {'content-type': type}});
+const head = lines => lines.join('\r\n') + '\r\n\r\n';
 const fields = lines => start(() => ok('')).gmail.fields(lines.join('\r\n'));
 
 const tests = [
@@ -132,6 +137,48 @@ const tests = [
     const plain = u(signed().filter(l => !l.startsWith('List-Unsubscribe-Post')));
     assert.deepStrictEqual([plain.post, plain.web, plain.first], [null, 'https://example.com/one?c=1', 'mailto']);
     assert.strictEqual(u(signed().map(l => l.replace('https://', 'http://'))).post, null);
+  }],
+  ['mark as unread is Gmail\'s action 4, as read is 3', async () => {
+    const g = start(() => ok('ok'));
+    await g.gmail.action({links: [link(2, 't1')], cmd: 'ur', prefs: {}});
+    const sent = JSON.parse(g.requests.at(-1).body.get('s_jr'));
+    assert.deepStrictEqual(sent[1][0][3].slice(1, 5), [4, 't1', 't1', 'l:all']);
+    assert.ok(g.requests.at(-1).url.startsWith('https://mail.google.com/mail/u/2/s/?v=or&ik=IK&at=AT&'));
+  }],
+  ['a label is added, and counts as added once Gmail\'s search finds the mail with it', async () => {
+    const g = start((url, o) => url.includes('act=ac_') ? ok(')]}\'\n[]') :
+      url.includes('view=att') ? ok(head(['Message-ID: <m1@x.com>'])) :
+        url.includes('/s/?v=or') ? ok(searchAnswer([['Hi', 't9']])) : new Response('', {status: 404}));
+    await g.gmail.action({links: [link(0, 't1')], cmd: 'ac_Work/Projects', prefs: {}});
+    const label = g.requests.find(q => q.url.includes('act='));
+    assert.ok(label.url.includes('ui=2&ik=IK&at=AT&view=up&act=' + encodeURIComponent('ac_Work/Projects')) && label.method === 'POST');
+    assert.deepStrictEqual([...label.body.getAll('t')], ['t1']);
+    const search = JSON.parse(g.requests.find(q => q.url.includes('/s/?v=or')).body.get('s_jr'));
+    assert.strictEqual(search[1][1][1][1], 'rfc822msgid:m1@x.com label:work-projects');
+    // no internal action call was made for it
+    assert.ok(!g.requests.some(q => q.body instanceof FormData));
+  }],
+  ['a label Gmail\'s search does not show is a failure; without a Message-ID the thread is looked for by its ID', async () => {
+    const g = start(url => url.includes('act=ac_') ? ok('') : url.includes('/s/?v=or') ? ok(searchAnswer([['Other', 't8']])) : new Response('', {status: 404}));
+    await assert.rejects(g.gmail.action({links: [link(0, 't1')], cmd: 'ac_Work', prefs: {}}), /not confirmed/);
+    const searches = g.requests.filter(q => q.url.includes('/s/?v=or')).map(q => JSON.parse(q.body.get('s_jr'))[1][1][1][1]);
+    assert.deepStrictEqual(searches, ['label:work', 'label:work']);
+    // found by its ID
+    const h = start(url => url.includes('act=ac_') ? ok('') : url.includes('/s/?v=or') ? ok(searchAnswer([['Mine', 't1']])) : new Response('', {status: 404}));
+    await h.gmail.action({links: [link(0, 't1')], cmd: 'ac_Work', prefs: {}});
+  }],
+  ['a move adds the label, then archives; Gmail refusing the label archives nothing; another label\'s removal is not sent', async () => {
+    const g = start(url => url.includes('act=ac_') ? ok('') : url.includes('view=att') ? ok(head(['Message-ID: <m@x>'])) :
+      url.includes('/s/?v=or') ? ok(searchAnswer([['Hi', 't1']])) : new Response('', {status: 404}));
+    await g.gmail.action({links: [link(0, 't1')], cmd: 'mv_Work', prefs: {doReadOnArchive: false}});
+    const actions = g.requests.filter(q => q.body instanceof FormData).map(q => JSON.parse(q.body.get('s_jr'))[1][0][3]?.[1]);
+    assert.deepStrictEqual(actions, [1]);
+    const refused = start(url => url.includes('act=ac_') ? new Response('', {status: 400}) : ok(''));
+    await assert.rejects(refused.gmail.action({links: [link(0, 't1')], cmd: 'mv_Work', prefs: {}}), /label -> 400/);
+    assert.ok(!refused.requests.some(q => q.body instanceof FormData));
+    const none = start(() => ok(''));
+    await assert.rejects(none.gmail.action({links: [link(0, 't1')], cmd: 'rc_Work', prefs: {}}), /action_not_supported/);
+    assert.ok(!none.requests.some(q => q.method === 'POST'));
   }]
 ];
 

@@ -1463,6 +1463,48 @@
     "panel_markAllRead": {
         "message": "Marca-ho tot com a llegit"
     },
+    "panel_markUnread": {
+        "message": "Marca com a no llegit"
+    },
+    "panel_doneUnread": {
+        "message": "S'ha marcat com a no llegit"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail no l'ha marcat com a no llegit"
+    },
+    "panel_labelAs": {
+        "message": "Etiqueta com a…"
+    },
+    "panel_moveTo": {
+        "message": "Mou a…"
+    },
+    "panel_labelTitle": {
+        "message": "Etiqueta com a"
+    },
+    "panel_moveTitle": {
+        "message": "Mou a"
+    },
+    "panel_labelFilter": {
+        "message": "Nom de l'etiqueta"
+    },
+    "panel_labelNew": {
+        "message": "Etiqueta com a «$1»"
+    },
+    "panel_moveNew": {
+        "message": "Mou a «$1»"
+    },
+    "panel_labelling": {
+        "message": "S'està afegint l'etiqueta…"
+    },
+    "panel_doneLabel": {
+        "message": "S'ha etiquetat com a «$1»"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail no ha afegit l'etiqueta"
+    },
+    "panel_doneMove": {
+        "message": "S'ha mogut a «$1»"
+    },
     "panel_unsubscribe": {
         "message": "Cancel·la la subscripció"
     },

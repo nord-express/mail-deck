@@ -1295,6 +1295,48 @@
   "panel_markAllRead": {
     "message": "Tout marquer comme lu"
   },
+  "panel_markUnread": {
+    "message": "Marquer comme non lu"
+  },
+  "panel_doneUnread": {
+    "message": "Marqué comme non lu"
+  },
+  "panel_unreadFailed": {
+    "message": "Gmail ne l’a pas marqué comme non lu"
+  },
+  "panel_labelAs": {
+    "message": "Ajouter un libellé…"
+  },
+  "panel_moveTo": {
+    "message": "Déplacer vers…"
+  },
+  "panel_labelTitle": {
+    "message": "Ajouter un libellé"
+  },
+  "panel_moveTitle": {
+    "message": "Déplacer vers"
+  },
+  "panel_labelFilter": {
+    "message": "Nom du libellé"
+  },
+  "panel_labelNew": {
+    "message": "Ajouter le libellé « $1 »"
+  },
+  "panel_moveNew": {
+    "message": "Déplacer vers « $1 »"
+  },
+  "panel_labelling": {
+    "message": "Ajout du libellé…"
+  },
+  "panel_doneLabel": {
+    "message": "Libellé « $1 » ajouté"
+  },
+  "panel_labelFailed": {
+    "message": "Gmail n’a pas ajouté le libellé"
+  },
+  "panel_doneMove": {
+    "message": "Déplacé vers « $1 »"
+  },
   "panel_unsubscribe": {
     "message": "Se désabonner"
   },

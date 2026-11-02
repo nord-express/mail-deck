@@ -1295,6 +1295,48 @@
   "panel_markAllRead": {
     "message": "Segna tutti come letti"
   },
+  "panel_markUnread": {
+    "message": "Segna come da leggere"
+  },
+  "panel_doneUnread": {
+    "message": "Segnato come da leggere"
+  },
+  "panel_unreadFailed": {
+    "message": "Gmail non l'ha segnato come da leggere"
+  },
+  "panel_labelAs": {
+    "message": "Applica etichetta…"
+  },
+  "panel_moveTo": {
+    "message": "Sposta in…"
+  },
+  "panel_labelTitle": {
+    "message": "Applica etichetta"
+  },
+  "panel_moveTitle": {
+    "message": "Sposta in"
+  },
+  "panel_labelFilter": {
+    "message": "Nome dell'etichetta"
+  },
+  "panel_labelNew": {
+    "message": "Applica l'etichetta «$1»"
+  },
+  "panel_moveNew": {
+    "message": "Sposta in «$1»"
+  },
+  "panel_labelling": {
+    "message": "Aggiunta dell'etichetta…"
+  },
+  "panel_doneLabel": {
+    "message": "Etichetta «$1» applicata"
+  },
+  "panel_labelFailed": {
+    "message": "Gmail non ha aggiunto l'etichetta"
+  },
+  "panel_doneMove": {
+    "message": "Spostato in «$1»"
+  },
   "panel_unsubscribe": {
     "message": "Annulla iscrizione"
   },

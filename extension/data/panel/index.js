@@ -46,6 +46,9 @@ const ICONS = {
   tag: ['M3.5 12.1V4.5a1 1 0 0 1 1-1h7.6a1 1 0 0 1 .7.3l7.7 7.7a1 1 0 0 1 0 1.4l-7.6 7.6a1 1 0 0 1-1.4 0l-7.7-7.7a1 1 0 0 1-.3-.7Z', 'M8 8h.01'],
   people: ['M9 11a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7Z', 'M2.5 20c.6-3.3 3.2-5.5 6.5-5.5s5.9 2.2 6.5 5.5', 'M16 4.3a3.5 3.5 0 0 1 0 6.4', 'M18.2 14.9c1.8.8 2.9 2.5 3.3 5.1'],
   info: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M12 11v5', 'M12 8v.1'],
+  unread: ['M13.5 5h-9A1.5 1.5 0 0 0 3 6.5v11A1.5 1.5 0 0 0 4.5 19h15a1.5 1.5 0 0 0 1.5-1.5v-6', 'M3.5 7l8.5 6 3.2-2.3', 'M19 8.5a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5Z'],
+  label: ['M3.5 12.1V4.5a1 1 0 0 1 1-1h7.6a1 1 0 0 1 .7.3l7.7 7.7a1 1 0 0 1 0 1.4l-7.6 7.6a1 1 0 0 1-1.4 0l-7.7-7.7a1 1 0 0 1-.3-.7Z', 'M8 8h.01'],
+  move: ['M3 7.5V18a1.5 1.5 0 0 0 1.5 1.5h15A1.5 1.5 0 0 0 21 18V9a1.5 1.5 0 0 0-1.5-1.5H12L10 5H4.5A1.5 1.5 0 0 0 3 6.5Z', 'M9 13.5h6.5', 'M13 11l2.5 2.5L13 16'],
   unsubscribe: ['M21 11V6.5A1.5 1.5 0 0 0 19.5 5h-15A1.5 1.5 0 0 0 3 6.5v11A1.5 1.5 0 0 0 4.5 19H12', 'M3.5 7l8.5 6 8.5-6', 'M15.5 17.5h6']
 };
 // the strings live in _locales as panel_*; a language without one falls back to English
@@ -392,6 +395,7 @@ const fromSearch = (a, o) => {
   let date = Number(a.date) || 0;
   date = date > 1e14 ? date / 1000 : date < 1e11 ? date * 1000 : date;
   const labels = a.labels || [];
+  seenLabels(o, labels);
   return {
     link: `${o.xml.rootLink.replace(/\/$/, '')}?message_id=${a.thread}&view=conv&extsrc=atom`,
     id: 'search:' + a.thread,
@@ -754,7 +758,9 @@ const act = (cmd, links, until) => {
   p.timer = setTimeout(() => commit(p), UNDO_MS);
   state.pending = p;
   const many = links.length > 1 ? links.length : '';
-  toast(cmd === 'remind' ? t('doneRemind', later(until)) + (many && ` · ${many}`) : ACTIONS[cmd].done + (many && `: ${many}`), false, undo);
+  // a move names the label it went to (mv_<label>)
+  toast(cmd === 'remind' ? t('doneRemind', later(until)) + (many && ` · ${many}`) :
+    (cmd.startsWith('mv_') ? t('doneMove', cmd.slice(3)) : ACTIONS[cmd].done) + (many && `: ${many}`), false, undo);
 };
 const paintStar = () => {
   const el = $('reader-bar').querySelector('.star');
@@ -890,6 +896,140 @@ const pickTime = (menu, anchor, links) => {
   input.focus();
 };
 const remindBtn = links => menuBtn('clock', t('remind'), 'B', anchor => remindMenu(anchor, links), 'remind');
+
+/* mark as unread: Gmail's at once, the mail kept in the list (or back in it from the reader) */
+const markUnread = (e, o) => {
+  if (serviceOf(o)) {
+    return;
+  }
+  // read on opening took it out of the list: it comes back, as it was should Gmail refuse
+  const was = {hidden: state.hidden.has(e.link), unread: e.unread};
+  state.hidden.delete(e.link);
+  e.unread = true;
+  closeMenu();
+  render();
+  if (state.reading?.e === e) {
+    back();
+  }
+  toast(t('doneUnread'));
+  ensureAt(e.link).then(() => chrome.runtime.sendMessage({method: 'gmail.action', cmd: 'ur', links: [e.link]}, failure => {
+    if (chrome.runtime.lastError || failure) {
+      if (was.hidden) {
+        state.hidden.add(e.link);
+      }
+      e.unread = was.unread;
+      render();
+      toast(t('unreadFailed'), true);
+    }
+  }));
+};
+
+/* labels: Gmail's L (label as) and V (move to), a menu of the account's labels with a field to narrow it */
+// The label actions ask Gmail the way its web app did before its internal call had them, and
+// count as done only once Gmail's search shows the label (core/offscreen/gmail/core.js); false
+// takes them out of the panel
+const LABELS = true;
+// the labels Gmail's search showed on an account's mail this panel: address -> Set. Gmail's own
+// ones (^i, ^u...) and IDs that are no names stay out
+const labelsSeen = new Map();
+const seenLabels = (o, labels) => {
+  const names = labels.filter(l => typeof l === 'string' && l && !l.startsWith('^') && l !== 'STARRED' && !/^Label_\d+$/.test(l));
+  if (names.length) {
+    const set = labelsSeen.get(o.xml.title) || new Set();
+    names.forEach(l => set.add(l));
+    labelsSeen.set(o.xml.title, set);
+  }
+};
+// used here before, newest first, by address
+const USED = 'labels.used';
+const USED_MAX = 30;
+const useLabel = (o, name) => chrome.storage.local.get({[USED]: {}}).then(prefs => {
+  const all = prefs[USED] && typeof prefs[USED] === 'object' ? prefs[USED] : {};
+  const list = (Array.isArray(all[o.xml.title]) ? all[o.xml.title] : []).filter(l => l !== name);
+  return chrome.storage.local.set({[USED]: {...all, [o.xml.title]: [name, ...list].slice(0, USED_MAX)}});
+}).catch(() => {});
+// an account's labels: those used here, then those it is watched through (its mailboxes, Settings
+// → Labels by address), then those its mail showed; each once, as first written
+const labelsOf = async o => {
+  const prefs = await chrome.storage.local.get({[USED]: {}, labels: {}}).catch(() => ({}));
+  const used = prefs[USED]?.[o.xml.title];
+  const watched = typeof prefs.labels?.[o.xml.title] === 'string' ? prefs.labels[o.xml.title].split(',') : [];
+  const boxes = state.objs.filter(x => x.xml.title === o.xml.title && x.xml.label).map(x => x.xml.label);
+  const all = [...(Array.isArray(used) ? used : []), ...boxes, ...watched, ...labelsSeen.get(o.xml.title) || []]
+    .map(l => String(l).trim()).filter(l => l && !l.startsWith('^') && l.toLowerCase() !== 'inbox');
+  return all.filter((l, i) => all.findIndex(x => x.toLowerCase() === l.toLowerCase()) === i);
+};
+// label: the label added, the mail staying where it is; move: added, and out of the inbox with the
+// list's Undo, as an archive. A label Gmail took is offered first next time (a move's, once chosen).
+const labelMail = (e, o, name, how) => {
+  closeMenu();
+  if (!name) {
+    return;
+  }
+  if (how === 'move') {
+    useLabel(o, name);
+    if (state.reading?.e === e) {
+      actFromReader('mv_' + name, e);
+    }
+    else {
+      act('mv_' + name, [e.link]);
+    }
+    return;
+  }
+  toast(t('labelling'));
+  ensureAt(e.link).then(() => chrome.runtime.sendMessage({method: 'gmail.action', cmd: 'ac_' + name, links: [e.link]}, failure => {
+    const failed = Boolean(chrome.runtime.lastError || failure);
+    toast(failed ? t('labelFailed') : t('doneLabel', name), failed);
+    if (!failed) {
+      useLabel(o, name);
+    }
+  }));
+};
+const labelMenu = async (anchor, e, o, how) => {
+  const labels = await labelsOf(o);
+  if (!anchor.isConnected) {
+    return;
+  }
+  const kind = how === 'move' ? 'move' : 'label';
+  const menu = openMenu(anchor, how === 'move' ? t('moveTitle') : t('labelTitle'), labels.map(name => ({icon: kind, label: name, run: () => labelMail(e, o, name, how)})));
+  menu.classList.add('long');
+  const items = [...menu.querySelectorAll('[role="menuitem"]')];
+  const input = h('input', {'type': 'text', 'autocomplete': 'off', 'spellcheck': false, 'placeholder': t('labelFilter'), 'aria-label': t('labelFilter')});
+  // a name typed that is not listed is offered as it stands
+  const typed = h('button', {'type': 'button', 'role': 'menuitem', 'hidden': true, 'onclick': () => labelMail(e, o, input.value.trim(), how)},
+    icon(kind), h('span', {}));
+  const narrow = () => {
+    const q = input.value.trim().toLowerCase();
+    items.forEach(b => b.hidden = Boolean(q) && !b.textContent.toLowerCase().includes(q));
+    typed.hidden = !q || items.some(b => b.textContent.toLowerCase() === q);
+    typed.lastChild.textContent = how === 'move' ? t('moveNew', input.value.trim()) : t('labelNew', input.value.trim());
+    place(menu, anchor);
+  };
+  input.addEventListener('input', narrow);
+  // the field's keys: Esc closes the menu (not the reader under it), Enter takes the first shown,
+  // the arrow goes down the list
+  input.addEventListener('keydown', ev => {
+    const shown = [...menu.querySelectorAll('[role="menuitem"]:not([hidden])')];
+    if (ev.key === 'Escape') {
+      closeMenu(true);
+    }
+    else if (ev.key === 'Enter') {
+      shown[0]?.click();
+    }
+    else if (ev.key === 'ArrowDown') {
+      shown[0]?.focus();
+    }
+    else {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+  menu.querySelector('.menu-title').after(h('form', {class: 'menu-pick menu-filter', onsubmit: ev => ev.preventDefault()}, input));
+  menu.append(typed);
+  place(menu, anchor);
+  input.focus();
+};
 
 /* unsubscribe: what a Gmail mail's List-Unsubscribe says, asked of the background once a panel */
 // link -> the header's answer, {messageId, unsubscribe: {post, web, mailto}} or null; known: the
@@ -1051,8 +1191,8 @@ const sendersMenu = (anchor, mail) => {
   [0, 1, 2].forEach(work);
 };
 
-// what the reader does less often: the mail service's own page, unsubscribing and the sender's
-// other mail, spam (not first, where the focus lands), and the keys. The header
+// what the reader does less often: the mail service's own page, unread and labels, unsubscribing
+// and the sender's other mail, spam (not first, where the focus lands), and the keys. The header
 // asked on opening the mail gets a moment to come, so Unsubscribe shows where it can.
 const moreBtn = (e, o) => menuBtn('more', t('moreActions'), '', async anchor => {
   const gm = !serviceOf(o);
@@ -1066,6 +1206,9 @@ const moreBtn = (e, o) => menuBtn('more', t('moreActions'), '', async anchor => 
       closeMenu();
       openEntry(e, o, ev);
     }},
+    gm && {icon: 'unread', label: t('markUnread'), key: 'U', run: () => markUnread(e, o)},
+    gm && LABELS && {icon: 'label', label: t('labelAs'), key: 'L', run: () => labelMenu(anchor, e, o, 'label')},
+    gm && LABELS && {icon: 'move', label: t('moveTo'), key: 'V', run: () => labelMenu(anchor, e, o, 'move')},
     'sep',
     wayOf(u) && {icon: 'unsubscribe', label: t('unsubscribe'), hint: howTo(u), run: () => askUnsubscribe(e, o, u)},
     e.author_email && {icon: 'archive', label: t('clearSender'), run: () => {
@@ -1152,6 +1295,8 @@ const sheetRows = from => {
   const line = from?.closest?.('#list .row');
   const o = r?.o || (line && state.rows.get(line.dataset.link)?.o) || objs.find(x => x.xml.fullcount) || objs[0];
   const any = what => r ? can(r.o, what) : objs.some(x => can(x, what));
+  // unread and labels are Gmail's: the open mail's, or any mailbox's of the list
+  const gmailHere = r ? !serviceOf(r.o) : objs.some(x => !serviceOf(x));
   return [
     [t('nextMessage'), r ? ['J'] : ['J', '↓']],
     [t('prevMessage'), r ? ['K'] : ['K', '↑']],
@@ -1161,6 +1306,9 @@ const sheetRows = from => {
     [t('delete'), ['Del']],
     any('spam') && [t('spam'), ['!']],
     [t('remind'), ['B']],
+    gmailHere && [t('markUnread'), ['U']],
+    gmailHere && LABELS && [t('labelAs'), ['L']],
+    gmailHere && LABELS && [t('moveTo'), ['V']],
     r && !serviceOf(r.o) && [t('star'), ['S']],
     o && [openIn(o), ['O']],
     [t('copyCode'), ['C']],
@@ -4227,12 +4375,20 @@ const onKey = ev => {
   }
   const menu = $('menu');
   if (menu) {
-    const items = [...menu.querySelectorAll('[role="menuitem"]')];
+    const items = [...menu.querySelectorAll('[role="menuitem"]:not([hidden])')];
     const i = items.indexOf(document.activeElement);
     // an item's own key: 1-4 for the times, ! and O under ⋯
     const keyed = items.find(b => b.dataset.key === pressed(ev));
+    // the labels' field: what is typed on an item goes there, and ↑ from the first item too
+    const field = menu.querySelector('.menu-filter input');
     if (ev.code === 'Escape') {
       closeMenu(true);
+    }
+    else if (field && (ev.key.length === 1 || (ev.code === 'ArrowUp' && i <= 0))) {
+      field.focus();
+      if (ev.key.length === 1) {
+        return;
+      }
     }
     else if (items.length && (ev.code === 'ArrowDown' || ev.code === 'KeyJ')) {
       items[Math.min(items.length - 1, i + 1)].focus();
@@ -4308,6 +4464,14 @@ const onKey = ev => {
   else if (ev.code === 'KeyB' && target) {
     const anchor = (state.reading ? $('reader-bar') : rowEl).querySelector('.remind');
     remindMenu(anchor, [target.e.link]);
+  }
+  // Gmail's own keys: U marks unread, L labels, V moves to a label
+  else if (ev.code === 'KeyU' && target && !serviceOf(target.o)) {
+    markUnread(target.e, target.o);
+  }
+  else if ((ev.code === 'KeyL' || ev.code === 'KeyV') && target && !serviceOf(target.o) && LABELS) {
+    const anchor = state.reading ? $('reader-bar').querySelector('.more-acts') : rowEl.querySelector('.remind');
+    labelMenu(anchor, target.e, target.o, ev.code === 'KeyV' ? 'move' : 'label');
   }
   else if (isQuestion(ev)) {
     openSheet();

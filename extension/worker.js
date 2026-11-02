@@ -135,8 +135,12 @@ const perform = async ({cmd, links}, response) => {
   const done = links.filter(link => !failed.includes(link));
   try {
     // the feed cannot report it yet; store the links and let the panel and the badge hide them
-    // until it does. A star changes no count.
-    if (done.length && cmd !== 'st' && cmd !== 'xst') {
+    // until it does. A star and a label change no count; mail marked unread counts again, even
+    // when the panel read it on opening and hid it.
+    if (done.length && cmd === 'ur') {
+      await Resolved.forget(await hidden(done));
+    }
+    else if (done.length && cmd !== 'st' && cmd !== 'xst' && !cmd.startsWith('ac_')) {
       await Resolved.record(await hidden(done));
     }
     if (failed.length) {

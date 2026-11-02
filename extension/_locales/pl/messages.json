@@ -1467,6 +1467,48 @@
     "panel_markAllRead": {
         "message": "Oznacz wszystkie jako przeczytane"
     },
+    "panel_markUnread": {
+        "message": "Oznacz jako nieprzeczytane"
+    },
+    "panel_doneUnread": {
+        "message": "Oznaczono jako nieprzeczytane"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail nie oznaczył wiadomości jako nieprzeczytanej"
+    },
+    "panel_labelAs": {
+        "message": "Oznacz etykietą…"
+    },
+    "panel_moveTo": {
+        "message": "Przenieś do…"
+    },
+    "panel_labelTitle": {
+        "message": "Oznacz etykietą"
+    },
+    "panel_moveTitle": {
+        "message": "Przenieś do"
+    },
+    "panel_labelFilter": {
+        "message": "Nazwa etykiety"
+    },
+    "panel_labelNew": {
+        "message": "Oznacz etykietą „$1”"
+    },
+    "panel_moveNew": {
+        "message": "Przenieś do „$1”"
+    },
+    "panel_labelling": {
+        "message": "Dodawanie etykiety…"
+    },
+    "panel_doneLabel": {
+        "message": "Dodano etykietę „$1”"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail nie dodał etykiety"
+    },
+    "panel_doneMove": {
+        "message": "Przeniesiono do „$1”"
+    },
     "panel_unsubscribe": {
         "message": "Wypisz się"
     },

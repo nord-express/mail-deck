@@ -1463,6 +1463,48 @@
     "panel_markAllRead": {
         "message": "Marcar todo como leído"
     },
+    "panel_markUnread": {
+        "message": "Marcar como no leído"
+    },
+    "panel_doneUnread": {
+        "message": "Marcado como no leído"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail no lo marcó como no leído"
+    },
+    "panel_labelAs": {
+        "message": "Etiquetar como…"
+    },
+    "panel_moveTo": {
+        "message": "Mover a…"
+    },
+    "panel_labelTitle": {
+        "message": "Etiquetar como"
+    },
+    "panel_moveTitle": {
+        "message": "Mover a"
+    },
+    "panel_labelFilter": {
+        "message": "Nombre de la etiqueta"
+    },
+    "panel_labelNew": {
+        "message": "Etiquetar como «$1»"
+    },
+    "panel_moveNew": {
+        "message": "Mover a «$1»"
+    },
+    "panel_labelling": {
+        "message": "Añadiendo la etiqueta…"
+    },
+    "panel_doneLabel": {
+        "message": "Etiquetado como «$1»"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail no añadió la etiqueta"
+    },
+    "panel_doneMove": {
+        "message": "Movido a «$1»"
+    },
     "panel_unsubscribe": {
         "message": "Cancelar suscripción"
     },

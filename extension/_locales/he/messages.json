@@ -1459,6 +1459,48 @@
     "panel_markAllRead": {
         "message": "סמן הכל כנקרא"
     },
+    "panel_markUnread": {
+        "message": "סמן כלא נקרא"
+    },
+    "panel_doneUnread": {
+        "message": "סומן כלא נקרא"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail לא סימן אותה כלא נקראה"
+    },
+    "panel_labelAs": {
+        "message": "הוסף תווית…"
+    },
+    "panel_moveTo": {
+        "message": "העבר אל…"
+    },
+    "panel_labelTitle": {
+        "message": "הוסף תווית"
+    },
+    "panel_moveTitle": {
+        "message": "העבר אל"
+    },
+    "panel_labelFilter": {
+        "message": "שם התווית"
+    },
+    "panel_labelNew": {
+        "message": "הוסף תווית: $1"
+    },
+    "panel_moveNew": {
+        "message": "העבר אל: $1"
+    },
+    "panel_labelling": {
+        "message": "מוסיף תווית…"
+    },
+    "panel_doneLabel": {
+        "message": "נוספה התווית: $1"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail לא הוסיף את התווית"
+    },
+    "panel_doneMove": {
+        "message": "הועבר אל: $1"
+    },
     "panel_unsubscribe": {
         "message": "בטל הרשמה"
     },

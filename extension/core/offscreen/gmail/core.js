@@ -359,6 +359,55 @@ gmail.unsubscribe = fields => {
   return out.post || out.web || out.mailto ? out : null;
 };
 
+// Gmail's search for a label: its name in lower case, spaces and slashes as dashes
+const labelQuery = label => 'label:' + label.toLowerCase().replace(/[\s/&"]+/g, '-');
+// Whether a search finds the thread with what was asked of it: by its Message-ID, which finds that
+// mail alone, or else among what the query finds, by its ID. Gmail's search may take a moment.
+const found = async (n, id, query) => {
+  const mid = await gmail.headers({link: `https://mail.google.com/mail/u/${n}?message_id=${id}`}).then(h => h.messageId, () => '');
+  for (const ms of [400, 1200]) {
+    await new Promise(resolve => setTimeout(resolve, ms));
+    const r = await gmail.search({url: `https://mail.google.com/mail/u/${n}`, query: mid ? `rfc822msgid:${mid} ${query}` : query}).catch(() => null);
+    if (r?.entries.some(e => mid || e.thread === id)) {
+      return true;
+    }
+  }
+  return false;
+};
+/*
+ * A label added to threads: Gmail's internal call above has no known way to, so the request goes
+ * the way Gmail's web app sent it before (act=ac_<label>), and whether Gmail took it is asked of
+ * its search afterwards. A label that does not show there is a failure: the mail is not said to
+ * be labelled when it may not be.
+ */
+gmail.label = async ({a, label, at, ik}) => {
+  const n = a[0].n;
+  const body = new URLSearchParams();
+  a.forEach(o => body.append('t', o.thread));
+  const href = `https://mail.google.com/mail/u/${n}/?ui=2&ik=${ik}&at=${at}&view=up&act=${encodeURIComponent('ac_' + label)}&rt=c`;
+  const r = await fetch(href, {
+    method: 'POST',
+    credentials: 'include',
+    body,
+    signal: wait()
+  });
+  if (!r.ok) {
+    forget(n, r.status);
+    throw Error('core.js -> label -> ' + r.status);
+  }
+  const content = await r.text();
+  if (content.includes('/spreauth')) {
+    const e = new Error('core.js -> permission_error');
+    e.details = {links: content.match(/\bhttps?:\/\/[^\s<>"'()]+/gi) || []};
+    throw e;
+  }
+  for (const o of a) {
+    if (!await found(n, o.thread, labelQuery(label))) {
+      throw Error('core.js -> label -> not confirmed');
+    }
+  }
+};
+
 gmail.action = async ({links, cmd, prefs}) => {
   links = typeof links === 'string' ? [links] : links;
 
@@ -411,9 +460,21 @@ gmail.action = async ({links, cmd, prefs}) => {
     else if (cmd === 'xst') { // remove star
       action.code = 6;
     }
-    else if (cmd.startsWith('rc_')) { // add or remove labels
-      // action.labels = cmd.slice(3);
+    // mark as unread: the code next to read's, as Checker Plus for Gmail sends it (its
+    // MARK_AS_UNREAD); not seen in Gmail's own traffic
+    else if (cmd === 'ur') {
+      action.code = 4;
     }
+    // ac_<label> adds a label; mv_<label> moves there: the label, and once Gmail has it, out of the inbox
+    else if (cmd.startsWith('ac_') || cmd.startsWith('mv_')) {
+      const label = cmd.slice(3);
+      if (!label) {
+        throw Error('core.js -> action_not_supported: ' + cmd);
+      }
+      await gmail.label({a, label, at, ik});
+      return cmd.startsWith('mv_') ? gmail.action({links, cmd: 'rc_^i', prefs}) : true;
+    }
+    // removing a label other than the inbox and spam has no known call
     if (!action.code) {
       throw Error('core.js -> action_not_supported: ' + cmd);
     }

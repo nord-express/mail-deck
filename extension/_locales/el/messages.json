@@ -1459,6 +1459,48 @@
     "panel_markAllRead": {
         "message": "Σήμανση όλων ως αναγνωσμένων"
     },
+    "panel_markUnread": {
+        "message": "Επισήμανση ως μη αναγνωσμένου"
+    },
+    "panel_doneUnread": {
+        "message": "Επισημάνθηκε ως μη αναγνωσμένο"
+    },
+    "panel_unreadFailed": {
+        "message": "Το Gmail δεν το επισήμανε ως μη αναγνωσμένο"
+    },
+    "panel_labelAs": {
+        "message": "Προσθήκη ετικέτας…"
+    },
+    "panel_moveTo": {
+        "message": "Μετακίνηση σε…"
+    },
+    "panel_labelTitle": {
+        "message": "Προσθήκη ετικέτας"
+    },
+    "panel_moveTitle": {
+        "message": "Μετακίνηση σε"
+    },
+    "panel_labelFilter": {
+        "message": "Όνομα ετικέτας"
+    },
+    "panel_labelNew": {
+        "message": "Ετικέτα «$1»"
+    },
+    "panel_moveNew": {
+        "message": "Μετακίνηση σε «$1»"
+    },
+    "panel_labelling": {
+        "message": "Προστίθεται η ετικέτα…"
+    },
+    "panel_doneLabel": {
+        "message": "Προστέθηκε η ετικέτα «$1»"
+    },
+    "panel_labelFailed": {
+        "message": "Το Gmail δεν πρόσθεσε την ετικέτα"
+    },
+    "panel_doneMove": {
+        "message": "Μετακινήθηκε σε «$1»"
+    },
     "panel_unsubscribe": {
         "message": "Κατάργηση εγγραφής"
     },

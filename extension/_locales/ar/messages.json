@@ -1459,6 +1459,48 @@
     "panel_markAllRead": {
         "message": "وضع علامة على الكل كمقروءة"
     },
+    "panel_markUnread": {
+        "message": "وضع علامة كغير مقروءة"
+    },
+    "panel_doneUnread": {
+        "message": "تم وضع علامة كغير مقروءة"
+    },
+    "panel_unreadFailed": {
+        "message": "لم يضع Gmail علامة غير مقروءة عليها"
+    },
+    "panel_labelAs": {
+        "message": "تصنيف كـ…"
+    },
+    "panel_moveTo": {
+        "message": "نقل إلى…"
+    },
+    "panel_labelTitle": {
+        "message": "تصنيف كـ"
+    },
+    "panel_moveTitle": {
+        "message": "نقل إلى"
+    },
+    "panel_labelFilter": {
+        "message": "اسم التصنيف"
+    },
+    "panel_labelNew": {
+        "message": "تصنيف كـ «$1»"
+    },
+    "panel_moveNew": {
+        "message": "نقل إلى «$1»"
+    },
+    "panel_labelling": {
+        "message": "جارٍ إضافة التصنيف…"
+    },
+    "panel_doneLabel": {
+        "message": "أُضيف التصنيف «$1»"
+    },
+    "panel_labelFailed": {
+        "message": "لم يُضف Gmail التصنيف"
+    },
+    "panel_doneMove": {
+        "message": "نُقلت إلى «$1»"
+    },
     "panel_unsubscribe": {
         "message": "إلغاء الاشتراك"
     },

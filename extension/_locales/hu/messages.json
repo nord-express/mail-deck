@@ -1277,6 +1277,48 @@
   "panel_markAllRead": {
     "message": "Összes megjelölése olvasottként"
   },
+  "panel_markUnread": {
+    "message": "Megjelölés olvasatlanként"
+  },
+  "panel_doneUnread": {
+    "message": "Olvasatlannak jelölve"
+  },
+  "panel_unreadFailed": {
+    "message": "A Gmail nem jelölte olvasatlannak"
+  },
+  "panel_labelAs": {
+    "message": "Címkézés…"
+  },
+  "panel_moveTo": {
+    "message": "Áthelyezés ide…"
+  },
+  "panel_labelTitle": {
+    "message": "Címkézés"
+  },
+  "panel_moveTitle": {
+    "message": "Áthelyezés ide"
+  },
+  "panel_labelFilter": {
+    "message": "Címke neve"
+  },
+  "panel_labelNew": {
+    "message": "Címke: „$1”"
+  },
+  "panel_moveNew": {
+    "message": "Áthelyezés ide: „$1”"
+  },
+  "panel_labelling": {
+    "message": "Címke hozzáadása…"
+  },
+  "panel_doneLabel": {
+    "message": "Címke hozzáadva: „$1”"
+  },
+  "panel_labelFailed": {
+    "message": "A Gmail nem adta hozzá a címkét"
+  },
+  "panel_doneMove": {
+    "message": "Áthelyezve ide: „$1”"
+  },
   "panel_unsubscribe": {
     "message": "Leiratkozás"
   },

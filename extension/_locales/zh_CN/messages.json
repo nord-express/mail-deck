@@ -1467,6 +1467,48 @@
     "panel_markAllRead": {
         "message": "全部标记为已读"
     },
+    "panel_markUnread": {
+        "message": "标记为未读"
+    },
+    "panel_doneUnread": {
+        "message": "已标记为未读"
+    },
+    "panel_unreadFailed": {
+        "message": "Gmail 未将其标记为未读"
+    },
+    "panel_labelAs": {
+        "message": "添加标签…"
+    },
+    "panel_moveTo": {
+        "message": "移至…"
+    },
+    "panel_labelTitle": {
+        "message": "添加标签"
+    },
+    "panel_moveTitle": {
+        "message": "移至"
+    },
+    "panel_labelFilter": {
+        "message": "标签名称"
+    },
+    "panel_labelNew": {
+        "message": "添加标签“$1”"
+    },
+    "panel_moveNew": {
+        "message": "移至“$1”"
+    },
+    "panel_labelling": {
+        "message": "正在添加标签…"
+    },
+    "panel_doneLabel": {
+        "message": "已添加标签“$1”"
+    },
+    "panel_labelFailed": {
+        "message": "Gmail 未添加该标签"
+    },
+    "panel_doneMove": {
+        "message": "已移至“$1”"
+    },
     "panel_unsubscribe": {
         "message": "退订"
     },
