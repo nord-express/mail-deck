@@ -325,10 +325,11 @@ const checks = {
       ['J/↓', 'Enter', 'E', '/', '?'].every(k => r.sheetList.keys.includes(k)) && !r.sheetList.keys.includes('Esc') && r.sheetHoldsKeys && r.sheetClosed,
     'in a message ? lists its keys (Esc for back, star, summary off), and Esc closes only the sheet': ['J', 'S', 'Esc', 'O'].every(k => r.sheetReader?.includes(k)) &&
       !r.sheetReader.includes('Enter') && r.sheetReaderClosed,
-    'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, unread, labels, the sender\'s mail, Spam and the keys':
+    'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, unread, the sender\'s mail, Spam and the keys (labels wait for labels.beta)':
       JSON.stringify(r.bar) === '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' &&
-      JSON.stringify(r.more) === '["O","U","L","V",null,"!","?"]' && r.moreClosed,
-    'the keys\' sheet lists U, L and V for Gmail mail': ['U', 'L', 'V'].every(k => r.sheetList?.keys.includes(k) && r.sheetReader?.includes(k)),
+      JSON.stringify(r.more) === '["O","U",null,"!","?"]' && r.moreClosed,
+    'the keys\' sheet lists U for Gmail mail, and L and V only once labels.beta is on': r.sheetList?.keys.includes('U') && r.sheetReader?.includes('U') &&
+      !['L', 'V'].some(k => r.sheetList.keys.includes(k) || r.sheetReader.includes(k)),
     'remind me later: its times have the keys 1-4; a date and a time of one\'s own': JSON.stringify(r.remindKeys?.slice(0, 3)) === '["1","2","3"]' && r.remindByKey &&
       r.pickFocused && r.remindPicked,
     'search as one types: the list\'s mail narrows, nothing is asked; Enter asks Gmail': JSON.stringify(r.typed) === '["a1"]' &&

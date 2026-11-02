@@ -64,6 +64,8 @@
   const local = {accounts: services ? {'evgeny@example.com': {}, 'ev@yahoo.com': {service: 'yahoo'}, 'ev@proton.me': {service: 'proton'}, 'gone@yahoo.com': {service: 'yahoo'}} :
     q.get('s') === 'nine' ? Object.fromEntries(nine.map(m => [m, {}])) : {'evgeny@example.com': {}, 'work@arbitron.example': {}, 'old@example.org': {}, 'gone@example.com': {}},
     accountOrder: [], panelScale: Number(q.get('scale') || 1), readOnOpen: q.get('read') === '1', 'remind.links': [],
+    // the label actions, not proven against Gmail yet, are tried where a scenario asks for them
+    ...(q.get('scenario') === 'acting' ? {'labels.beta': true} : {}),
     autoAdvance: q.get('advance') === '1', 'badge.count': q.get('badge') || 'all',
     // ?ai=on|off|real: the assistant's engine (real: the real ai.js, loaded by the panel, with no key)
     ...(q.get('ai') ? {'ai.engine': q.get('ai') === 'off' ? 'off' : 'openai', 'ai.summary': q.get('summary') || 'click', 'ai.reply': q.get('reply') !== '0',
