@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "най-бърз и най-евтин"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck е обновен, но още не е презареден. Презаредете го от chrome://extensions и опитайте отново."
+    },
     "opt_copyCodes": {
         "message": "Копирай кодовете за вход от известията"
     },

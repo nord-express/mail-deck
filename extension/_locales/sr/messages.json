@@ -2520,6 +2520,9 @@
     "opt_aiFast": {
         "message": "најбржи и најјефтинији"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck је ажуриран, али још није поново учитан. Поново га учитајте на chrome://extensions, па покушајте поново."
+    },
     "opt_copyCodes": {
         "message": "Копирај кодове за пријаву из обавештења"
     },

@@ -2520,6 +2520,9 @@
     "opt_aiFast": {
         "message": "быстрее и дешевле всех"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck обновлён, но ещё не перезагружен. Перезагрузите его на странице chrome://extensions и попробуйте ещё раз."
+    },
     "opt_copyCodes": {
         "message": "Копировать коды входа из уведомлений"
     },

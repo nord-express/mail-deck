@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "המהיר והזול ביותר"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck עודכן אך עדיין לא נטען מחדש. טען אותו מחדש ב-chrome://extensions ונסה שוב."
+    },
     "opt_copyCodes": {
         "message": "להעתיק קודי כניסה מההתראות"
     },

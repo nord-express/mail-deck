@@ -2520,6 +2520,9 @@
     "opt_aiFast": {
         "message": "snelst en goedkoopst"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck is bijgewerkt maar nog niet opnieuw geladen. Laad het opnieuw via chrome://extensions en probeer het dan opnieuw."
+    },
     "opt_copyCodes": {
         "message": "Inlogcodes kopiëren uit meldingen"
     },

@@ -2378,6 +2378,9 @@
   "opt_aiFast": {
     "message": "fastest, cheapest"
   },
+  "opt_reloadNeeded": {
+    "message": "Mail Deck was updated but not reloaded yet. Reload it on chrome://extensions, then try again."
+  },
   "opt_copyCodes": {
     "message": "Copy sign-in codes from notifications"
   },

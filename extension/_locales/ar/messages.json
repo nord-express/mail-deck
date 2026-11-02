@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "الأسرع والأرخص"
     },
+    "opt_reloadNeeded": {
+        "message": "تم تحديث Mail Deck ولكن لم تتم إعادة تحميله بعد. أعد تحميله من chrome://extensions، ثم أعد المحاولة."
+    },
     "opt_copyCodes": {
         "message": "نسخ رموز التحقق من الإشعارات"
     },

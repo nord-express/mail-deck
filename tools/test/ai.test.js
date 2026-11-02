@@ -1657,8 +1657,25 @@ check('chatgpt: the first sign-in: its sites from the click, PKCE, the rule, the
   // the sites refused: nothing started
   const t4 = load();
   t4.perm.grant = false;
-  await failsWith(t4.AI.chatgpt.signIn({open: () => assert.fail('opened')}), 'no-access');
+  const no = await failsWith(t4.AI.chatgpt.signIn({open: () => assert.fail('opened')}), 'no-access');
   assert.ok(!('ai.chatgpt.pending' in t4.store.session) && t4.rules.length === 0);
+  assert.ok(!no.reason, 'a no of the user\'s');
+  // Chrome would not ask: a Mail Deck from disk not reloaded since its manifest got the sites, or another reason
+  const t5 = load();
+  t5.ctx.chrome.permissions.request = () => Promise.reject(new Error('Only permissions specified in the manifest may be requested.'));
+  assert.strictEqual((await failsWith(t5.AI.chatgpt.signIn({open: () => assert.fail('opened')}), 'no-access')).reason, 'stale');
+  t5.ctx.chrome.permissions.request = () => {
+    throw new Error('Must be called during a user gesture');
+  };
+  const other = await failsWith(t5.AI.chatgpt.signIn({open: () => assert.fail('opened')}), 'no-access');
+  assert.deepStrictEqual([other.reason, other.detail], ['error', 'Must be called during a user gesture']);
+  // known before Chrome is asked, from the manifest it loaded
+  let asked = 0;
+  t5.ctx.chrome.permissions.request = () => Promise.resolve(Boolean(asked += 1));
+  t5.ctx.chrome.runtime.getManifest = () => ({optional_host_permissions: ['https://api.openai.com/*', 'http://127.0.0.1/*']});
+  assert.strictEqual((await failsWith(t5.AI.chatgpt.signIn({open: () => assert.fail('opened')}), 'no-access')).reason, 'stale');
+  assert.strictEqual(asked, 0);
+  assert.ok(!('ai.chatgpt.pending' in t5.store.session) && t5.rules.length === 0);
 });
 
 check('chatgpt: a later sign-in: the client it was given and the same host, no name; the account named when known', async () => {

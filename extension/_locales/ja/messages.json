@@ -2348,6 +2348,9 @@
   "opt_aiFast": {
     "message": "最速・最安"
   },
+  "opt_reloadNeeded": {
+    "message": "Mail Deck は更新されましたが、まだ再読み込みされていません。chrome://extensions で再読み込みしてから、もう一度お試しください。"
+  },
   "opt_copyCodes": {
     "message": "通知からログインコードをコピー"
   },

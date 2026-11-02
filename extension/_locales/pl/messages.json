@@ -2520,6 +2520,9 @@
     "opt_aiFast": {
         "message": "najszybszy i najtańszy"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck został zaktualizowany, ale nie został jeszcze przeładowany. Przeładuj go na stronie chrome://extensions i spróbuj ponownie."
+    },
     "opt_copyCodes": {
         "message": "Kopiuj kody logowania z powiadomień"
     },

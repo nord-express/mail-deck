@@ -204,6 +204,47 @@ const toast = (text, bad = false) => {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), bad ? 5000 : 2400);
 };
+
+/* Chrome's access, asked from a click */
+// What the manifest Chrome loaded has not got: a Mail Deck run from disk keeps its old manifest
+// until it is reloaded on chrome://extensions, while its pages are already the new ones. Chrome
+// then refuses the request itself ("Only permissions specified in the manifest may be requested").
+const unknownTo = ({origins = [], permissions = []}) => {
+  let m = null;
+  try {
+    m = chrome.runtime.getManifest?.();
+  }
+  catch (e) {}
+  const hosts = [...m?.optional_host_permissions || [], ...m?.host_permissions || []];
+  const apis = [...m?.optional_permissions || [], ...m?.permissions || []];
+  return (Array.isArray(m?.optional_host_permissions) && origins.some(o => !hosts.includes(o))) ||
+    (Array.isArray(m?.optional_permissions) && permissions.some(p => !apis.includes(p)));
+};
+// how Chrome (and Firefox) refuse to ask for what the manifest loaded has not got
+const STALE = /only permissions specified in the manifest|not declared in optional_permissions/i;
+// {granted, reason, message}: given; or not, as the user declined ('declined'), as this Mail Deck
+// is not reloaded yet ('stale'), or as Chrome said something else ('error', its words). Chrome asks
+// only from the click itself, so the request goes out at once, before anything is awaited.
+const askAccess = what => {
+  if (unknownTo(what)) {
+    return Promise.resolve({granted: false, reason: 'stale', message: t('reloadNeeded')});
+  }
+  let asked;
+  try {
+    asked = chrome.permissions.request(what);
+  }
+  catch (e) {
+    asked = Promise.reject(e);
+  }
+  return Promise.resolve(asked).then(granted => granted === true ? {granted: true, reason: '', message: ''} :
+    {granted: false, reason: 'declined', message: ''}, e => {
+    const said = String(e?.message || e || '');
+    return STALE.test(said) ? {granted: false, reason: 'stale', message: t('reloadNeeded')} :
+      {granted: false, reason: 'error', message: said || t('aiErrOther')};
+  });
+};
+// what the page says of access not given: nothing for a no the user chose, which needs no word
+const accessNote = r => r.granted || r.reason === 'declined' ? '' : r.message;
 const save = values => {
   Object.assign(prefs, values);
   const saving = store.set(values);
@@ -343,10 +384,15 @@ const syncCopy = async () => {
 $('copy-codes').onchange = () => {
   const on = $('copy-codes').checked;
   copyAsking = true;
-  // Chrome asks only from the click itself, before anything is awaited; off gives it back
-  const asked = on ? chrome.permissions.request(CLIPBOARD) : chrome.permissions.remove(CLIPBOARD);
-  return Promise.resolve(asked).catch(() => false)
-    .then(ok => save({'notification.buttons.copy': on && ok === true}))
+  // asked from the click itself; off gives it back
+  const asked = on ? askAccess(CLIPBOARD) : Promise.resolve(chrome.permissions.remove(CLIPBOARD)).catch(() => false);
+  return asked
+    .then(r => {
+      if (on && accessNote(r)) {
+        toast(accessNote(r), true);
+      }
+      return save({'notification.buttons.copy': on && r?.granted === true});
+    })
     .finally(() => {
       copyAsking = false;
       return syncCopy();
@@ -702,19 +748,28 @@ const paintServices = () => {
     toggle.setAttribute('aria-label', s.name);
     // wanted without its sites: a word, and a button that asks Chrome for them from its click
     const allow = h('button', {type: 'button', className: 'btn sm', textContent: t('aiAllow')});
-    allow.onclick = () => chrome.permissions.request({origins: s.origins}).catch(() => false).then(() => syncServices());
+    allow.onclick = () => askAccess({origins: s.origins}).then(r => {
+      if (accessNote(r)) {
+        toast(accessNote(r), true);
+      }
+      return syncServices();
+    });
     const note = h('div', {className: 'notice', id: 'service-note-' + s.id, hidden: true},
       self.UI?.icon('alert') || '', h('span', {textContent: t('serviceAccess', s.name)}), allow);
     toggle.setAttribute('aria-describedby', note.id);
     toggle.onchange = () => {
       const on = toggle.checked;
       asking.add(s.id);
-      // Chrome asks only from the click itself, before anything is awaited
-      const asked = on ? chrome.permissions.request({origins: s.origins}) : chrome.permissions.remove({origins: s.origins});
-      asked.catch(() => false).then(ok => {
+      // asked from the click itself
+      const asked = on ? askAccess({origins: s.origins}) :
+        Promise.resolve(chrome.permissions.remove({origins: s.origins})).catch(() => false).then(() => ({granted: false}));
+      asked.then(r => {
+        if (on && accessNote(r)) {
+          toast(accessNote(r), true);
+        }
         // on with its sites, or off; a refusal turns it off in the settings too
         const ids = prefs.services.filter(id => id !== s.id);
-        const next = on && ok ? [...ids, s.id] : ids;
+        const next = on && r.granted ? [...ids, s.id] : ids;
         if (next.join() !== prefs.services.join()) {
           return save({services: next});
         }
@@ -776,6 +831,8 @@ let aiAccount = null;
 // while a sign-in waits in its tab; what went wrong with the last one, or a sign-out OpenAI did not confirm
 let aiSigning = false;
 let aiPlanNote = '';
+// why Allow access did not give a key's site back: this Mail Deck not reloaded, or Chrome's words
+let aiAllowNote = '';
 // whether Chrome gives the provider's site: a key without it is of no use
 const aiAccess = {};
 // the models a provider's key may use, as this page last heard, or {error}
@@ -828,6 +885,13 @@ const aiErrorText = (e, engine) => {
   const code = e?.code;
   if (code === 'aborted') {
     return '';
+  }
+  // access not given as Chrome would not ask: this Mail Deck is not reloaded yet, or Chrome said why
+  if (code === 'no-access' && e.reason === 'stale') {
+    return t('reloadNeeded');
+  }
+  if (code === 'no-access' && e.reason === 'error' && e.detail) {
+    return e.detail;
   }
   // the plan has no key: what OpenAI said keeps it out (a region, say), or its sites not given
   if (engine === 'chatgpt' && (code === 'auth' || code === 'no-access' || code === 'model' || code === 'no-models')) {
@@ -1143,7 +1207,7 @@ const paintCloud = () => {
   const access = aiAccess[engine];
   $('ai-connected-title').textContent = t('aiConnected', p.name);
   $('ai-connected-title').dataset.state = access ? 'ok' : 'bad';
-  $('ai-access').textContent = access ? '' : t('aiNoAccess', p.host);
+  $('ai-access').textContent = access ? '' : aiAllowNote || t('aiNoAccess', p.host);
   $('ai-access').hidden = access;
   $('ai-allow').hidden = access;
   if (access) {
@@ -1192,6 +1256,7 @@ const pickEngine = engine => {
   resetKeyField();
   builtinError('');
   aiPlanNote = '';
+  aiAllowNote = '';
   save({'ai.engine': engine});
   paintAI();
 };
@@ -1213,13 +1278,13 @@ const connect = () => {
   }
   const had = aiAccess[engine] === true;
   // Chrome asks only from the click itself, before anything is awaited
-  const asked = chrome.permissions.request({origins: [p.origin]});
+  const asked = askAccess({origins: [p.origin]});
   aiConnecting = true;
   aiError('');
   paintCloud();
-  return Promise.resolve(asked).catch(() => false).then(async granted => {
-    if (!granted) {
-      throw {code: 'no-access'};
+  return asked.then(async r => {
+    if (!r.granted) {
+      throw {code: 'no-access', reason: r.reason, detail: r.message};
     }
     aiAccess[engine] = true;
     const AI = aiModule();
@@ -1311,11 +1376,12 @@ $('ai-allow').onclick = () => {
   if (!p) {
     return;
   }
-  return Promise.resolve(chrome.permissions.request({origins: [p.origin]})).catch(() => false).then(granted => {
-    aiAccess[engine] = granted === true;
+  return askAccess({origins: [p.origin]}).then(r => {
+    aiAccess[engine] = r.granted;
+    aiAllowNote = accessNote(r);
     delete aiLists[engine];
     paintCloud();
-    if (granted) {
+    if (r.granted) {
       $('ai-model').focus();
     }
   });
@@ -1375,11 +1441,12 @@ $('ai-signout').onclick = () => {
   });
 };
 // the plan signed in while Chrome's access was taken: asked for again
-$('ai-plan-allow').onclick = () => Promise.resolve(chrome.permissions.request({origins: AI_PLAN.origins})).catch(() => false).then(granted => {
-  aiAccess.chatgpt = granted === true;
+$('ai-plan-allow').onclick = () => askAccess({origins: AI_PLAN.origins}).then(r => {
+  aiAccess.chatgpt = r.granted;
+  aiPlanNote = accessNote(r);
   delete aiLists.chatgpt;
   paintCloud();
-  if (granted) {
+  if (r.granted) {
     $('ai-model').focus();
   }
 });

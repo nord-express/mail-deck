@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "en hızlı ve en ucuz"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck güncellendi ama henüz yeniden yüklenmedi. chrome://extensions sayfasında yeniden yükleyin, sonra yeniden deneyin."
+    },
     "opt_copyCodes": {
         "message": "Bildirimlerdeki giriş kodlarını kopyala"
     },

@@ -1490,7 +1490,22 @@
     return true;
   };
   // the sites first, asked from the click itself before anything is awaited; then the sign-in
+  // A Mail Deck run from disk keeps the manifest it was loaded with until it is reloaded, and
+  // Chrome refuses to ask for a site that one has not got: reason says so (stale), or that Chrome
+  // said something else (error), apart from a no of the user's
+  const STALE = /only permissions specified in the manifest|not declared in optional_permissions/i;
+  const known = origins => {
+    let m = null;
+    try {
+      m = chrome.runtime.getManifest?.();
+    }
+    catch (e) {}
+    return !Array.isArray(m?.optional_host_permissions) || origins.every(x => m.optional_host_permissions.includes(x));
+  };
   const signIn = (o = {}) => {
+    if (!known(SIGN_IN)) {
+      return Promise.reject(new AIError('no-access', 'not in the manifest loaded', {reason: 'stale'}));
+    }
     let asked;
     try {
       asked = chrome.permissions.request({origins: SIGN_IN});
@@ -1498,12 +1513,14 @@
     catch (e) {
       asked = Promise.reject(e);
     }
-    return Promise.resolve(asked).catch(() => false).then(ok => {
+    return Promise.resolve(asked).then(ok => {
       if (!ok) {
         throw new AIError('no-access', 'the sites were not given');
       }
-      return begin(o.open);
-    });
+    }, e => {
+      const said = String(e?.message || e || '');
+      throw new AIError('no-access', said, {reason: STALE.test(said) ? 'stale' : 'error'});
+    }).then(() => begin(o.open));
   };
 
   // What the token endpoint said. OAuth's error is a string ({error, error_description}), or an

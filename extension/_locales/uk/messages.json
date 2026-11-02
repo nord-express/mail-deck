@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "найшвидша й найдешевша"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck оновлено, але ще не перезавантажено. Перезавантажте його на сторінці chrome://extensions і спробуйте ще раз."
+    },
     "opt_copyCodes": {
         "message": "Копіювати коди входу зі сповіщень"
     },

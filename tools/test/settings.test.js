@@ -71,6 +71,11 @@ const requested = [];
 const requestedApis = [];
 const removedApis = [];
 let grant = true;
+// what Chrome throws instead of asking (a site the manifest loaded has not got), when set
+let refuse = null;
+// the manifest as Chrome loaded it: this one, or an older one a check puts in its place
+const MANIFEST = JSON.parse(fs.readFileSync(path.join(EXT, 'manifest.json'), 'utf8'));
+let loaded = MANIFEST;
 const store = {
   // the page's own start waits for this forever: the checks below call its parts one by one
   get: () => new Promise(() => {}),
@@ -106,6 +111,9 @@ const chrome = {
     // written down as it is asked, before anything is awaited: that is what Chrome takes as the click's
     request: async ({origins, permissions}) => {
       (permissions ? requestedApis : requested).push(permissions || origins);
+      if (refuse) {
+        throw refuse;
+      }
       if (grant) {
         [...origins || [], ...permissions || []].forEach(o => granted.add(o));
       }
@@ -120,7 +128,7 @@ const chrome = {
     onRemoved: {addListener() {}}
   },
   commands: {getAll: () => Promise.resolve([])},
-  runtime: {getManifest: () => ({version: '0'}), sendMessage: async () => null},
+  runtime: {getManifest: () => structuredClone(loaded), sendMessage: async () => null},
   tabs: {create() {}}
 };
 
@@ -192,6 +200,8 @@ ctx.AI = {
           throw {code: 'no-access'};
         }
         return true;
+      }, e => {
+        throw {code: 'no-access', reason: /only permissions specified/i.test(e.message) ? 'stale' : 'error', detail: e.message};
       });
     },
     signOut: async () => {
@@ -597,13 +607,15 @@ const freshAI = (values = {}) => {
   Object.assign(local, values);
   granted.clear();
   grant = true;
+  refuse = null;
+  loaded = MANIFEST;
   for (const list of [set, removed, forgotten, synced, requested, asked]) {
     list.length = 0;
   }
   Object.assign(ai, {availability: 'available', state: null, checkError: null, modelsError: null, progress: [], downloaded: null,
     account: null, revoked: true});
   page(`prefs = {...DEFAULTS, ...${JSON.stringify(values)}}; aiKeys = {}; aiConnecting = false; aiDownload = null;
-    aiAccount = null; aiSigning = false; aiPlanNote = '';
+    aiAccount = null; aiSigning = false; aiPlanNote = ''; aiAllowNote = '';
     for (const id of Object.keys(aiLists)) delete aiLists[id];
     for (const id of Object.keys(aiAccess)) delete aiAccess[id];
     clearTimeout(aiPoll);`);
@@ -833,6 +845,103 @@ check('Connect says precisely why a key did not connect, and keeps nothing of it
   assert.strictEqual(element('ai-error').textContent, msg('opt_aiNoModels'));
   ai.models = models;
   assert.ok(!set.some(v => 'ai.openai.key' in v), 'no key that failed was ever stored');
+});
+check('Chrome\'s access: a no of the user\'s, a Mail Deck not reloaded since an update, and Chrome\'s own words are told apart', async () => {
+  const STALE = new Error('Only permissions specified in the manifest may be requested.');
+  const OTHER = new Error('This function must be called during a user gesture');
+  const reload = msg('opt_reloadNeeded');
+  assert.ok(/chrome:\/\/extensions/.test(reload));
+  // Connect: declined keeps its word; an older manifest, found before Chrome is asked or in what it threw, says to reload
+  await freshAI({'ai.engine': 'zai'});
+  element('ai-key').value = ZAI_KEY;
+  grant = false;
+  assert.strictEqual(await element('ai-connect').onclick(), false);
+  assert.strictEqual(element('ai-error').textContent, msg('opt_aiErrAccess', 'api.z.ai'));
+  grant = true;
+  loaded = {...MANIFEST, optional_host_permissions: MANIFEST.optional_host_permissions.filter(o => o !== 'https://api.z.ai/*')};
+  requested.length = 0;
+  assert.strictEqual(await element('ai-connect').onclick(), false);
+  assert.strictEqual(element('ai-error').textContent, reload);
+  assert.deepStrictEqual([requested.length, asked.length], [0, 0], 'Chrome is not asked for what it cannot give, the key not checked');
+  loaded = MANIFEST;
+  refuse = STALE;
+  assert.strictEqual(await element('ai-connect').onclick(), false);
+  assert.strictEqual(element('ai-error').textContent, reload);
+  refuse = OTHER;
+  assert.strictEqual(await element('ai-connect').onclick(), false);
+  assert.strictEqual(element('ai-error').textContent, OTHER.message);
+  assert.ok(!('ai.zai.key' in local) && removed.length === 0, 'nothing kept, nothing to give back');
+  // the request still goes out from the click itself
+  refuse = null;
+  requested.length = 0;
+  const done = element('ai-connect').onclick();
+  assert.strictEqual(requested.length, 1);
+  assert.strictEqual(await done, true);
+  // Allow access for a key kept: the word in the card
+  await freshAI({'ai.engine': 'openai', 'ai.openai.key': OPENAI_KEY});
+  refuse = STALE;
+  await element('ai-allow').onclick();
+  assert.strictEqual(element('ai-access').textContent, reload);
+  refuse = null;
+  grant = false;
+  await element('ai-allow').onclick();
+  assert.strictEqual(element('ai-access').textContent, msg('opt_aiNoAccess', 'api.openai.com'));
+  // the ChatGPT plan: its sign-in and its Allow access
+  await freshAI({'ai.engine': 'chatgpt'});
+  refuse = STALE;
+  await element('ai-signin').onclick();
+  assert.strictEqual(element('ai-plan-note').textContent, reload);
+  refuse = OTHER;
+  await element('ai-signin').onclick();
+  assert.strictEqual(element('ai-plan-note').textContent, OTHER.message);
+  refuse = null;
+  grant = false;
+  await element('ai-signin').onclick();
+  assert.strictEqual(element('ai-plan-note').textContent, msg('opt_aiPlanAccess'));
+  ai.account = {...ACCOUNT};
+  await page('readAccount()');
+  grant = true;
+  refuse = STALE;
+  await element('ai-plan-allow').onclick();
+  assert.strictEqual(element('ai-plan-note').textContent, reload);
+  // the Copy switch and a mail service: a toast, and the switch off
+  const toasts = () => element('toast').textContent;
+  const sw = element('copy-codes');
+  for (const [thrown, want] of [[STALE, reload], [OTHER, OTHER.message]]) {
+    refuse = thrown;
+    element('toast').textContent = '';
+    sw.checked = true;
+    await sw.onchange();
+    assert.deepStrictEqual([sw.checked, local['notification.buttons.copy'], toasts()], [false, false, want]);
+  }
+  refuse = null;
+  grant = false;
+  element('toast').textContent = '';
+  sw.checked = true;
+  await sw.onchange();
+  assert.deepStrictEqual([sw.checked, toasts()], [false, ''], 'a no needs no word');
+  loaded = {...MANIFEST, optional_permissions: []};
+  grant = true;
+  requestedApis.length = 0;
+  sw.checked = true;
+  await sw.onchange();
+  assert.deepStrictEqual([sw.checked, toasts(), requestedApis.length], [false, reload, 0]);
+  loaded = MANIFEST;
+  delete local['notification.buttons.copy'];
+  const ask = page('askAccess');
+  refuse = STALE;
+  assert.deepStrictEqual({...await ask({origins: ['https://mail.yahoo.com/*']})}, {granted: false, reason: 'stale', message: reload});
+  refuse = OTHER;
+  assert.deepStrictEqual({...await ask({origins: ['https://mail.yahoo.com/*']})}, {granted: false, reason: 'error', message: OTHER.message});
+  refuse = null;
+  grant = false;
+  assert.deepStrictEqual({...await ask({origins: ['https://mail.yahoo.com/*']})}, {granted: false, reason: 'declined', message: ''});
+  grant = true;
+  assert.deepStrictEqual({...await ask({origins: ['https://mail.yahoo.com/*']})}, {granted: true, reason: '', message: ''});
+  // every request of the page goes through it: none is left that turns Chrome's words into a no
+  const code = fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8');
+  assert.deepStrictEqual(code.match(/permissions\.request\(/g), ['permissions.request(']);
+  refuse = null;
 });
 check('every AIError code reads as what to do', () => {
   const text = page('aiErrorText');

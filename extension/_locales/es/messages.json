@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "el más rápido y barato"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck se ha actualizado, pero aún no se ha recargado. Recárgalo en chrome://extensions y vuelve a intentarlo."
+    },
     "opt_copyCodes": {
         "message": "Copiar los códigos de inicio de sesión desde las notificaciones"
     },

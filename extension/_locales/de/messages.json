@@ -2516,6 +2516,9 @@
     "opt_aiFast": {
         "message": "am schnellsten und günstigsten"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck wurde aktualisiert, aber noch nicht neu geladen. Lade es unter chrome://extensions neu und versuch es dann noch einmal."
+    },
     "opt_copyCodes": {
         "message": "Anmeldecodes aus Benachrichtigungen kopieren"
     },

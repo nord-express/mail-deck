@@ -2520,6 +2520,9 @@
     "opt_aiFast": {
         "message": "最快、最便宜"
     },
+    "opt_reloadNeeded": {
+        "message": "Mail Deck 已更新但尚未重新加载。请在 chrome://extensions 中重新加载，然后重试。"
+    },
     "opt_copyCodes": {
         "message": "从通知中复制验证码"
     },

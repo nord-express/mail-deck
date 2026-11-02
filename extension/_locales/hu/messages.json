@@ -2336,6 +2336,9 @@
   "opt_aiFast": {
     "message": "a leggyorsabb és legolcsóbb"
   },
+  "opt_reloadNeeded": {
+    "message": "A Mail Deck frissült, de még nincs újratöltve. Töltsd újra a chrome://extensions oldalon, majd próbáld újra."
+  },
   "opt_copyCodes": {
     "message": "Belépési kódok másolása az értesítésekből"
   },
