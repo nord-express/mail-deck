@@ -336,7 +336,8 @@ const checks = {
   aireal: r => ({
     'the real ai.js comes after the list\'s first frame; with no key the card says so, and nothing is classified':
       r.loadedAfter && r.noKey && r.noChip && r.consoleClean === true,
-    'every engine ai.js runs is one the panel turns the assistant on with': JSON.stringify(r.unknownEngines) === '[]'
+    'every engine ai.js runs is one the panel turns the assistant on with': JSON.stringify(r.unknownEngines) === '[]',
+    'every engine the panel offers is one ai.js runs': JSON.stringify(r.missingEngines) === '[]'
   }),
   reliable: r => ({
     'a mail archived from Gmail\'s search leaves the feed\'s list as well; Undo brings it back':

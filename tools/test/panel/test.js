@@ -1215,8 +1215,10 @@
         // the real ai.js, with no key: loaded after the list's first frame, its error in the card
         await until(() => self.AI, 3000);
         out.loadedAfter = window.__aiScriptAt > window.__firstRow;
-        // every engine ai.js runs is one the panel knows before loading it (or it would say off)
+        // every engine ai.js runs is one the panel knows before loading it (or it would say off),
+        // and every engine the panel offers is one ai.js runs
         out.unknownEngines = (self.AI?.ENGINES || ['none']).filter(e => e !== 'off' && !ENGINES.includes(e));
+        out.missingEngines = ENGINES.filter(e => !self.AI?.ENGINES?.includes(e));
         out.times = {script: window.__aiScriptAt};
         out.firstRow = window.__firstRow;
         await open('a1');
