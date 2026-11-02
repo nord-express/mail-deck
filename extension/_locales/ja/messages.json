@@ -1295,6 +1295,66 @@
   "panel_markAllRead": {
     "message": "すべて既読にする"
   },
+  "panel_unsubscribe": {
+    "message": "配信停止"
+  },
+  "panel_unsubscribeFrom": {
+    "message": "$1 の配信を停止しますか？"
+  },
+  "panel_unsubscribePost": {
+    "message": "Mail Deck が $1 にこのメールの配信停止を依頼します。依頼と一緒にほかの情報は送られません。"
+  },
+  "panel_unsubscribeMail": {
+    "message": "$1 宛てのメールが送信できる状態で Gmail に開きます。送信すると完了です。"
+  },
+  "panel_unsubscribeWeb": {
+    "message": "$1 の配信停止ページが新しいタブで開きます。そこで手続きを完了してください。"
+  },
+  "panel_unsubscribeWrite": {
+    "message": "メールを作成"
+  },
+  "panel_unsubscribeOpen": {
+    "message": "ページを開く"
+  },
+  "panel_unsubscribeSending": {
+    "message": "送信中…"
+  },
+  "panel_unsubscribeSent": {
+    "message": "配信停止の依頼を送信しました"
+  },
+  "panel_unsubscribeFailed": {
+    "message": "依頼を送信できませんでした。"
+  },
+  "panel_alsoArchive": {
+    "message": "この送信者の未読メールもアーカイブする"
+  },
+  "panel_cancel": {
+    "message": "キャンセル"
+  },
+  "panel_howOneClick": {
+    "message": "ワンクリック"
+  },
+  "panel_howMail": {
+    "message": "メールで"
+  },
+  "panel_howWeb": {
+    "message": "サイトで"
+  },
+  "panel_howNone": {
+    "message": "リンクなし"
+  },
+  "panel_unsubscribeSenders": {
+    "message": "送信者の配信を停止"
+  },
+  "panel_senders": {
+    "message": "送信者"
+  },
+  "panel_clearSender": {
+    "message": "この送信者の未読メールをアーカイブ"
+  },
+  "panel_senderNone": {
+    "message": "この送信者からの未読メールはありません"
+  },
   "panel_openInbox": {
     "message": "Gmail で受信トレイを開く"
   },

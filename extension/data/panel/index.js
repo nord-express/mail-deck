@@ -45,7 +45,8 @@ const ICONS = {
   // Gmail's own categories: Promotions, Social, Updates
   tag: ['M3.5 12.1V4.5a1 1 0 0 1 1-1h7.6a1 1 0 0 1 .7.3l7.7 7.7a1 1 0 0 1 0 1.4l-7.6 7.6a1 1 0 0 1-1.4 0l-7.7-7.7a1 1 0 0 1-.3-.7Z', 'M8 8h.01'],
   people: ['M9 11a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7Z', 'M2.5 20c.6-3.3 3.2-5.5 6.5-5.5s5.9 2.2 6.5 5.5', 'M16 4.3a3.5 3.5 0 0 1 0 6.4', 'M18.2 14.9c1.8.8 2.9 2.5 3.3 5.1'],
-  info: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M12 11v5', 'M12 8v.1']
+  info: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M12 11v5', 'M12 8v.1'],
+  unsubscribe: ['M21 11V6.5A1.5 1.5 0 0 0 19.5 5h-15A1.5 1.5 0 0 0 3 6.5v11A1.5 1.5 0 0 0 4.5 19H12', 'M3.5 7l8.5 6 8.5-6', 'M15.5 17.5h6']
 };
 // the strings live in _locales as panel_*; a language without one falls back to English
 const t = (key, ...subs) => chrome.i18n.getMessage('panel_' + key, subs.map(String)) || key;
@@ -833,7 +834,7 @@ const openMenu = (anchor, title, items, label = title) => {
   anchor.setAttribute('aria-expanded', 'true');
   hideTip();
   place(menu, anchor);
-  menu.querySelector('[role="menuitem"]').focus();
+  (menu.querySelector('[role="menuitem"]') || menu).focus();
   return menu;
 };
 document.addEventListener('click', () => closeMenu());
@@ -889,23 +890,201 @@ const pickTime = (menu, anchor, links) => {
   input.focus();
 };
 const remindBtn = links => menuBtn('clock', t('remind'), 'B', anchor => remindMenu(anchor, links), 'remind');
-// what the reader does less often: the mail service's own page, spam (not first, where the
-// focus lands), and the keys
-const moreBtn = (e, o) => menuBtn('more', t('moreActions'), '', anchor => openMenu(anchor, '', [
-  {icon: 'open', label: openIn(o), key: 'O', run: ev => {
-    closeMenu();
-    openEntry(e, o, ev);
-  }},
-  allowed('sp', o) && {icon: 'spam', label: t('spam'), key: '!', danger: true, run: () => {
-    closeMenu();
-    actFromReader('sp', e);
-  }},
-  'sep',
-  {icon: 'keyboard', label: t('shortcuts'), key: '?', run: () => {
-    closeMenu();
-    openSheet();
-  }}
-], t('moreActions')), 'more-acts');
+
+/* unsubscribe: what a Gmail mail's List-Unsubscribe says, asked of the background once a panel */
+// link -> the header's answer, {messageId, unsubscribe: {post, web, mailto}} or null; known: the
+// answers already in
+const heads = new Map();
+const headsKnown = new Map();
+const headsOf = link => {
+  if (!heads.has(link)) {
+    const p = chrome.runtime.sendMessage({method: 'gmail.headers', link}).then(r => r && !r.message ? r : null, () => null);
+    p.then(r => headsKnown.set(link, r));
+    heads.set(link, p);
+  }
+  return heads.get(link);
+};
+const hostOf = url => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  }
+  catch (e) {
+    return '';
+  }
+};
+// the way taken: one click when the sender offers it, else the one it lists first of a message
+// and a page; and that way in a word
+const wayOf = u => u?.post ? 'post' : u?.mailto && (!u.web || u.first === 'mailto') ? 'mailto' : u?.web ? 'web' : null;
+const howTo = u => ({post: t('howOneClick'), mailto: t('howMail'), web: t('howWeb')})[wayOf(u)] || t('howNone');
+
+// every unread mail from this sender, in each Gmail account (its search) and in the list, one
+// line a thread; a service that cannot archive keeps its mail
+const fromSender = async email => {
+  const same = e => (e.author_email || '').toLowerCase() === email.toLowerCase();
+  const gmails = view().filter(o => !serviceOf(o)).filter((o, i, l) => l.findIndex(x => x.xml.title === o.xml.title) === i);
+  const found = await Promise.all(gmails.map(o => searchIn(o, `from:(${email}) is:unread`).then(list => (list || []).filter(same).map(e => ({e, o})))));
+  const seen = new Set();
+  return [...shownMail(view()).filter(({e}) => same(e)), ...found.flat()].filter(({e, o}) => {
+    const key = userOf(e.link) + '|' + thread(e.link);
+    const keep = !seen.has(key) && !state.hidden.has(e.link) && can(o, 'archive');
+    seen.add(key);
+    return keep;
+  });
+};
+// archived at once with the list's Undo; from the reader, back to the list first. said: what the
+// toast says before the count
+const clearSender = async (e, said = t('doneArchive')) => {
+  if (!e.author_email) {
+    return;
+  }
+  toast(t('searching'));
+  const mail = await fromSender(e.author_email);
+  if (mail.length === 0) {
+    toast(t('senderNone'));
+    return;
+  }
+  mail.forEach(x => !state.rows.has(x.e.link) && state.rows.set(x.e.link, x));
+  if (state.reading) {
+    back();
+  }
+  const links = mail.map(x => x.e.link);
+  act('rc_^i', links);
+  if (state.pending?.links.some(link => links.includes(link))) {
+    toast(said + ': ' + state.pending.links.length, false, undo);
+  }
+};
+
+// Unsubscribing asks first, in a small dialog that names the sender and says what happens: one
+// click sends the sender's own request from the background; a message opens in Gmail's compose
+// window, to send; a page opens in a tab. Their unread mail may go to the archive as well.
+const askUnsubscribe = (e, o, u) => {
+  const way = wayOf(u);
+  if (!way || $('sheet')) {
+    return;
+  }
+  // the focus comes back to the button the menu opened from
+  closeMenu(true);
+  hideTip();
+  sheetFrom = document.activeElement;
+  const name = e.author_name || e.author_email || '';
+  const text = way === 'post' ? t('unsubscribePost', hostOf(u.post)) : way === 'mailto' ? t('unsubscribeMail', u.mailto.to) :
+    t('unsubscribeWeb', hostOf(u.web));
+  const also = h('input', {type: 'checkbox'});
+  const error = h('p', {'class': 'confirm-error', 'role': 'alert', 'hidden': true});
+  const go = h('button', {class: 'primary-btn', type: 'button', onclick: async () => {
+    const archive = also.checked;
+    if (way === 'post' && !go.dataset.failed) {
+      go.disabled = true;
+      go.textContent = t('unsubscribeSending');
+      const r = await chrome.runtime.sendMessage({method: 'gmail.unsubscribe', link: e.link}).catch(() => null);
+      if (!r?.sent) {
+        // the request did not go: the sender's page, when it has one, is the way left
+        go.disabled = false;
+        error.hidden = false;
+        error.textContent = t('unsubscribeFailed');
+        go.dataset.failed = u.web ? '1' : '';
+        go.textContent = u.web ? t('unsubscribeOpen') : t('unsubscribe');
+        go.focus();
+        return;
+      }
+      closeSheet();
+      if (archive) {
+        await clearSender(e, t('unsubscribeSent') + ' · ' + t('doneArchive'));
+      }
+      else {
+        toast(t('unsubscribeSent'));
+      }
+      return;
+    }
+    closeSheet();
+    // the panel may close once the page opens: the mail goes to the archive first
+    if (archive) {
+      await clearSender(e);
+    }
+    openUrl(way === 'mailto' && !go.dataset.failed ? composeWith(o, u.mailto) : u.web);
+  }}, way === 'post' ? t('unsubscribe') : way === 'mailto' ? t('unsubscribeWrite') : t('unsubscribeOpen'));
+  const box = h('div', {'class': 'sheet confirm', 'role': 'alertdialog', 'aria-modal': 'true', 'aria-labelledby': 'confirm-title',
+    'aria-describedby': 'confirm-text', 'tabIndex': -1},
+  h('header', {class: 'sheet-head'}, h('h2', {id: 'confirm-title'}, t('unsubscribeFrom', name)), btn('close', t('close'), () => closeSheet(), '', 'Esc')),
+  h('p', {class: 'confirm-text', id: 'confirm-text'}, text),
+  h('label', {class: 'confirm-also'}, also, h('span', {}, t('alsoArchive'))),
+  error,
+  h('div', {class: 'confirm-btns'}, h('button', {class: 'text-btn', type: 'button', onclick: () => closeSheet()}, t('cancel')), go));
+  // a click beside it closes it; a handler that gave false would cancel the click on its checkbox
+  const shade = h('div', {'class': 'sheet-shade', 'id': 'sheet', 'onclick': ev => {
+    if (ev.target === shade) {
+      closeSheet();
+    }
+  }}, box);
+  document.body.append(shade);
+  $('app').inert = true;
+  go.focus();
+};
+// the Newsletters list's senders, each once with its newest Gmail mail, and how it is unsubscribed
+// from: their headers are asked as the menu opens, a few at a time, each item saying it once known
+const sendersMenu = (anchor, mail) => {
+  const by = new Map();
+  for (const x of mail.filter(({o}) => !serviceOf(o))) {
+    const k = (x.e.author_email || '').toLowerCase();
+    if (k && (!by.has(k) || (Date.parse(x.e.modified) || 0) > (Date.parse(by.get(k).e.modified) || 0))) {
+      by.set(k, x);
+    }
+  }
+  const list = [...by.values()].sort((a, b) => (a.e.author_name || a.e.author_email).localeCompare(b.e.author_name || b.e.author_email, LANG));
+  const menu = openMenu(anchor, t('senders'), list.map(({e, o}) => ({icon: 'unsubscribe', label: e.author_name || e.author_email, hint: '…', run: async () => {
+    const r = await headsOf(e.link);
+    if (r?.unsubscribe) {
+      askUnsubscribe(e, o, r.unsubscribe);
+    }
+  }})), t('unsubscribeSenders'));
+  menu.classList.add('long');
+  const items = [...menu.querySelectorAll('[role="menuitem"]')];
+  let next = 0;
+  const work = async () => {
+    while (next < list.length && menu.isConnected) {
+      const i = next++;
+      const u = (await headsOf(list[i].e.link))?.unsubscribe;
+      items[i].querySelector('.hint').textContent = howTo(u);
+      items[i].setAttribute('aria-disabled', String(!wayOf(u)));
+    }
+  };
+  [0, 1, 2].forEach(work);
+};
+
+// what the reader does less often: the mail service's own page, unsubscribing and the sender's
+// other mail, spam (not first, where the focus lands), and the keys. The header
+// asked on opening the mail gets a moment to come, so Unsubscribe shows where it can.
+const moreBtn = (e, o) => menuBtn('more', t('moreActions'), '', async anchor => {
+  const gm = !serviceOf(o);
+  const r = gm ? await Promise.race([headsOf(e.link), new Promise(resolve => setTimeout(resolve, 400, headsKnown.get(e.link)))]) : null;
+  if (!anchor.isConnected || state.reading?.e !== e) {
+    return;
+  }
+  const u = r?.unsubscribe;
+  const items = [
+    {icon: 'open', label: openIn(o), key: 'O', run: ev => {
+      closeMenu();
+      openEntry(e, o, ev);
+    }},
+    'sep',
+    wayOf(u) && {icon: 'unsubscribe', label: t('unsubscribe'), hint: howTo(u), run: () => askUnsubscribe(e, o, u)},
+    e.author_email && {icon: 'archive', label: t('clearSender'), run: () => {
+      closeMenu();
+      clearSender(e);
+    }},
+    allowed('sp', o) && {icon: 'spam', label: t('spam'), key: '!', danger: true, run: () => {
+      closeMenu();
+      actFromReader('sp', e);
+    }},
+    'sep',
+    {icon: 'keyboard', label: t('shortcuts'), key: '?', run: () => {
+      closeMenu();
+      openSheet();
+    }}
+  ].filter(Boolean);
+  // a separator between two groups only
+  openMenu(anchor, '', items.filter((it, i) => it !== 'sep' || (i > 0 && items[i - 1] !== 'sep')), t('moreActions'));
+}, 'more-acts');
 
 /* tooltips: a button's name and its key, a moment after the pointer or the keyboard comes to it */
 const TIP_MS = 450;
@@ -2125,6 +2304,10 @@ const read = async (e, o, trail) => {
   // the keys and a screen reader follow the reader
   $('reader').focus({preventScroll: true});
 
+  // the mail's header, for Unsubscribe under ⋯
+  if (!serviceOf(o)) {
+    headsOf(e.link);
+  }
   const doc = await frameReady;
   doc.querySelector('base').href = e.link;
   doc.body.className = 'summary';
@@ -3043,10 +3226,14 @@ const sortBar = objs => {
     h('span', {class: 'sort-what'}, icon(kindIcon(state.sortOnly)), h('span', {'class': 'sr'}, t(state.sortOnly + 'Shown', mail.length)),
       h('span', {'class': 'label', 'aria-hidden': 'true'}, t(state.sortOnly + 'List')), h('span', {'class': 'n', 'aria-hidden': 'true'}, mail.length)),
     h('span', {class: 'grow'}),
-    links.length > 0 && h('button', {class: 'text-btn', type: 'button', 'data-focus': 'sort:read', onclick: () => act('rd', links)},
-      icon('readAll'), t('markAllRead')),
-    archivable.length > 0 && h('button', {class: 'text-btn', type: 'button', 'data-focus': 'sort:archive', onclick: () => act('rc_^i', archivable)},
-      icon('archive'), t('archiveAll')));
+    // a narrow panel shows their icons alone (index.css), their names in the tooltips
+    links.length > 0 && h('button', {'class': 'text-btn', 'type': 'button', 'aria-label': t('markAllRead'), 'data-tip': t('markAllRead'),
+      'data-focus': 'sort:read', 'onclick': () => act('rd', links)}, icon('readAll'), h('span', {class: 'btn-label'}, t('markAllRead'))),
+    archivable.length > 0 && h('button', {'class': 'text-btn', 'type': 'button', 'aria-label': t('archiveAll'), 'data-tip': t('archiveAll'),
+      'data-focus': 'sort:archive', 'onclick': () => act('rc_^i', archivable)}, icon('archive'), h('span', {class: 'btn-label'}, t('archiveAll'))),
+    // Newsletters: each sender, with how to unsubscribe from it (Gmail's mail)
+    state.sortOnly === 'bulk' && mail.some(({o}) => !serviceOf(o)) && menuBtn('unsubscribe', t('unsubscribeSenders'), '',
+      anchor => sendersMenu(anchor, mail), 'senders-btn'));
 };
 // the answers on the lines as they are, and on the chip: the list is not drawn again for them
 const paintReplies = () => {
@@ -4009,9 +4196,11 @@ const onKey = ev => {
       ev.preventDefault();
       closeSheet();
     }
+    // Tab goes round what it has (the keys' close button, a dialog's field and buttons)
     else if (ev.code === 'Tab') {
       ev.preventDefault();
-      $('sheet').querySelector('button')?.focus();
+      const all = [...$('sheet').querySelectorAll('button, input')].filter(el => !el.disabled);
+      all[(all.indexOf(document.activeElement) + (ev.shiftKey ? -1 : 1) + all.length) % all.length]?.focus();
     }
     return;
   }

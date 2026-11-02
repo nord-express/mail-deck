@@ -1463,6 +1463,66 @@
     "panel_markAllRead": {
         "message": "Позначити всі як прочитані"
     },
+    "panel_unsubscribe": {
+        "message": "Відписатися"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Відписатися від $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck попросить $1 більше не надсилати вам ці листи. Нічого іншого із запитом не надсилається."
+    },
+    "panel_unsubscribeMail": {
+        "message": "У Gmail відкриється лист на $1, готовий до надсилання. Надішліть його, щоб завершити."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Їхня сторінка на $1 відкриється в новій вкладці. Завершіть там."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Написати лист"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Відкрити сторінку"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Надсилання…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Запит на відписку надіслано"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Запит не пройшов."
+    },
+    "panel_alsoArchive": {
+        "message": "Також архівувати їхні непрочитані листи"
+    },
+    "panel_cancel": {
+        "message": "Скасувати"
+    },
+    "panel_howOneClick": {
+        "message": "одним кліком"
+    },
+    "panel_howMail": {
+        "message": "листом"
+    },
+    "panel_howWeb": {
+        "message": "на їхньому сайті"
+    },
+    "panel_howNone": {
+        "message": "немає посилання"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Відписатися від відправника"
+    },
+    "panel_senders": {
+        "message": "Відправники"
+    },
+    "panel_clearSender": {
+        "message": "Архівувати непрочитані від цього відправника"
+    },
+    "panel_senderNone": {
+        "message": "Від цього відправника немає непрочитаних листів"
+    },
     "panel_openInbox": {
         "message": "Відкрити скриньку в Gmail"
     },

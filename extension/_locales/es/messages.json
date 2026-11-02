@@ -1463,6 +1463,66 @@
     "panel_markAllRead": {
         "message": "Marcar todo como leído"
     },
+    "panel_unsubscribe": {
+        "message": "Cancelar suscripción"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "¿Cancelar la suscripción a $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck pide a $1 que deje de enviarte este correo. Con la solicitud no se envía nada más."
+    },
+    "panel_unsubscribeMail": {
+        "message": "Se abre en Gmail un mensaje para $1, listo para enviar. Envíalo para terminar."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Su página en $1 se abre en una pestaña nueva. Termina allí."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Escribir el mensaje"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Abrir la página"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Enviando…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Solicitud de baja enviada"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "La solicitud no llegó."
+    },
+    "panel_alsoArchive": {
+        "message": "Archivar también su correo sin leer"
+    },
+    "panel_cancel": {
+        "message": "Cancelar"
+    },
+    "panel_howOneClick": {
+        "message": "con un clic"
+    },
+    "panel_howMail": {
+        "message": "por correo"
+    },
+    "panel_howWeb": {
+        "message": "en su web"
+    },
+    "panel_howNone": {
+        "message": "sin enlace"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Cancelar la suscripción a un remitente"
+    },
+    "panel_senders": {
+        "message": "Remitentes"
+    },
+    "panel_clearSender": {
+        "message": "Archivar el correo sin leer de este remitente"
+    },
+    "panel_senderNone": {
+        "message": "No hay correo sin leer de este remitente"
+    },
     "panel_openInbox": {
         "message": "Abrir buzón en Gmail"
     },

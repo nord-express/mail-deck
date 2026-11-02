@@ -1459,6 +1459,66 @@
     "panel_markAllRead": {
         "message": "وضع علامة على الكل كمقروءة"
     },
+    "panel_unsubscribe": {
+        "message": "إلغاء الاشتراك"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "إلغاء الاشتراك في رسائل $1؟"
+    },
+    "panel_unsubscribePost": {
+        "message": "يطلب Mail Deck من $1 التوقف عن إرسال هذا البريد إليك. لا يُرسل أي شيء آخر مع الطلب."
+    },
+    "panel_unsubscribeMail": {
+        "message": "تُفتح رسالة إلى $1 في Gmail جاهزة للإرسال. أرسلها لإتمام الأمر."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "تُفتح صفحتهم على $1 في علامة تبويب جديدة. أكمل الأمر هناك."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "كتابة الرسالة"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "فتح الصفحة"
+    },
+    "panel_unsubscribeSending": {
+        "message": "جارٍ الإرسال…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "أُرسل طلب إلغاء الاشتراك"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "لم يصل الطلب."
+    },
+    "panel_alsoArchive": {
+        "message": "أرشفة بريدهم غير المقروء أيضًا"
+    },
+    "panel_cancel": {
+        "message": "إلغاء"
+    },
+    "panel_howOneClick": {
+        "message": "بنقرة واحدة"
+    },
+    "panel_howMail": {
+        "message": "عبر البريد"
+    },
+    "panel_howWeb": {
+        "message": "على موقعهم"
+    },
+    "panel_howNone": {
+        "message": "لا يوجد رابط"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "إلغاء الاشتراك من مُرسِل"
+    },
+    "panel_senders": {
+        "message": "المرسلون"
+    },
+    "panel_clearSender": {
+        "message": "أرشفة البريد غير المقروء من هذا المرسل"
+    },
+    "panel_senderNone": {
+        "message": "لا يوجد بريد غير مقروء من هذا المرسل"
+    },
     "panel_openInbox": {
         "message": "فتح البريد الوارد في Gmail"
     },

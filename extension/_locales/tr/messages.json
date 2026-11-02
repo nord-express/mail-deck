@@ -1463,6 +1463,66 @@
     "panel_markAllRead": {
         "message": "Tümünü okundu olarak işaretle"
     },
+    "panel_unsubscribe": {
+        "message": "Abonelikten çık"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "$1 aboneliğinden çıkılsın mı?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck, $1 adresinden bu postaları size göndermeyi bırakmasını ister. İstekle başka hiçbir şey gönderilmez."
+    },
+    "panel_unsubscribeMail": {
+        "message": "Gmail’de $1 adresine gönderilmeye hazır bir ileti açılır. Bitirmek için gönderin."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "$1 üzerindeki sayfaları yeni bir sekmede açılır. İşlemi orada bitirin."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "İletiyi yaz"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Sayfayı aç"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Gönderiliyor…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Abonelikten çıkma isteği gönderildi"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "İstek iletilemedi."
+    },
+    "panel_alsoArchive": {
+        "message": "Okunmamış postalarını da arşivle"
+    },
+    "panel_cancel": {
+        "message": "İptal"
+    },
+    "panel_howOneClick": {
+        "message": "tek tıkla"
+    },
+    "panel_howMail": {
+        "message": "e-postayla"
+    },
+    "panel_howWeb": {
+        "message": "sitelerinde"
+    },
+    "panel_howNone": {
+        "message": "bağlantı yok"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Bir gönderenin aboneliğinden çık"
+    },
+    "panel_senders": {
+        "message": "Gönderenler"
+    },
+    "panel_clearSender": {
+        "message": "Bu gönderenin okunmamış postalarını arşivle"
+    },
+    "panel_senderNone": {
+        "message": "Bu gönderenden okunmamış posta yok"
+    },
     "panel_openInbox": {
         "message": "Kutuyu Gmail’de aç"
     },

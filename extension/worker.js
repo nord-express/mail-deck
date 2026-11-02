@@ -223,6 +223,51 @@ waiting.change(list => [null, list]).then(list => {
   }
 });
 
+/*
+ * Unsubscribing from a Gmail mail: what its header says (the offscreen document reads it), and
+ * the one-click request of RFC 8058, sent from here so a panel that closes does not stop it. The
+ * address is the header's own, read again here, never one a message names. The request carries
+ * nothing of the browser (no cookies, no referrer); its answer cannot be read (no-cors), so it is
+ * "sent", not "done". It needs no permission for the sender's host.
+ */
+const unsubs = new Map();
+const headersOf = link => {
+  const kept = unsubs.get(link);
+  if (kept && Date.now() - kept.at < 10 * 60 * 1000) {
+    return kept.p;
+  }
+  const p = offscreen.command({cmd: 'gmail.headers', request: {link}}).then(r => {
+    if (!r || r.message) {
+      throw Error(r?.message || 'No answer');
+    }
+    return r;
+  });
+  unsubs.set(link, {at: Date.now(), p});
+  p.catch(() => unsubs.get(link)?.p === p && unsubs.delete(link));
+  if (unsubs.size > 100) {
+    unsubs.delete(unsubs.keys().next().value);
+  }
+  return p;
+};
+const unsubscribe = async link => {
+  const {unsubscribe: u} = await headersOf(link);
+  if (!u?.post || !/^https:\/\//i.test(u.post)) {
+    throw Error('No one-click unsubscribe');
+  }
+  await fetch(u.post, {
+    method: 'POST',
+    mode: 'no-cors',
+    credentials: 'omit',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    cache: 'no-store',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'List-Unsubscribe=One-Click',
+    signal: AbortSignal.timeout(15000)
+  });
+  return {sent: true};
+};
+
 chrome.runtime.onMessage.addListener((request, sender, response) => {
   const method = request.method;
 
@@ -311,6 +356,15 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
         reply(response, r.entries);
       }
     });
+    return true;
+  }
+  // a Gmail mail's Message-ID and how it is unsubscribed from ({unsubscribe: null} without a way)
+  else if (method === 'gmail.headers') {
+    headersOf(request.link).then(r => reply(response, r), e => reply(response, {message: e.message}));
+    return true;
+  }
+  else if (method === 'gmail.unsubscribe') {
+    unsubscribe(request.link).then(r => reply(response, r), e => reply(response, {message: e?.message || String(e)}));
     return true;
   }
   // a mail of another service, for the panel's reader

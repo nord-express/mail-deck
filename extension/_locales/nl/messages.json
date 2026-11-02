@@ -1467,6 +1467,66 @@
     "panel_markAllRead": {
         "message": "Alles markeren als gelezen"
     },
+    "panel_unsubscribe": {
+        "message": "Afmelden"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Afmelden bij $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck vraagt $1 je deze mail niet meer te sturen. Verder wordt er niets met het verzoek meegestuurd."
+    },
+    "panel_unsubscribeMail": {
+        "message": "In Gmail opent een bericht aan $1, klaar om te versturen. Verstuur het om af te ronden."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Hun pagina op $1 opent in een nieuw tabblad. Rond het daar af."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Bericht schrijven"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Pagina openen"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Versturen…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Afmeldverzoek verstuurd"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Het verzoek is niet aangekomen."
+    },
+    "panel_alsoArchive": {
+        "message": "Ook hun ongelezen mail archiveren"
+    },
+    "panel_cancel": {
+        "message": "Annuleren"
+    },
+    "panel_howOneClick": {
+        "message": "met één klik"
+    },
+    "panel_howMail": {
+        "message": "per mail"
+    },
+    "panel_howWeb": {
+        "message": "op hun site"
+    },
+    "panel_howNone": {
+        "message": "geen link"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Afmelden bij een afzender"
+    },
+    "panel_senders": {
+        "message": "Afzenders"
+    },
+    "panel_clearSender": {
+        "message": "Ongelezen mail van deze afzender archiveren"
+    },
+    "panel_senderNone": {
+        "message": "Geen ongelezen mail van deze afzender"
+    },
     "panel_openInbox": {
         "message": "Postvak openen in Gmail"
     },

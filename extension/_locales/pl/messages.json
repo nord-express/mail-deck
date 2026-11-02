@@ -1467,6 +1467,66 @@
     "panel_markAllRead": {
         "message": "Oznacz wszystkie jako przeczytane"
     },
+    "panel_unsubscribe": {
+        "message": "Wypisz się"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Zrezygnować z subskrypcji: $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck poprosi $1 o zaprzestanie wysyłania tej poczty. Z prośbą nie jest wysyłane nic więcej."
+    },
+    "panel_unsubscribeMail": {
+        "message": "W Gmailu otworzy się wiadomość do $1 gotowa do wysłania. Wyślij ją, aby zakończyć."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Ich strona w $1 otworzy się w nowej karcie. Dokończ tam."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Napisz wiadomość"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Otwórz stronę"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Wysyłanie…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Wysłano prośbę o wypisanie"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Prośba nie dotarła."
+    },
+    "panel_alsoArchive": {
+        "message": "Zarchiwizuj też ich nieprzeczytaną pocztę"
+    },
+    "panel_cancel": {
+        "message": "Anuluj"
+    },
+    "panel_howOneClick": {
+        "message": "jednym kliknięciem"
+    },
+    "panel_howMail": {
+        "message": "e-mailem"
+    },
+    "panel_howWeb": {
+        "message": "na ich stronie"
+    },
+    "panel_howNone": {
+        "message": "brak linku"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Zrezygnuj z subskrypcji nadawcy"
+    },
+    "panel_senders": {
+        "message": "Nadawcy"
+    },
+    "panel_clearSender": {
+        "message": "Zarchiwizuj nieprzeczytane od tego nadawcy"
+    },
+    "panel_senderNone": {
+        "message": "Brak nieprzeczytanej poczty od tego nadawcy"
+    },
     "panel_openInbox": {
         "message": "Otwórz skrzynkę w Gmailu"
     },

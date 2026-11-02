@@ -1277,6 +1277,66 @@
   "panel_markAllRead": {
     "message": "Összes megjelölése olvasottként"
   },
+  "panel_unsubscribe": {
+    "message": "Leiratkozás"
+  },
+  "panel_unsubscribeFrom": {
+    "message": "Leiratkozik erről: $1?"
+  },
+  "panel_unsubscribePost": {
+    "message": "A Mail Deck megkéri a feladót ($1), hogy ne küldjön több ilyen levelet. A kéréssel semmi más nem megy el."
+  },
+  "panel_unsubscribeMail": {
+    "message": "A Gmailben megnyílik egy levél ide: $1, küldésre készen. Küldje el a befejezéshez."
+  },
+  "panel_unsubscribeWeb": {
+    "message": "Az oldaluk ($1) új lapon nyílik meg. Ott fejezze be."
+  },
+  "panel_unsubscribeWrite": {
+    "message": "Levél megírása"
+  },
+  "panel_unsubscribeOpen": {
+    "message": "Oldal megnyitása"
+  },
+  "panel_unsubscribeSending": {
+    "message": "Küldés…"
+  },
+  "panel_unsubscribeSent": {
+    "message": "Leiratkozási kérés elküldve"
+  },
+  "panel_unsubscribeFailed": {
+    "message": "A kérés nem ment át."
+  },
+  "panel_alsoArchive": {
+    "message": "Az olvasatlan leveleik archiválása is"
+  },
+  "panel_cancel": {
+    "message": "Mégse"
+  },
+  "panel_howOneClick": {
+    "message": "egy kattintással"
+  },
+  "panel_howMail": {
+    "message": "e-mailben"
+  },
+  "panel_howWeb": {
+    "message": "a webhelyükön"
+  },
+  "panel_howNone": {
+    "message": "nincs link"
+  },
+  "panel_unsubscribeSenders": {
+    "message": "Leiratkozás egy feladóról"
+  },
+  "panel_senders": {
+    "message": "Feladók"
+  },
+  "panel_clearSender": {
+    "message": "A feladó olvasatlan leveleinek archiválása"
+  },
+  "panel_senderNone": {
+    "message": "Nincs olvasatlan levél ettől a feladótól"
+  },
   "panel_openInbox": {
     "message": "Beérkező levelek megnyitása a Gmailben"
   },

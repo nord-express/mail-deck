@@ -1328,6 +1328,66 @@
   "panel_markAllRead": {
     "message": "Mark all as read"
   },
+  "panel_unsubscribe": {
+    "message": "Unsubscribe"
+  },
+  "panel_unsubscribeFrom": {
+    "message": "Unsubscribe from $1?"
+  },
+  "panel_unsubscribePost": {
+    "message": "Mail Deck asks $1 to stop sending you this mail. Nothing else is sent with the request."
+  },
+  "panel_unsubscribeMail": {
+    "message": "A message to $1 opens in Gmail, ready to send. Send it to finish."
+  },
+  "panel_unsubscribeWeb": {
+    "message": "Their page on $1 opens in a new tab. Finish there."
+  },
+  "panel_unsubscribeWrite": {
+    "message": "Write the message"
+  },
+  "panel_unsubscribeOpen": {
+    "message": "Open the page"
+  },
+  "panel_unsubscribeSending": {
+    "message": "Sending…"
+  },
+  "panel_unsubscribeSent": {
+    "message": "Unsubscribe request sent"
+  },
+  "panel_unsubscribeFailed": {
+    "message": "The request did not go through."
+  },
+  "panel_alsoArchive": {
+    "message": "Also archive their unread mail"
+  },
+  "panel_cancel": {
+    "message": "Cancel"
+  },
+  "panel_howOneClick": {
+    "message": "one click"
+  },
+  "panel_howMail": {
+    "message": "by email"
+  },
+  "panel_howWeb": {
+    "message": "on their site"
+  },
+  "panel_howNone": {
+    "message": "no link"
+  },
+  "panel_unsubscribeSenders": {
+    "message": "Unsubscribe from a sender"
+  },
+  "panel_senders": {
+    "message": "Senders"
+  },
+  "panel_clearSender": {
+    "message": "Archive unread mail from this sender"
+  },
+  "panel_senderNone": {
+    "message": "No unread mail from this sender"
+  },
   "panel_openInbox": {
     "message": "Open inbox in Gmail"
   },

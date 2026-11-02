@@ -325,8 +325,9 @@ const checks = {
       ['J/↓', 'Enter', 'E', '/', '?'].every(k => r.sheetList.keys.includes(k)) && !r.sheetList.keys.includes('Esc') && r.sheetHoldsKeys && r.sheetClosed,
     'in a message ? lists its keys (Esc for back, star, summary off), and Esc closes only the sheet': ['J', 'S', 'Esc', 'O'].every(k => r.sheetReader?.includes(k)) &&
       !r.sheetReader.includes('Enter') && r.sheetReaderClosed,
-    'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, Spam and the keys': JSON.stringify(r.bar) ===
-      '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' && JSON.stringify(r.more) === '["O","!","?"]' && r.moreClosed,
+    'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, the sender\'s mail, Spam and the keys':
+      JSON.stringify(r.bar) === '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' &&
+      JSON.stringify(r.more) === '["O",null,"!","?"]' && r.moreClosed,
     'remind me later: its times have the keys 1-4; a date and a time of one\'s own': JSON.stringify(r.remindKeys?.slice(0, 3)) === '["1","2","3"]' && r.remindByKey &&
       r.pickFocused && r.remindPicked,
     'search as one types: the list\'s mail narrows, nothing is asked; Enter asks Gmail': JSON.stringify(r.typed) === '["a1"]' &&
@@ -380,6 +381,22 @@ const checks = {
     'not before two weeks, nor ten days of use; not over the pinning hint or a search': r.tooEarly && r.tooFew && r.pinFirst && r.notInSearch && r.back,
     'a day of use counts once': r.firstDay && r.nextDay
   }),
+  acting: r => ({
+    'a mail with a List-Unsubscribe: ⋯ offers Unsubscribe with its way, and the sender\'s unread mail': r.moreUnsub && JSON.stringify(r.moreKeys) === '["O","","","!","?"]',
+    'Unsubscribe asks first in a dialog that names the sender and what happens; the focus stays in it and comes back on Esc':
+      r.dialog?.title === T('unsubscribeFrom', 'GitHub') && r.dialog.text === T('unsubscribeMail', 'unsub@github.com') && r.dialog.go === T('unsubscribeWrite') &&
+      r.dialog.modal && r.tabRound && r.tabBack && r.escClosed,
+    'by mail: Gmail\'s compose window with its address, subject and text; nothing is posted': r.composed.includes('view=cm') &&
+      r.composed.includes('to=unsub%40github.com') && r.composed.includes('su=unsubscribe') && r.composed.includes('body=please') && r.noPost,
+    'Newsletters: a menu of its senders, each with its way from its header': r.sendersBtn && JSON.stringify(r.senders) === JSON.stringify(['Notion:' + T('howOneClick')]) &&
+      r.postText === T('unsubscribePost', 'notion.so'),
+    'a one-click request that does not go says so in the dialog and offers the sender\'s page; Esc gives the focus back':
+      JSON.stringify(r.failedOffer) === JSON.stringify({error: T('unsubscribeFailed'), go: T('unsubscribeOpen')}) && r.focusBack,
+    'one click: the background sends it; their unread mail found in every account and archived with the Undo':
+      JSON.stringify(r.unsubscribed) === JSON.stringify({asked: ['a4', 'a4'], searched: true, archived: 'rc_^i:a4:5000',
+        toast: T('unsubscribeSent') + ' · ' + T('doneArchive') + ': 1', undo: true}),
+    'nothing goes wrong unseen': r.consoleClean === true
+  }),
   narrow: r => ({
     'a 320px side panel: the mailbox line keeps whole buttons, without copy and Meet, and a readable address':
       r.width === 320 && JSON.stringify(r.buttons) === '["readAll:32","archive:32","open:32"]' && r.addr >= 60,
@@ -396,7 +413,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ux', ''], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['acting', '&ai=on'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

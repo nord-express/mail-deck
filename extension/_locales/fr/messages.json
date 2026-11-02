@@ -1295,6 +1295,66 @@
   "panel_markAllRead": {
     "message": "Tout marquer comme lu"
   },
+  "panel_unsubscribe": {
+    "message": "Se désabonner"
+  },
+  "panel_unsubscribeFrom": {
+    "message": "Se désabonner de $1 ?"
+  },
+  "panel_unsubscribePost": {
+    "message": "Mail Deck demande à $1 de ne plus vous envoyer ces messages. Rien d’autre n’est envoyé avec la demande."
+  },
+  "panel_unsubscribeMail": {
+    "message": "Un message à $1 s’ouvre dans Gmail, prêt à partir. Envoyez-le pour terminer."
+  },
+  "panel_unsubscribeWeb": {
+    "message": "Leur page sur $1 s’ouvre dans un nouvel onglet. Terminez là-bas."
+  },
+  "panel_unsubscribeWrite": {
+    "message": "Rédiger le message"
+  },
+  "panel_unsubscribeOpen": {
+    "message": "Ouvrir la page"
+  },
+  "panel_unsubscribeSending": {
+    "message": "Envoi…"
+  },
+  "panel_unsubscribeSent": {
+    "message": "Demande de désabonnement envoyée"
+  },
+  "panel_unsubscribeFailed": {
+    "message": "La demande n’est pas passée."
+  },
+  "panel_alsoArchive": {
+    "message": "Archiver aussi leurs messages non lus"
+  },
+  "panel_cancel": {
+    "message": "Annuler"
+  },
+  "panel_howOneClick": {
+    "message": "en un clic"
+  },
+  "panel_howMail": {
+    "message": "par e-mail"
+  },
+  "panel_howWeb": {
+    "message": "sur leur site"
+  },
+  "panel_howNone": {
+    "message": "aucun lien"
+  },
+  "panel_unsubscribeSenders": {
+    "message": "Se désabonner d’un expéditeur"
+  },
+  "panel_senders": {
+    "message": "Expéditeurs"
+  },
+  "panel_clearSender": {
+    "message": "Archiver les messages non lus de cet expéditeur"
+  },
+  "panel_senderNone": {
+    "message": "Aucun message non lu de cet expéditeur"
+  },
   "panel_openInbox": {
     "message": "Ouvrir la boîte dans Gmail"
   },

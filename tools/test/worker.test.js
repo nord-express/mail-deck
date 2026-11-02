@@ -15,8 +15,10 @@ const FAST = 100;
 const feedLink = (n, id) => `https://mail.google.com/mail/u/${n}?account_id=user${n}@gmail.com&message_id=${id}&view=conv&extsrc=atom`;
 const searchLink = (n, id) => `https://mail.google.com/mail/u/${n}?message_id=${id}&view=conv&extsrc=atom`;
 
-// local: what the local storage holds when the worker starts; fails: the links Gmail refuses
-const start = ({local = {}, session = {}, fails = []} = {}) => {
+// local: what the local storage holds when the worker starts; fails: the links Gmail refuses;
+// heads: a mail's header as the offscreen document reads it, by link; posts: the requests sent
+// to a sender, which fail with postFails
+const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = false} = {}) => {
   const copy = o => o === undefined ? o : JSON.parse(JSON.stringify(o));
   const area = store => ({
     get: async d => {
@@ -35,7 +37,7 @@ const start = ({local = {}, session = {}, fails = []} = {}) => {
     set: async o => Object.assign(store, copy(o)),
     remove: async k => [].concat(k).forEach(k => delete store[k])
   });
-  const out = {local, session, dispatched: [], toasts: [], alarms: {}, listeners: [], refreshed: 0};
+  const out = {local, session, dispatched: [], toasts: [], alarms: {}, listeners: [], refreshed: 0, posts: [], asked: []};
   const chrome = {
     i18n: {getMessage: () => 'x', getUILanguage: () => 'en'},
     runtime: {onMessage: {addListener: fn => out.listeners.push(fn)}, onInstalled: {addListener() {}}, getManifest: () => ({})},
@@ -46,8 +48,15 @@ const start = ({local = {}, session = {}, fails = []} = {}) => {
     cookies: {get() {}},
     tabs: {create() {}}
   };
-  const ctx = {chrome, console: {log() {}, info() {}, warn() {}, error() {}}, Date, Promise, Map, Set, JSON, out,
-    setTimeout: (fn, ms, ...args) => setTimeout(fn, ms / FAST, ...args), clearTimeout};
+  const ctx = {chrome, console: {log() {}, info() {}, warn() {}, error() {}}, Date, Promise, Map, Set, JSON, out, AbortSignal,
+    setTimeout: (fn, ms, ...args) => setTimeout(fn, ms / FAST, ...args), clearTimeout,
+    fetch: async (url, o) => {
+      out.posts.push({url, ...o, signal: Boolean(o.signal)});
+      if (postFails) {
+        throw TypeError('Failed to fetch');
+      }
+      return {type: 'opaque', status: 0, ok: false};
+    }};
   ctx.self = ctx;
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(EXT + '/core/utils/resolved.js', 'utf8'), ctx, {filename: 'resolved.js'});
@@ -63,6 +72,10 @@ const start = ({local = {}, session = {}, fails = []} = {}) => {
     return failed.length ? {message: 'refused', failed} : true;
   }};
   vm.runInContext('var repeater = {reset() {}}; var sound = {}; var offscreen = {}; self.openLink = () => {};', ctx);
+  vm.runInContext('offscreen', ctx).command = async ({cmd, request}) => {
+    out.asked.push(cmd);
+    return cmd === 'gmail.headers' ? copy(heads[request.link]) || {message: 'core.js -> headers -> not read'} : {};
+  };
   vm.runInContext(fs.readFileSync(EXT + '/worker.js', 'utf8'), ctx, {filename: 'worker.js'});
   // a message from the panel; its answer, once the worker gives one
   out.send = request => new Promise(resolve => {
@@ -135,6 +148,25 @@ const tests = [
     const w = start();
     await w.send({method: 'gmail.action', cmd: 'st', links: [feedLink(0, 's1')]});
     assert.deepStrictEqual([w.dispatched.length, w.hidden()], [1, []]);
+  }],
+  ['one click: the background posts RFC 8058\'s request to the header\'s own address, with nothing of the browser', async () => {
+    const link = feedLink(0, 'n1');
+    const w = start({heads: {[link]: {messageId: 'm@x', unsubscribe: {post: 'https://news.example/one?u=1', web: 'https://news.example/one?u=1', mailto: null}}}});
+    assert.deepStrictEqual((await w.send({method: 'gmail.headers', link})).value.unsubscribe.post, 'https://news.example/one?u=1');
+    assert.deepStrictEqual((await w.send({method: 'gmail.unsubscribe', link, url: 'https://evil.example/'})).value, {sent: true});
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(w.posts)), [{url: 'https://news.example/one?u=1', method: 'POST', mode: 'no-cors', credentials: 'omit', redirect: 'follow',
+      referrerPolicy: 'no-referrer', cache: 'no-store', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'List-Unsubscribe=One-Click', signal: true}]);
+    // the header is read once for the menu and the click
+    assert.deepStrictEqual(w.asked, ['gmail.headers']);
+  }],
+  ['no one-click without its header; a request that fails says so', async () => {
+    const link = feedLink(0, 'n2');
+    const w = start({heads: {[link]: {messageId: '', unsubscribe: {post: null, web: 'https://x.example/u', mailto: null}}}});
+    assert.ok((await w.send({method: 'gmail.unsubscribe', link})).value.message);
+    assert.ok((await w.send({method: 'gmail.unsubscribe', link: feedLink(0, 'none')})).value.message);
+    assert.deepStrictEqual(w.posts, []);
+    const f = start({postFails: true, heads: {[link]: {unsubscribe: {post: 'https://x.example/one'}}}});
+    assert.strictEqual((await f.send({method: 'gmail.unsubscribe', link})).value.message, 'Failed to fetch');
   }]
 ];
 

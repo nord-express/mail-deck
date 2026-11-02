@@ -1463,6 +1463,66 @@
     "panel_markAllRead": {
         "message": "Alle als gelesen markieren"
     },
+    "panel_unsubscribe": {
+        "message": "Abbestellen"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "$1 abbestellen?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck bittet $1, Ihnen diese E-Mails nicht mehr zu senden. Sonst wird mit der Anfrage nichts gesendet."
+    },
+    "panel_unsubscribeMail": {
+        "message": "In Gmail öffnet sich eine Nachricht an $1, bereit zum Senden. Senden Sie sie, um es abzuschließen."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Deren Seite auf $1 öffnet sich in einem neuen Tab. Schließen Sie es dort ab."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Nachricht schreiben"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Seite öffnen"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Wird gesendet…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Abmeldeanfrage gesendet"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Die Anfrage ist nicht durchgegangen."
+    },
+    "panel_alsoArchive": {
+        "message": "Auch deren ungelesene E-Mails archivieren"
+    },
+    "panel_cancel": {
+        "message": "Abbrechen"
+    },
+    "panel_howOneClick": {
+        "message": "mit einem Klick"
+    },
+    "panel_howMail": {
+        "message": "per E-Mail"
+    },
+    "panel_howWeb": {
+        "message": "auf deren Website"
+    },
+    "panel_howNone": {
+        "message": "kein Link"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Absender abbestellen"
+    },
+    "panel_senders": {
+        "message": "Absender"
+    },
+    "panel_clearSender": {
+        "message": "Ungelesene E-Mails dieses Absenders archivieren"
+    },
+    "panel_senderNone": {
+        "message": "Keine ungelesenen E-Mails von diesem Absender"
+    },
     "panel_openInbox": {
         "message": "Posteingang in Gmail öffnen"
     },

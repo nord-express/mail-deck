@@ -1459,6 +1459,66 @@
     "panel_markAllRead": {
         "message": "סמן הכל כנקרא"
     },
+    "panel_unsubscribe": {
+        "message": "בטל הרשמה"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "לבטל את ההרשמה ל-$1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck מבקש מ-$1 להפסיק לשלוח לך את הדואר הזה. שום דבר אחר לא נשלח עם הבקשה."
+    },
+    "panel_unsubscribeMail": {
+        "message": "הודעה אל $1 נפתחת ב-Gmail, מוכנה לשליחה. שלח אותה כדי לסיים."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "הדף שלהם ב-$1 נפתח בכרטיסייה חדשה. סיים שם."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "כתוב את ההודעה"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "פתח את הדף"
+    },
+    "panel_unsubscribeSending": {
+        "message": "שולח…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "בקשת ביטול ההרשמה נשלחה"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "הבקשה לא עברה."
+    },
+    "panel_alsoArchive": {
+        "message": "העבר לארכיון גם את הדואר שלהם שלא נקרא"
+    },
+    "panel_cancel": {
+        "message": "ביטול"
+    },
+    "panel_howOneClick": {
+        "message": "בלחיצה אחת"
+    },
+    "panel_howMail": {
+        "message": "בדוא״ל"
+    },
+    "panel_howWeb": {
+        "message": "באתר שלהם"
+    },
+    "panel_howNone": {
+        "message": "אין קישור"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "בטל הרשמה לשולח"
+    },
+    "panel_senders": {
+        "message": "שולחים"
+    },
+    "panel_clearSender": {
+        "message": "העבר לארכיון דואר שלא נקרא מהשולח הזה"
+    },
+    "panel_senderNone": {
+        "message": "אין דואר שלא נקרא מהשולח הזה"
+    },
     "panel_openInbox": {
         "message": "פתח את הדואר הנכנס ב-Gmail"
     },

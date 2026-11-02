@@ -1463,6 +1463,66 @@
     "panel_markAllRead": {
         "message": "Означи све као прочитано"
     },
+    "panel_unsubscribe": {
+        "message": "Откажи пријаву"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Отказати пријаву на $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck тражи од $1 да вам више не шаље ову пошту. Уз захтев се не шаље ништа друго."
+    },
+    "panel_unsubscribeMail": {
+        "message": "У Gmail-у се отвара порука за $1, спремна за слање. Пошаљите је да бисте завршили."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Њихова страница на $1 отвара се у новој картици. Завршите тамо."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Напиши поруку"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Отвори страницу"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Слање…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Захтев за отказивање пријаве је послат"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Захтев није прошао."
+    },
+    "panel_alsoArchive": {
+        "message": "Архивирај и њихову непрочитану пошту"
+    },
+    "panel_cancel": {
+        "message": "Откажи"
+    },
+    "panel_howOneClick": {
+        "message": "једним кликом"
+    },
+    "panel_howMail": {
+        "message": "имејлом"
+    },
+    "panel_howWeb": {
+        "message": "на њиховом сајту"
+    },
+    "panel_howNone": {
+        "message": "нема везе"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Откажи пријаву код пошиљаоца"
+    },
+    "panel_senders": {
+        "message": "Пошиљаоци"
+    },
+    "panel_clearSender": {
+        "message": "Архивирај непрочитано од овог пошиљаоца"
+    },
+    "panel_senderNone": {
+        "message": "Нема непрочитане поште од овог пошиљаоца"
+    },
     "panel_openInbox": {
         "message": "Отвори пријемно сандуче у Gmail-у"
     },

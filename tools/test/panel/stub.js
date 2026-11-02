@@ -301,6 +301,9 @@
     if (m.method === 'gmail.search') r = window.__searchFails?.(m) ? null : search(m);
     if (m.method === 'get-at') r = 'AT';
     if (m.method === 'gmail.action' && window.__actionFails?.(m.links)?.length) r = {message: 'refused', failed: window.__actionFails(m.links)};
+    // how a mail is unsubscribed from, by its thread (__heads); __unsubscribeFails: the one-click request does not go
+    if (m.method === 'gmail.headers') r = window.__heads?.[(m.link.match(/message_id=([^&]+)/) || [])[1]] || {messageId: '', unsubscribe: null};
+    if (m.method === 'gmail.unsubscribe') r = window.__unsubscribeFails ? {message: 'Failed to fetch'} : {sent: true};
     // what a service answers: markup that must not run in the reader
     // and markup that must not load before Show pictures, nor open a link over the panel
     const px = k => `${location.origin}/__pixel?k=services-svc-${k}`;

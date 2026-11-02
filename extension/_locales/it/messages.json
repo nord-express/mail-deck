@@ -1295,6 +1295,66 @@
   "panel_markAllRead": {
     "message": "Segna tutti come letti"
   },
+  "panel_unsubscribe": {
+    "message": "Annulla iscrizione"
+  },
+  "panel_unsubscribeFrom": {
+    "message": "Annullare l'iscrizione a $1?"
+  },
+  "panel_unsubscribePost": {
+    "message": "Mail Deck chiede a $1 di smettere di inviarti questa posta. Con la richiesta non viene inviato nient'altro."
+  },
+  "panel_unsubscribeMail": {
+    "message": "In Gmail si apre un messaggio a $1, pronto da inviare. Invialo per finire."
+  },
+  "panel_unsubscribeWeb": {
+    "message": "La loro pagina su $1 si apre in una nuova scheda. Completa lì."
+  },
+  "panel_unsubscribeWrite": {
+    "message": "Scrivi il messaggio"
+  },
+  "panel_unsubscribeOpen": {
+    "message": "Apri la pagina"
+  },
+  "panel_unsubscribeSending": {
+    "message": "Invio…"
+  },
+  "panel_unsubscribeSent": {
+    "message": "Richiesta di annullamento inviata"
+  },
+  "panel_unsubscribeFailed": {
+    "message": "La richiesta non è andata a buon fine."
+  },
+  "panel_alsoArchive": {
+    "message": "Archivia anche la loro posta da leggere"
+  },
+  "panel_cancel": {
+    "message": "Annulla"
+  },
+  "panel_howOneClick": {
+    "message": "con un clic"
+  },
+  "panel_howMail": {
+    "message": "via email"
+  },
+  "panel_howWeb": {
+    "message": "sul loro sito"
+  },
+  "panel_howNone": {
+    "message": "nessun link"
+  },
+  "panel_unsubscribeSenders": {
+    "message": "Annulla l'iscrizione a un mittente"
+  },
+  "panel_senders": {
+    "message": "Mittenti"
+  },
+  "panel_clearSender": {
+    "message": "Archivia la posta da leggere di questo mittente"
+  },
+  "panel_senderNone": {
+    "message": "Nessuna email da leggere da questo mittente"
+  },
   "panel_openInbox": {
     "message": "Apri la casella in Gmail"
   },

@@ -1459,6 +1459,66 @@
     "panel_markAllRead": {
         "message": "Отбелязване на всички като прочетени"
     },
+    "panel_unsubscribe": {
+        "message": "Отписване"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Отписване от $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck ще помоли $1 да спре да ви изпраща тези писма. Нищо друго не се изпраща със заявката."
+    },
+    "panel_unsubscribeMail": {
+        "message": "В Gmail се отваря писмо до $1, готово за изпращане. Изпратете го, за да завършите."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Страницата им в $1 се отваря в нов раздел. Завършете там."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Написване на писмото"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Отваряне на страницата"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Изпраща се…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Заявката за отписване е изпратена"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Заявката не премина."
+    },
+    "panel_alsoArchive": {
+        "message": "Архивиране и на непрочетените им писма"
+    },
+    "panel_cancel": {
+        "message": "Отказ"
+    },
+    "panel_howOneClick": {
+        "message": "с едно щракване"
+    },
+    "panel_howMail": {
+        "message": "по имейл"
+    },
+    "panel_howWeb": {
+        "message": "на сайта им"
+    },
+    "panel_howNone": {
+        "message": "няма връзка"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Отписване от подател"
+    },
+    "panel_senders": {
+        "message": "Податели"
+    },
+    "panel_clearSender": {
+        "message": "Архивиране на непрочетените от този подател"
+    },
+    "panel_senderNone": {
+        "message": "Няма непрочетени писма от този подател"
+    },
     "panel_openInbox": {
         "message": "Отваряне на входящата кутия в Gmail"
     },

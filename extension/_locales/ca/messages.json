@@ -1463,6 +1463,66 @@
     "panel_markAllRead": {
         "message": "Marca-ho tot com a llegit"
     },
+    "panel_unsubscribe": {
+        "message": "Cancel·la la subscripció"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Vols cancel·lar la subscripció a $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck demana a $1 que deixi d'enviar-te aquest correu. Amb la sol·licitud no s'envia res més."
+    },
+    "panel_unsubscribeMail": {
+        "message": "S'obre a Gmail un missatge per a $1, a punt per enviar. Envia'l per acabar."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "La seva pàgina a $1 s'obre en una pestanya nova. Acaba-ho allà."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Escriu el missatge"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Obre la pàgina"
+    },
+    "panel_unsubscribeSending": {
+        "message": "S'està enviant…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "S'ha enviat la sol·licitud de baixa"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "La sol·licitud no ha arribat."
+    },
+    "panel_alsoArchive": {
+        "message": "Arxiva també el seu correu sense llegir"
+    },
+    "panel_cancel": {
+        "message": "Cancel·la"
+    },
+    "panel_howOneClick": {
+        "message": "amb un clic"
+    },
+    "panel_howMail": {
+        "message": "per correu"
+    },
+    "panel_howWeb": {
+        "message": "al seu web"
+    },
+    "panel_howNone": {
+        "message": "sense enllaç"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Cancel·la la subscripció d'un remitent"
+    },
+    "panel_senders": {
+        "message": "Remitents"
+    },
+    "panel_clearSender": {
+        "message": "Arxiva el correu sense llegir d'aquest remitent"
+    },
+    "panel_senderNone": {
+        "message": "No hi ha correu sense llegir d'aquest remitent"
+    },
     "panel_openInbox": {
         "message": "Obre la safata d'entrada a Gmail"
     },

@@ -1467,6 +1467,66 @@
     "panel_markAllRead": {
         "message": "全部标记为已读"
     },
+    "panel_unsubscribe": {
+        "message": "退订"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "要退订 $1 吗？"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck 会请 $1 停止向你发送此类邮件。请求中不会附带其他任何信息。"
+    },
+    "panel_unsubscribeMail": {
+        "message": "Gmail 中会打开一封发往 $1 的邮件，可直接发送。发送后即可完成。"
+    },
+    "panel_unsubscribeWeb": {
+        "message": "其在 $1 上的页面会在新标签页中打开。请在那里完成。"
+    },
+    "panel_unsubscribeWrite": {
+        "message": "撰写邮件"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "打开页面"
+    },
+    "panel_unsubscribeSending": {
+        "message": "正在发送…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "已发送退订请求"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "请求未能送达。"
+    },
+    "panel_alsoArchive": {
+        "message": "同时归档其未读邮件"
+    },
+    "panel_cancel": {
+        "message": "取消"
+    },
+    "panel_howOneClick": {
+        "message": "一键"
+    },
+    "panel_howMail": {
+        "message": "通过邮件"
+    },
+    "panel_howWeb": {
+        "message": "在其网站"
+    },
+    "panel_howNone": {
+        "message": "无链接"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "退订某个发件人"
+    },
+    "panel_senders": {
+        "message": "发件人"
+    },
+    "panel_clearSender": {
+        "message": "归档此发件人的未读邮件"
+    },
+    "panel_senderNone": {
+        "message": "没有来自此发件人的未读邮件"
+    },
     "panel_openInbox": {
         "message": "在 Gmail 中打开邮箱"
     },

@@ -1808,6 +1808,26 @@ kbd {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+/* a menu stays inside a narrow panel: a long item wraps */
+.menu {
+  max-width: calc(100vw - 16px);
+}
+/* a long menu (the senders) scrolls inside the window */
+.menu.long {
+  max-width: min(320px, calc(100vw - 16px));
+  max-height: min(420px, calc(100vh - 16px));
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.menu.long [role="menuitem"] > span:first-of-type {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu [role="menuitem"][aria-disabled="true"] {
+  color: var(--muted);
+  cursor: default;
+}
 
 /* accounts seen here before that are signed out now */
 .section.away {
@@ -2839,6 +2859,43 @@ button.cite:hover {
   font-size: var(--fs-xs);
 }
 
+/* a question before what cannot be undone: unsubscribing */
+.sheet.confirm {
+  width: min(360px, 100%);
+  padding: 12px 6px 12px;
+}
+.confirm-text {
+  margin: 0 12px 12px;
+  color: var(--soft);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.confirm-also {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 12px;
+  font-size: var(--fs-md);
+  cursor: pointer;
+}
+.confirm-also input {
+  flex: none;
+  margin: 0;
+  accent-color: var(--accent-solid);
+}
+.confirm-error {
+  margin: 0 12px 12px;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+.confirm-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-inline: 8px;
+}
+
 /* under the list: another account, and the keys */
 .list-foot {
   display: flex;
@@ -3079,6 +3136,10 @@ button.cite:hover {
     display: inline;
   }
   .list-foot .keys-btn span {
+    display: none;
+  }
+  /* the bar over a sorting keeps its name and count: its buttons say only their icon */
+  .sort-bar .text-btn .btn-label {
     display: none;
   }
 }

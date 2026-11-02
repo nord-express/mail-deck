@@ -1453,6 +1453,86 @@
       out.closed = !hint() && window.__set.some(o => o['pinHint.dismissed'] === true);
     }
 
+    if (scenario === 'acting') {
+      // acting on mail: unsubscribing; the assistant on for its Newsletters (a4, Notion's digest, one click; a2, GitHub's, by mail; a1 has no way)
+      const $ = id => document.getElementById(id);
+      const id = link => link.match(/message_id=([^&]*)/)[1];
+      const rowOf = x => [...document.querySelectorAll('#list .row')].find(r => id(r.dataset.link) === x);
+      const actions = () => sent('gmail.action').map(m => m.cmd + ':' + m.links.map(id).join(',') + (m.delay ? ':' + m.delay : ''));
+      const items = () => [...document.querySelectorAll('#menu [role="menuitem"]:not([hidden])')];
+      const press = (code, extra = {}) => key(document.activeElement || document, code, extra);
+      window.__heads = {
+        a4: {messageId: 'd@notion.so', unsubscribe: {post: 'https://www.notion.so/unsub?u=1', web: 'https://www.notion.so/unsub?u=1', mailto: null, first: 'web'}},
+        a2: {messageId: 's@github.com', unsubscribe: {post: null, web: null, mailto: {to: 'unsub@github.com', subject: 'unsubscribe', body: 'please'}, first: 'mailto'}}
+      };
+      // a mail by mail: ⋯ says so; the dialog names the sender and keeps the focus, Esc closes it
+      rowOf('a2').click();
+      await until(() => $('app').classList.contains('reading') && sent('gmail.headers').length);
+      await wait(100);
+      $('reader-bar').querySelector('.more-acts').click();
+      await until(() => $('menu'));
+      const item = items().find(b => b.textContent.startsWith(t('unsubscribe')));
+      out.moreUnsub = item?.querySelector('.hint')?.textContent === t('howMail');
+      out.moreKeys = items().map(b => b.dataset.key || '');
+      item?.click();
+      await wait(30);
+      const dialog = () => $('sheet')?.querySelector('[role="alertdialog"]');
+      out.dialog = {title: dialog()?.querySelector('h2').textContent, text: dialog()?.querySelector('.confirm-text').textContent,
+        go: document.activeElement?.textContent, modal: $('app').inert};
+      press('Tab');
+      out.tabRound = document.activeElement === dialog()?.querySelector('.sheet-head .icon-btn');
+      press('Tab', {shiftKey: true});
+      out.tabBack = document.activeElement === dialog()?.querySelector('.primary-btn');
+      press('Escape');
+      await wait(30);
+      out.escClosed = !$('sheet') && !$('app').inert && document.activeElement === $('reader-bar').querySelector('.more-acts') && $('app').classList.contains('reading');
+      // again, and the message to write opens in Gmail's compose window
+      $('reader-bar').querySelector('.more-acts').click();
+      await until(() => $('menu'));
+      items().find(b => b.textContent.startsWith(t('unsubscribe')))?.click();
+      await wait(30);
+      dialog()?.querySelector('.primary-btn').click();
+      await wait(50);
+      out.composed = sent('open').at(-1)?.url || '';
+      out.noPost = sent('gmail.unsubscribe').length === 0;
+      key(document, 'Escape');
+      await wait(50);
+
+      // Newsletters: each sender with how, from its header; one click asks first, then the background sends it
+      await until(() => $('chips').querySelector('.bulk-chip'), 3000);
+      $('chips').querySelector('.bulk-chip')?.click();
+      await wait(50);
+      const sendersBtn = $('list').querySelector('.sort-bar .senders-btn');
+      out.sendersBtn = sendersBtn?.getAttribute('aria-label') === t('unsubscribeSenders') && sendersBtn.getAttribute('aria-haspopup') === 'menu';
+      sendersBtn?.click();
+      await until(() => items()[0]?.querySelector('.hint')?.textContent === t('howOneClick'));
+      out.senders = items().map(b => b.querySelector('span').textContent + ':' + b.querySelector('.hint').textContent);
+      items()[0]?.click();
+      await until(() => dialog());
+      out.postText = dialog()?.querySelector('.confirm-text').textContent;
+      // the request fails: said in the dialog, the sender's page offered instead
+      window.__unsubscribeFails = true;
+      dialog().querySelector('.primary-btn').click();
+      await until(() => !dialog()?.querySelector('.confirm-error').hidden);
+      out.failedOffer = {error: dialog().querySelector('.confirm-error').textContent, go: dialog().querySelector('.primary-btn').textContent};
+      press('Escape');
+      await wait(30);
+      out.focusBack = document.activeElement === $('list').querySelector('.sort-bar .senders-btn');
+      window.__unsubscribeFails = false;
+      // it goes, with their unread mail archived too, with the Undo
+      $('list').querySelector('.sort-bar .senders-btn').click();
+      await until(() => items()[0]?.querySelector('.hint')?.textContent === t('howOneClick'));
+      items()[0].click();
+      await until(() => dialog());
+      dialog().querySelector('.confirm-also input').click();
+      dialog().querySelector('.primary-btn').click();
+      await until(() => actions().some(a => a.startsWith('rc_^i:a4')), 3000);
+      await wait(50);
+      out.unsubscribed = {asked: sent('gmail.unsubscribe').map(m => id(m.link)), searched: sent('gmail.search').some(m => m.query === 'from:(team@notion.so) is:unread'),
+        archived: actions().at(-1), toast: $('toast').querySelector('span')?.textContent, undo: Boolean($('toast').querySelector('.undo'))};
+      out.consoleClean = window.__errors.length === 0 || window.__errors;
+    }
+
     if (scenario === 'narrow') {
       // a side panel 320px wide: the mailbox line keeps its buttons whole and its address
       // readable, the reader's bar stays inside

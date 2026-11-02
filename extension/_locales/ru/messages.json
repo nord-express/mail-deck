@@ -1467,6 +1467,66 @@
     "panel_markAllRead": {
         "message": "Отметить все как прочитанные"
     },
+    "panel_unsubscribe": {
+        "message": "Отписаться"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Отписаться от $1?"
+    },
+    "panel_unsubscribePost": {
+        "message": "Mail Deck попросит $1 больше не присылать вам эти письма. Ничего другого с запросом не отправляется."
+    },
+    "panel_unsubscribeMail": {
+        "message": "В Gmail откроется письмо на $1, готовое к отправке. Отправьте его, чтобы завершить."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Их страница на $1 откроется в новой вкладке. Завершите там."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Написать письмо"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Открыть страницу"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Отправка…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Запрос на отписку отправлен"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Запрос не прошёл."
+    },
+    "panel_alsoArchive": {
+        "message": "Заодно архивировать их непрочитанные письма"
+    },
+    "panel_cancel": {
+        "message": "Отмена"
+    },
+    "panel_howOneClick": {
+        "message": "в один клик"
+    },
+    "panel_howMail": {
+        "message": "письмом"
+    },
+    "panel_howWeb": {
+        "message": "на их сайте"
+    },
+    "panel_howNone": {
+        "message": "нет ссылки"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Отписаться от отправителя"
+    },
+    "panel_senders": {
+        "message": "Отправители"
+    },
+    "panel_clearSender": {
+        "message": "Архивировать непрочитанные от этого отправителя"
+    },
+    "panel_senderNone": {
+        "message": "От этого отправителя нет непрочитанных писем"
+    },
     "panel_openInbox": {
         "message": "Открыть ящик в Gmail"
     },

@@ -1459,6 +1459,66 @@
     "panel_markAllRead": {
         "message": "Σήμανση όλων ως αναγνωσμένων"
     },
+    "panel_unsubscribe": {
+        "message": "Κατάργηση εγγραφής"
+    },
+    "panel_unsubscribeFrom": {
+        "message": "Κατάργηση εγγραφής από $1;"
+    },
+    "panel_unsubscribePost": {
+        "message": "Το Mail Deck ζητά από το $1 να σταματήσει να σας στέλνει αυτά τα μηνύματα. Τίποτε άλλο δεν στέλνεται με το αίτημα."
+    },
+    "panel_unsubscribeMail": {
+        "message": "Ανοίγει στο Gmail ένα μήνυμα προς $1, έτοιμο για αποστολή. Στείλτε το για να ολοκληρωθεί."
+    },
+    "panel_unsubscribeWeb": {
+        "message": "Η σελίδα τους στο $1 ανοίγει σε νέα καρτέλα. Ολοκληρώστε εκεί."
+    },
+    "panel_unsubscribeWrite": {
+        "message": "Σύνταξη μηνύματος"
+    },
+    "panel_unsubscribeOpen": {
+        "message": "Άνοιγμα σελίδας"
+    },
+    "panel_unsubscribeSending": {
+        "message": "Αποστολή…"
+    },
+    "panel_unsubscribeSent": {
+        "message": "Το αίτημα κατάργησης εγγραφής στάλθηκε"
+    },
+    "panel_unsubscribeFailed": {
+        "message": "Το αίτημα δεν πέρασε."
+    },
+    "panel_alsoArchive": {
+        "message": "Αρχειοθέτηση και των μη αναγνωσμένων μηνυμάτων τους"
+    },
+    "panel_cancel": {
+        "message": "Ακύρωση"
+    },
+    "panel_howOneClick": {
+        "message": "με ένα κλικ"
+    },
+    "panel_howMail": {
+        "message": "με μήνυμα"
+    },
+    "panel_howWeb": {
+        "message": "στον ιστότοπό τους"
+    },
+    "panel_howNone": {
+        "message": "χωρίς σύνδεσμο"
+    },
+    "panel_unsubscribeSenders": {
+        "message": "Κατάργηση εγγραφής από αποστολέα"
+    },
+    "panel_senders": {
+        "message": "Αποστολείς"
+    },
+    "panel_clearSender": {
+        "message": "Αρχειοθέτηση μη αναγνωσμένων από αυτόν τον αποστολέα"
+    },
+    "panel_senderNone": {
+        "message": "Κανένα μη αναγνωσμένο μήνυμα από αυτόν τον αποστολέα"
+    },
     "panel_openInbox": {
         "message": "Άνοιγμα εισερχομένων στο Gmail"
     },
