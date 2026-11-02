@@ -3,6 +3,13 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.7.1
+
+Mail Deck 1.7.1 puts each inbox's picture back in its place on the settings page. It includes everything of 1.7.0, which did not reach the store on its own.
+
+**Fixed**
+- Settings → Mailboxes: Google's picture of an account, and its coloured letter for an account with no photo, came at full size over the rows below; it now fills the inbox's circle.
+
 ## 1.7.0
 
 Mail Deck 1.7.0 lets the assistant run on the AI you already use: ten more providers, or a model on your own computer that keeps your mail on it. It includes everything of 1.6.0, which did not reach the store on its own.
