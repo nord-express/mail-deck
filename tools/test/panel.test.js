@@ -265,7 +265,21 @@ const checks = {
     'a mail archived from Gmail\'s search leaves the feed\'s list as well; Undo brings it back':
       JSON.stringify(r.searchFound) === '["a1"]' && JSON.stringify(r.afterSearchAction) === '["a2","b1"]' && JSON.stringify(r.afterUndo) === '["a1","a2","b1"]',
     'an action over two accounts that one refuses brings back only that one\'s mail, and says it failed':
-      JSON.stringify(r.partial) === '["a1","b1"]' && r.partialToast
+      JSON.stringify(r.partial) === '["a1","b1"]' && r.partialToast,
+    'an action with auto-advance goes on along the list the mail was opened from, J too':
+      r.trailBefore === '1 of 3' && JSON.stringify(r.trailAfter) === '["1 of 2","Счёт за октябрь"]' && r.trailJ === '2 of 2',
+    'a side panel asks for the mail past the feed\'s 20 again once a count moves, not sooner than in 3 minutes':
+      r.extraSameCount === 0 && r.extraTooSoon === 0 && r.extraAgain === 1,
+    'after accounts change places, the mail past the feed\'s 20 of each is asked at its own place':
+      r.extraAtPlace && JSON.stringify(r.extraAsked) === '["https://mail.google.com/mail/u/0","https://mail.google.com/mail/u/1"]',
+    'a print view sent to Google\'s sign-in page fails, is not kept, and the mail loads once the account is back':
+      r.signIn === 'failed' && r.signInKept === false && r.signInBack === true,
+    'a print view that never comes is given up': r.hung === 'TimeoutError',
+    'the files and the sorting of mail no longer listed are forgotten; the listed mail\'s stay': r.pruned,
+    'the panel keeps the last 20 threads it rendered': r.renderKept && r.renderDropped,
+    'the print views kept for the session stay within 3 MB, one over 300 KB is not kept, and the index names them all':
+      r.printBytes > 0 && r.printBytes <= 3 * 1024 * 1024 && r.printIndexed && r.hugeKept === false,
+    'a print view no index names goes': r.lostGone
   }),
   narrow: r => ({
     'a 320px side panel: the mailbox line keeps whole buttons, without copy and Meet, and a readable address':

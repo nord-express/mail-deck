@@ -1,7 +1,8 @@
 // chrome.* and Gmail for the panel under test: three mailboxes, Gmail's search,
 // a three-message thread with an attachment, and a 700px newsletter (?wide=1).
 // It records what the panel sends (__sent), stores (__set) and prints (__prints).
-// A test may make Gmail fail: __printStatus answers the print view, __searchFails(m) the search,
+// A test may make Gmail fail: __printStatus answers the print view (and __printSignIn, __printHang
+// below), __searchFails(m) the search,
 // __actionFails(links) names the links of an action Gmail refuses.
 (() => {
   const q = new URLSearchParams(location.search);
@@ -263,7 +264,7 @@
     storage: {
       // the files of every line are known already (none), so the print views stay the reader's,
       // as the other scenarios count them; ?scenario=files reads them ahead
-      session: (() => { const area = {'cached-objects': objs, 'resolved.links': [], ...(q.get('scenario') === 'files' ? {} : {'files.index': new Proxy({}, {get: (o, k) => typeof k === 'string' && k.includes('#') ? o[k] ?? [] : o[k], has: () => true})})}; return {get: store(area), set: o => { Object.assign(area, o); return Promise.resolve(); }, remove: k => { [k].flat().forEach(x => delete area[x]); return Promise.resolve(); }, area}; })(),
+      session: (() => { const area = {'cached-objects': objs, 'resolved.links': [], ...(q.get('scenario') === 'files' ? {} : {'files.index': new Proxy({}, {get: (o, k) => typeof k === 'string' && k.includes('#') ? o[k] ?? [] : o[k], has: () => true})})}; return {get: store(area), set: o => { Object.assign(area, o); return Promise.resolve(); }, remove: k => { [k].flat().forEach(x => delete area[x]); return Promise.resolve(); }, getKeys: () => Promise.resolve(Object.keys(area)), area}; })(),
       local: {get: store(local), set: (o) => { window.__set.push(o); Object.assign(local, o); return Promise.resolve(); }},
       onChanged: {addListener() {}}
     },
@@ -302,5 +303,21 @@
   const realFetch = window.fetch;
   window.__prints = 0;
   window.__printed = [];
-  window.fetch = (url, o) => String(url).includes('view=pt') && window.__printed.push(String(url)) && ++window.__prints ? Promise.resolve(new Response(q.get('wide') ? wide : window.__printLong ? long : page, {status: window.__printStatus || 200})) : realFetch(url, o);
+  // __printSignIn: Gmail sends the print view to Google's sign-in page; __printHang: it never
+  // answers (until the request is given up); __printBig: a thread of that many characters
+  window.fetch = (url, o) => {
+    if (!String(url).includes('view=pt')) {
+      return realFetch(url, o);
+    }
+    window.__printed.push(String(url));
+    ++window.__prints;
+    if (window.__printSignIn) {
+      return Promise.resolve({ok: true, status: 200, url: 'https://accounts.google.com/v3/signin/identifier', text: async () => '<html><body>Sign in</body></html>'});
+    }
+    if (window.__printHang) {
+      return new Promise((resolve, reject) => o?.signal?.addEventListener('abort', () => reject(new DOMException('timeout', 'TimeoutError'))));
+    }
+    const body = window.__printBig ? page.replace('— Аня', '— Аня' + 'ж'.repeat(window.__printBig)) : q.get('wide') ? wide : window.__printLong ? long : page;
+    return Promise.resolve(new Response(body, {status: window.__printStatus || 200}));
+  };
 })();

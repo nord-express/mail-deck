@@ -16,16 +16,38 @@ gmail.get = {
 
 /* gmail.body */
 {
+  // what a print view is waited for: one that never comes would hold the reader, and the line
+  // of the ones read ahead, for good
+  const WAIT = 15000;
+  const host = href => {
+    try {
+      return new URL(href).host;
+    }
+    catch (e) {
+      return '';
+    }
+  };
   // the thread's print view; a mail back from snooze answers msg= with 400, so th= gets a try too
   const print = async (url, thread) => {
     let status;
     for (const key of ['msg', 'th']) {
       const href = url + '/?ui=2&view=pt&dsqt=1&search=all&' + key + '=' + thread;
       const r = await fetch(href, {
-        credentials: 'include'
+        credentials: 'include',
+        signal: AbortSignal.timeout(WAIT)
       });
       if (r.ok) {
-        return {href, content: await r.text()};
+        // An account signed out, or one that took another's place, is sent to Google's sign-in
+        // page, which answers 200; a page without a message is no print view either. Neither is
+        // kept, so the mail loads once the account is back.
+        if (r.url && host(r.url) !== host(href)) {
+          throw Error('body -> signed out');
+        }
+        const content = await r.text();
+        if (!/<table[^>]*\bclass=["']?message\b/i.test(content)) {
+          throw Error('body -> no message');
+        }
+        return {href, content};
       }
       status = r.status;
       if (status !== 400) {
@@ -38,23 +60,53 @@ gmail.get = {
   // The print views of the last mails opened or pointed at stay for the browser
   // session (in memory, not on disk), so such a mail opens again at once. A
   // version, the feed's time of the thread, keeps a thread with new mail apart.
+  // The session storage holds 10 MB for all the extension keeps there (a
+  // notification's buttons, the mail resolved, the accounts), so these take 3 MB
+  // at most, and a print view larger than 300 KB is not kept.
   const KEEP = 12;
-  const LARGEST = 800000;
+  const BUDGET = 3 * 1024 * 1024;
+  const LARGEST = 300 * 1024;
   const STORE = 'print:';
+  // [[key, bytes]], the newest first
   const INDEX = 'print.index';
+  const bytes = value => new TextEncoder().encode(JSON.stringify(value)).length;
   let writing = Promise.resolve();
   const keep = (key, value) => writing = writing.then(async () => {
-    if (value.content.length > LARGEST) {
+    const size = bytes(value) + STORE.length + key.length;
+    if (size > LARGEST) {
       return;
     }
     const {[INDEX]: index = []} = await chrome.storage.session.get(INDEX);
-    const next = [key, ...index.filter(k => k !== key)];
-    await chrome.storage.session.set({[STORE + key]: value, [INDEX]: next.slice(0, KEEP)});
-    if (next.length > KEEP) {
-      await chrome.storage.session.remove(next.slice(KEEP).map(k => STORE + k));
+    // an index of an earlier version names the keys alone
+    const old = (Array.isArray(index) ? index : []).map(x => Array.isArray(x) ? x : [x, LARGEST]).filter(([k]) => k !== key);
+    const next = [[key, size]];
+    let total = size;
+    for (const x of old) {
+      if (next.length < KEEP && total + x[1] <= BUDGET) {
+        next.push(x);
+        total += x[1];
+      }
     }
+    // the room first, then the new one
+    const gone = old.filter(x => !next.includes(x)).map(([k]) => STORE + k);
+    if (gone.length) {
+      await chrome.storage.session.remove(gone);
+    }
+    await chrome.storage.session.set({[STORE + key]: value, [INDEX]: next});
   }).catch(() => {});
   const kept = key => chrome.storage.session.get(STORE + key).then(prefs => prefs[STORE + key], () => null);
+  // A print view written by a panel that closed between its two writes, or by the popup and the
+  // side panel at the same moment, is in no index: such ones go, a while after the panel opens.
+  setTimeout(() => writing = writing.then(async () => {
+    const session = chrome.storage.session;
+    const keys = session.getKeys ? await session.getKeys() : Object.keys(await session.get(null));
+    const {[INDEX]: index = []} = await session.get(INDEX);
+    const listed = new Set((Array.isArray(index) ? index : []).map(x => STORE + (Array.isArray(x) ? x[0] : x)));
+    const lost = keys.filter(k => k.startsWith(STORE) && !listed.has(k));
+    if (lost.length) {
+      await session.remove(lost);
+    }
+  }).catch(() => {}), 3000);
 
   // The print views this panel fetched, the last few, by thread and version: a mail's files,
   // read ahead for its line, and its body, opened later, take one request. The ones read ahead
@@ -113,8 +165,29 @@ gmail.get = {
     return p;
   };
 
-  // one rendering per mail and panel, however many times it is pointed at or opened
-  const cache = {};
+  // One rendering per mail and panel, however many times it is pointed at or opened: the last
+  // few, a parsed thread being large and a side panel staying open for days. A rendering that
+  // shows nothing is not kept.
+  const RENDERED = 20;
+  const cache = new Map();
+  const rendered = (id, make) => {
+    let p = cache.get(id);
+    if (!p) {
+      p = make().then(node => {
+        if (!node) {
+          throw Error('body -> empty');
+        }
+        return node;
+      });
+      p.catch(() => cache.get(id) === p && cache.delete(id));
+    }
+    cache.delete(id);
+    cache.set(id, p);
+    while (cache.size > RENDERED) {
+      cache.delete(cache.keys().next().value);
+    }
+    return p;
+  };
 
   gmail.body = (link, mode, version = '') => {
     link = link.replace('http://', 'https://');
@@ -125,19 +198,14 @@ gmail.get = {
       return Promise.reject(Error('body -> Error at resolving thread. Please switch back to the summary mode.'));
     }
     const key = link + '#' + version;
-    const id = key + (mode ? '#html' : '#text');
-    if (!cache[id]) {
-      cache[id] = (async () => {
-        const got = await page(link, version, true);
-        // the mails pointed at or opened are the ones kept for the session
-        if (version && !got.saved) {
-          keep(key, got);
-        }
-        return gmail.render[mode ? 'getHTMLText' : 'getPlainText'](got.content, got.href);
-      })();
-      cache[id].catch(() => delete cache[id]);
-    }
-    return cache[id];
+    return rendered(key + (mode ? '#html' : '#text'), async () => {
+      const got = await page(link, version, true);
+      // the mails pointed at or opened are the ones kept for the session
+      if (version && !got.saved) {
+        keep(key, got);
+      }
+      return gmail.render[mode ? 'getHTMLText' : 'getPlainText'](got.content, got.href);
+    });
   };
 
   // The files of a thread, for its line in the list before it is opened: [{name, view,
@@ -147,14 +215,19 @@ gmail.get = {
   let index = null;
   const files = {};
   const loadIndex = () => index ||= chrome.storage.session.get(FILES).then(prefs => prefs[FILES] || {}, () => ({}));
+  // written once the answers of a moment are in, not once for each line
   let saving = Promise.resolve();
-  const save = () => saving = saving.then(async () => {
-    const all = await loadIndex();
-    const keys = Object.keys(all);
-    // the oldest answers go first
-    keys.slice(0, Math.max(0, keys.length - FILES_MAX)).forEach(k => delete all[k]);
-    await chrome.storage.session.set({[FILES]: all});
-  }).catch(() => {});
+  let saveTimer;
+  const save = () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => saving = saving.then(async () => {
+      const all = await loadIndex();
+      const keys = Object.keys(all);
+      // the oldest answers go first
+      keys.slice(0, Math.max(0, keys.length - FILES_MAX)).forEach(k => delete all[k]);
+      await chrome.storage.session.set({[FILES]: all});
+    }).catch(() => {}), 500);
+  };
   gmail.files = (link, version = '') => {
     link = link.replace('http://', 'https://');
     const key = link + '#' + version;
@@ -183,24 +256,19 @@ gmail.get = {
   // messages, which stay for the session like a print view.
   gmail.serviceBody = (link, version = '') => {
     const key = link + '#' + version;
-    const id = key + '#service';
-    if (!cache[id]) {
-      cache[id] = (async () => {
-        const saved = version ? await kept(key) : null;
-        const page = saved || await chrome.runtime.sendMessage({method: 'services.body', link}).then(r => {
-          if (!Array.isArray(r?.messages)) {
-            throw Error(r?.message || 'body -> service failed');
-          }
-          return {href: link, content: JSON.stringify(r.messages)};
-        });
-        if (version && !saved) {
-          keep(key, page);
+    return rendered(key + '#service', async () => {
+      const saved = version ? await kept(key) : null;
+      const page = saved || await chrome.runtime.sendMessage({method: 'services.body', link}).then(r => {
+        if (!Array.isArray(r?.messages)) {
+          throw Error(r?.message || 'body -> service failed');
         }
-        return gmail.render.messages(JSON.parse(page.content), link);
-      })();
-      cache[id].catch(() => delete cache[id]);
-    }
-    return cache[id];
+        return {href: link, content: JSON.stringify(r.messages)};
+      });
+      if (version && !saved) {
+        keep(key, page);
+      }
+      return gmail.render.messages(JSON.parse(page.content), link);
+    });
   };
 }
 

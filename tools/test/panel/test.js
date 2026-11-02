@@ -118,7 +118,8 @@
       await until(() => chrome.storage.session.area['extra.cache']);
       out.firstOpenSearches = sent('gmail.search').length;
       out.cached = Object.keys(chrome.storage.session.area['extra.cache'] || {}).length;
-      extraLoaded = false;
+      extraFound.clear();
+      extraSaved = null;
       state.extra.clear();
       const asked = sent('gmail.search').length;
       await loadExtra();
@@ -499,6 +500,8 @@
       out.stripFiles = [...document.querySelectorAll('#reader-files .file-chip .name')].map(n => n.textContent);
       out.download = document.querySelector('#reader-files .file-dl')?.title || '';
       out.noSecondPrint = printsOf() === before;
+      // written once the answers of a moment are in
+      await until(() => Object.keys(chrome.storage.session.area['files.index'] || {}).length);
       out.kept = Object.keys(chrome.storage.session.area['files.index'] || {}).length;
     }
 
@@ -1026,6 +1029,8 @@
     }
 
     if (scenario === 'reliable') {
+      // a print view in no index (a panel closed between its writes), there when the panel opens
+      chrome.storage.session.area['print:lost#v'] = {href: 'x', content: 'x'};
       const listed = () => [...document.querySelectorAll('#list .row')].map(r => gmail.get.id(r.dataset.link));
       // a mail archived from Gmail's search leaves the feed's list too: the same thread, printed otherwise
       document.getElementById('search').hidden = false;
@@ -1051,6 +1056,107 @@
       out.partial = listed();
       out.partialToast = document.getElementById('toast').classList.contains('error');
       window.__actionFails = null;
+
+      // with auto-advance, an action in a mail opened from a list of its own (the assistant's)
+      // goes on along that list, which the reader still counts
+      state.autoAdvance = true;
+      const evgeny = state.objs.find(o => o.xml.title === 'evgeny@example.com');
+      const extra = state.extra.get('evgeny@example.com') || [];
+      const trail = new Map([evgeny.xml.entries[0], ...extra.slice(0, 2)].map(e => [e.link, {e, o: evgeny}]));
+      read(evgeny.xml.entries[0], evgeny, trail);
+      await wait(200);
+      const pos = () => document.getElementById('reader-bar').querySelector('.pos')?.textContent;
+      out.trailBefore = pos();
+      actFromReader('rc_^i', evgeny.xml.entries[0]);
+      await wait(250);
+      out.trailAfter = [pos(), document.getElementById('reader-subject').firstChild?.textContent];
+      key(document, 'KeyJ');
+      await wait(200);
+      out.trailJ = pos();
+      key(document, 'Escape');
+      await wait(100);
+      undo();
+      await wait(250);
+      state.autoAdvance = false;
+
+      // a side panel asks again for a mailbox's mail past the feed's 20 once its count moves, a
+      // while after the last time; after accounts change places, each is asked at its own place
+      const searches = () => sent('gmail.search').filter(m => m.query.includes('is:unread')).length;
+      const before = searches();
+      update(JSON.parse(JSON.stringify(state.objs)));
+      await wait(100);
+      out.extraSameCount = searches() - before;
+      const moved = JSON.parse(JSON.stringify(state.objs));
+      moved[0].xml.fullcount += 1;
+      update(moved);
+      await wait(100);
+      out.extraTooSoon = searches() - before;
+      extraFound.forEach(f => f.at -= 3 * 60 * 1000);
+      update(JSON.parse(JSON.stringify(moved)));
+      await until(() => searches() > before);
+      out.extraAgain = searches() - before;
+      const swap = JSON.parse(JSON.stringify(state.objs).replace(/mail\/u\/([01])/g, (m, n) => 'mail/u/' + (1 - n)));
+      update(swap);
+      await wait(300);
+      out.extraAtPlace = [...state.extra].every(([name, list]) => {
+        const o = state.objs.find(x => accountName(x) === name);
+        return list.every(e => e.link.startsWith(o.xml.rootLink + '?'));
+      });
+      out.extraAsked = sent('gmail.search').filter(m => m.query.includes('is:unread')).slice(-2).map(m => m.url).sort();
+
+      // what the panel knows of mail no longer listed goes
+      state.files.set('https://mail.google.com/mail/u/0?message_id=gone#v', []);
+      state.replies.set('evgeny@example.com|gone|v', {reply: true});
+      replySeen.add('evgeny@example.com|gone|v');
+      update(JSON.parse(JSON.stringify(state.objs)));
+      out.pruned = !state.files.has('https://mail.google.com/mail/u/0?message_id=gone#v') && !state.replies.has('evgeny@example.com|gone|v') &&
+        !replySeen.has('evgeny@example.com|gone|v') && state.files.size > 0;
+
+      // a print view Gmail sends to its sign-in page fails, is not kept, and loads once the account is back
+      const link = id => `https://mail.google.com/mail/u/2?account_id=x&message_id=${id}&view=conv&extsrc=atom`;
+      const shows = node => Boolean(node?.querySelector?.('.thread, details.msg') || node?.classList?.contains('thread'));
+      window.__printSignIn = true;
+      out.signIn = await gmail.body(link('away'), true, 'v').then(shows, () => 'failed');
+      await wait(100);
+      out.signInKept = (chrome.storage.session.area['print.index'] || []).some(([k]) => k.includes('away'));
+      window.__printSignIn = false;
+      out.signInBack = await gmail.body(link('away'), true, 'v').then(shows, () => 'failed');
+      // one that never answers is given up, and the reader says so
+      const timeout = AbortSignal.timeout;
+      AbortSignal.timeout = ms => timeout.call(AbortSignal, ms / 100);
+      window.__printHang = true;
+      const hung = 'https://mail.google.com/mail/u/1?account_id=x&message_id=hung&view=conv&extsrc=atom';
+      out.hung = await gmail.body(hung, true, 'v').then(() => 'loaded', e => String(e.name || e));
+      window.__printHang = false;
+      AbortSignal.timeout = timeout;
+
+      // the renderings kept are the last 20
+      const first = await gmail.body(link('r0'), true, 'v');
+      out.renderKept = await gmail.body(link('r0'), true, 'v') === first;
+      for (let i = 1; i <= 20; i += 1) {
+        await gmail.body(link('r' + i), true, 'v');
+      }
+      out.renderDropped = await gmail.body(link('r0'), true, 'v') !== first;
+
+      // the print views kept for the session stay within 3 MB, and one over 300 KB is not kept
+      window.__printBig = 120000;
+      for (let i = 0; i < 14; i += 1) {
+        await gmail.body(link('big' + i), true, 'v');
+      }
+      window.__printBig = 200000;
+      await gmail.body(link('huge'), true, 'v');
+      window.__printBig = 0;
+      await wait(300);
+      const area = chrome.storage.session.area;
+      const prints = Object.keys(area).filter(k => k.startsWith('print:') && k !== 'print:lost#v');
+      const size = k => new TextEncoder().encode(JSON.stringify(area[k])).length + k.length;
+      out.printBytes = prints.reduce((n, k) => n + size(k), 0);
+      out.printIndexed = JSON.stringify(area['print.index'].map(([k]) => 'print:' + k).sort()) === JSON.stringify(prints.sort());
+      out.hugeKept = prints.some(k => k.includes('huge'));
+
+      // the print view in no index goes a while after the panel opened
+      await until(() => !('print:lost#v' in area), 4000);
+      out.lostGone = !('print:lost#v' in area);
     }
 
     if (scenario === 'narrow') {

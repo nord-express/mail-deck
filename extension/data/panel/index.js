@@ -88,9 +88,9 @@ const state = {
   pending: null, // the action waiting for its Undo: {cmd, links, ready, timer}
   // threads with a star; the feed does not tell, Gmail's search does
   starred: new Set(),
-  // what the feed leaves out: its 20 entries are all it lists of a mailbox. link of the mailbox -> entries
+  // what the feed leaves out: its 20 entries are all it lists of a mailbox. accountName -> entries
   extra: new Map(),
-  expanded: new Set(), // mailboxes showing their extra mail
+  expanded: new Set(), // mailboxes showing their extra mail, by accountName
   search: null, // {q, busy, results: [{o, entries, failed}]}
   accounts: {}, // every address the extension has seen, with its settings
   order: [], // the mailboxes, by name, in the order they were dragged to
@@ -424,49 +424,82 @@ const unreadQuery = o => {
   }
   return 'label:' + label.toLowerCase().replace(/[\s/&]+/g, '-') + ' is:unread';
 };
-// once a panel: the stars, and the unread mail past the feed's 20. What the search
-// found stays a few minutes for a mailbox whose count has not moved, so a panel
-// opened again shows it at once and asks Gmail nothing.
+// The stars, and the unread mail past the feed's 20: asked once a panel opens, and again when a
+// mailbox's count moves, at most once in a few minutes (a side panel stays open for days). What
+// the search found stays that long for a mailbox whose count has not moved, so a panel opened
+// again shows it at once and asks Gmail nothing. A mailbox goes by its address and label
+// (accountName): its place in the browser (/u/<n>) moves when an account before it signs out,
+// and what was found before names the old place, so it is asked again.
 const EXTRA = 'extra.cache';
 const EXTRA_MS = 3 * 60 * 1000;
-let extraLoaded = false;
-// an action here makes the answers old; the next panel asks again
+// what this panel found of each mailbox: name -> {at, fullcount, rootLink, entries}
+const extraFound = new Map();
+// the session's answers, read once a panel
+let extraSaved = null;
+// the last action here: what was found before it is not given to the next panel
+let extraForgot = 0;
+// an action here makes the answers old: the next panel asks again, this one once the count moves
 const forgetExtra = () => {
-  extraLoaded = 'stale';
+  extraForgot = Date.now();
+  extraSaved = Promise.resolve({});
   chrome.storage.session.remove(EXTRA);
 };
 const loadExtra = async () => {
-  if (extraLoaded || state.objs.length === 0) {
+  if (state.objs.length === 0) {
     return;
   }
-  extraLoaded = true;
-  const {[EXTRA]: saved = {}} = await chrome.storage.session.get(EXTRA);
-  const kept = {};
-  const use = (o, entries) => {
-    entries.filter(e => e.starred).forEach(e => state.starred.add(thread(e.link)));
+  const saved = await (extraSaved ||= chrome.storage.session.get(EXTRA).then(prefs => prefs[EXTRA] || {}, () => ({})));
+  const use = (o, found) => {
+    extraFound.set(accountName(o), found);
+    found.entries.filter(e => e.starred).forEach(e => state.starred.add(thread(e.link)));
     const listed = new Set(o.xml.entries.map(e => thread(e.link)));
-    state.extra.set(o.xml.link, entries.filter(e => !listed.has(thread(e.link))));
+    state.extra.set(accountName(o), found.entries.filter(e => !listed.has(thread(e.link))));
   };
   const asks = [];
+  let changed = false;
   for (const o of state.objs) {
+    const name = accountName(o);
     const query = unreadQuery(o);
-    if (!query || !o.xml.fullcount || o.meta?.ignored) {
+    const had = extraFound.get(name);
+    // nothing left past the feed's 20, or found at another place
+    if (!query || !o.xml.fullcount || o.meta?.ignored || (had && had.rootLink !== o.xml.rootLink)) {
+      changed = state.extra.delete(name) || changed;
+      extraFound.delete(name);
+      if (!query || !o.xml.fullcount || o.meta?.ignored) {
+        continue;
+      }
+    }
+    const found = extraFound.get(name);
+    // its count has not moved, or it was asked a moment ago
+    if (found && (found.fullcount === o.xml.fullcount || Date.now() - found.at < EXTRA_MS)) {
       continue;
     }
-    const old = saved[o.xml.link];
-    if (old && Date.now() - old.at < EXTRA_MS && old.fullcount === o.xml.fullcount) {
-      use(o, old.entries);
-      kept[o.xml.link] = old;
+    const old = saved[name];
+    if (!found && old && Date.now() - old.at < EXTRA_MS && old.fullcount === o.xml.fullcount && old.rootLink === o.xml.rootLink) {
+      use(o, old);
+      changed = true;
       continue;
     }
+    // asked once at a time: an answer still on its way counts as found
+    const asking = {at: Date.now(), fullcount: o.xml.fullcount, rootLink: o.xml.rootLink, entries: found?.entries || [], pending: true};
+    extraFound.set(name, asking);
     asks.push(searchIn(o, query).then(entries => {
+      if (extraFound.get(name) !== asking) {
+        return;
+      }
       if (entries) {
-        use(o, entries);
-        kept[o.xml.link] = {at: Date.now(), fullcount: o.xml.fullcount, entries};
+        use(o, {at: asking.at, fullcount: asking.fullcount, rootLink: asking.rootLink, entries});
+      }
+      // Gmail did not answer: asked again at the next check
+      else if (found) {
+        extraFound.set(name, found);
+      }
+      else {
+        extraFound.delete(name);
       }
     }));
   }
-  if (Object.keys(kept).length) {
+  if (changed) {
     render();
     paintStar();
   }
@@ -476,7 +509,9 @@ const loadExtra = async () => {
     paintStar();
     scheduleReplies();
   }
-  if (extraLoaded === true) {
+  // for the next panel: what was found since the last action here
+  if (changed || asks.length) {
+    const kept = Object.fromEntries([...extraFound].filter(([, f]) => f.at > extraForgot && !f.pending));
     chrome.storage.session.set({[EXTRA]: kept});
   }
 };
@@ -969,9 +1004,9 @@ const row = (e, o) => {
 // narrows it to that mail, all of it at once (the site's, the mail waiting for a reply)
 const section = (o, keep) => {
   // the mail past the feed's 20, from the search; what was acted on here leaves the count as well
-  const all = state.extra.get(o.xml.link) || [];
+  const all = state.extra.get(accountName(o)) || [];
   const extra = all.filter(e => !state.hidden.has(e.link));
-  const open = Boolean(keep) || state.expanded.has(o.xml.link);
+  const open = Boolean(keep) || state.expanded.has(accountName(o));
   const entries = (open ? [...o.xml.entries, ...extra] : o.xml.entries).filter(e => !keep || keep(e, o));
   const n = keep ? entries.length : Math.max(0, o.xml.fullcount - (all.length - extra.length));
   const links = entries.map(e => e.link);
@@ -991,7 +1026,7 @@ const section = (o, keep) => {
     ),
     entries.length > 0 && h('div', {class: 'cards'}, entries.map(e => row(e, o)),
       !open && extra.length > 0 ? h('button', {class: 'more', type: 'button', onclick: () => {
-        state.expanded.add(o.xml.link);
+        state.expanded.add(accountName(o));
         // the button goes; the first mail it brought takes the focus
         state.focus = extra[0].link;
         render();
@@ -1102,7 +1137,7 @@ const siteMail = (site, objs) => {
   const seen = new Set();
   const found = [];
   for (const o of objs) {
-    const extra = (state.extra.get(o.xml.link) || []).filter(e => !state.hidden.has(e.link));
+    const extra = (state.extra.get(accountName(o)) || []).filter(e => !state.hidden.has(e.link));
     for (const e of [...o.xml.entries, ...extra]) {
       // a mailbox watched through labels lists a mail twice
       if (!seen.has(e.link) && ofSite(e, site)) {
@@ -1336,6 +1371,19 @@ const render = () => {
     document.querySelector(path)?.focus({preventScroll: true});
   }
 };
+// What the panel knows of mail no longer listed goes (its files, the assistant's sorting): a side
+// panel stays open for days. Mail listed again is asked about again.
+const prune = () => {
+  const mail = [
+    ...state.objs.flatMap(o => [...o.xml.entries, ...state.extra.get(accountName(o)) || []].map(e => ({e, o}))),
+    ...(state.search?.results || []).flatMap(r => r.entries.map(e => ({e, o: r.o})))
+  ];
+  const files = new Set(mail.map(({e}) => fileKey(e)));
+  const ids = new Set(mail.map(({e, o}) => replyId(e, o)));
+  [...state.files.keys()].filter(k => !files.has(k)).forEach(k => state.files.delete(k));
+  [...state.replies.keys()].filter(k => !ids.has(k)).forEach(k => state.replies.delete(k));
+  [...replySeen].filter(k => !ids.has(k)).forEach(k => replySeen.delete(k));
+};
 const update = objs => {
   state.objs = objs || [];
   // the search's mail counts as listed too, the feed never lists it
@@ -1349,6 +1397,7 @@ const update = objs => {
       state.hidden.delete(link);
     }
   }
+  prune();
   // A check that found nothing new, every two minutes, leaves the list as it is: the focus,
   // the pointer's line and its pictures stay; only the times move on. Mail folding away
   // after its action draws the list itself once the fold is done.
@@ -1455,13 +1504,15 @@ const stepReader = step => {
     read(r.e, r.o);
   }
 };
-// an action from the reader: back to the list, or on to the next mail when the settings say so
+// an action from the reader: back to the list, or on to the next mail when the settings say so,
+// along the same mail as before (the assistant's, a search's), which back() lets go of
 const actFromReader = (cmd, e, until) => {
   const next = state.autoAdvance ? besideOpen(e.link, 1) || besideOpen(e.link, -1) : null;
+  const trail = state.trail;
   back();
   act(cmd, [e.link], until);
   if (next) {
-    read(next.e, next.o);
+    read(next.e, next.o, trail);
   }
 };
 // trail: the mail J and K walk, the list's when none is given
@@ -2202,7 +2253,7 @@ const replySeen = new Set();
 const replyId = (e, o) => o.xml.title + '|' + thread(e.link) + '|' + (e.modified || '');
 const replyOf = (e, o) => state.replies.get(replyId(e, o));
 // the mail the list shows, with what Gmail's search added past the feed's 20
-const shownMail = objs => objs.flatMap(o => [...o.xml.entries, ...(state.extra.get(o.xml.link) || [])
+const shownMail = objs => objs.flatMap(o => [...o.xml.entries, ...(state.extra.get(accountName(o)) || [])
   .filter(e => !state.hidden.has(e.link))].map(e => ({e, o})));
 // the kinds the assistant sorts unread mail into, each a chip that narrows the list to it
 const SORTS = {
