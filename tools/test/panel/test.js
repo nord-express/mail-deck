@@ -357,8 +357,8 @@
       out.focusAfterUndo = focus();
 
       // a chip, and "show more", keep the keys where they were
-      // (the mailboxes' chips: the assistant's offer stands before them)
-      const chips = () => [...document.querySelectorAll('#chips .chip:not(.ai-offer)')];
+      // (the mailboxes' chips: Gmail's categories and the assistant's offer stand before them)
+      const chips = () => [...document.querySelectorAll('#chips .chip:not(.ai-offer, .cat-chip)')];
       chips()[1]?.focus();
       chips()[1]?.click();
       await wait(50);
@@ -1461,6 +1461,16 @@
       out.width = innerWidth;
       out.buttons = [...head.querySelectorAll('.icon-btn')].filter(shown).map(b => b.dataset.focus + ':' + Math.round(b.getBoundingClientRect().width));
       out.addr = Math.round(head.querySelector('.addr').getBoundingClientRect().width);
+      // Gmail's categories say their count; narrowed to one, its name stays whole over the buttons
+      await until(() => document.querySelectorAll('#chips .cat-chip').length === 3);
+      out.catShort = [...document.querySelectorAll('#chips .cat-chip')].map(c => getComputedStyle(c.querySelector('.full')).display + ':' + c.querySelector('.short').textContent);
+      document.querySelector('#chips .updates-chip').click();
+      await wait(50);
+      const what = document.querySelector('#list .sort-bar .sort-what .label').getBoundingClientRect();
+      const first = document.querySelector('#list .sort-bar .text-btn').getBoundingClientRect();
+      out.barWraps = what.width >= 40 && first.top >= what.bottom - 1;
+      key(document, 'Escape');
+      await wait(50);
       document.querySelector('#list .row').click();
       await wait(350);
       const bar = document.getElementById('reader-bar');
@@ -1469,6 +1479,93 @@
       const name = document.getElementById('reader-name').getBoundingClientRect();
       const date = document.getElementById('reader-date').getBoundingClientRect();
       out.dateBelow = date.top >= name.bottom - 1 && date.width > 0;
+    }
+
+    if (scenario === 'cats' || scenario === 'catsearch') {
+      // Gmail's own categories: a chip each, before the assistant's offer and the mailboxes
+      const $ = id => document.getElementById(id);
+      const ids = () => [...document.querySelectorAll('#list .row')].map(r => r.dataset.link.match(/message_id=([^&]*)/)[1]);
+      const asked = () => sent('gmail.search').filter(m => m.query.includes('category:')).map(m => m.query + '@' + m.url.slice(-1));
+      await until(() => $('chips').querySelectorAll('.cat-chip').length === 3);
+      out.chips = [...$('chips').children].map(c => c.matches('.chip-sep') ? '|' : c.matches('.cat-chip') ? c.dataset.focus.slice(5) : c.matches('.ai-offer') ? 'ai' : 'box');
+      out.labels = [...$('chips').querySelectorAll('.cat-chip')].map(c => c.getAttribute('aria-label'));
+      out.tip = $('chips').querySelector('.promo-chip').dataset.tip;
+      out.asked = asked();
+      if (scenario === 'catsearch') {
+        // kept for the next panel, which asks nothing; a count that moves is asked again a while later
+        out.kept = Object.keys(chrome.storage.session.area['categories.cache'] || {});
+        catFound.clear();
+        catSaved = null;
+        await loadCategories();
+        out.secondAsks = asked().length - out.asked.length;
+        out.secondChips = $('chips').querySelectorAll('.cat-chip').length;
+        const moved = JSON.parse(JSON.stringify(state.objs));
+        moved[0].xml.fullcount += 1;
+        update(moved);
+        await wait(150);
+        out.tooSoon = asked().length - out.asked.length;
+        extraFound.forEach(f => f.at -= 3 * 60 * 1000);
+        catFound.forEach(f => f.at -= 3 * 60 * 1000);
+        update(JSON.parse(JSON.stringify(moved)));
+        await until(() => asked().length > out.asked.length);
+        await wait(100);
+        out.again = asked().length - out.asked.length;
+      }
+      // a chip narrows the list to its mail, with all of it read at once, and Undo
+      $('chips').querySelector('.updates-chip').click();
+      await wait(50);
+      out.narrowed = ids();
+      out.pressed = $('chips').querySelector('.updates-chip').getAttribute('aria-pressed');
+      out.bar = $('list').querySelector('.sort-bar .sort-what .sr')?.textContent;
+      out.barShown = [...$('list').querySelectorAll('.sort-bar .sort-what > span[aria-hidden]')].map(el => el.textContent);
+      $('list').querySelector('[data-focus="sort:read"]').click();
+      await wait(300);
+      const read = sent('gmail.action').at(-1);
+      out.readAll = read?.cmd === 'rd' && read.links.map(l => l.match(/message_id=([^&]*)/)[1]).sort().join() === 'a2,a3';
+      // all of it gone, the list lets go of the chip; Z brings it back
+      out.letGoWhenDone = !state.sortOnly && !$('chips').querySelector('.updates-chip');
+      key(document, 'KeyZ');
+      await wait(100);
+      out.undone = sent('gmail.action.cancel').at(-1)?.id === read?.id && $('chips').querySelector('.updates-chip')?.getAttribute('aria-label') === t('updatesChip', 2);
+      // Archive all, for what can be archived
+      $('chips').querySelector('.promo-chip').click();
+      await wait(50);
+      out.promo = ids();
+      $('list').querySelector('[data-focus="sort:archive"]').click();
+      await wait(300);
+      const archived = sent('gmail.action').at(-1);
+      out.archived = archived?.cmd === 'rc_^i' && archived.links.length === 1 && archived.links[0].includes('message_id=a4');
+      key(document, 'KeyZ');
+      await wait(100);
+      // Esc lets go
+      $('chips').querySelector('.social-chip').click();
+      await wait(50);
+      out.social = ids();
+      key(document, 'Escape');
+      await wait(50);
+      out.escLetGo = !state.sortOnly && !$('chips').querySelector('.chip.on:not([data-focus="chip:"])') && rows() === 3;
+      // turned off in the settings: no chip, and a list narrowed to one lets go
+      $('chips').querySelector('.updates-chip').click();
+      await wait(50);
+      prefsChanged({gmailCategories: false});
+      render();
+      out.off = !$('chips').querySelector('.cat-chip') && !state.sortOnly && rows() === 3;
+      prefsChanged({gmailCategories: true});
+      render();
+      out.on = $('chips').querySelectorAll('.cat-chip').length === 3;
+      out.consoleClean = window.__errors.length === 0 || window.__errors;
+    }
+
+    if (scenario === 'catsai') {
+      // with the assistant sorting, its Newsletters stands for Promotions and Social; Updates stays
+      const $ = id => document.getElementById(id);
+      await until(() => state.ai.ok && $('chips').querySelectorAll('.sort-chip').length === 3 && $('chips').querySelector('.cat-chip'), 4000);
+      out.kinds = [...$('chips').querySelectorAll('.sort-chip, .cat-chip')].map(c => c.dataset.focus.slice(5));
+      out.noSearch = sent('gmail.search').filter(m => m.query.includes('category:') && !m.query.includes(' OR ')).length === 0;
+      // its sorting turned off: Gmail's three come back
+      state.ai.reply = false;
+      render();
+      out.withoutSorting = [...$('chips').querySelectorAll('.sort-chip, .cat-chip')].map(c => c.dataset.focus.slice(5));
     }
 
     if (scenario === 'wide') {

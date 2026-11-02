@@ -89,6 +89,15 @@ const run = (port, scenario, query = '', frame = 0) => new Promise(resolve => {
   chrome.on('error', e => done({error: 'cannot start ' + CHROME + ': ' + e.message}));
 });
 
+// what Gmail's categories do once their chips are up, found either way (cats, catsearch)
+const categoryChecks = r => ({
+  'a category\'s chip narrows the list to its mail, pressed, with how much over it': JSON.stringify(r.narrowed) === '["a2","a3"]' && r.pressed === 'true' &&
+    r.bar === T('updatesShown', 2) && JSON.stringify(r.barShown) === JSON.stringify([T('updatesList'), '2']),
+  'Mark all as read reads all of it; with none left the list lets go; Z brings it back': r.readAll && r.letGoWhenDone && r.undone,
+  'Archive all archives it; Esc lets go of the chip': JSON.stringify(r.promo) === '["a4"]' && r.archived && JSON.stringify(r.social) === '["a5"]' && r.escLetGo,
+  'turned off in the settings, no chip and no list narrowed to one; on again, they are back': r.off && r.on,
+  'nothing goes wrong unseen (categories)': r.consoleClean === true
+});
 const checks = {
   main: r => ({
     'the feed\'s mail shows': r.rowsBefore >= 3,
@@ -331,10 +340,32 @@ const checks = {
   pin: r => ({
     'the toolbar button not pinned: a line says what pinning gives; it goes once pinned, or closed for good': r.shown && r.goneWhenPinned && r.closed
   }),
+  cats: r => ({
+    'Gmail\'s categories: a chip each with its count, before the assistant\'s offer and the mailboxes':
+      JSON.stringify(r.chips) === '["promo","social","updates","ai","|","box","box","box"]' &&
+      JSON.stringify(r.labels) === JSON.stringify([T('promoChip', 1), T('socialChip', 1), T('updatesChip', 2)]) && r.tip === T('promoChip', 1) + ' — ' + T('categoryTip'),
+    'the labels of the search for the mail past the feed\'s 20 say them: nothing more is asked': JSON.stringify(r.asked) === '[]',
+    ...categoryChecks(r)
+  }),
+  catsearch: r => ({
+    'rows without the labels: each category searched for in that inbox alone, the same chips': JSON.stringify(r.asked) === JSON.stringify(
+      ['promotions', 'social', 'updates'].map(c => `in:inbox is:unread category:${c}@0`)) &&
+      JSON.stringify(r.labels) === JSON.stringify([T('promoChip', 1), T('socialChip', 1), T('updatesChip', 2)]),
+    'what was found is kept for the next panel, which asks nothing': JSON.stringify(r.kept) === '["evgeny@example.com"]' && r.secondAsks === 0 && r.secondChips === 3,
+    'a count that moves is asked again, not sooner than in 3 minutes': r.tooSoon === 0 && r.again === 3,
+    ...categoryChecks(r)
+  }),
+  catsai: r => ({
+    'with the assistant sorting, its Newsletters stands for Promotions and Social; Updates keeps its chip, with nothing asked':
+      JSON.stringify(r.kinds) === '["reply","important","bulk","updates"]' && r.noSearch,
+    'its sorting off, Gmail\'s three come back': JSON.stringify(r.withoutSorting) === '["promo","social","updates"]'
+  }),
   narrow: r => ({
     'a 320px side panel: the mailbox line keeps whole buttons, without copy and Meet, and a readable address':
       r.width === 320 && JSON.stringify(r.buttons) === '["readAll:32","archive:32","open:32"]' && r.addr >= 60,
     'a 320px side panel: the reader\'s bar stays inside': r.barInside,
+    'a 320px side panel: Gmail\'s categories say their count; narrowed to one, its name stays whole over its buttons':
+      JSON.stringify(r.catShort) === '["none:1","none:1","none:2"]' && r.barWraps,
     'a 320px side panel: the reader\'s date stands under the sender': r.dateBelow
   })
 };
@@ -345,7 +376,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ux', ''], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

@@ -376,6 +376,16 @@ check('an inbox left out of the count stays out of it in a backup', () => {
   assert.deepStrictEqual({...out.accounts['a@gmail.com']}, {ignored: false, quiet: false, uncounted: true});
   assert.deepStrictEqual({...out.accounts['b@gmail.com']}, {ignored: false, quiet: true});
 });
+check('Gmail\'s categories in the panel: on by default, a switch under Panel, in a backup', () => {
+  assert.strictEqual(page('DEFAULTS').gmailCategories, true);
+  const sanitize = page('sanitize');
+  assert.deepStrictEqual({...sanitize({gmailCategories: false})}, {gmailCategories: false});
+  assert.deepStrictEqual({...sanitize({gmailCategories: 'no'})}, {});
+  assert.ok(/<input type="checkbox" role="switch" data-key="gmailCategories">/.test(html));
+  for (const key of ['opt_gmailCategories', 'opt_gmailCategoriesText']) {
+    assert.ok(en[key]?.message, key);
+  }
+});
 check('an export holds the new settings, not the time the panel was last opened', async () => {
   Object.assign(local, {'badge.count': 'new', 'badge.seen': 123, 'notify.repeat': 30});
   const out = await page('collect(false)');

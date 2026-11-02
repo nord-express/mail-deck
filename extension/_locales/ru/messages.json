@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Ярлыки для $1"
     },
+    "opt_gmailCategories": {
+        "message": "Показывать категории Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Промоакции, Соцсети и Оповещения — фильтры над списком, как их разбирает сам Gmail. Пока почту разбирает ИИ, его фильтр «Рассылки» включает Промоакции и Соцсети."
+    },
     "opt_forgotten": {
         "message": "Список ящиков очищен"
     },
@@ -1313,6 +1319,36 @@
     },
     "panel_all": {
         "message": "Все"
+    },
+    "panel_promoChip": {
+        "message": "Промоакции · $1"
+    },
+    "panel_socialChip": {
+        "message": "Соцсети · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Оповещения · $1"
+    },
+    "panel_promoList": {
+        "message": "Промоакции"
+    },
+    "panel_socialList": {
+        "message": "Соцсети"
+    },
+    "panel_updatesList": {
+        "message": "Оповещения"
+    },
+    "panel_promoShown": {
+        "message": "Промоакции: $1"
+    },
+    "panel_socialShown": {
+        "message": "Соцсети: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Оповещения: $1"
+    },
+    "panel_categoryTip": {
+        "message": "По сортировке Gmail"
     },
     "panel_mailboxes": {
         "message": "Ящики"

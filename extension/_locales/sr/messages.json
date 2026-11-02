@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Ознаке за $1"
     },
+    "opt_gmailCategories": {
+        "message": "Прикажи Gmail категорије"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Промоције, Друштвене мреже и Ажурирања као филтери изнад листе, онако како Gmail разврстава пошту. Док пошту разврстава асистент, његов филтер „Билтени“ обухвата Промоције и Друштвене мреже."
+    },
     "opt_forgotten": {
         "message": "Списак сандучића је очишћен"
     },
@@ -1309,6 +1315,36 @@
     },
     "panel_all": {
         "message": "Све"
+    },
+    "panel_promoChip": {
+        "message": "Промоције · $1"
+    },
+    "panel_socialChip": {
+        "message": "Друштвене мреже · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Ажурирања · $1"
+    },
+    "panel_promoList": {
+        "message": "Промоције"
+    },
+    "panel_socialList": {
+        "message": "Друштвене мреже"
+    },
+    "panel_updatesList": {
+        "message": "Ажурирања"
+    },
+    "panel_promoShown": {
+        "message": "Промоције: $1"
+    },
+    "panel_socialShown": {
+        "message": "Друштвене мреже: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Ажурирања: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Разврстао Gmail"
     },
     "panel_mailboxes": {
         "message": "Сандучићи"

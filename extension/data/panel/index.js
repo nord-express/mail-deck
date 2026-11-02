@@ -41,7 +41,11 @@ const ICONS = {
   more: ['M5.5 12h.01', 'M12 12h.01', 'M18.5 12h.01'],
   pushpin: ['M8.5 3.5h7', 'M9.5 3.5v6l-3 3.5h11l-3-3.5v-6', 'M12 13v7.5'],
   keyboard: ['M4.5 6h15A1.5 1.5 0 0 1 21 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5v-9A1.5 1.5 0 0 1 4.5 6Z', 'M7 10h.01', 'M10.5 10h.01', 'M14 10h.01', 'M17 10h.01', 'M8.5 14h7'],
-  plus: ['M12 5v14', 'M5 12h14']
+  plus: ['M12 5v14', 'M5 12h14'],
+  // Gmail's own categories: Promotions, Social, Updates
+  tag: ['M3.5 12.1V4.5a1 1 0 0 1 1-1h7.6a1 1 0 0 1 .7.3l7.7 7.7a1 1 0 0 1 0 1.4l-7.6 7.6a1 1 0 0 1-1.4 0l-7.7-7.7a1 1 0 0 1-.3-.7Z', 'M8 8h.01'],
+  people: ['M9 11a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7Z', 'M2.5 20c.6-3.3 3.2-5.5 6.5-5.5s5.9 2.2 6.5 5.5', 'M16 4.3a3.5 3.5 0 0 1 0 6.4', 'M18.2 14.9c1.8.8 2.9 2.5 3.3 5.1'],
+  info: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M12 11v5', 'M12 8v.1']
 };
 // the strings live in _locales as panel_*; a language without one falls back to English
 const t = (key, ...subs) => chrome.i18n.getMessage('panel_' + key, subs.map(String)) || key;
@@ -106,7 +110,8 @@ const state = {
   // after a browser start, until the background has read the mail once: the list shows lines
   // that stand for it, never "Sign in" to someone signed in
   booting: false,
-  unpinned: false // the toolbar button is not pinned, and the hint about it not closed (pinHint)
+  unpinned: false, // the toolbar button is not pinned, and the hint about it not closed (pinHint)
+  categories: true // Gmail's own categories as chips over the list (Settings → Panel)
 };
 let refreshing = false;
 // the list drawn as one types in the search: nothing it draws may ask the network (searchList)
@@ -436,7 +441,9 @@ const fromSearch = (a, o) => {
     author_email: email,
     modified: date ? new Date(date).toISOString() : '',
     unread: labels.includes('^u'),
-    starred: labels.includes('STARRED')
+    starred: labels.includes('STARRED'),
+    // the tabs Gmail sorted the thread into, when the row says (categoriesOf)
+    cats: categoriesOf(labels)
   };
 };
 // Gmail may not answer at all; the panel does not wait longer than this
@@ -548,6 +555,117 @@ const loadExtra = async () => {
   if (changed || asks.length) {
     const kept = Object.fromEntries([...extraFound].filter(([, f]) => f.at > extraForgot && !f.pending));
     chrome.storage.session.set({[EXTRA]: kept});
+  }
+  loadCategories();
+};
+
+/* Gmail's own sorting of the inbox, its tabs: chips that narrow the list, with no AI */
+// Promotions and Social are what the assistant's Newsletters is made of (BULK_QUERY): while it
+// sorts the mail, its chip stands for them, and Updates keeps one of its own
+const CATEGORIES = {
+  promo: {icon: 'tag', query: 'category:promotions', labels: ['^smartlabel_promo', '^sq_ig_i_promo'], bulk: true},
+  social: {icon: 'people', query: 'category:social', labels: ['^smartlabel_social', '^sq_ig_i_social'], bulk: true},
+  updates: {icon: 'info', query: 'category:updates', labels: ['^smartlabel_notification', '^sq_ig_i_notification']}
+};
+// a label of that sorting, Primary's and Forums' as well
+const SORTED = /^\^(smartlabel|sq_ig_i)_/;
+// where a row of Gmail's search says its thread is: the categories it is in ([] for Primary), or
+// null for a row that carries no label of the sorting at all
+const categoriesOf = labels => labels.some(l => SORTED.test(l)) ?
+  Object.keys(CATEGORIES).filter(k => CATEGORIES[k].labels.some(l => labels.includes(l))) : null;
+// the categories that have a chip now
+const shownCategories = () => !state.categories ? [] :
+  Object.keys(CATEGORIES).filter(k => !(CATEGORIES[k].bulk && aiOn() && state.ai.reply));
+// The categories of a mailbox's unread mail come with the search for its mail past the feed's 20
+// (loadExtra): its rows' labels say them, and nothing more is asked. An inbox whose rows carry
+// none has each category searched for instead, asked as that search is (once its count moves, at
+// most once in a few minutes) and kept for the next panel too.
+const CATS = 'categories.cache';
+// what was found that way: name -> {at, fullcount, rootLink, threads: {promo: [thread...], ...}}
+const catFound = new Map();
+let catSaved = null;
+// a mailbox's thread -> its categories, from what was found of it; made once for each answer
+const catMaps = new WeakMap();
+const categoriesIn = o => {
+  const found = extraFound.get(accountName(o));
+  if (found && !catMaps.has(found)) {
+    catMaps.set(found, found.entries.some(e => e.cats) ? new Map(found.entries.map(e => [thread(e.link), e.cats || []])) : null);
+  }
+  if (found && catMaps.get(found)) {
+    return catMaps.get(found);
+  }
+  const searched = catFound.get(accountName(o));
+  if (searched && !catMaps.has(searched)) {
+    const map = new Map();
+    Object.entries(searched.threads).forEach(([kind, list]) => list.forEach(id => map.set(id, [...map.get(id) || [], kind])));
+    catMaps.set(searched, map);
+  }
+  return searched ? catMaps.get(searched) : null;
+};
+const inCategory = (kind, e, o) => shownCategories().includes(kind) && Boolean(categoriesIn(o)?.get(thread(e.link))?.includes(kind));
+const loadCategories = async () => {
+  if (!state.categories || state.objs.length === 0) {
+    return;
+  }
+  const saved = await (catSaved ||= chrome.storage.session.get(CATS).then(prefs => prefs[CATS] || {}, () => ({})));
+  const asks = [];
+  let changed = false;
+  for (const o of state.objs) {
+    const name = accountName(o);
+    const found = extraFound.get(name);
+    // its unread mail being asked for: what it had stays meanwhile
+    if (found?.pending) {
+      continue;
+    }
+    let had = catFound.get(name);
+    // an inbox with unread mail found, whose rows do not say where it is
+    if (unreadQuery(o) !== 'in:inbox is:unread' || !found?.entries.length || found.entries.some(e => e.cats)) {
+      changed = catFound.delete(name) || changed;
+      continue;
+    }
+    if (had && had.rootLink !== o.xml.rootLink) {
+      catFound.delete(name);
+      had = null;
+      changed = true;
+    }
+    if (had && (had.fullcount === o.xml.fullcount || Date.now() - had.at < EXTRA_MS)) {
+      continue;
+    }
+    const old = saved[name];
+    if (!had && old && Date.now() - old.at < EXTRA_MS && old.fullcount === o.xml.fullcount && old.rootLink === o.xml.rootLink) {
+      catFound.set(name, old);
+      changed = true;
+      continue;
+    }
+    const asking = {at: Date.now(), fullcount: o.xml.fullcount, rootLink: o.xml.rootLink, threads: had?.threads || {}, pending: true};
+    catFound.set(name, asking);
+    const kinds = Object.keys(CATEGORIES);
+    asks.push(Promise.all(kinds.map(k => searchIn(o, 'in:inbox is:unread ' + CATEGORIES[k].query))).then(lists => {
+      if (catFound.get(name) !== asking) {
+        return;
+      }
+      // every category answered, or none counts: asked again at the next check
+      if (lists.every(Boolean)) {
+        catFound.set(name, {at: asking.at, fullcount: asking.fullcount, rootLink: asking.rootLink,
+          threads: Object.fromEntries(kinds.map((k, i) => [k, lists[i].map(e => thread(e.link))]))});
+      }
+      else if (had) {
+        catFound.set(name, had);
+      }
+      else {
+        catFound.delete(name);
+      }
+    }));
+  }
+  if (changed) {
+    render();
+  }
+  if (asks.length) {
+    await Promise.all(asks);
+    render();
+  }
+  if (changed || asks.length) {
+    chrome.storage.session.set({[CATS]: Object.fromEntries([...catFound].filter(([, f]) => !f.pending))});
   }
 };
 
@@ -1012,15 +1130,37 @@ const renderChips = objs => {
     }
   }, state.site.domain, icon('close'));
   paintChipsEdge.observed ||= ($('chips').addEventListener('scroll', paintChipsEdge, {passive: true}), true);
-  const sorts = [...sortChips(objs), site].filter(Boolean);
+  // the kinds of mail first: the assistant's sorting before Gmail's categories, its offer after
+  // them; then the site's mail
+  const kinds = aiOn() ? [...sortChips(objs), ...categoryChips(objs)] : [...categoryChips(objs), ...sortChips(objs)];
+  const sorts = [...kinds, site].filter(Boolean);
   const boxes = busy.length < 2 || state.search ? [] : [
     chip(null, t('all'), busy.reduce((p, o) => p + o.xml.fullcount, 0)),
     ...busy.map(o => chip(o, short(o, busy) + (o.xml.label ? ` [${o.xml.label}]` : ''), o.xml.fullcount))
   ];
-  // a hairline between the assistant's sorting and the mailboxes
+  // a hairline between the kinds of mail and the mailboxes
   $('chips').replaceChildren(...sorts, ...(sorts.length && boxes.length ? [h('span', {'class': 'chip-sep', 'aria-hidden': 'true'})] : []), ...boxes);
+  fitChips();
   paintChipsEdge();
 };
+// The kinds of mail say their names while they fit the row (the mailboxes after them scroll);
+// past that their chips say only their count, as in a narrow panel, the names in their tooltips
+const fitChips = () => {
+  const el = $('chips');
+  el.classList.remove('tight');
+  const kinds = [...el.children].filter(c => !c.matches('.chip-sep, .chip-sep ~ *'));
+  const css = getComputedStyle(el);
+  const width = kinds.reduce((w, c) => w + c.offsetWidth, parseFloat(css.paddingInlineStart) + parseFloat(css.paddingInlineEnd) +
+    (kinds.length - 1) * (parseFloat(css.columnGap) || 0));
+  if (width > el.clientWidth + 1 && kinds.some(c => c.matches('.sort-chip, .cat-chip'))) {
+    el.classList.add('tight');
+  }
+};
+// a side panel made wider or narrower
+addEventListener('resize', () => {
+  fitChips();
+  paintChipsEdge();
+});
 
 // chips past the panel's edge fade out there, so the row says it scrolls
 const paintChipsEdge = () => {
@@ -1583,7 +1723,7 @@ const renderList = objs => {
   state.rows.clear();
 
   const shown = state.only ? objs.filter(o => o.xml.link === state.only) : objs;
-  const keep = state.siteOnly ? e => ofSite(e, state.site) : state.sortOnly ? (e, o) => SORTS[state.sortOnly].has(replyOf(e, o)) : null;
+  const keep = state.siteOnly ? e => ofSite(e, state.site) : state.sortOnly ? (e, o) => inKind(state.sortOnly, e, o) : null;
   list.ariaBusy = String(state.booting);
   list.replaceChildren(...(state.search ? searchList(objs, shown) : keep ? [
     state.sortOnly && sortBar(shown),
@@ -2760,7 +2900,10 @@ const SORTS = {
   important: {icon: 'flag', has: v => v?.important === true},
   bulk: {icon: 'bulk', has: v => v?.bulk === true}
 };
-const sortCount = (objs, kind) => shownMail(objs).filter(({e, o}) => SORTS[kind].has(replyOf(e, o))).length;
+// the mail of one of the list's views: a kind of the assistant's sorting, or one of Gmail's categories
+const inKind = (kind, e, o) => SORTS[kind] ? SORTS[kind].has(replyOf(e, o)) : inCategory(kind, e, o);
+const kindIcon = kind => (SORTS[kind] || CATEGORIES[kind]).icon;
+const sortCount = (objs, kind) => shownMail(objs).filter(({e, o}) => inKind(kind, e, o)).length;
 const replyCount = objs => sortCount(objs, 'reply');
 const replyMark = (e, o) => {
   const v = replyOf(e, o);
@@ -2815,14 +2958,34 @@ const sortChips = objs => {
     dot && h('span', {class: 'err-dot', 'aria-hidden': 'true'}));
   });
 };
+// One chip for each of Gmail's categories with unread mail in it, as the sorting's chips are: a
+// click narrows the list to that mail, with all of it read or archived at once (sortBar)
+const categoryChips = objs => state.search ? [] : shownCategories().map(kind => ({kind, n: sortCount(objs, kind)})).filter(({n}) => n > 0)
+  .map(({kind, n}) => {
+    const label = t(kind + 'Chip', n);
+    return h('button', {
+      'class': 'chip cat-chip ' + kind + '-chip' + (state.sortOnly === kind ? ' on' : ''),
+      'type': 'button',
+      'aria-pressed': String(state.sortOnly === kind),
+      'aria-label': label,
+      'data-tip': label + ' — ' + t('categoryTip'),
+      'data-focus': 'chip:' + kind,
+      'onclick': () => {
+        state.sortOnly = state.sortOnly === kind ? null : kind;
+        state.siteOnly = false;
+        state.focus = FIRST;
+        render();
+      }
+    }, icon(CATEGORIES[kind].icon), h('span', {class: 'full'}, label), h('span', {class: 'short count'}, n));
+  });
 // over the list narrowed to one kind: how much, and the mail all read or archived at once
 const sortBar = objs => {
-  const mail = shownMail(objs).filter(({e, o}) => SORTS[state.sortOnly].has(replyOf(e, o)));
+  const mail = shownMail(objs).filter(({e, o}) => inKind(state.sortOnly, e, o));
   const links = mail.map(({e}) => e.link);
   const archivable = mail.filter(({o}) => can(o, 'archive')).map(({e}) => e.link);
   // what it is, and how many as a count of its own; a screen reader hears the sentence
   return h('div', {class: 'sort-bar'},
-    h('span', {class: 'sort-what'}, icon(SORTS[state.sortOnly].icon), h('span', {'class': 'sr'}, t(state.sortOnly + 'Shown', mail.length)),
+    h('span', {class: 'sort-what'}, icon(kindIcon(state.sortOnly)), h('span', {'class': 'sr'}, t(state.sortOnly + 'Shown', mail.length)),
       h('span', {'class': 'label', 'aria-hidden': 'true'}, t(state.sortOnly + 'List')), h('span', {'class': 'n', 'aria-hidden': 'true'}, mail.length)),
     h('span', {class: 'grow'}),
     links.length > 0 && h('button', {class: 'text-btn', type: 'button', 'data-focus': 'sort:read', onclick: () => act('rd', links)},
@@ -4089,6 +4252,9 @@ const prefsChanged = prefs => {
   if ('ai.reply' in prefs) {
     state.ai.reply = prefs['ai.reply'] !== false;
   }
+  if ('gmailCategories' in prefs) {
+    state.categories = prefs.gmailCategories !== false;
+  }
 };
 // what the panel reads of Settings → AI (the keys stay with ai.js)
 const AI_PREFS = {'ai.engine': 'off', 'ai.summary': 'click', 'ai.reply': true, 'ai.buttons': true};
@@ -4102,11 +4268,14 @@ const markSeen = () => {
 };
 document.addEventListener('visibilitychange', markSeen);
 chrome.storage.onChanged.addListener((ps, area) => {
-  const changed = Object.fromEntries(['panelScale', 'readOnOpen', 'accounts', 'accountOrder', 'senderLogos', 'avatars', 'autoAdvance', 'badge.count']
-    .filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
+  const changed = Object.fromEntries(['panelScale', 'readOnOpen', 'accounts', 'accountOrder', 'senderLogos', 'avatars', 'autoAdvance', 'badge.count',
+    'gmailCategories'].filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
   if (Object.keys(changed).length) {
     prefsChanged(changed);
     render();
+    if ('gmailCategories' in changed) {
+      loadCategories();
+    }
   }
   // the assistant's engine, key, model or features; not what it keeps (ai.replies, ai.summaries)
   if (area === 'local' && Object.keys(ps).some(k => /^ai\.((engine|summary|reply|buttons)$|(openai|anthropic|zai|chatgpt)\.)/.test(k))) {
@@ -4140,7 +4309,7 @@ const endBoot = () => {
 };
 Promise.all([
   chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, avatars: {},
-    autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS}),
+    autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true}),
   // no default for the accounts: none at all is not the same as none read yet
   chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos']),
   // the files the session knows, for the first lines to show theirs

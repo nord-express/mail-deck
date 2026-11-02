@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Labels für $1"
     },
+    "opt_gmailCategories": {
+        "message": "Gmail-Kategorien anzeigen"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Werbung, Soziale Netzwerke und Benachrichtigungen als Filter über der Liste, so wie Gmail Ihre E-Mails sortiert. Solange die KI sortiert, umfasst ihr Filter „Newsletter“ Werbung und Soziale Netzwerke."
+    },
     "opt_forgotten": {
         "message": "Postfachliste geleert"
     },
@@ -1309,6 +1315,36 @@
     },
     "panel_all": {
         "message": "Alle"
+    },
+    "panel_promoChip": {
+        "message": "Werbung · $1"
+    },
+    "panel_socialChip": {
+        "message": "Soziale Netzwerke · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Benachrichtigungen · $1"
+    },
+    "panel_promoList": {
+        "message": "Werbung"
+    },
+    "panel_socialList": {
+        "message": "Soziale Netzwerke"
+    },
+    "panel_updatesList": {
+        "message": "Benachrichtigungen"
+    },
+    "panel_promoShown": {
+        "message": "Werbung: $1"
+    },
+    "panel_socialShown": {
+        "message": "Soziale Netzwerke: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Benachrichtigungen: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Von Gmail sortiert"
     },
     "panel_mailboxes": {
         "message": "Postfächer"

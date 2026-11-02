@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Labels voor $1"
     },
+    "opt_gmailCategories": {
+        "message": "Gmail-categorieën tonen"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Reclame, Sociaal en Updates als filters boven de lijst, zoals Gmail je mail sorteert. Zolang de AI sorteert, omvat het filter ‘Nieuwsbrieven’ Reclame en Sociaal."
+    },
     "opt_forgotten": {
         "message": "Lijst met postvakken gewist"
     },
@@ -1313,6 +1319,36 @@
     },
     "panel_all": {
         "message": "Alle"
+    },
+    "panel_promoChip": {
+        "message": "Reclame · $1"
+    },
+    "panel_socialChip": {
+        "message": "Sociaal · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Updates · $1"
+    },
+    "panel_promoList": {
+        "message": "Reclame"
+    },
+    "panel_socialList": {
+        "message": "Sociaal"
+    },
+    "panel_updatesList": {
+        "message": "Updates"
+    },
+    "panel_promoShown": {
+        "message": "Reclame: $1"
+    },
+    "panel_socialShown": {
+        "message": "Sociaal: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Updates: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Gesorteerd door Gmail"
     },
     "panel_mailboxes": {
         "message": "Postvakken"

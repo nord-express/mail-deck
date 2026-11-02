@@ -446,6 +446,12 @@
   "opt_labelsFor": {
     "message": "Etichette per $1"
   },
+  "opt_gmailCategories": {
+    "message": "Mostra le categorie di Gmail"
+  },
+  "opt_gmailCategoriesText": {
+    "message": "Promozioni, Social e Aggiornamenti come filtri sopra l’elenco, come Gmail smista la tua posta. Mentre la smista l’IA, il suo filtro «Newsletter» comprende Promozioni e Social."
+  },
   "opt_forgotten": {
     "message": "Elenco delle caselle svuotato"
   },
@@ -1141,6 +1147,36 @@
   },
   "panel_all": {
     "message": "Tutte"
+  },
+  "panel_promoChip": {
+    "message": "Promozioni · $1"
+  },
+  "panel_socialChip": {
+    "message": "Social · $1"
+  },
+  "panel_updatesChip": {
+    "message": "Aggiornamenti · $1"
+  },
+  "panel_promoList": {
+    "message": "Promozioni"
+  },
+  "panel_socialList": {
+    "message": "Social"
+  },
+  "panel_updatesList": {
+    "message": "Aggiornamenti"
+  },
+  "panel_promoShown": {
+    "message": "Promozioni: $1"
+  },
+  "panel_socialShown": {
+    "message": "Social: $1"
+  },
+  "panel_updatesShown": {
+    "message": "Aggiornamenti: $1"
+  },
+  "panel_categoryTip": {
+    "message": "Smistato da Gmail"
   },
   "panel_mailboxes": {
     "message": "Caselle"

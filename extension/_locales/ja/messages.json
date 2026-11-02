@@ -446,6 +446,12 @@
   "opt_labelsFor": {
     "message": "$1 のラベル"
   },
+  "opt_gmailCategories": {
+    "message": "Gmail のカテゴリを表示"
+  },
+  "opt_gmailCategoriesText": {
+    "message": "プロモーション、ソーシャル、新着を、Gmail の分類のままリストの上にフィルタとして表示します。AI が仕分けている間は、その「ニュースレター」フィルタにプロモーションとソーシャルが含まれます。"
+  },
   "opt_forgotten": {
     "message": "受信トレイの一覧を消去しました"
   },
@@ -1141,6 +1147,36 @@
   },
   "panel_all": {
     "message": "すべて"
+  },
+  "panel_promoChip": {
+    "message": "プロモーション · $1"
+  },
+  "panel_socialChip": {
+    "message": "ソーシャル · $1"
+  },
+  "panel_updatesChip": {
+    "message": "新着 · $1"
+  },
+  "panel_promoList": {
+    "message": "プロモーション"
+  },
+  "panel_socialList": {
+    "message": "ソーシャル"
+  },
+  "panel_updatesList": {
+    "message": "新着"
+  },
+  "panel_promoShown": {
+    "message": "プロモーション: $1"
+  },
+  "panel_socialShown": {
+    "message": "ソーシャル: $1"
+  },
+  "panel_updatesShown": {
+    "message": "新着: $1"
+  },
+  "panel_categoryTip": {
+    "message": "Gmail による分類"
   },
   "panel_mailboxes": {
     "message": "メールボックス"

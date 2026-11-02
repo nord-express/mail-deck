@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Etykiety dla $1"
     },
+    "opt_gmailCategories": {
+        "message": "Pokazuj kategorie Gmaila"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Oferty, Społeczności i Powiadomienia jako filtry nad listą, tak jak Gmail porządkuje pocztę. Gdy porządkuje ją AI, jej filtr „Newslettery” obejmuje Oferty i Społeczności."
+    },
     "opt_forgotten": {
         "message": "Lista skrzynek wyczyszczona"
     },
@@ -1313,6 +1319,36 @@
     },
     "panel_all": {
         "message": "Wszystkie"
+    },
+    "panel_promoChip": {
+        "message": "Oferty · $1"
+    },
+    "panel_socialChip": {
+        "message": "Społeczności · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Powiadomienia · $1"
+    },
+    "panel_promoList": {
+        "message": "Oferty"
+    },
+    "panel_socialList": {
+        "message": "Społeczności"
+    },
+    "panel_updatesList": {
+        "message": "Powiadomienia"
+    },
+    "panel_promoShown": {
+        "message": "Oferty: $1"
+    },
+    "panel_socialShown": {
+        "message": "Społeczności: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Powiadomienia: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Posortowane przez Gmaila"
     },
     "panel_mailboxes": {
         "message": "Skrzynki"

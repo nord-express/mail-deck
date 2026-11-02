@@ -446,6 +446,12 @@
   "opt_labelsFor": {
     "message": "$1 címkéi"
   },
+  "opt_gmailCategories": {
+    "message": "A Gmail-kategóriák mutatása"
+  },
+  "opt_gmailCategoriesText": {
+    "message": "Promóciók, Közösségi és Frissítések szűrőként a lista fölött, ahogy a Gmail rendezi a leveleket. Amíg az MI rendez, a Hírlevelek szűrője magában foglalja a Promóciókat és a Közösségit."
+  },
   "opt_forgotten": {
     "message": "Postafióklista törölve"
   },
@@ -1123,6 +1129,36 @@
   },
   "panel_all": {
     "message": "Összes"
+  },
+  "panel_promoChip": {
+    "message": "Promóciók · $1"
+  },
+  "panel_socialChip": {
+    "message": "Közösségi · $1"
+  },
+  "panel_updatesChip": {
+    "message": "Frissítések · $1"
+  },
+  "panel_promoList": {
+    "message": "Promóciók"
+  },
+  "panel_socialList": {
+    "message": "Közösségi"
+  },
+  "panel_updatesList": {
+    "message": "Frissítések"
+  },
+  "panel_promoShown": {
+    "message": "Promóciók: $1"
+  },
+  "panel_socialShown": {
+    "message": "Közösségi: $1"
+  },
+  "panel_updatesShown": {
+    "message": "Frissítések: $1"
+  },
+  "panel_categoryTip": {
+    "message": "A Gmail rendezése szerint"
   },
   "panel_mailboxes": {
     "message": "Postafiókok"

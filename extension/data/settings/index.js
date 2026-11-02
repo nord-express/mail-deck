@@ -53,6 +53,8 @@ const DEFAULTS = {
   // an action in an open message opens the next one instead of the list
   'autoAdvance': false,
   'senderLogos': true,
+  // Gmail's own categories as chips over the panel's list
+  'gmailCategories': true,
   // the other mail services turned on (core/services/)
   'services': [],
   // the AI (data/ai/ai.js): which engine, each one's model, what it does. The keys and the

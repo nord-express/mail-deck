@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "تصنيفات $1"
     },
+    "opt_gmailCategories": {
+        "message": "إظهار فئات Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "العروض الترويجية والشبكات الاجتماعية والتحديثات كمرشحات فوق القائمة، كما يصنّف Gmail بريدك. وما دام الذكاء الاصطناعي يصنّفه، يضمّ مرشّح «النشرات» العروض الترويجية والشبكات الاجتماعية."
+    },
     "opt_forgotten": {
         "message": "مُسحت قائمة الصناديق"
     },
@@ -1305,6 +1311,36 @@
     },
     "panel_all": {
         "message": "الكل"
+    },
+    "panel_promoChip": {
+        "message": "العروض الترويجية · $1"
+    },
+    "panel_socialChip": {
+        "message": "الشبكات الاجتماعية · $1"
+    },
+    "panel_updatesChip": {
+        "message": "التحديثات · $1"
+    },
+    "panel_promoList": {
+        "message": "العروض الترويجية"
+    },
+    "panel_socialList": {
+        "message": "الشبكات الاجتماعية"
+    },
+    "panel_updatesList": {
+        "message": "التحديثات"
+    },
+    "panel_promoShown": {
+        "message": "العروض الترويجية: $1"
+    },
+    "panel_socialShown": {
+        "message": "الشبكات الاجتماعية: $1"
+    },
+    "panel_updatesShown": {
+        "message": "التحديثات: $1"
+    },
+    "panel_categoryTip": {
+        "message": "حسب تصنيف Gmail"
     },
     "panel_mailboxes": {
         "message": "صناديق البريد"

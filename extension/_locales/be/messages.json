@@ -443,6 +443,12 @@
   "opt_labelsFor": {
     "message": "Ярлыкі для $1"
   },
+  "opt_gmailCategories": {
+    "message": "Паказваць катэгорыі Gmail"
+  },
+  "opt_gmailCategoriesText": {
+    "message": "Акцыі, Сацсеткі і Апавяшчэнні — фільтры над спісам, як іх разбірае сам Gmail. Пакуль пошту разбірае ШІ, яго фільтр «Рассылкі» ўключае Акцыі і Сацсеткі."
+  },
   "opt_forgotten": {
     "message": "Спіс скрынь ачышчаны"
   },
@@ -1165,6 +1171,36 @@
   },
   "panel_all": {
     "message": "Усе"
+  },
+  "panel_promoChip": {
+    "message": "Акцыі · $1"
+  },
+  "panel_socialChip": {
+    "message": "Сацсеткі · $1"
+  },
+  "panel_updatesChip": {
+    "message": "Апавяшчэнні · $1"
+  },
+  "panel_promoList": {
+    "message": "Акцыі"
+  },
+  "panel_socialList": {
+    "message": "Сацсеткі"
+  },
+  "panel_updatesList": {
+    "message": "Апавяшчэнні"
+  },
+  "panel_promoShown": {
+    "message": "Акцыі: $1"
+  },
+  "panel_socialShown": {
+    "message": "Сацсеткі: $1"
+  },
+  "panel_updatesShown": {
+    "message": "Апавяшчэнні: $1"
+  },
+  "panel_categoryTip": {
+    "message": "Па сартаванні Gmail"
   },
   "panel_mailboxes": {
     "message": "Скрыні"

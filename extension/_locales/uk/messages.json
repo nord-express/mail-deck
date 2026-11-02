@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Мітки для $1"
     },
+    "opt_gmailCategories": {
+        "message": "Показувати категорії Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Промоакції, Соцмережі та Сповіщення — фільтри над списком, як їх розбирає сам Gmail. Поки пошту розбирає ШІ, його фільтр «Розсилки» охоплює Промоакції та Соцмережі."
+    },
     "opt_forgotten": {
         "message": "Список скриньок очищено"
     },
@@ -1309,6 +1315,36 @@
     },
     "panel_all": {
         "message": "Усі"
+    },
+    "panel_promoChip": {
+        "message": "Промоакції · $1"
+    },
+    "panel_socialChip": {
+        "message": "Соцмережі · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Сповіщення · $1"
+    },
+    "panel_promoList": {
+        "message": "Промоакції"
+    },
+    "panel_socialList": {
+        "message": "Соцмережі"
+    },
+    "panel_updatesList": {
+        "message": "Сповіщення"
+    },
+    "panel_promoShown": {
+        "message": "Промоакції: $1"
+    },
+    "panel_socialShown": {
+        "message": "Соцмережі: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Сповіщення: $1"
+    },
+    "panel_categoryTip": {
+        "message": "За сортуванням Gmail"
     },
     "panel_mailboxes": {
         "message": "Скриньки"

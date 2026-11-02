@@ -1616,6 +1616,77 @@ kbd {
   stroke-width: 2.4;
 }
 
+/* Gmail's own categories, as the sorting's chips are, with Gmail's quieter colours */
+.chip.cat-chip svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2.1;
+}
+.chip.promo-chip:not(.on) svg {
+  color: #1e8e57;
+}
+.chip.social-chip:not(.on) svg {
+  color: #3567e6;
+}
+.chip.updates-chip:not(.on) svg {
+  color: #138fa8;
+}
+.cat-chip .short {
+  display: none;
+}
+/* a row too long for the panel (fitChips), and a narrow panel: the kinds' chips say their count */
+.chips.tight .chip.sort-chip,
+.chips.tight .chip.cat-chip {
+  gap: 5px;
+  padding: 0 10px;
+}
+.chips.tight .sort-chip .full,
+.chips.tight .cat-chip .full {
+  display: none;
+}
+.chips.tight .sort-chip .short,
+.chips.tight .cat-chip .short {
+  display: inline;
+}
+@media (prefers-color-scheme: dark) {
+  .chip.promo-chip:not(.on) svg {
+    color: #4cc38a;
+  }
+  .chip.social-chip:not(.on) svg {
+    color: #7d9cff;
+  }
+  .chip.updates-chip:not(.on) svg {
+    color: #45b8d0;
+  }
+}
+@media (max-width: 440px) {
+  /* over a list narrowed to one kind: what and how much on a line of its own, what to do with
+     all of it under that, rather than the name squeezed out by the buttons */
+  .sort-bar {
+    flex-wrap: wrap;
+  }
+  .sort-what {
+    flex: 1 0 100%;
+    min-height: 30px;
+  }
+  .sort-bar .grow {
+    display: none;
+  }
+  .sort-bar .text-btn:first-of-type {
+    margin-inline-start: -11px;
+  }
+  .chip.cat-chip {
+    gap: 5px;
+    padding: 0 10px;
+  }
+  .cat-chip .full {
+    display: none;
+  }
+  .cat-chip .short {
+    display: inline;
+  }
+}
+
 /* a short menu under its button: remind me later, the reader's other actions */
 .menu {
   position: fixed;

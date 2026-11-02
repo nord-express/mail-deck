@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "תוויות עבור $1"
     },
+    "opt_gmailCategories": {
+        "message": "להציג את הקטגוריות של Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "קידומי מכירות, רשתות חברתיות ועדכונים כמסננים מעל הרשימה, כפי ש-Gmail ממיין את הדואר. כל עוד הבינה המלאכותית ממיינת, המסנן ״ניוזלטרים״ שלה כולל קידומי מכירות ורשתות חברתיות."
+    },
     "opt_forgotten": {
         "message": "רשימת התיבות נוקתה"
     },
@@ -1305,6 +1311,36 @@
     },
     "panel_all": {
         "message": "הכל"
+    },
+    "panel_promoChip": {
+        "message": "קידומי מכירות · $1"
+    },
+    "panel_socialChip": {
+        "message": "רשתות חברתיות · $1"
+    },
+    "panel_updatesChip": {
+        "message": "עדכונים · $1"
+    },
+    "panel_promoList": {
+        "message": "קידומי מכירות"
+    },
+    "panel_socialList": {
+        "message": "רשתות חברתיות"
+    },
+    "panel_updatesList": {
+        "message": "עדכונים"
+    },
+    "panel_promoShown": {
+        "message": "קידומי מכירות: $1"
+    },
+    "panel_socialShown": {
+        "message": "רשתות חברתיות: $1"
+    },
+    "panel_updatesShown": {
+        "message": "עדכונים: $1"
+    },
+    "panel_categoryTip": {
+        "message": "ממוין על ידי Gmail"
     },
     "panel_mailboxes": {
         "message": "תיבות דואר"

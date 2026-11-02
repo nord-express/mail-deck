@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Etiquetas de $1"
     },
+    "opt_gmailCategories": {
+        "message": "Mostrar las categorías de Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Promociones, Social y Notificaciones como filtros sobre la lista, tal como Gmail ordena tu correo. Mientras la IA lo ordena, su filtro «Boletines» incluye Promociones y Social."
+    },
     "opt_forgotten": {
         "message": "Lista de bandejas borrada"
     },
@@ -1309,6 +1315,36 @@
     },
     "panel_all": {
         "message": "Todos"
+    },
+    "panel_promoChip": {
+        "message": "Promociones · $1"
+    },
+    "panel_socialChip": {
+        "message": "Social · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Notificaciones · $1"
+    },
+    "panel_promoList": {
+        "message": "Promociones"
+    },
+    "panel_socialList": {
+        "message": "Social"
+    },
+    "panel_updatesList": {
+        "message": "Notificaciones"
+    },
+    "panel_promoShown": {
+        "message": "Promociones: $1"
+    },
+    "panel_socialShown": {
+        "message": "Social: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Notificaciones: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Clasificado por Gmail"
     },
     "panel_mailboxes": {
         "message": "Buzones"

@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Etiquetes de $1"
     },
+    "opt_gmailCategories": {
+        "message": "Mostra les categories de Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Promocions, Xarxes socials i Notificacions com a filtres sobre la llista, tal com Gmail ordena el correu. Mentre l’IA l’ordena, el seu filtre «Butlletins» inclou Promocions i Xarxes socials."
+    },
     "opt_forgotten": {
         "message": "Llista de safates esborrada"
     },
@@ -1309,6 +1315,36 @@
     },
     "panel_all": {
         "message": "Totes"
+    },
+    "panel_promoChip": {
+        "message": "Promocions · $1"
+    },
+    "panel_socialChip": {
+        "message": "Xarxes socials · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Notificacions · $1"
+    },
+    "panel_promoList": {
+        "message": "Promocions"
+    },
+    "panel_socialList": {
+        "message": "Xarxes socials"
+    },
+    "panel_updatesList": {
+        "message": "Notificacions"
+    },
+    "panel_promoShown": {
+        "message": "Promocions: $1"
+    },
+    "panel_socialShown": {
+        "message": "Xarxes socials: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Notificacions: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Classificat per Gmail"
     },
     "panel_mailboxes": {
         "message": "Bústies"

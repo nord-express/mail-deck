@@ -446,6 +446,12 @@
   "opt_labelsFor": {
     "message": "Libellés pour $1"
   },
+  "opt_gmailCategories": {
+    "message": "Afficher les catégories de Gmail"
+  },
+  "opt_gmailCategoriesText": {
+    "message": "Promotions, Réseaux sociaux et Notifications en filtres au-dessus de la liste, tels que Gmail trie vos messages. Quand l’IA les trie, son filtre « Newsletters » réunit Promotions et Réseaux sociaux."
+  },
   "opt_forgotten": {
     "message": "Liste des boîtes effacée"
   },
@@ -1141,6 +1147,36 @@
   },
   "panel_all": {
     "message": "Toutes"
+  },
+  "panel_promoChip": {
+    "message": "Promotions · $1"
+  },
+  "panel_socialChip": {
+    "message": "Réseaux sociaux · $1"
+  },
+  "panel_updatesChip": {
+    "message": "Notifications · $1"
+  },
+  "panel_promoList": {
+    "message": "Promotions"
+  },
+  "panel_socialList": {
+    "message": "Réseaux sociaux"
+  },
+  "panel_updatesList": {
+    "message": "Notifications"
+  },
+  "panel_promoShown": {
+    "message": "Promotions : $1"
+  },
+  "panel_socialShown": {
+    "message": "Réseaux sociaux : $1"
+  },
+  "panel_updatesShown": {
+    "message": "Notifications : $1"
+  },
+  "panel_categoryTip": {
+    "message": "Trié par Gmail"
   },
   "panel_mailboxes": {
     "message": "Boîtes"

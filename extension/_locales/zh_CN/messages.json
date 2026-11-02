@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "$1 的标签"
     },
+    "opt_gmailCategories": {
+        "message": "显示 Gmail 的分类"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "按 Gmail 自己的分类，在列表上方以筛选标签显示“推广”“社交”“动态”。由 AI 整理邮件时，它的“订阅邮件”标签已包含推广和社交。"
+    },
     "opt_forgotten": {
         "message": "已清除邮箱列表"
     },
@@ -1313,6 +1319,36 @@
     },
     "panel_all": {
         "message": "全部"
+    },
+    "panel_promoChip": {
+        "message": "推广 · $1"
+    },
+    "panel_socialChip": {
+        "message": "社交 · $1"
+    },
+    "panel_updatesChip": {
+        "message": "动态 · $1"
+    },
+    "panel_promoList": {
+        "message": "推广"
+    },
+    "panel_socialList": {
+        "message": "社交"
+    },
+    "panel_updatesList": {
+        "message": "动态"
+    },
+    "panel_promoShown": {
+        "message": "推广：$1"
+    },
+    "panel_socialShown": {
+        "message": "社交：$1"
+    },
+    "panel_updatesShown": {
+        "message": "动态：$1"
+    },
+    "panel_categoryTip": {
+        "message": "由 Gmail 分类"
     },
     "panel_mailboxes": {
         "message": "邮箱"

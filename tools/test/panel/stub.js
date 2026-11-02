@@ -67,7 +67,9 @@
     autoAdvance: q.get('advance') === '1', 'badge.count': q.get('badge') || 'all',
     // ?ai=on|off|real: the assistant's engine (real: the real ai.js, loaded by the panel, with no key)
     ...(q.get('ai') ? {'ai.engine': q.get('ai') === 'off' ? 'off' : 'openai', 'ai.summary': q.get('summary') || 'click', 'ai.reply': q.get('reply') !== '0',
-      'ai.buttons': q.get('buttons') !== '0'} : {})};
+      'ai.buttons': q.get('buttons') !== '0'} : {}),
+    // ?cats=off: Gmail's categories turned off in the settings
+    ...(q.get('cats') === 'off' ? {gmailCategories: false} : {})};
   window.__sent = []; window.__set = []; window.__objs = objs;
   window.__tabUrl = q.get('url') || ''; window.__tabEvents = {};
   // what the panel copies (__copied): a page under test has no clipboard of its own to ask
@@ -245,6 +247,8 @@
         (account ? '&authuser=' + encodeURIComponent(account) : '')
     };
   }
+  // ?cats=search: Gmail's rows carry no label of its categories, each is searched for instead
+  const sorting = q.get('cats') === 'search' ? () => [] : (...labels) => labels;
   const row = (thread, subject, from, text, mins, labels) => ({subject, thread, labels, date: now - mins * 60000, from, text});
   const search = ({url, query}) => {
     // the site's mail is all in the feeds
@@ -256,20 +260,29 @@
     if (query === 'mockups') {
       return n === 0 ? [row('a1', 'Макеты на ревью', ['Anna Petrova', 'anna@figma.com'], '…', 4, ['^u', '^i'])] : [];
     }
-    // Gmail's categories: the digest is a promotion
-    if (query.includes('category:')) {
+    // Gmail's categories: the digest is a promotion (and bulk, for the assistant), the invitation
+    // social, GitHub's sign-in and the bill updates
+    if (query.includes(' OR ') || query.includes('category:promotions')) {
       return n === 0 ? [row('a4', 'Weekly digest', 'Notion <team@notion.so>', 'Your workspace this week', 2000, ['^u', '^i', 'STARRED'])] : [];
+    }
+    if (query.includes('category:social')) {
+      return n === 0 ? [row('a5', 'Приглашение', ['Мария', 'maria@yandex.ru'], 'Приходи в субботу', 3000, ['^u', '^i'])] : [];
+    }
+    if (query.includes('category:updates')) {
+      return n === 0 ? [row('a2', 'New sign-in', ['GitHub', 'noreply@github.com'], '…', 95, ['^u', '^i']),
+        row('a3', 'Счёт за октябрь', ['Бухгалтерия', 'billing@stripe.com'], 'Счёт №1042 во вложении', 600, ['^u', '^i'])] : [];
     }
     if (query.includes('nothing') || query.includes('zzz')) {
       return [];
     }
     if (query.includes('is:unread')) {
+      // where Gmail sorted each thread, as its labels say
       return n === 0 ? [
-        row('a1', 'Макеты на ревью', ['Anna Petrova', 'anna@figma.com'], '…', 4, ['^u', '^i', 'STARRED']),
-        row('a2', 'New sign-in', ['GitHub', 'noreply@github.com'], '…', 95, ['^u', '^i']),
-        row('a3', 'Счёт за октябрь', ['Бухгалтерия', 'billing@stripe.com'], 'Счёт №1042 во вложении', 600, ['^u', '^i']),
-        row('a4', 'Weekly digest', 'Notion <team@notion.so>', 'Your workspace this week', 2000, ['^u', '^i', 'STARRED']),
-        row('a5', 'Приглашение', ['Мария', 'maria@yandex.ru'], 'Приходи в субботу', 3000, ['^u', '^i'])
+        row('a1', 'Макеты на ревью', ['Anna Petrova', 'anna@figma.com'], '…', 4, ['^u', '^i', 'STARRED', ...sorting('^smartlabel_personal', '^sq_ig_i_personal')]),
+        row('a2', 'New sign-in', ['GitHub', 'noreply@github.com'], '…', 95, ['^u', '^i', ...sorting('^smartlabel_notification')]),
+        row('a3', 'Счёт за октябрь', ['Бухгалтерия', 'billing@stripe.com'], 'Счёт №1042 во вложении', 600, ['^u', '^i', ...sorting('^sq_ig_i_notification')]),
+        row('a4', 'Weekly digest', 'Notion <team@notion.so>', 'Your workspace this week', 2000, ['^u', '^i', 'STARRED', ...sorting('^smartlabel_promo', '^sq_ig_i_promo')]),
+        row('a5', 'Приглашение', ['Мария', 'maria@yandex.ru'], 'Приходи в субботу', 3000, ['^u', '^i', ...sorting('^smartlabel_social')])
       ] : [];
     }
     return n === 1 ? [] : [

@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "$1 etiketleri"
     },
+    "opt_gmailCategories": {
+        "message": "Gmail kategorilerini göster"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Promosyonlar, Sosyal ve Güncellemeler, Gmail’in postanızı sıraladığı gibi listenin üstünde filtre olarak. Yapay zekâ sıralarken onun Bültenler filtresi Promosyonlar ve Sosyal’i kapsar."
+    },
     "opt_forgotten": {
         "message": "Kutu listesi temizlendi"
     },
@@ -1309,6 +1315,36 @@
     },
     "panel_all": {
         "message": "Tümü"
+    },
+    "panel_promoChip": {
+        "message": "Promosyonlar · $1"
+    },
+    "panel_socialChip": {
+        "message": "Sosyal · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Güncellemeler · $1"
+    },
+    "panel_promoList": {
+        "message": "Promosyonlar"
+    },
+    "panel_socialList": {
+        "message": "Sosyal"
+    },
+    "panel_updatesList": {
+        "message": "Güncellemeler"
+    },
+    "panel_promoShown": {
+        "message": "Promosyonlar: $1"
+    },
+    "panel_socialShown": {
+        "message": "Sosyal: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Güncellemeler: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Gmail’in sıralaması"
     },
     "panel_mailboxes": {
         "message": "Posta kutuları"

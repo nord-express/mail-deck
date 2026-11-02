@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Етикети за $1"
     },
+    "opt_gmailCategories": {
+        "message": "Показвай категориите на Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Промоции, Социални и Актуализации като филтри над списъка, както ги подрежда самият Gmail. Докато ИИ подрежда пощата, неговият филтър „Бюлетини“ обхваща Промоции и Социални."
+    },
     "opt_forgotten": {
         "message": "Списъкът с кутии е изчистен"
     },
@@ -1305,6 +1311,36 @@
     },
     "panel_all": {
         "message": "Всички"
+    },
+    "panel_promoChip": {
+        "message": "Промоции · $1"
+    },
+    "panel_socialChip": {
+        "message": "Социални · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Актуализации · $1"
+    },
+    "panel_promoList": {
+        "message": "Промоции"
+    },
+    "panel_socialList": {
+        "message": "Социални"
+    },
+    "panel_updatesList": {
+        "message": "Актуализации"
+    },
+    "panel_promoShown": {
+        "message": "Промоции: $1"
+    },
+    "panel_socialShown": {
+        "message": "Социални: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Актуализации: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Сортирано от Gmail"
     },
     "panel_mailboxes": {
         "message": "Пощенски кутии"

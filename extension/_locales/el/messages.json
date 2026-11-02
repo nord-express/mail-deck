@@ -446,6 +446,12 @@
     "opt_labelsFor": {
         "message": "Ετικέτες για $1"
     },
+    "opt_gmailCategories": {
+        "message": "Εμφάνιση των κατηγοριών του Gmail"
+    },
+    "opt_gmailCategoriesText": {
+        "message": "Προσφορές, Κοινωνικά δίκτυα και Ενημερώσεις ως φίλτρα πάνω από τη λίστα, όπως ταξινομεί το Gmail την αλληλογραφία σας. Όσο την ταξινομεί η τεχνητή νοημοσύνη, το φίλτρο «Ενημερωτικά» περιλαμβάνει τις Προσφορές και τα Κοινωνικά δίκτυα."
+    },
     "opt_forgotten": {
         "message": "Η λίστα γραμματοκιβωτίων διαγράφηκε"
     },
@@ -1305,6 +1311,36 @@
     },
     "panel_all": {
         "message": "Όλα"
+    },
+    "panel_promoChip": {
+        "message": "Προσφορές · $1"
+    },
+    "panel_socialChip": {
+        "message": "Κοινωνικά δίκτυα · $1"
+    },
+    "panel_updatesChip": {
+        "message": "Ενημερώσεις · $1"
+    },
+    "panel_promoList": {
+        "message": "Προσφορές"
+    },
+    "panel_socialList": {
+        "message": "Κοινωνικά δίκτυα"
+    },
+    "panel_updatesList": {
+        "message": "Ενημερώσεις"
+    },
+    "panel_promoShown": {
+        "message": "Προσφορές: $1"
+    },
+    "panel_socialShown": {
+        "message": "Κοινωνικά δίκτυα: $1"
+    },
+    "panel_updatesShown": {
+        "message": "Ενημερώσεις: $1"
+    },
+    "panel_categoryTip": {
+        "message": "Ταξινόμηση από το Gmail"
     },
     "panel_mailboxes": {
         "message": "Γραμματοκιβώτια"
