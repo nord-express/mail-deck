@@ -114,7 +114,7 @@ A Claude Pro or Max subscription cannot be used here: Anthropic allows it only i
 
 ### A model on this computer
 
-Install [Ollama](https://ollama.com) or [LM Studio](https://lmstudio.ai), download a model and start its server (Ollama's runs by itself, at `http://localhost:11434`; LM Studio's is in its Developer tab, at `http://localhost:1234`). In Settings → AI, connect it at that address: Chrome asks you to allow it, and Mail Deck lists the server's models. Nothing leaves your computer, and nothing is paid.
+Install [Ollama](https://ollama.com) or [LM Studio](https://lmstudio.ai), download a model and start its server (Ollama's runs by itself, at `http://localhost:11434`; LM Studio's is in its Developer tab, at `http://localhost:1234`). In Settings → AI, pick **Ollama · LM Studio** under On this computer, choose your server (or Other, for another address on this computer) and click **Connect**: Chrome asks you to allow it, and Mail Deck lists the server's models. Nothing leaves your computer, and nothing is paid.
 
 Ollama turns away requests from browser extensions unless they come with its own address as their origin, so Mail Deck sets that origin on its own requests to it (a Chrome rule for those requests alone); nothing needs changing. If an older Ollama still refuses, allow extensions with the `OLLAMA_ORIGINS` environment variable, `chrome-extension://*`: on a Mac, `launchctl setenv OLLAMA_ORIGINS "chrome-extension://*"` and restart Ollama; on Windows, a user environment variable; on Linux, `Environment="OLLAMA_ORIGINS=chrome-extension://*"` in the service's settings (`systemctl edit ollama.service`). In LM Studio, turn on **Enable CORS** in the server's settings.
 
