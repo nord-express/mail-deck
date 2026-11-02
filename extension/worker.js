@@ -323,6 +323,15 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     sound.stop();
   }
   // an account's ID key for the offscreen document, kept per address for the session
+  // one Gmail refused: the next action fetches the account's page again
+  else if (method === 'ik-forget') {
+    chrome.storage.session.get('iks').then(({iks = {}}) => {
+      if (request.n in iks) {
+        delete iks[request.n];
+        chrome.storage.session.set({iks});
+      }
+    });
+  }
   else if (method === 'ik-get' || method === 'ik-set') {
     checkEmails.getCached().then(async objs => {
       const title = (objs || []).find(o => (o.xml.rootLink.match(/u\/(\d+)/) || [])[1] === String(request.n))?.xml.title;

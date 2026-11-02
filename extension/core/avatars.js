@@ -44,7 +44,9 @@
           continue;
         }
         const html = await fetch(`https://mail.google.com/mail/u/${n}/`, {
-          credentials: 'include'
+          credentials: 'include',
+          // a page that never comes would keep the next look from ever starting
+          signal: AbortSignal.timeout(15000)
         }).then(r => r.ok ? r.text() : '', () => '');
         avatars[o.xml.title] = {url: find(html, o.xml.title), at: now};
       }

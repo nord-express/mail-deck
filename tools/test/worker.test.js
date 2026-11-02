@@ -1,6 +1,7 @@
 // worker.js, the background's messages, against a fake Chrome: an action and its Undo window,
 // one that outlives the worker, the mail of a search hidden with its feed's copy, and an action
-// done in one account and not in another. Time runs a hundred times faster here.
+// done in one account and not in another (time runs a hundred times faster there); where a
+// mail opens with no tab or window (core/open.js); an offscreen document that never answers.
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -136,6 +137,65 @@ const tests = [
     assert.deepStrictEqual([w.dispatched.length, w.hidden()], [1, []]);
   }]
 ];
+
+// core/open.js against a browser with the windows given ({tabs}: those of the current window)
+const opener = ({tabs = [], windows = true, prefs = {}} = {}) => {
+  const out = {created: [], windows: [], updated: []};
+  const chrome = {
+    storage: {local: {get: (d, cb) => cb({...d, ...prefs})}},
+    tabs: {
+      query: (o, cb) => cb(o.active ? tabs.filter(t => t.active) : tabs),
+      update: (id, o) => out.updated.push([id, o.url]),
+      create: async o => {
+        if (!windows) {
+          throw Error('No current window');
+        }
+        out.created.push(o);
+      }
+    },
+    windows: {create: async o => out.windows.push(o.url), update() {}, getCurrent: async () => ({})},
+    i18n: {getMessage: () => 'x'}
+  };
+  const ctx = {chrome, URL, Promise, console, toast() {}};
+  ctx.self = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(EXT + '/core/open.js', 'utf8'), ctx, {filename: 'open.js'});
+  out.open = url => (ctx.openLink(url), wait(10));
+  return out;
+};
+const mail = 'https://mail.google.com/mail/u/0/?shva=1#inbox/t1';
+tests.push(
+  ['a mail opens with no tab active: in a new tab, "in the current tab" and "next to it" too', async () => {
+    for (const prefs of [{}, {currentTab: true}, {relatedToCurrent: true}]) {
+      const o = opener({prefs});
+      await o.open(mail);
+      assert.deepStrictEqual(o.created.map(c => c.url), [mail], JSON.stringify(prefs));
+    }
+    // and next to the active tab when there is one
+    const o = opener({tabs: [{id: 3, index: 4, active: true, url: 'https://example.com/'}], prefs: {relatedToCurrent: true}});
+    await o.open(mail);
+    assert.strictEqual(o.created[0].index, 5);
+  }],
+  ['a mail opens with no window at all, in a window of its own', async () => {
+    const o = opener({windows: false});
+    await o.open(mail);
+    assert.deepStrictEqual(o.windows, [mail]);
+  }]
+);
+
+// core/offscreen.js: a document that never answers gives the command an error in time
+tests.push(['a command the offscreen document never answers fails in time', async () => {
+  const chrome = {
+    runtime: {getContexts: async () => [{}], sendMessage() {}, onMessage: {addListener() {}}, lastError: null},
+    offscreen: {}
+  };
+  const ctx = {chrome, setTimeout, clearTimeout, Promise, log() {}};
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(EXT + '/core/offscreen.js', 'utf8') + ';offscreen.WAIT = 50;', ctx, {filename: 'offscreen.js'});
+  const r = await vm.runInContext('offscreen', ctx).command({cmd: 'gmail.action', request: {}});
+  assert.ok(r.message);
+  assert.strictEqual(vm.runInContext('offscreen.pending', ctx), 0);
+}]);
 
 (async () => {
   let failed = 0;

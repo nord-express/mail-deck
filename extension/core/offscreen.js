@@ -34,14 +34,21 @@ offscreen.ready = () => {
   return offscreen.creating;
 };
 
-// the answer of the document; a document that closed meanwhile answers nothing
-offscreen.send = request => new Promise(resolve => chrome.runtime.sendMessage({
-  method: 'offscreen',
-  request
-}, r => {
-  const e = chrome.runtime.lastError;
-  resolve(e ? {lost: e.message || 'No answer from the offscreen document'} : r);
-}));
+// what a command waits for the document: its own requests to Gmail give up long before
+offscreen.WAIT = 60000;
+// the answer of the document; a document that closed meanwhile answers nothing, and one that
+// does not answer in time is given up, so an action never stays unanswered
+offscreen.send = request => new Promise(resolve => {
+  const timer = setTimeout(resolve, offscreen.WAIT, {message: 'No answer from the offscreen document in time', error: 'timeout'});
+  chrome.runtime.sendMessage({
+    method: 'offscreen',
+    request
+  }, r => {
+    clearTimeout(timer);
+    const e = chrome.runtime.lastError;
+    resolve(e ? {lost: e.message || 'No answer from the offscreen document'} : r);
+  });
+});
 
 offscreen.command = async request => {
   offscreen.pending += 1;

@@ -94,31 +94,34 @@
           return;
         }
       }
+      const focused = typeof inBackground === 'undefined' ? !prefs.background : !inBackground;
+      // no window open (macOS keeps the browser running without one): a window of its own
+      const create = options => chrome.tabs.create(options).catch(() => chrome.windows.create({url, focused: true}));
       if (mode === 2) {
         chrome.tabs.query({
           active: true,
           currentWindow: true
-        }, ([tab]) => chrome.tabs.update(tab.id, {url}));
+        }, ([tab] = []) => tab ? chrome.tabs.update(tab.id, {url}) : create({url}));
       }
       else if (mode === 0) {
         chrome.tabs.query({
           active: true,
           currentWindow: true
-        }, ([tab]) => {
+        }, ([tab] = []) => {
           const options = {
             url,
-            active: typeof inBackground === 'undefined' ? !prefs.background : !inBackground
+            active: focused
           };
-          if (prefs.relatedToCurrent) {
+          if (prefs.relatedToCurrent && tab) {
             options.index = tab.index + 1;
           }
-          chrome.tabs.create(options);
+          create(options);
         });
       }
       else {
         chrome.windows.create({
           url,
-          focused: typeof inBackground === 'undefined' ? !prefs.background : !inBackground
+          focused
         });
       }
     });

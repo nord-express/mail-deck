@@ -1,37 +1,40 @@
 const gmail = {};
-const cache = {
-  iks: new Map(),
-  ats: new Map()
-};
-// The ID key of an account is fetched from a whole Gmail page. The background
-// keeps it for the browser session, tied to the address it belongs to, so this
-// document, which closes when idle, does not fetch that page again each time.
+// what this document waits for Gmail: an answer that never comes fails the action, which then
+// shows its mail again, instead of leaving it hidden for good
+const WAIT = 15000;
+const wait = () => AbortSignal.timeout(WAIT);
+// The ID key of an account is fetched from a whole Gmail page. The background keeps it for the
+// browser session, tied to the address it belongs to, and gives it only while that address is
+// at the account's place (/u/<n>): this document does not keep one of its own, which would
+// outlive an account that signed out.
 gmail.page = async n => {
-  if (cache.iks.has(n)) {
-    return cache.iks.get(n);
-  }
   const kept = await chrome.runtime.sendMessage({method: 'ik-get', n}).catch(() => null);
   if (kept) {
-    cache.iks.set(n, {ik: kept});
     return {ik: kept};
   }
   const groups = await gmail.fetchPage(n);
   chrome.runtime.sendMessage({method: 'ik-set', n, ik: groups.ik}).catch(() => {});
   return groups;
 };
+// Gmail refused the key or the token: the next action fetches them again
+const forget = (n, status) => {
+  if ([400, 401, 403].includes(status)) {
+    chrome.runtime.sendMessage({method: 'ik-forget', n}).catch(() => {});
+  }
+};
 gmail.fetchPage = n => {
   const page = localStorage.getItem('page-' + n) || `https://mail.google.com/mail/u/${n}/s/`;
 
   const next = async href => {
     const r = await fetch(href, {
-      credentials: 'include'
+      credentials: 'include',
+      signal: wait()
     });
     if (r.ok) {
       const content = await r.text();
       const m = content.match(/ID_KEY\s*=\s*['"](?<ik>[^'"]*)['"]/);
 
       if (m) {
-        cache.iks.set(n, m.groups);
         return m.groups;
       }
       const parser = new DOMParser();
@@ -56,22 +59,20 @@ const cookie = n => new Promise(resolve => chrome.runtime.sendMessage({
   method: 'get-at',
   n
 }, resolve));
+// the account's token, read from its cookie each time: a cookie of the place (/u/<n>) is the
+// account's that is there now
 gmail.at = (n, thread) => {
-  if (cache.ats.has(n)) {
-    return Promise.resolve(cache.ats.get(n));
-  }
-
   return new Promise((resolve, reject) => cookie(n).then(async at => {
     // the print view of a thread sets the cookie; the panel opens one before it
     // acts, an action sent from a closed panel has only this
     if (!at && thread) {
       await fetch(`https://mail.google.com/mail/u/${n}/?ui=2&view=pt&dsqt=1&search=all&msg=${thread}`, {
-        credentials: 'include'
+        credentials: 'include',
+        signal: wait()
       }).catch(() => {});
       at = await cookie(n);
     }
     if (at) {
-      cache.ats.set(n, at);
       resolve(at);
     }
     // Gmail's basic HTML view, the old way to the token, is gone since 2024
@@ -104,9 +105,11 @@ gmail.search = async ({url, query}) => {
     const r = await fetch(href, {
       method: 'POST',
       credentials: 'include',
-      body
+      body,
+      signal: wait()
     });
     if (!r.ok) {
+      forget(n, r.status);
       throw Error('core.js -> body: ' + r.status);
     }
     const content = await r.text();
@@ -226,10 +229,12 @@ gmail.action = async ({links, cmd, prefs}) => {
     const r = await fetch(href, {
       method: 'POST',
       credentials: 'include',
-      body
+      body,
+      signal: wait()
     });
     // an answer other than 200 is a refusal, though it carries no permission error
     if (!r.ok) {
+      forget(a[0].n, r.status);
       throw Error('core.js -> action -> ' + r.status);
     }
     // do we have permission to do the action?
