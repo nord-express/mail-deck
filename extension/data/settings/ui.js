@@ -254,6 +254,9 @@ const UI = (() => {
   const partsOf = unit => [...unit.querySelectorAll(PARTS)].filter(el => !el.hidden);
   const hit = (el, q) => fold(el?.textContent || '').includes(q);
   let query = '';
+  // how well each row shown matches: 2 by its section's or group's title or its own label, 1 by
+  // the words under it; Enter goes to the best one first
+  let ranks = new Map();
   const search = text => {
     query = String(text || '').trim();
     const q = fold(query);
@@ -264,6 +267,7 @@ const UI = (() => {
       delete document.body.dataset.search;
     }
     const found = [];
+    ranks = new Map();
     let any = false;
     const missed = new Set();
     for (const section of sections()) {
@@ -293,8 +297,12 @@ const UI = (() => {
         }
         const parts = unit.matches?.('.engines') ? [...unit.querySelectorAll('b, small')] : partsOf(unit);
         const words = parts.filter(el => hit(el, q));
-        const shown = !q || all || (group && hit(group.querySelector('h3'), q)) || words.length > 0;
+        const titled = all || (group && hit(group.querySelector('h3'), q));
+        const shown = !q || titled || words.length > 0;
         found.push(...words);
+        if (q && shown) {
+          ranks.set(unit, titled || words.some(el => el.tagName === 'B') ? 2 : 1);
+        }
         if (shown) {
           delete unit.dataset.miss;
           cards.set(card, true);
@@ -364,19 +372,18 @@ const UI = (() => {
       CSS.highlights.delete('settings');
     }
   };
-  // Enter: the first setting found, its control focused
+  // Enter: the setting found that matches best (then the first), its control focused
   const firstFound = () => {
-    for (const section of sections()) {
-      if (section.dataset.miss !== undefined) {
-        continue;
-      }
-      for (const unit of section.querySelectorAll('.row, .engines')) {
-        if (unit.dataset.miss === undefined && !unit.closest('[hidden]')) {
-          return unit.querySelector('input:checked, input:not([type="hidden"]):not([hidden]), select, textarea:not([hidden]), button, a[href]');
-        }
-      }
+    const units = [...ranks].filter(([unit]) => unit.dataset.miss === undefined && !unit.closest('[hidden]'));
+    const best = units.find(([, rank]) => rank === 2) || units[0];
+    if (!best) {
+      return null;
     }
-    return null;
+    const unit = best[0];
+    // the engine picked; a row's own control (an inbox's switch, not its first chip); else the first one in it
+    return unit.matches('.engines') ? unit.querySelector('input:checked') :
+      unit.querySelector(':scope > input, :scope > select, :scope > .segmented input:checked, :scope > .tokens input, :scope > button') ||
+      unit.querySelector('input:not([hidden]), select, textarea:not([hidden]), button, a[href]');
   };
   const clearSearch = () => {
     $('search').value = '';
@@ -447,6 +454,9 @@ const UI = (() => {
       }
     }
   };
+  // a click on the rail picks its section for as long as the page scrolls there: a short one
+  // never reaches the line the reading is followed by
+  let held = 0;
   const startRail = () => {
     $('nav').onclick = ev => {
       const a = ev.target.closest('a');
@@ -459,6 +469,7 @@ const UI = (() => {
         clearSearch();
       }
       setCurrent(section.id);
+      held = Date.now() + 1000;
       history.replaceState(null, '', a.hash);
       section.scrollIntoView({block: 'start', behavior: smooth()});
       // the focus follows, to the section's title, without a second scroll
@@ -471,35 +482,31 @@ const UI = (() => {
       return;
     }
     setCurrent(list[0].id);
-    if (typeof IntersectionObserver !== 'function') {
-      return;
-    }
-    // a band at 30-40% of the window: the first section in it is the one being read
-    const inBand = new Set();
+    // the section being read: the last whose top is above a line at 30% of the window, so a short
+    // one and the gap after it count as it; at the end of the page, the last
     const pick = () => {
+      if (Date.now() < held) {
+        return;
+      }
+      const shown = list.filter(s => s.dataset.miss === undefined);
       const end = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
-      const current = end ? list.findLast(s => s.dataset.miss === undefined) : list.find(s => inBand.has(s));
+      const line = innerHeight * .3;
+      const current = end ? shown.at(-1) : shown.filter(s => s.getBoundingClientRect().top <= line).at(-1) || shown[0];
       if (current) {
         setCurrent(current.id);
       }
     };
-    const spy = new IntersectionObserver(entries => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          inBand.add(e.target);
-        }
-        else {
-          inBand.delete(e.target);
-        }
-      }
-      pick();
-    }, {rootMargin: '-30% 0px -60% 0px'});
-    list.forEach(s => spy.observe(s));
-    // the last section may never reach the band: at the end of the page it is the one
+    // looked at as sections cross a band at 30-40% of the window, and once a frame while it scrolls
+    if (typeof IntersectionObserver === 'function') {
+      const spy = new IntersectionObserver(pick, {rootMargin: '-30% 0px -60% 0px'});
+      list.forEach(s => spy.observe(s));
+    }
+    let frame = 0;
     addEventListener('scroll', () => {
-      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) {
+      frame ||= requestAnimationFrame(() => {
+        frame = 0;
         pick();
-      }
+      });
     }, {passive: true});
   };
 
