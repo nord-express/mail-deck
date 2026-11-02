@@ -78,7 +78,7 @@ It is not made by or affiliated with any mail provider. Gmail is a trademark of 
 4. `store/screenshot-4-site.png`: Mail from the site you’re on / Open the panel on a site and its mail is on top, with the sign-in code ready to copy.
 5. `store/screenshot-5-summary.png`: The gist before you read / An AI summary with what it asks of you and its dates, on your computer or with your provider.
 
-In the dashboard, remove the five screenshots of 1.4 (inbox, summary, site, later, AI settings) and upload these five in this order. **Small promo tile:** `store/promo-440x280.png`.
+In the dashboard, remove the five screenshots of 1.4 (inbox, summary, site, later, AI settings) and upload these five in this order. **Small promo tile:** `store/promo-440x280.png`, drawn in `tools/promo/tile.html` (no words but the name: the tile is the same in every language).
 
 **Other languages:** translated summaries and descriptions are in `store/listing-translations.md`.
 

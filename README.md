@@ -241,6 +241,7 @@ extension/            the extension (load this folder unpacked)
   _locales/           translations
 store/                Chrome Web Store listing text and images
 tools/icon/           the icon's SVG sources; render.py renders every PNG
+tools/promo/          the store's promo tile (tile.html); render.py renders store/promo-440x280.png
 tools/package.sh      zips the extension for the store into dist/
 tools/publish.py      uploads that zip to the Chrome Web Store and submits it for review
 tools/test/run.sh     runs the tests: scripts, locales, settings, the background check and the worker, the mail services, Gmail's headers, the AI module, trackers and sender warnings, the panel and the welcome page in headless Chrome
