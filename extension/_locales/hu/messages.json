@@ -2282,6 +2282,12 @@
   "opt_aiCheckingKey": {
     "message": "A kulcs ellenőrzése: $1…"
   },
+  "opt_aiFastModel": {
+    "message": "Gyorsabb modell a szétválogatáshoz és a kereséshez"
+  },
+  "opt_aiFastModelText": {
+    "message": "A levelek szétválogatása és a keresés gyorsabb, olcsóbb modellt használ; az összefoglalók a fent választottat."
+  },
   "opt_quietChip": {
     "message": "Csend $1–$2"
   },

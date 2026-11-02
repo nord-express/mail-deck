@@ -2462,6 +2462,12 @@
     "opt_aiCheckingKey": {
         "message": "Comprobando la clave con $1…"
     },
+    "opt_aiFastModel": {
+        "message": "Usar un modelo más rápido para ordenar y buscar"
+    },
+    "opt_aiFastModelText": {
+        "message": "Ordenar y buscar en tu correo usan un modelo más rápido y barato; los resúmenes siguen con el elegido arriba."
+    },
     "opt_quietChip": {
         "message": "Silencio $1–$2"
     },

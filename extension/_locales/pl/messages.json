@@ -2466,6 +2466,12 @@
     "opt_aiCheckingKey": {
         "message": "Sprawdzanie klucza w $1…"
     },
+    "opt_aiFastModel": {
+        "message": "Szybszy model do porządkowania i wyszukiwania"
+    },
+    "opt_aiFastModelText": {
+        "message": "Porządkowanie i wyszukiwanie w poczcie korzystają z szybszego, tańszego modelu; streszczenia zostają przy wybranym wyżej."
+    },
     "opt_quietChip": {
         "message": "Cisza $1–$2"
     },

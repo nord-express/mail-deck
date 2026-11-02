@@ -2466,6 +2466,12 @@
     "opt_aiCheckingKey": {
         "message": "Sleutel wordt gecontroleerd bij $1…"
     },
+    "opt_aiFastModel": {
+        "message": "Sneller model gebruiken voor sorteren en zoeken"
+    },
+    "opt_aiFastModelText": {
+        "message": "Sorteren en zoeken in je mail gebruiken een sneller, goedkoper model; samenvattingen houden het model dat hierboven is gekozen."
+    },
     "opt_quietChip": {
         "message": "Stil $1–$2"
     },

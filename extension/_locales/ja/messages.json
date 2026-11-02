@@ -2294,6 +2294,12 @@
   "opt_aiCheckingKey": {
     "message": "$1 でキーを確認しています…"
   },
+  "opt_aiFastModel": {
+    "message": "仕分けと検索に高速なモデルを使う"
+  },
+  "opt_aiFastModelText": {
+    "message": "メールの仕分けと検索には、より速く安いモデルを使います。要約は上で選んだモデルのままです。"
+  },
   "opt_quietChip": {
     "message": "おやすみ $1〜$2"
   },

@@ -2466,6 +2466,12 @@
     "opt_aiCheckingKey": {
         "message": "S’està comprovant la clau amb $1…"
     },
+    "opt_aiFastModel": {
+        "message": "Fes servir un model més ràpid per ordenar i cercar"
+    },
+    "opt_aiFastModelText": {
+        "message": "Ordenar i cercar al correu fan servir un model més ràpid i barat; els resums mantenen el triat més amunt."
+    },
     "opt_quietChip": {
         "message": "Silenci $1–$2"
     },

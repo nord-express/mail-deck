@@ -2462,6 +2462,12 @@
     "opt_aiCheckingKey": {
         "message": "Schlüssel wird bei $1 geprüft…"
     },
+    "opt_aiFastModel": {
+        "message": "Schnelleres Modell zum Sortieren und Suchen"
+    },
+    "opt_aiFastModelText": {
+        "message": "Sortieren und Suchen in deinen Mails nutzen ein schnelleres, günstigeres Modell; Zusammenfassungen bleiben beim oben gewählten."
+    },
     "opt_quietChip": {
         "message": "Ruhe $1–$2"
     },

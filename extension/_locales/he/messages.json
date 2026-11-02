@@ -2462,6 +2462,12 @@
     "opt_aiCheckingKey": {
         "message": "בודק את המפתח מול $1…"
     },
+    "opt_aiFastModel": {
+        "message": "מודל מהיר יותר למיון ולחיפוש"
+    },
+    "opt_aiFastModelText": {
+        "message": "מיון וחיפוש בדואר שלך משתמשים במודל מהיר וזול יותר; הסיכומים נשארים עם המודל שנבחר למעלה."
+    },
     "opt_quietChip": {
         "message": "שקט $1–$2"
     },

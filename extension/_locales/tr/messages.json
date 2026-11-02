@@ -2462,6 +2462,12 @@
     "opt_aiCheckingKey": {
         "message": "Anahtar $1 ile denetleniyor…"
     },
+    "opt_aiFastModel": {
+        "message": "Sınıflandırma ve arama için daha hızlı model kullan"
+    },
+    "opt_aiFastModelText": {
+        "message": "Postalarınızı sınıflandırma ve aramada daha hızlı, daha ucuz bir model kullanılır; özetler yukarıda seçilen modelde kalır."
+    },
     "opt_quietChip": {
         "message": "Sessiz $1–$2"
     },

@@ -2294,6 +2294,12 @@
   "opt_aiCheckingKey": {
     "message": "Vérification de la clé auprès de $1…"
   },
+  "opt_aiFastModel": {
+    "message": "Modèle plus rapide pour le tri et les recherches"
+  },
+  "opt_aiFastModelText": {
+    "message": "Le tri et la recherche dans vos messages utilisent un modèle plus rapide et moins cher ; les résumés gardent celui choisi plus haut."
+  },
   "opt_quietChip": {
     "message": "Calme $1–$2"
   },

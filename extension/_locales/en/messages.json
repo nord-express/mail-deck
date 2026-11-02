@@ -2324,6 +2324,12 @@
   "opt_aiCheckingKey": {
     "message": "Checking the key with $1…"
   },
+  "opt_aiFastModel": {
+    "message": "Use a faster model for sorting and searches"
+  },
+  "opt_aiFastModelText": {
+    "message": "Sorting and searching your mail use a quicker, cheaper model; summaries keep the one picked above."
+  },
   "opt_quietChip": {
     "message": "Quiet $1–$2"
   },

@@ -2294,6 +2294,12 @@
   "opt_aiCheckingKey": {
     "message": "Verifica della chiave con $1…"
   },
+  "opt_aiFastModel": {
+    "message": "Usa un modello più veloce per ordinare e cercare"
+  },
+  "opt_aiFastModelText": {
+    "message": "Ordinare e cercare nella posta usano un modello più veloce ed economico; i riepiloghi restano su quello scelto sopra."
+  },
   "opt_quietChip": {
     "message": "Silenzio $1–$2"
   },

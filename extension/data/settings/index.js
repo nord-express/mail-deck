@@ -65,6 +65,8 @@ const DEFAULTS = {
   'ai.zai.model': '',
   'ai.summary': 'click',
   'ai.reply': true,
+  // a quicker, cheaper model of the engine for sorting and searching the mail (data/ai/ai.js)
+  'ai.fast': true,
   // the panel's AI buttons while the AI is off: they offer to turn it on
   'ai.buttons': true,
   'sync.settings': false

@@ -1096,7 +1096,7 @@ check('the AI buttons switch: on by default, saved, in a backup, and offered in 
   page('paintAI()');
   assert.strictEqual(element('ai-buttons-row').hidden, true);
   assert.strictEqual(element('ai-privacy-note').hidden, false);
-  for (const key of ['ai.summary', 'ai.reply']) {
+  for (const key of ['ai.summary', 'ai.reply', 'ai.fast']) {
     assert.ok(new RegExp(`<label class="row[^"]*" data-ai>\\s*<span class="text">[\\s\\S]*?data-key="${key.replace('.', '\\.')}"`).test(html), key + ' is one of the AI\'s rows');
   }
   assert.strictEqual(msg('opt_aiButtons'), 'Keep AI buttons in the panel');
@@ -1104,6 +1104,19 @@ check('the AI buttons switch: on by default, saved, in a backup, and offered in 
   assert.strictEqual(msg('opt_aiReply'), 'Sort unread mail');
   assert.strictEqual(msg('opt_aiReplyText'), 'Finds mail waiting for your reply, important mail, and newsletters you can clear in one go.');
   assert.ok(/data-key="ai\.reply"/.test(html));
+});
+check('the faster model for sorting and searches: on by default, in a backup, under the AI\'s More options', async () => {
+  assert.strictEqual(page('DEFAULTS')['ai.fast'], true);
+  const sanitize = page('sanitize');
+  assert.deepStrictEqual({...sanitize({'ai.fast': false})}, {'ai.fast': false});
+  assert.deepStrictEqual({...sanitize({'ai.fast': 'no'})}, {});
+  assert.ok(/<label class="row adv" data-ai>\s*<span class="text"><b data-i18n="aiFastModel">[^<]*<\/b><small data-i18n="aiFastModelText">[^<]*<\/small><\/span>\s*<input type="checkbox" role="switch" data-key="ai\.fast">/.test(html));
+  await freshAI({'ai.fast': false});
+  assert.strictEqual((await page('collect(false)'))['ai.fast'], false);
+  // another tab turns it on: the page follows
+  page('followAI')({'ai.fast': {newValue: true}});
+  assert.strictEqual(page(`prefs['ai.fast']`), true);
+  assert.strictEqual(msg('opt_aiFastModel'), 'Use a faster model for sorting and searches');
 });
 check('each engine\'s card says how it is: ready, signed in, connected, or the access to give again', async () => {
   await freshAI({'ai.engine': 'anthropic', 'ai.anthropic.key': ANTHROPIC_KEY, 'ai.openai.key': OPENAI_KEY});

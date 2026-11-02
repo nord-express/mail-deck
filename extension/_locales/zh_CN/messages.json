@@ -2466,6 +2466,12 @@
     "opt_aiCheckingKey": {
         "message": "正在向 $1 验证密钥…"
     },
+    "opt_aiFastModel": {
+        "message": "整理和搜索使用更快的模型"
+    },
+    "opt_aiFastModelText": {
+        "message": "整理和搜索邮件时使用更快、更便宜的模型；摘要仍使用上方选择的模型。"
+    },
     "opt_quietChip": {
         "message": "免打扰 $1–$2"
     },
