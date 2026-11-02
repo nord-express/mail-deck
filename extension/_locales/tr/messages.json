@@ -2765,6 +2765,12 @@
     "opt_welcomeAgain": {
         "message": "Karşılama sayfasını yeniden göster"
     },
+    "opt_askPictures": {
+        "message": "Gmail iletilerinde resimleri göstermeden önce sor"
+    },
+    "opt_askPicturesText": {
+        "message": "Resimler, diğer hizmetlerin iletilerinde olduğu gibi “Resimleri göster”i bekler. Bilinen izleyiciler her durumda engellenir."
+    },
     "opt_aiWelcome": {
         "message": "ChatGPT planınızı kullanıyorsunuz"
     },

@@ -2585,6 +2585,12 @@
   "opt_welcomeAgain": {
     "message": "Az üdvözlőoldal újbóli megjelenítése"
   },
+  "opt_askPictures": {
+    "message": "Kérdés a képek megjelenítése előtt a Gmail-levelekben"
+  },
+  "opt_askPicturesText": {
+    "message": "A képek a „Képek megjelenítése” gombra várnak, ahogy más szolgáltatások leveleiben. Az ismert nyomkövetők mindenképp le vannak tiltva."
+  },
   "opt_aiWelcome": {
     "message": "A ChatGPT-előfizetésedet használod"
   },

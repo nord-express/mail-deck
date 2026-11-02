@@ -2627,6 +2627,12 @@
   "opt_welcomeAgain": {
     "message": "Show the welcome page again"
   },
+  "opt_askPictures": {
+    "message": "Ask before showing pictures in Gmail mail"
+  },
+  "opt_askPicturesText": {
+    "message": "Pictures wait for “Show pictures”, as in mail from other services. Known trackers are blocked either way."
+  },
   "opt_aiWelcome": {
     "message": "You’re using your ChatGPT plan"
   },

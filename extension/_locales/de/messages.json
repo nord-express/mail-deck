@@ -2765,6 +2765,12 @@
     "opt_welcomeAgain": {
         "message": "Willkommensseite noch einmal zeigen"
     },
+    "opt_askPictures": {
+        "message": "Vor dem Anzeigen von Bildern in Gmail-Nachrichten fragen"
+    },
+    "opt_askPicturesText": {
+        "message": "Bilder warten auf „Bilder anzeigen“, wie bei Nachrichten anderer Dienste. Bekannte Tracker werden so oder so blockiert."
+    },
     "opt_aiWelcome": {
         "message": "Du nutzt dein ChatGPT-Abo"
     },

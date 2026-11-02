@@ -2769,6 +2769,12 @@
     "opt_welcomeAgain": {
         "message": "Torna a mostrar la pàgina de benvinguda"
     },
+    "opt_askPictures": {
+        "message": "Pregunta abans de mostrar les imatges als missatges de Gmail"
+    },
+    "opt_askPicturesText": {
+        "message": "Les imatges esperen «Mostra les imatges», com als missatges d’altres serveis. Els rastrejadors coneguts es bloquegen igualment."
+    },
     "opt_aiWelcome": {
         "message": "Estàs fent servir el teu pla de ChatGPT"
     },

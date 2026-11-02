@@ -64,6 +64,8 @@ const DEFAULTS = {
   // Gmail's own categories as chips over the panel's list, and the searches saved as chips there
   'gmailCategories': true,
   'savedSearches': [],
+  // Gmail's pictures wait for Show pictures in the panel, as other services' do; trackers never load
+  'askPictures': false,
   // the other mail services turned on (core/services/)
   'services': [],
   // the AI (data/ai/ai.js): which engine, each one's model, what it does. The keys and the

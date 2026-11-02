@@ -1160,7 +1160,7 @@
       }
     }
 
-    if (scenario === 'privacy') {
+    if (scenario === 'privacy' || scenario === 'privacyask') {
       // the reader of a mail, its body shown and its lines said: what they say, without the
       // marks that keep a domain's direction
       const doc = document.getElementById('body').contentDocument;

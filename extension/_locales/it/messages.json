@@ -2597,6 +2597,12 @@
   "opt_welcomeAgain": {
     "message": "Mostra di nuovo la pagina di benvenuto"
   },
+  "opt_askPictures": {
+    "message": "Chiedi prima di mostrare le immagini nei messaggi Gmail"
+  },
+  "opt_askPicturesText": {
+    "message": "Le immagini aspettano «Mostra immagini», come nei messaggi di altri servizi. I tracker noti vengono bloccati comunque."
+  },
   "opt_aiWelcome": {
     "message": "Stai usando il tuo piano ChatGPT"
   },

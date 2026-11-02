@@ -111,6 +111,7 @@ const state = {
   drag: null, // the name of the mailbox being dragged
   readOnOpen: false,
   senderLogos: true, // the settings may turn the logos off; they come from Google's icon service
+  askPictures: false, // Gmail's pictures wait for Show pictures, as other services' do
   avatars: {}, // address -> {url}: the accounts' own pictures
   windowId: null,
   // after a browser start, until the background has read the mail once: the list shows lines
@@ -2478,9 +2479,9 @@ const read = async (e, o, trail) => {
     doc.body.className = '';
     doc.body.replaceChildren(node);
     paintReaderFiles(filesIn(node));
-    // a service's remote pictures, sounds and videos load only when asked for; Gmail's at once,
-    // as Gmail shows them. A tracker never loads (gmail.js)
-    if (gmail.render.held(doc.body) && serviceOf(o)) {
+    // a service's remote pictures, sounds and videos load only when asked for, and so do Gmail's
+    // when the settings say so; a tracker never loads (gmail.js)
+    if (gmail.render.held(doc.body) && (serviceOf(o) || state.askPictures)) {
       const bar = h('p', {class: 'pictures'}, h('button', {type: 'button', onclick: () => {
         bar.remove();
         gmail.render.show(doc.body);
@@ -4672,6 +4673,9 @@ const prefsChanged = prefs => {
   if ('senderLogos' in prefs) {
     state.senderLogos = prefs.senderLogos !== false;
   }
+  if ('askPictures' in prefs) {
+    state.askPictures = prefs.askPictures === true;
+  }
   if ('avatars' in prefs) {
     state.avatars = prefs.avatars || {};
   }
@@ -4722,7 +4726,7 @@ document.addEventListener('visibilitychange', markSeen);
 // a side panel stays open for days: each day it is looked at counts
 document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && countDay());
 chrome.storage.onChanged.addListener((ps, area) => {
-  const changed = Object.fromEntries(['panelScale', 'readOnOpen', 'accounts', 'accountOrder', 'senderLogos', 'avatars', 'autoAdvance', 'badge.count',
+  const changed = Object.fromEntries(['panelScale', 'readOnOpen', 'accounts', 'accountOrder', 'senderLogos', 'askPictures', 'avatars', 'autoAdvance', 'badge.count',
     'gmailCategories', 'savedSearches', RATE].filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
   if (Object.keys(changed).length) {
     prefsChanged(changed);
@@ -4762,7 +4766,7 @@ const endBoot = () => {
   }
 };
 Promise.all([
-  chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, avatars: {}, 'labels.beta': false,
+  chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, askPictures: false, avatars: {}, 'labels.beta': false,
     autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true, savedSearches: [], [RATE]: null}),
   // no default for the accounts: none at all is not the same as none read yet
   chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos', SAVED]),

@@ -2597,6 +2597,12 @@
   "opt_welcomeAgain": {
     "message": "Afficher à nouveau la page de bienvenue"
   },
+  "opt_askPictures": {
+    "message": "Demander avant d’afficher les images des messages Gmail"
+  },
+  "opt_askPicturesText": {
+    "message": "Les images attendent « Afficher les images », comme dans les messages des autres services. Les traqueurs connus sont bloqués dans tous les cas."
+  },
   "opt_aiWelcome": {
     "message": "Vous utilisez votre forfait ChatGPT"
   },

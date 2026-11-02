@@ -2769,6 +2769,12 @@
     "opt_welcomeAgain": {
         "message": "Welkomstpagina opnieuw tonen"
     },
+    "opt_askPictures": {
+        "message": "Vragen voordat afbeeldingen in Gmail-berichten worden getoond"
+    },
+    "opt_askPicturesText": {
+        "message": "Afbeeldingen wachten op ‘Afbeeldingen tonen’, zoals in berichten van andere diensten. Bekende trackers worden hoe dan ook geblokkeerd."
+    },
     "opt_aiWelcome": {
         "message": "Je gebruikt je ChatGPT-abonnement"
     },

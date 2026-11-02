@@ -355,8 +355,8 @@ gmail.get = {
   };
   // A Gmail message's pictures, before anything of it loads (Trackers): a tracker becomes a
   // blank of its size, never fetched, and is named; a blank spacer the same, unnamed; a picture
-  // of the sender's waits for the reader, which shows it at once (index.js, read). So do the
-  // backgrounds and the styles that ask for one. Gmail's own
+  // of the sender's waits for the reader, which shows it at once unless the settings ask first
+  // (index.js, read). So do the backgrounds and the styles that ask for one. Gmail's own
   // pictures (an attachment shown in the message) stay as they are. The trackers' names, in
   // the order of the message.
   const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';

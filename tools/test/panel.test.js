@@ -162,6 +162,11 @@ const checks = {
     'a mail without trackers says nothing': JSON.stringify(r.normal) === '[]' && r.notesHidden,
     'nothing goes wrong unseen': r.consoleClean === true
   }),
+  privacyask: r => ({
+    'asked first: a Gmail mail\'s pictures wait for Show pictures, its trackers stay out after it too':
+      r.bar && JSON.stringify(r.before) === '{}' && r.after.pic >= 1 && r.after.bg >= 1 && r.after.css >= 1 && !r.after.tiny && !r.after.hidden &&
+      r.blanks === 5 && r.trackerLine.length === 1
+  }),
   wide: r => ({
     'a 700px newsletter fits without a sideways scroll': r.clientWidth > 0 && r.scrollWidth <= r.clientWidth + 1
   }),
@@ -438,7 +443,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ux', ''], ['acting', '&ai=on&read=1'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', ''], ['privacy', '&s=privacy']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['acting', '&ai=on&read=1'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', ''], ['privacy', '&s=privacy'], ['privacyask', '&s=privacy&ask=1']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

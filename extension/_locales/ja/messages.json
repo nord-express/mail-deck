@@ -2597,6 +2597,12 @@
   "opt_welcomeAgain": {
     "message": "ようこそページをもう一度表示"
   },
+  "opt_askPictures": {
+    "message": "Gmail のメールの画像は表示する前に確認する"
+  },
+  "opt_askPicturesText": {
+    "message": "ほかのサービスのメールと同じく、画像は「画像を表示」を押すまで読み込みません。既知のトラッカーはどちらの場合もブロックします。"
+  },
   "opt_aiWelcome": {
     "message": "ChatGPT プランを使用しています"
   },

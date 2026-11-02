@@ -2765,6 +2765,12 @@
     "opt_welcomeAgain": {
         "message": "عرض صفحة الترحيب مرة أخرى"
     },
+    "opt_askPictures": {
+        "message": "السؤال قبل إظهار الصور في رسائل Gmail"
+    },
+    "opt_askPicturesText": {
+        "message": "تنتظر الصور زر «إظهار الصور» كما في رسائل الخدمات الأخرى. تُحظر أدوات التتبّع المعروفة في الحالتين."
+    },
     "opt_aiWelcome": {
         "message": "أنت تستخدم خطة ChatGPT الخاصة بك"
     },

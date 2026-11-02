@@ -71,7 +71,7 @@
     accountOrder: [], panelScale: Number(q.get('scale') || 1), readOnOpen: q.get('read') === '1', 'remind.links': [],
     // the label actions, not proven against Gmail yet, are tried where a scenario asks for them
     ...(q.get('scenario') === 'acting' ? {'labels.beta': true} : {}),
-    autoAdvance: q.get('advance') === '1', 'badge.count': q.get('badge') || 'all',
+    autoAdvance: q.get('advance') === '1', 'badge.count': q.get('badge') || 'all', askPictures: q.get('ask') === '1',
     // ?ai=on|off|real: the assistant's engine (real: the real ai.js, loaded by the panel, with no key)
     ...(q.get('ai') ? {'ai.engine': q.get('ai') === 'off' ? 'off' : 'openai', 'ai.summary': q.get('summary') || 'click', 'ai.reply': q.get('reply') !== '0',
       'ai.buttons': q.get('buttons') !== '0'} : {}),

@@ -2769,6 +2769,12 @@
     "opt_welcomeAgain": {
         "message": "再次显示欢迎页面"
     },
+    "opt_askPictures": {
+        "message": "显示 Gmail 邮件中的图片前先询问"
+    },
+    "opt_askPicturesText": {
+        "message": "与其他服务的邮件一样，图片要等你点击“显示图片”才会加载。已知的跟踪器始终会被拦截。"
+    },
     "opt_aiWelcome": {
         "message": "你正在使用 ChatGPT 套餐"
     },

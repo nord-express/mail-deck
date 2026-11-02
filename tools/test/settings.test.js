@@ -453,6 +453,22 @@ check('an export holds the new settings, not the time the panel was last opened'
   assert.deepStrictEqual([out['badge.count'], out['notify.repeat'], out.autoAdvance], ['new', 30, false]);
   assert.strictEqual('badge.seen' in out, false);
 });
+check('asking before Gmail\'s pictures show: off by default, in a backup, under the Panel\'s More options', async () => {
+  assert.strictEqual(page('DEFAULTS').askPictures, false);
+  const sanitize = page('sanitize');
+  assert.deepStrictEqual({...sanitize({askPictures: true})}, {askPictures: true});
+  assert.deepStrictEqual({...sanitize({askPictures: 'yes'})}, {});
+  local.askPictures = true;
+  assert.strictEqual((await page('collect(false)')).askPictures, true);
+  delete local.askPictures;
+  const panel = /<section id="panel"[\s\S]*?<\/section>/.exec(html)[0];
+  assert.ok(/<label class="row adv">\s*<span class="text"><b data-i18n="askPictures">[^<]*<\/b><small data-i18n="askPicturesText">[^<]*<\/small><\/span>\s*<input type="checkbox" role="switch" data-key="askPictures">/.test(panel));
+  assert.strictEqual(msg('opt_askPictures'), 'Ask before showing pictures in Gmail mail');
+  assert.ok(msg('opt_askPicturesText'));
+  // the panel reads it, and follows a change
+  const panelCode = fs.readFileSync(path.join(EXT, 'data/panel/index.js'), 'utf8');
+  assert.ok(/askPictures: false/.test(panelCode) && /'askPictures', 'avatars'/.test(panelCode));
+});
 check('the new settings default as the background does, and their rows and strings are there', () => {
   const defaults = page('DEFAULTS');
   assert.deepStrictEqual([defaults['badge.count'], defaults['notify.repeat'], defaults.autoAdvance], ['all', 0, false]);
