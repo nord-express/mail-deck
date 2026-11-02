@@ -1889,6 +1889,21 @@
     "ai_err_other_account": {
         "message": "ليس هذا حساب ChatGPT الذي أُعدّ به Mail Deck. أعد المحاولة لإعداده بهذا الحساب."
     },
+    "ai_err_key_denied": {
+        "message": "لم تسمح لـ Mail Deck بالحصول على مفتاح من OpenRouter."
+    },
+    "ai_err_key_sign_in": {
+        "message": "لم يكتمل تسجيل الدخول باستخدام OpenRouter. أعد المحاولة."
+    },
+    "ai_err_key_replaced": {
+        "message": "هذه الصفحة من تسجيل دخول سابق باستخدام OpenRouter. أكمل أحدث تسجيل دخول، أو أعد المحاولة."
+    },
+    "ai_err_key_cancelled": {
+        "message": "أُغلقت صفحة OpenRouter قبل اكتمال تسجيل الدخول."
+    },
+    "ai_err_key_timeout": {
+        "message": "استغرق تسجيل الدخول باستخدام OpenRouter وقتًا طويلًا. أعد المحاولة."
+    },
     "ai_signin_title": {
         "message": "تسجيل الدخول باستخدام ChatGPT"
     },
@@ -1909,6 +1924,15 @@
     },
     "ai_signin_retry": {
         "message": "إعادة المحاولة"
+    },
+    "ai_key_title": {
+        "message": "تسجيل الدخول باستخدام $1"
+    },
+    "ai_key_done": {
+        "message": "مرتبط بـ $1"
+    },
+    "ai_key_failed": {
+        "message": "تعذّر الربط"
     },
     "ai_note_english": {
         "message": "يجيب النموذج المدمج بالإنجليزية."

@@ -1893,6 +1893,21 @@
     "ai_err_other_account": {
         "message": "这不是设置 Mail Deck 时使用的 ChatGPT 账号。请重试，改用此账号进行设置。"
     },
+    "ai_err_key_denied": {
+        "message": "你没有允许 Mail Deck 从 OpenRouter 获取密钥。"
+    },
+    "ai_err_key_sign_in": {
+        "message": "OpenRouter 登录未完成。请重试。"
+    },
+    "ai_err_key_replaced": {
+        "message": "此页面来自之前的一次 OpenRouter 登录。请完成最近的那次，或重试。"
+    },
+    "ai_err_key_cancelled": {
+        "message": "登录完成前，OpenRouter 页面已关闭。"
+    },
+    "ai_err_key_timeout": {
+        "message": "OpenRouter 登录用时过长。请重试。"
+    },
     "ai_signin_title": {
         "message": "使用 ChatGPT 登录"
     },
@@ -1913,6 +1928,15 @@
     },
     "ai_signin_retry": {
         "message": "重试"
+    },
+    "ai_key_title": {
+        "message": "使用 $1 登录"
+    },
+    "ai_key_done": {
+        "message": "已连接到 $1"
+    },
+    "ai_key_failed": {
+        "message": "未能连接"
     },
     "ai_note_english": {
         "message": "内置模型会用英语回答。"

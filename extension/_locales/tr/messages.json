@@ -1889,6 +1889,21 @@
     "ai_err_other_account": {
         "message": "Bu, Mail Deck’in kurulduğu ChatGPT hesabı değil. Bu hesapla kurmak için yeniden deneyin."
     },
+    "ai_err_key_denied": {
+        "message": "Mail Deck’in OpenRouter’dan anahtar almasına izin vermediniz."
+    },
+    "ai_err_key_sign_in": {
+        "message": "OpenRouter ile oturum açma tamamlanmadı. Yeniden deneyin."
+    },
+    "ai_err_key_replaced": {
+        "message": "Bu sayfa, OpenRouter ile daha önce başlatılan bir oturum açmaya ait. En sonuncusunu tamamlayın ya da yeniden deneyin."
+    },
+    "ai_err_key_cancelled": {
+        "message": "Oturum açma tamamlanmadan OpenRouter sayfası kapatıldı."
+    },
+    "ai_err_key_timeout": {
+        "message": "OpenRouter ile oturum açma çok uzun sürdü. Yeniden deneyin."
+    },
     "ai_signin_title": {
         "message": "ChatGPT ile oturum aç"
     },
@@ -1909,6 +1924,15 @@
     },
     "ai_signin_retry": {
         "message": "Yeniden dene"
+    },
+    "ai_key_title": {
+        "message": "$1 ile oturum aç"
+    },
+    "ai_key_done": {
+        "message": "$1 ile bağlı"
+    },
+    "ai_key_failed": {
+        "message": "Bağlanmadı"
     },
     "ai_note_english": {
         "message": "Yerleşik model İngilizce yanıt verir."

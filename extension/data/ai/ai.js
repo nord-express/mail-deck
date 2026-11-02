@@ -6,8 +6,8 @@
 // Kimi, Yandex), or a model server on this computer (Ollama, LM Studio). A request goes from this
 // page straight to the provider, there is no server of ours in between, and nothing at all is
 // sent while the engine or the feature is off. Loaded by the panel, the settings page and the
-// page a ChatGPT sign-in comes back to; it needs nothing else. Every failure comes out as an
-// AIError with a code and a short text the page can show as it is.
+// page a sign-in (ChatGPT's, or OpenRouter's for a key) comes back to; it needs nothing else.
+// Every failure comes out as an AIError with a code and a short text the page can show as it is.
 
 {
   const ENGINES = ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek', 'mistral', 'openrouter',
@@ -114,6 +114,13 @@
     'denied': [() => chrome.i18n.getMessage('ai_err_denied'), 'Mail Deck was not allowed to use your ChatGPT plan.'],
     'sign-in': [() => chrome.i18n.getMessage('ai_err_sign_in'), 'Signing in with ChatGPT did not finish. Try again.'],
     'other-account': [() => chrome.i18n.getMessage('ai_err_other_account'), 'This is not the ChatGPT account Mail Deck was set up with. Try again to set it up with this one.'],
+    // a sign-in with OpenRouter for a key that did not bring one: declined, broken off, an
+    // earlier one's page, its tab closed, too slow
+    'key-denied': [() => chrome.i18n.getMessage('ai_err_key_denied'), 'You did not allow Mail Deck to get a key from OpenRouter.'],
+    'key-sign-in': [() => chrome.i18n.getMessage('ai_err_key_sign_in'), 'Signing in with OpenRouter did not finish. Try again.'],
+    'key-replaced': [() => chrome.i18n.getMessage('ai_err_key_replaced'), 'This page is from an earlier sign-in with OpenRouter. Finish the latest one, or try again.'],
+    'key-cancelled': [() => chrome.i18n.getMessage('ai_err_key_cancelled'), 'The OpenRouter page was closed before signing in finished.'],
+    'key-timeout': [() => chrome.i18n.getMessage('ai_err_key_timeout'), 'Signing in with OpenRouter took too long. Try again.'],
     // a server on this computer: not running, or not taking requests from this extension
     'no-server': [() => chrome.i18n.getMessage('ai_err_no_server'), 'The AI server on this computer did not answer. Is it running?'],
     'origin': [() => chrome.i18n.getMessage('ai_err_origin'), 'The AI server on this computer refused Mail Deck. See Settings → AI.'],
@@ -1533,7 +1540,8 @@
   // Ollama answers only the origins it knows, and an extension's is none of them unless the user
   // adds it: a session rule gives this extension's own requests to the server the server's own
   // origin, as one of its own pages would have. Ours only; core/services.js's rules start at 1000,
-  // the ChatGPT sign-in's is 900. Session rules go with the browser: made again when one is missing.
+  // the ChatGPT sign-in's is 900, OpenRouter's 902. Session rules go with the browser: made again
+  // when one is missing.
   const LOCAL_RULE = 901;
   let ruled = '';
   const localRule = async base => {
@@ -1918,10 +1926,12 @@
       await dnr().updateSessionRules({removeRuleIds: [RULE], ...(on ? {addRules: [callbackRule()]} : {})});
     }
   };
-  // the loopback address given back, unless a server on this computer is at it
-  const giveBack = async () => {
+  // the loopback address given back, unless a server on this computer is at it or the other
+  // sign-in (other: its record) still comes back to it
+  const giveBack = async other => {
     const {[BASE_KEY]: base} = await chrome.storage.local.get(BASE_KEY).catch(() => ({}));
-    if (localOrigin(localBase(base)) !== 'http://127.0.0.1/*') {
+    const {[other]: underway} = await chrome.storage.session.get(other).catch(() => ({}));
+    if (localOrigin(localBase(base)) !== 'http://127.0.0.1/*' && !underway) {
       await chrome.permissions?.remove?.({origins: ['http://127.0.0.1/*']});
     }
   };
@@ -1930,7 +1940,7 @@
     await Promise.all([
       chrome.storage.session.remove(PENDING).catch(() => {}),
       rule(false).catch(() => {}),
-      giveBack().catch(() => false)
+      giveBack(KEY_PENDING).catch(() => false)
     ]);
   };
   // a sign-in left unfinished: its rule goes once it is too old to finish
@@ -1991,13 +2001,14 @@
     catch (e) {}
     return !Array.isArray(m?.optional_host_permissions) || origins.every(x => m.optional_host_permissions.includes(x));
   };
-  const signIn = (o = {}) => {
-    if (!known(SIGN_IN)) {
+  // a sign-in's sites (loaded: whether the manifest Chrome loaded has all it needs), or why not
+  const ask = (origins, loaded = known(origins)) => {
+    if (!loaded) {
       return Promise.reject(new AIError('no-access', 'not in the manifest loaded', {reason: 'stale'}));
     }
     let asked;
     try {
-      asked = chrome.permissions.request({origins: SIGN_IN});
+      asked = chrome.permissions.request({origins});
     }
     catch (e) {
       asked = Promise.reject(e);
@@ -2009,8 +2020,9 @@
     }, e => {
       const said = String(e?.message || e || '');
       throw new AIError('no-access', said, {reason: STALE.test(said) ? 'stale' : 'error'});
-    }).then(() => begin(o.open));
+    });
   };
+  const signIn = (o = {}) => ask(SIGN_IN).then(() => begin(o.open));
 
   // What the token endpoint said. OAuth's error is a string ({error, error_description}), or an
   // object with a code: either way the error's type, for the caller to tell what it means.
@@ -2478,6 +2490,234 @@
         }
         throw e;
       }
+    }
+  };
+
+  /*
+   * OpenRouter: a key of the user's own without copying one. OpenRouter's OAuth with PKCE asks
+   * the user on its site, comes back with a code, and the code and the verifier make a key, which
+   * is checked and kept as a pasted one is. OpenRouter takes a callback on https or on a loopback
+   * address at any port, and names an app on one after it ("127.0.0.1:1456"); as with ChatGPT's,
+   * nothing listens there: while a sign-in is underway a session rule turns the visit into one of
+   * callback.html#openrouter, the query kept.
+   */
+  const KEY_AUTH = 'https://openrouter.ai/auth';
+  const KEY_EXCHANGE = 'https://openrouter.ai/api/v1/auth/keys';
+  const KEY_PORT = 1456;
+  const KEY_REDIRECT = `http://127.0.0.1:${KEY_PORT}/callback`;
+  // the sites it needs: OpenRouter's for the exchange (and the key's requests after it), the
+  // loopback address for the rule
+  const KEY_SIGN_IN = [...CLOUD.openrouter.origins, 'http://127.0.0.1/*'];
+  // the sign-in underway, in this browser session; the key it brings, where a pasted one is kept
+  const KEY_PENDING = 'ai.openrouter.pending';
+  const KEY_KEPT = 'ai.openrouter.key';
+  // after the ChatGPT sign-in's (900) and a local server's (901)
+  const KEY_RULE = 902;
+  // a key's own page at OpenRouter, by its SHA-256: where it is limited or deleted
+  const KEY_PAGE = 'https://openrouter.ai/keys/';
+  const keyRule = () => ({
+    id: KEY_RULE,
+    priority: 1,
+    action: {type: 'redirect', redirect: {transform: {scheme: 'chrome-extension', host: chrome.runtime.id, port: '', path: CALLBACK,
+      fragment: '#openrouter'}}},
+    condition: {regexFilter: '^' + KEY_REDIRECT.replace(/\./g, '\\.') + '(\\?.*)?$', resourceTypes: ['main_frame']}
+  });
+  // the user's own name for the key in OpenRouter's list, and the state to know the answer by
+  const keyAuthorizeUrl = ({state, challenge}) => KEY_AUTH + '?' + [
+    ['callback_url', KEY_REDIRECT],
+    ['code_challenge', challenge],
+    ['code_challenge_method', 'S256'],
+    ['key_label', AGENT],
+    ['state', state]
+  ].map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+  // OpenRouter's site given back when no key came of the sign-in: nothing else needs it then
+  const keyGiveBack = async () => {
+    const {[KEY_KEPT]: key} = await chrome.storage.local.get(KEY_KEPT);
+    if (!String(key ?? '').trim()) {
+      await chrome.permissions?.remove?.({origins: CLOUD.openrouter.origins});
+    }
+  };
+  // A sign-in over (code: '' when it brought a key, an AIError's code when not, null when there
+  // is none to tell). Its record says how it went as it goes, for the page that waits on it (the
+  // settings page reads it in the change); then no record, no rule, the loopback address given
+  // back, and OpenRouter's site too when no key came of it.
+  const keyOver = async (code = null) => {
+    try {
+      const {[KEY_PENDING]: p} = await chrome.storage.session.get(KEY_PENDING);
+      if (p && code !== null) {
+        await chrome.storage.session.set({[KEY_PENDING]: {...p, ended: code || 'ok'}});
+      }
+    }
+    catch (e) {}
+    await Promise.all([
+      chrome.storage.session.remove(KEY_PENDING).catch(() => {}),
+      Promise.resolve(dnr()?.updateSessionRules?.({removeRuleIds: [KEY_RULE]})).catch(() => {}),
+      giveBack(PENDING).catch(() => false),
+      code ? keyGiveBack().catch(() => false) : null
+    ]);
+  };
+  // a sign-in too old to finish: over, and said so; a rule with none underway goes as well
+  const keyTidy = async () => {
+    try {
+      const {[KEY_PENDING]: p} = await chrome.storage.session.get(KEY_PENDING);
+      if (p && Date.now() - p.created < PENDING_MAX) {
+        return;
+      }
+      if (p || (await dnr().getSessionRules()).some(r => r.id === KEY_RULE)) {
+        await keyOver(p ? 'key-timeout' : null);
+      }
+    }
+    catch (e) {}
+  };
+  // The page that waits on a sign-in (the one it began in, or a settings page that finds it
+  // underway) ends it when the tab OpenRouter's page is in closes before it came back, and when
+  // it is too old to finish. Once a page for the tab, once a sign-in for the time.
+  let keyWatched = false;
+  const keyWatch = async () => {
+    const {[KEY_PENDING]: p} = await chrome.storage.session.get(KEY_PENDING).catch(() => ({}));
+    if (!p) {
+      return;
+    }
+    setTimeout(keyTidy, Math.max(0, p.created + PENDING_MAX - Date.now()) + 1000);
+    if (!keyWatched && chrome.tabs?.onRemoved?.addListener) {
+      keyWatched = true;
+      chrome.tabs.onRemoved.addListener(async id => {
+        const {[KEY_PENDING]: now} = await chrome.storage.session.get(KEY_PENDING).catch(() => ({}));
+        if (now?.opened === id) {
+          await keyOver('key-cancelled');
+        }
+      });
+    }
+  };
+  // Open OpenRouter's page: the record of the sign-in, the rule that brings it back, then the
+  // page, in a tab next to this one (open(url, tab) shows it elsewhere: the callback page itself,
+  // for Try again). The tab it is in is written down, to know when it closes.
+  const keyBegin = async (open = (url, tab) => chrome.tabs.create({url, ...(tab?.id ? {openerTabId: tab.id} : {})})) => {
+    const tab = await Promise.resolve(chrome.tabs?.getCurrent?.()).catch(() => null);
+    const pending = {state: random(), verifier: random(), created: Date.now(), ...(tab?.id ? {tab: tab.id} : {})};
+    let opened;
+    try {
+      await chrome.storage.session.set({[KEY_PENDING]: pending});
+      if (dnr()?.updateSessionRules) {
+        await dnr().updateSessionRules({removeRuleIds: [KEY_RULE], addRules: [keyRule()]});
+      }
+      opened = await open(keyAuthorizeUrl({state: pending.state, challenge: await challengeOf(pending.verifier)}), tab);
+    }
+    catch (e) {
+      await keyOver(null);
+      throw new AIError('key-sign-in', e?.message || String(e));
+    }
+    const id = opened?.id ?? tab?.id;
+    const {[KEY_PENDING]: now} = await chrome.storage.session.get(KEY_PENDING);
+    if (id && now?.state === pending.state) {
+      await chrome.storage.session.set({[KEY_PENDING]: {...now, opened: id}});
+    }
+    keyWatch();
+    return true;
+  };
+  // the page OpenRouter sends the user back to is ours only where the manifest Chrome loaded
+  // lets OpenRouter's pages reach it
+  const comesBack = () => {
+    let m = null;
+    try {
+      m = chrome.runtime.getManifest?.();
+    }
+    catch (e) {}
+    return !Array.isArray(m?.web_accessible_resources) || m.web_accessible_resources.some(w =>
+      w?.resources?.includes(CALLBACK.slice(1)) && w.matches?.includes(CLOUD.openrouter.origins[0]));
+  };
+  // the sites, asked from the click itself before anything is awaited; then the sign-in
+  const keySignIn = (o = {}) => ask(KEY_SIGN_IN, known(KEY_SIGN_IN) && comesBack()).then(() => keyBegin(o.open));
+  // The user's own stop, from the page that waits: the sign-in over, and OpenRouter's page closed
+  // when the tab still shows it (seen while its site is still given, before the sign-in is over)
+  const keyCancel = async () => {
+    const {[KEY_PENDING]: p} = await chrome.storage.session.get(KEY_PENDING).catch(() => ({}));
+    const tab = p?.opened && p.opened !== p.tab ? await Promise.resolve(chrome.tabs?.get?.(p.opened)).catch(() => null) : null;
+    await keyOver(p ? 'aborted' : null);
+    if (tab?.url?.startsWith(KEY_AUTH)) {
+      await Promise.resolve(chrome.tabs.remove(tab.id)).catch(() => {});
+    }
+  };
+  // what the exchange said: a code spent, too old, or not the verifier's is a sign-in to try again
+  const keyRefused = (status, text, headers) => {
+    const j = parse(text);
+    const said = String((j?.error && typeof j.error === 'object' ? j.error.message : j?.error ?? j?.message) || text || 'HTTP ' + status);
+    if (status === 429 || status >= 500) {
+      return refused(status, text, headers);
+    }
+    return new AIError(/expired/i.test(said) ? 'key-timeout' : 'key-sign-in', said, {status});
+  };
+
+  /*
+   * The sign-in comes back (callback.html#openrouter, with the query of its visit): its state is
+   * checked against the one underway, its code exchanged for a key with the verifier, the key
+   * checked as a pasted one is and kept. {tab} (the tab it was started from), or an AIError.
+   */
+  const keyComplete = async (query, signal) => {
+    const q = new URLSearchParams(query);
+    const {[KEY_PENDING]: p} = await chrome.storage.session.get(KEY_PENDING);
+    if (!p || typeof p !== 'object') {
+      await keyOver(null);
+      throw new AIError('key-sign-in', 'no sign-in underway');
+    }
+    // OpenRouter comes back without the state when the user declines. Another state, or a code
+    // without one, is no answer to the sign-in underway (an earlier one's page): that one goes on.
+    const state = q.get('state');
+    if (!state && !q.get('code')) {
+      await keyOver('key-denied');
+      throw new AIError('key-denied', q.get('error_description') || q.get('error') || 'no code');
+    }
+    if (state !== p.state) {
+      throw new AIError('key-replaced', state ? 'another state' : 'a code without the state');
+    }
+    try {
+      if (Date.now() - p.created > PENDING_MAX) {
+        throw new AIError('key-timeout', 'too late');
+      }
+      const error = q.get('error');
+      if (error) {
+        throw new AIError(error === 'access_denied' ? 'key-denied' : 'key-sign-in', q.get('error_description') || error);
+      }
+      if (!q.get('code')) {
+        throw new AIError('key-sign-in', 'no code');
+      }
+      const {r, w} = await call(KEY_EXCHANGE, {
+        method: 'POST',
+        headers: {'content-type': 'application/json', ...COMPAT.openrouter.headers()},
+        body: JSON.stringify({code: q.get('code'), code_verifier: p.verifier, code_challenge_method: 'S256'})
+      }, signal, WAIT_LIST, keyRefused);
+      const j = await readJSON(r, w);
+      let key;
+      try {
+        key = keyOf(j?.key);
+      }
+      catch (e) {
+        throw new AIError('key-sign-in', 'no key');
+      }
+      // OpenRouter's own key, and still: checked as a pasted one is before it is kept. One it
+      // refuses at once is no key to check again: the sign-in is to be tried again.
+      await check('openrouter', key, signal).catch(e => {
+        throw e?.code === 'auth' ? new AIError('key-sign-in', e.detail) : e;
+      });
+      await chrome.storage.local.set({[KEY_KEPT]: key});
+      await keyOver('');
+      return p.tab ? {tab: p.tab} : {};
+    }
+    catch (e) {
+      await keyOver(e?.code || 'key-sign-in');
+      throw e;
+    }
+  };
+  // the page of a key at OpenRouter (its SHA-256 in lowercase hex), where only its owner, signed
+  // in, sees it; the list of keys when there is no key or no hash
+  const keyPage = async key => {
+    try {
+      const k = keyOf(key);
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(k));
+      return KEY_PAGE + [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    catch (e) {
+      return 'https://openrouter.ai/settings/keys';
     }
   };
 
@@ -4279,6 +4519,7 @@
   // a sign-in an earlier page left unfinished
   if (dnr()?.getSessionRules) {
     tidy();
+    keyTidy();
   }
 
   self.AIError = AIError;
@@ -4306,10 +4547,14 @@
     localBase,
     // the ChatGPT plan: signIn() from a click, complete() on the page the sign-in comes back to
     chatgpt: {signIn, signOut, account, complete, resume, usage: USAGE},
+    // OpenRouter's key from a sign-in: signIn() from a click, complete() on the page it comes back
+    // to; cancel() and watch() for the page that waits; the page of a key at OpenRouter; the
+    // loopback port, which OpenRouter names the app by
+    openrouter: {signIn: keySignIn, complete: keyComplete, cancel: keyCancel, watch: keyWatch, keyPage, port: KEY_PORT},
     calendarUrl,
     // for the tests
     _internal: {readSummary, fit, candidate, sortable, prune, jsonOf, sse, watch, summarySystem, replySystem, readPlan, fitMail,
-      citesOf, readEmail, planSystem, answerSystem, draftSystem, composeSystem, authorizeUrl, challengeOf, verifyIdToken, begin,
+      citesOf, readEmail, planSystem, answerSystem, draftSystem, composeSystem, authorizeUrl, challengeOf, verifyIdToken, begin, keyBegin,
       access, thinksAlways, checkCites, passages, languagesOf, calendar, midnight, planUser, effortFor, readResults, replyUser,
       COMPAT, CLOUD, unthink, localOrigin, localName}
   };

@@ -1889,6 +1889,21 @@
     "ai_err_other_account": {
         "message": "Αυτός δεν είναι ο λογαριασμός ChatGPT με τον οποίο ρυθμίστηκε το Mail Deck. Δοκιμάστε ξανά για να το ρυθμίσετε με αυτόν."
     },
+    "ai_err_key_denied": {
+        "message": "Δεν επιτρέψατε στο Mail Deck να πάρει κλειδί από το OpenRouter."
+    },
+    "ai_err_key_sign_in": {
+        "message": "Η σύνδεση με το OpenRouter δεν ολοκληρώθηκε. Δοκιμάστε ξανά."
+    },
+    "ai_err_key_replaced": {
+        "message": "Αυτή η σελίδα είναι από προηγούμενη σύνδεση με το OpenRouter. Ολοκληρώστε την πιο πρόσφατη ή δοκιμάστε ξανά."
+    },
+    "ai_err_key_cancelled": {
+        "message": "Η σελίδα του OpenRouter έκλεισε πριν ολοκληρωθεί η σύνδεση."
+    },
+    "ai_err_key_timeout": {
+        "message": "Η σύνδεση με το OpenRouter καθυστέρησε πολύ. Δοκιμάστε ξανά."
+    },
     "ai_signin_title": {
         "message": "Σύνδεση με ChatGPT"
     },
@@ -1909,6 +1924,15 @@
     },
     "ai_signin_retry": {
         "message": "Δοκιμάστε ξανά"
+    },
+    "ai_key_title": {
+        "message": "Σύνδεση με $1"
+    },
+    "ai_key_done": {
+        "message": "Συνδέθηκε με $1"
+    },
+    "ai_key_failed": {
+        "message": "Δεν συνδέθηκε"
     },
     "ai_note_english": {
         "message": "Το ενσωματωμένο μοντέλο απαντά στα αγγλικά."

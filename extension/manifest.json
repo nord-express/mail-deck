@@ -60,7 +60,7 @@
   "web_accessible_resources": [
     {
       "resources": ["data/ai/callback.html", "data/ai/callback.js"],
-      "matches": ["https://auth.openai.com/*", "https://chatgpt.com/*"]
+      "matches": ["https://auth.openai.com/*", "https://chatgpt.com/*", "https://openrouter.ai/*"]
     }
   ],
   "side_panel": {

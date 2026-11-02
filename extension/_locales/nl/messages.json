@@ -1893,6 +1893,21 @@
     "ai_err_other_account": {
         "message": "Dit is niet het ChatGPT-account waarmee Mail Deck is ingesteld. Probeer het opnieuw om Mail Deck met dit account in te stellen."
     },
+    "ai_err_key_denied": {
+        "message": "Je hebt Mail Deck geen toestemming gegeven om een sleutel van OpenRouter te krijgen."
+    },
+    "ai_err_key_sign_in": {
+        "message": "Inloggen met OpenRouter is niet afgerond. Probeer het opnieuw."
+    },
+    "ai_err_key_replaced": {
+        "message": "Deze pagina hoort bij een eerdere inlogpoging met OpenRouter. Rond de nieuwste af of probeer het opnieuw."
+    },
+    "ai_err_key_cancelled": {
+        "message": "De pagina van OpenRouter is gesloten voordat het inloggen klaar was."
+    },
+    "ai_err_key_timeout": {
+        "message": "Inloggen met OpenRouter duurde te lang. Probeer het opnieuw."
+    },
     "ai_signin_title": {
         "message": "Inloggen met ChatGPT"
     },
@@ -1913,6 +1928,15 @@
     },
     "ai_signin_retry": {
         "message": "Opnieuw proberen"
+    },
+    "ai_key_title": {
+        "message": "Inloggen met $1"
+    },
+    "ai_key_done": {
+        "message": "Verbonden met $1"
+    },
+    "ai_key_failed": {
+        "message": "Niet verbonden"
     },
     "ai_note_english": {
         "message": "Het ingebouwde model antwoordt in het Engels."

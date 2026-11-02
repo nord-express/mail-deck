@@ -1889,6 +1889,21 @@
     "ai_err_other_account": {
         "message": "Це не той акаунт ChatGPT, з яким було налаштовано Mail Deck. Спробуйте ще раз, щоб налаштувати його з цим акаунтом."
     },
+    "ai_err_key_denied": {
+        "message": "Ви не дозволили Mail Deck отримати ключ від OpenRouter."
+    },
+    "ai_err_key_sign_in": {
+        "message": "Вхід через OpenRouter не завершено. Спробуйте ще раз."
+    },
+    "ai_err_key_replaced": {
+        "message": "Ця сторінка від попередньої спроби входу через OpenRouter. Завершіть останню або спробуйте ще раз."
+    },
+    "ai_err_key_cancelled": {
+        "message": "Сторінку OpenRouter закрили до того, як вхід завершився."
+    },
+    "ai_err_key_timeout": {
+        "message": "Вхід через OpenRouter тривав надто довго. Спробуйте ще раз."
+    },
     "ai_signin_title": {
         "message": "Вхід через ChatGPT"
     },
@@ -1909,6 +1924,15 @@
     },
     "ai_signin_retry": {
         "message": "Спробувати ще раз"
+    },
+    "ai_key_title": {
+        "message": "Вхід через $1"
+    },
+    "ai_key_done": {
+        "message": "Підключено: $1"
+    },
+    "ai_key_failed": {
+        "message": "Не підключено"
     },
     "ai_note_english": {
         "message": "Вбудована модель відповідає англійською."

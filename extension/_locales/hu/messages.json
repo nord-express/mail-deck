@@ -1709,6 +1709,21 @@
   "ai_err_other_account": {
     "message": "Ez nem az a ChatGPT-fiók, amellyel a Mail Deck be lett állítva. Próbálja újra, hogy ezzel a fiókkal állítsa be."
   },
+  "ai_err_key_denied": {
+    "message": "Nem engedélyezte, hogy a Mail Deck kulcsot kapjon az OpenRoutertől."
+  },
+  "ai_err_key_sign_in": {
+    "message": "Az OpenRouterrel való bejelentkezés nem fejeződött be. Próbálja újra."
+  },
+  "ai_err_key_replaced": {
+    "message": "Ez az oldal egy korábbi OpenRouter-bejelentkezéshez tartozik. Fejezze be a legutóbbit, vagy próbálja újra."
+  },
+  "ai_err_key_cancelled": {
+    "message": "Az OpenRouter oldala bezárult, mielőtt a bejelentkezés befejeződött."
+  },
+  "ai_err_key_timeout": {
+    "message": "Az OpenRouterrel való bejelentkezés túl sokáig tartott. Próbálja újra."
+  },
   "ai_signin_title": {
     "message": "Bejelentkezés ChatGPT-vel"
   },
@@ -1729,6 +1744,15 @@
   },
   "ai_signin_retry": {
     "message": "Próbálja újra"
+  },
+  "ai_key_title": {
+    "message": "Bejelentkezés $1-fiókkal"
+  },
+  "ai_key_done": {
+    "message": "Csatlakozva: $1"
+  },
+  "ai_key_failed": {
+    "message": "Nincs csatlakozva"
   },
   "ai_note_english": {
     "message": "A beépített modell angolul válaszol."

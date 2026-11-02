@@ -1721,6 +1721,21 @@
   "ai_err_other_account": {
     "message": "Ce n’est pas le compte ChatGPT avec lequel Mail Deck a été configuré. Réessayez pour le configurer avec celui-ci."
   },
+  "ai_err_key_denied": {
+    "message": "Vous n’avez pas autorisé Mail Deck à obtenir une clé d’OpenRouter."
+  },
+  "ai_err_key_sign_in": {
+    "message": "La connexion avec OpenRouter n’a pas abouti. Réessayez."
+  },
+  "ai_err_key_replaced": {
+    "message": "Cette page provient d’une connexion antérieure avec OpenRouter. Terminez la plus récente ou réessayez."
+  },
+  "ai_err_key_cancelled": {
+    "message": "La page OpenRouter a été fermée avant la fin de la connexion."
+  },
+  "ai_err_key_timeout": {
+    "message": "La connexion avec OpenRouter a pris trop de temps. Réessayez."
+  },
   "ai_signin_title": {
     "message": "Se connecter avec ChatGPT"
   },
@@ -1741,6 +1756,15 @@
   },
   "ai_signin_retry": {
     "message": "Réessayer"
+  },
+  "ai_key_title": {
+    "message": "Se connecter avec $1"
+  },
+  "ai_key_done": {
+    "message": "Connecté à $1"
+  },
+  "ai_key_failed": {
+    "message": "Non connecté"
   },
   "ai_note_english": {
     "message": "Le modèle intégré répond en anglais."

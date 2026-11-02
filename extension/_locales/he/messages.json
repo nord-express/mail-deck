@@ -1889,6 +1889,21 @@
     "ai_err_other_account": {
         "message": "זה לא חשבון ה-ChatGPT ש-Mail Deck הוגדר איתו. נסה שוב כדי להגדיר אותו עם החשבון הזה."
     },
+    "ai_err_key_denied": {
+        "message": "לא אישרת ל-Mail Deck לקבל מפתח מ-OpenRouter."
+    },
+    "ai_err_key_sign_in": {
+        "message": "ההתחברות עם OpenRouter לא הושלמה. נסה שוב."
+    },
+    "ai_err_key_replaced": {
+        "message": "הדף הזה שייך להתחברות קודמת עם OpenRouter. סיים את האחרונה, או נסה שוב."
+    },
+    "ai_err_key_cancelled": {
+        "message": "הדף של OpenRouter נסגר לפני שההתחברות הושלמה."
+    },
+    "ai_err_key_timeout": {
+        "message": "ההתחברות עם OpenRouter ארכה יותר מדי זמן. נסה שוב."
+    },
     "ai_signin_title": {
         "message": "התחברות עם ChatGPT"
     },
@@ -1909,6 +1924,15 @@
     },
     "ai_signin_retry": {
         "message": "נסה שוב"
+    },
+    "ai_key_title": {
+        "message": "התחברות עם $1"
+    },
+    "ai_key_done": {
+        "message": "מחובר ל-$1"
+    },
+    "ai_key_failed": {
+        "message": "לא מחובר"
     },
     "ai_note_english": {
         "message": "המודל המובנה עונה באנגלית."

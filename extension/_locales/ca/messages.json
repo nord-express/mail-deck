@@ -1893,6 +1893,21 @@
     "ai_err_other_account": {
         "message": "Aquest no és el compte de ChatGPT amb què es va configurar Mail Deck. Torna-ho a provar per configurar-lo amb aquest."
     },
+    "ai_err_key_denied": {
+        "message": "No has permès que Mail Deck obtingui una clau d’OpenRouter."
+    },
+    "ai_err_key_sign_in": {
+        "message": "L’inici de sessió amb OpenRouter no s’ha completat. Torna-ho a provar."
+    },
+    "ai_err_key_replaced": {
+        "message": "Aquesta pàgina és d’un inici de sessió anterior amb OpenRouter. Acaba el més recent o torna-ho a provar."
+    },
+    "ai_err_key_cancelled": {
+        "message": "La pàgina d’OpenRouter s’ha tancat abans que s’acabés d’iniciar la sessió."
+    },
+    "ai_err_key_timeout": {
+        "message": "L’inici de sessió amb OpenRouter ha trigat massa. Torna-ho a provar."
+    },
     "ai_signin_title": {
         "message": "Inicia la sessió amb ChatGPT"
     },
@@ -1913,6 +1928,15 @@
     },
     "ai_signin_retry": {
         "message": "Torna-ho a provar"
+    },
+    "ai_key_title": {
+        "message": "Inicia la sessió amb $1"
+    },
+    "ai_key_done": {
+        "message": "Connectat a $1"
+    },
+    "ai_key_failed": {
+        "message": "No connectat"
     },
     "ai_note_english": {
         "message": "El model integrat respon en anglès."

@@ -1893,6 +1893,21 @@
     "ai_err_other_account": {
         "message": "Ово није ChatGPT налог са којим је Mail Deck подешен. Покушајте поново да бисте га подесили са овим налогом."
     },
+    "ai_err_key_denied": {
+        "message": "Нисте дозволили да Mail Deck добије кључ од OpenRouter-а."
+    },
+    "ai_err_key_sign_in": {
+        "message": "Пријава преко OpenRouter-а није довршена. Покушајте поново."
+    },
+    "ai_err_key_replaced": {
+        "message": "Ова страница је од раније пријаве преко OpenRouter-а. Довршите најновију или покушајте поново."
+    },
+    "ai_err_key_cancelled": {
+        "message": "Страница OpenRouter-а је затворена пре него што је пријава довршена."
+    },
+    "ai_err_key_timeout": {
+        "message": "Пријава преко OpenRouter-а је трајала предуго. Покушајте поново."
+    },
     "ai_signin_title": {
         "message": "Пријава преко ChatGPT налога"
     },
@@ -1913,6 +1928,15 @@
     },
     "ai_signin_retry": {
         "message": "Покушај поново"
+    },
+    "ai_key_title": {
+        "message": "Пријава преко $1 налога"
+    },
+    "ai_key_done": {
+        "message": "Повезано: $1"
+    },
+    "ai_key_failed": {
+        "message": "Није повезано"
     },
     "ai_note_english": {
         "message": "Уграђени модел одговара на енглеском."

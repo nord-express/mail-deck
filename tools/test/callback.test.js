@@ -1,9 +1,10 @@
-// The ChatGPT sign-in coming back, in a real Chrome with the extension loaded: a session rule
-// turns the visit to the loopback address into data/ai/callback.html with its query, and the
-// page finishes the sign-in. A copy of the extension is changed for the test only: OpenAI's
-// sign-in site is a local server (its token endpoint and keys), the page that sends the user
-// back is one of that server's (so the copy lets it reach callback.html), and a page of the
-// copy's starts the sign-in and reports what it saw.
+// The ChatGPT sign-in, and OpenRouter's for a key, coming back in a real Chrome with the
+// extension loaded: a session rule turns the visit to the loopback address into
+// data/ai/callback.html with its query (#openrouter for OpenRouter's), and the page finishes the
+// sign-in. A copy of the extension is changed for the test only: OpenAI's sign-in site and
+// OpenRouter's are a local server (the token endpoint and keys; the key exchange and the key's
+// check), the page that sends the user back is one of that server's (so the copy lets it reach
+// callback.html), and a page of the copy's starts each sign-in and reports what it saw.
 // Google Chrome no longer loads an unpacked extension from the command line: Chrome for
 // Testing (Playwright's) does. CHROME_EXT names one; without it the check is skipped.
 const fs = require('fs');
@@ -42,6 +43,7 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
   const pair = await crypto.subtle.generateKey(RSA, true, ['sign', 'verify']);
   const jwk = {...await crypto.subtle.exportKey('jwk', pair.publicKey), kid: 'k1', alg: 'RS256', use: 'sig'};
   const tokenRequests = [];
+  const keyRequests = [];
   let auth;
   let done;
   const result = new Promise(r => done = r);
@@ -73,6 +75,26 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
         res.setHeader('content-type', 'application/json');
         res.end(JSON.stringify({access_token: 'at-1', refresh_token: 'rt-1', id_token: `${head}.${claims}.${sig}`, token_type: 'Bearer',
           expires_in: 3600, scope: SCOPES}));
+      }
+      else if (url.pathname === '/or-start' || url.pathname === '/or-deny') {
+        // OpenRouter's page: Authorize sends the user back with a code and the state; a decline, with neither
+        res.setHeader('content-type', 'text/html');
+        const back = url.pathname === '/or-deny' ? '/or-back' : `/or-back?code=or-code-1&state=${encodeURIComponent(url.searchParams.get('state'))}`;
+        res.end(`<a id="go" href="${back}">Authorize</a><script>setTimeout(() => document.getElementById("go").click(), 200)</script>`);
+      }
+      else if (url.pathname === '/or-back') {
+        res.writeHead(302, {location: 'http://127.0.0.1:1456/callback' + url.search});
+        res.end();
+      }
+      else if (url.pathname === '/api/v1/auth/keys') {
+        keyRequests.push({method: req.method, type: req.headers['content-type'], body: JSON.parse(body || 'null')});
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify({key: 'sk-or-v1-test-0123456789', user_id: 'user_test'}));
+      }
+      else if (url.pathname === '/api/v1/key') {
+        keyRequests.push({method: req.method, authorization: req.headers.authorization});
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify({data: {label: 'Mail Deck', limit: null, usage: 0}}));
       }
       else if (url.pathname === '/.well-known/jwks.json') {
         res.setHeader('content-type', 'application/json');
@@ -108,10 +130,21 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest));
   const ai = path.join(dir, 'data/ai/ai.js');
   const source = fs.readFileSync(ai, 'utf8');
-  if (!source.includes(`const AUTH = 'https://auth.openai.com';`)) {
-    throw new Error('ai.js no longer names OpenAI\'s sign-in site as this test expects');
+  // OpenAI's sign-in site, and OpenRouter's site (its page, the exchange, the key's check under
+  // /api/v1/), the local server
+  const swaps = [
+    [`const AUTH = 'https://auth.openai.com';`, `const AUTH = '${auth}';`],
+    [`const KEY_AUTH = 'https://openrouter.ai/auth';`, `const KEY_AUTH = 'http://localhost:${port}/or-start';`],
+    [`const KEY_EXCHANGE = 'https://openrouter.ai/api/v1/auth/keys';`, `const KEY_EXCHANGE = '${auth}/api/v1/auth/keys';`],
+    [`openrouter: {origins: ['https://openrouter.ai/*'], base: 'https://openrouter.ai/api/v1/'},`,
+      `openrouter: {origins: ['http://127.0.0.1/*'], base: '${auth}/api/v1/'},`]
+  ];
+  for (const [from] of swaps) {
+    if (!source.includes(from)) {
+      throw new Error('ai.js no longer has this as the test expects: ' + from);
+    }
   }
-  fs.writeFileSync(ai, source.replace(`const AUTH = 'https://auth.openai.com';`, `const AUTH = '${auth}';`));
+  fs.writeFileSync(ai, swaps.reduce((text, [from, to]) => text.replace(from, to), source));
   fs.writeFileSync(path.join(dir, '__worker.js'), 'chrome.runtime.onInstalled.addListener(() => chrome.tabs.create({url: "/__drive.html"}));');
   fs.writeFileSync(path.join(dir, '__drive.html'), '<!DOCTYPE html><meta charset="utf-8"><script src="/data/ai/ai.js"></script><script src="/__drive.js"></script>');
   fs.writeFileSync(path.join(dir, '__drive.js'), `
@@ -126,9 +159,9 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
     }
     return null;
   };
-  // the callback page in a state: its window, which this page of the extension may read
-  const page = state => until(() => chrome.extension.getViews({type: 'tab'})
-    .find(v => v.location.pathname === '/data/ai/callback.html' && v.document.getElementById('card')?.dataset.state === state));
+  // the callback page in a state (OpenRouter's: #openrouter): its window, which this page of the extension may read
+  const page = (state, hash = '') => until(() => chrome.extension.getViews({type: 'tab'})
+    .find(v => v.location.pathname === '/data/ai/callback.html' && v.location.hash === hash && v.document.getElementById('card')?.dataset.state === state));
   const said = v => v && {title: v.document.getElementById('title').textContent, text: v.document.getElementById('text').textContent,
     retry: !v.document.getElementById('retry').hidden, address: v.location.href, dir: v.document.documentElement.dir,
     paper: getComputedStyle(v.document.body).backgroundColor, card: getComputedStyle(v.document.getElementById('card')).borderRadius};
@@ -153,6 +186,43 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
     await chrome.tabs.create({url: 'http://127.0.0.1:1455/auth/callback?code=x&state=forged'});
     out.forged = said(await page('bad'));
     out.pendingKept = Boolean((await chrome.storage.session.get('ai.chatgpt.pending'))['ai.chatgpt.pending']);
+
+    // OpenRouter's sign-in for a key: its page in a tab, Authorize, back to 127.0.0.1:1456
+    const ended = [];
+    chrome.storage.onChanged.addListener((changes, area) => {
+      const c = changes['ai.openrouter.pending'];
+      if (area === 'session' && c && !c.newValue) {
+        ended.push(c.oldValue?.ended);
+      }
+    });
+    const pending = async () => (await chrome.storage.session.get('ai.openrouter.pending'))['ai.openrouter.pending'] || null;
+    let keyTab = null;
+    const keyTabGone = new Promise(r => chrome.tabs.onRemoved.addListener(id => id === keyTab && r(true)));
+    await AI._internal.keyBegin(async url => {
+      out.keyAuthorize = url;
+      const tab = await chrome.tabs.create({url});
+      keyTab = tab.id;
+      return tab;
+    });
+    out.keyRules = await chrome.declarativeNetRequest.getSessionRules();
+    out.keyDone = said(await page('ok', '#openrouter'));
+    out.keyClosed = await Promise.race([keyTabGone, new Promise(r => setTimeout(r, 6000, false))]);
+    out.key = (await chrome.storage.local.get('ai.openrouter.key'))['ai.openrouter.key'] || null;
+    out.keyRulesAfter = (await chrome.declarativeNetRequest.getSessionRules()).filter(x => x.id === 902);
+    out.keyPendingAfter = await pending();
+    // declined at OpenRouter: back with neither the state nor a code; said on the page, and over
+    await AI._internal.keyBegin(async url => chrome.tabs.create({url: url.replace('/or-start?', '/or-deny?')}));
+    out.keyDenied = said(await page('bad', '#openrouter'));
+    await until(async () => !await pending());
+    out.keyDeniedPending = await pending();
+    // the tab of OpenRouter's page closed before it came back: over, said as such
+    let blank = null;
+    await AI._internal.keyBegin(async () => blank = await chrome.tabs.create({url: 'about:blank'}));
+    await until(async () => (await pending())?.opened === blank.id);
+    await chrome.tabs.remove(blank.id);
+    await until(async () => !await pending());
+    out.keyEnded = ended;
+    out.keyRulesLast = (await chrome.declarativeNetRequest.getSessionRules()).filter(x => x.id === 902);
   }
   catch (e) {
     out.error = String(e.stack || e);
@@ -173,6 +243,7 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
   }
 
   const q = r.authorize ? Object.fromEntries(new URL(r.authorize).searchParams) : {};
+  const keyQ = r.keyAuthorize ? Object.fromEntries(new URL(r.keyAuthorize).searchParams) : {};
   const [rule] = r.rules || [];
   const checks = {
     'the sign-in starts with a session rule for the loopback address, below core/services.js\'s': r.rules?.length === 1 && rule.id < 1000 &&
@@ -193,7 +264,22 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
     'after it the rule and the record of the sign-in are gone': r.rulesAfter?.length === 0 && r.pendingAfter === null,
     'the page goes on its own, and the tab the sign-in began in comes to the front': r.closed === true && r.back === true,
     'a visit with another state is refused with Try again; the sign-in underway stays': r.forged?.title === 'Not signed in' && r.forged.retry &&
-      /did not finish/.test(r.forged.text) && r.pendingKept === true
+      /did not finish/.test(r.forged.text) && r.pendingKept === true,
+    'OpenRouter: its page opens with the loopback callback, PKCE and a state; its own rule marks the address #openrouter':
+      keyQ.callback_url === 'http://127.0.0.1:1456/callback' && keyQ.code_challenge_method === 'S256' && /^[\w-]{43}$/.test(keyQ.state || '') &&
+      r.keyRules?.some(x => x.id === 902 && x.action.redirect.transform.fragment === '#openrouter'),
+    'OpenRouter: Authorize, a 302 to 127.0.0.1:1456: callback.html#openrouter loads and says it is connected': r.keyDone?.title === 'Connected to OpenRouter' &&
+      r.keyDone.text === 'You can close this tab.' && !r.keyDone.retry,
+    'OpenRouter: the code exchanged with the verifier as JSON, the key checked with it, then kept': keyRequests.length >= 2 &&
+      keyRequests[0].method === 'POST' && keyRequests[0].type === 'application/json' && keyRequests[0].body?.code === 'or-code-1' &&
+      /^[\w-]{43}$/.test(keyRequests[0].body?.code_verifier || '') && keyRequests[0].body?.code_challenge_method === 'S256' &&
+      keyRequests[1].method === 'GET' && keyRequests[1].authorization === 'Bearer sk-or-v1-test-0123456789' && r.key === 'sk-or-v1-test-0123456789',
+    'OpenRouter: the address no longer shows the code; the page goes on its own; the rule and the record gone':
+      r.keyDone?.address?.endsWith('/data/ai/callback.html#openrouter') && r.keyClosed === true && r.keyRulesAfter?.length === 0 && r.keyPendingAfter === null,
+    'OpenRouter: declined there: said on the page with Try again, and over': r.keyDenied?.title === 'Not connected' && r.keyDenied.retry &&
+      /did not allow Mail Deck to get a key from OpenRouter/.test(r.keyDenied.text) && r.keyDeniedPending === null,
+    'OpenRouter: its tab closed before it came back: over, as cancelled; no rule left':
+      JSON.stringify(r.keyEnded) === '["ok","key-denied","key-cancelled"]' && r.keyRulesLast?.length === 0
   };
   let failed = r.error ? 1 : 0;
   if (r.error) {
@@ -201,7 +287,7 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
   }
   for (const [name, pass] of Object.entries(checks)) {
     failed += pass ? 0 : 1;
-    console.log(pass ? 'ok' : 'not ok', name + (pass ? '' : ' - ' + JSON.stringify({r, tokenRequests})));
+    console.log(pass ? 'ok' : 'not ok', name + (pass ? '' : ' - ' + JSON.stringify({r, tokenRequests, keyRequests})));
   }
   process.exit(failed ? 1 : 0);
 })().catch(e => {

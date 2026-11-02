@@ -1721,6 +1721,21 @@
   "ai_err_other_account": {
     "message": "これは Mail Deck の設定に使った ChatGPT アカウントではありません。このアカウントで設定し直すには、もう一度お試しください。"
   },
+  "ai_err_key_denied": {
+    "message": "Mail Deck が OpenRouter からキーを取得することは許可されませんでした。"
+  },
+  "ai_err_key_sign_in": {
+    "message": "OpenRouter でのログインが完了しませんでした。もう一度お試しください。"
+  },
+  "ai_err_key_replaced": {
+    "message": "このページは以前の OpenRouter ログインのものです。最新のログインを完了するか、もう一度お試しください。"
+  },
+  "ai_err_key_cancelled": {
+    "message": "ログインが完了する前に OpenRouter のページが閉じられました。"
+  },
+  "ai_err_key_timeout": {
+    "message": "OpenRouter でのログインに時間がかかりすぎました。もう一度お試しください。"
+  },
   "ai_signin_title": {
     "message": "ChatGPT でログイン"
   },
@@ -1741,6 +1756,15 @@
   },
   "ai_signin_retry": {
     "message": "もう一度試す"
+  },
+  "ai_key_title": {
+    "message": "$1 でログイン"
+  },
+  "ai_key_done": {
+    "message": "$1 に接続済み"
+  },
+  "ai_key_failed": {
+    "message": "接続できませんでした"
   },
   "ai_note_english": {
     "message": "内蔵モデルは英語で回答します。"

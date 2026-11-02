@@ -24,7 +24,8 @@ const load = ({lang = 'en', local = {}, session = {}, LanguageModel, userAgent =
   const listeners = other?.listeners || [];
   // the session rules of declarativeNetRequest, and the tabs opened
   const rules = other?.rules || [];
-  const tabs = {created: [], current: {id: 7}};
+  // the tabs: the ones opened, those closed, what one shows (pages: {id: url}), and who hears a tab close
+  const tabs = {created: [], current: {id: 7}, removed: [], pages: {}, closing: [], close: id => tabs.closing.forEach(fn => fn(id))};
   const perm = {granted: true, asked: [], grant: true, requested: [], removed: []};
   const tell = (changes, name) => listeners.forEach(fn => fn(changes, name));
   const area = name => ({
@@ -111,7 +112,17 @@ const load = ({lang = 'en', local = {}, session = {}, LanguageModel, userAgent =
       create: async o => {
         tabs.created.push(o);
         return {id: 99};
-      }
+      },
+      get: async id => {
+        if (!(id in tabs.pages)) {
+          throw new Error('No tab with id: ' + id);
+        }
+        return {id, url: tabs.pages[id]};
+      },
+      remove: async id => {
+        tabs.removed.push(id);
+      },
+      onRemoved: {addListener: fn => tabs.closing.push(fn)}
     },
     runtime: {id: 'maildeckmaildeckmaildeckmaildeck'}
   };
@@ -2845,6 +2856,347 @@ check('chatgpt: a sign-in left unfinished: its rule goes once it is too old, whe
   assert.strictEqual(w.rules.length, 0);
 });
 
+/* OpenRouter: a key from a sign-in */
+const KEY_SIGN_IN = ['https://openrouter.ai/*', 'http://127.0.0.1/*'];
+// made up, and not in a key's shape, so that no scanner of secrets takes it for one
+const OR_KEY = 'sk-or-v1-MAIL-DECK-TEST-KEY-not-a-real-one';
+// a sign-in started from a click, with the page it opens written down (open: the tab it is in)
+const keyStarted = async (t, opened = {id: 42}) => {
+  const urls = [];
+  await t.AI.openrouter.signIn({open: url => {
+    urls.push(url);
+    return opened;
+  }});
+  return {p: t.store.session['ai.openrouter.pending'], url: new URL(urls[0]), raw: urls[0]};
+};
+const keyBack = (p, extra = '') => `?code=c-or-1&state=${encodeURIComponent(p.state)}${extra}`;
+// OpenRouter's answers: the key for the code, then the key's own page for the check
+const keyExchanged = (key = OR_KEY) => json(200, {key, user_id: 'user_2yOPcMpKoQhcd4bVgSMlELRaIah'});
+const keyChecked = json(200, {data: {label: 'Mail Deck', limit: null, usage: 0, is_free_tier: true}});
+// what the session's record went through: each value it was set to, and its removal
+const sessionLog = t => {
+  const log = [];
+  t.listeners.push((changes, area) => {
+    if (area === 'session' && 'ai.openrouter.pending' in changes) {
+      log.push(changes['ai.openrouter.pending']);
+    }
+  });
+  return log;
+};
+
+check('openrouter: Sign in: its sites from the click, PKCE, its own rule, then OpenRouter\'s page with every value encoded', async () => {
+  const t = load();
+  const p = t.AI.openrouter.signIn({open: () => ({id: 42})});
+  // asked from the click itself, before anything was awaited
+  assert.deepStrictEqual(t.perm.requested.map(o => [...o]), [KEY_SIGN_IN]);
+  assert.strictEqual(await p, true);
+  const t2 = load();
+  const {p: pending, url, raw} = await keyStarted(t2);
+  assert.strictEqual(url.origin + url.pathname, 'https://openrouter.ai/auth');
+  const q = Object.fromEntries(url.searchParams);
+  assert.deepStrictEqual(Object.keys(q), ['callback_url', 'code_challenge', 'code_challenge_method', 'key_label', 'state']);
+  assert.deepStrictEqual({...q, code_challenge: '', state: ''}, {callback_url: 'http://127.0.0.1:1456/callback', code_challenge: '',
+    code_challenge_method: 'S256', key_label: 'Mail Deck', state: ''});
+  assert.ok(raw.includes('?callback_url=http%3A%2F%2F127.0.0.1%3A1456%2Fcallback&') && raw.includes('&key_label=Mail%20Deck&'));
+  // PKCE: base64url SHA-256 of a fresh verifier, no padding; a fresh state, which OpenRouter gives back
+  assert.match(pending.verifier, /^[\w-]{43}$/);
+  assert.strictEqual(q.code_challenge, require('crypto').createHash('sha256').update(pending.verifier).digest('base64url'));
+  assert.strictEqual(q.state, pending.state);
+  assert.ok(pending.state !== pending.verifier && pending.state.length >= 43);
+  // the record: the tab it began in (to come back to) and the tab OpenRouter's page is in (to know it closed)
+  assert.deepStrictEqual({...plain(pending), state: '', verifier: '', created: 0}, {state: '', verifier: '', created: 0, tab: 7, opened: 42});
+  assert.ok(Math.abs(pending.created - Date.now()) < 5000);
+  // nothing goes to OpenRouter before the user comes back, and no key is kept
+  assert.strictEqual(t2.requests.length, 0);
+  assert.ok(!('ai.openrouter.key' in t2.store.local));
+  // its rule: the loopback callback, a main frame, to callback.html#openrouter with the query kept; only that address
+  const [rule] = t2.rules;
+  assert.strictEqual(t2.rules.length, 1);
+  assert.strictEqual(rule.id, 902, 'after the ChatGPT sign-in\'s and a local server\'s, below core/services.js\'s');
+  assert.deepStrictEqual(plain(rule.action), {type: 'redirect', redirect: {transform: {scheme: 'chrome-extension',
+    host: 'maildeckmaildeckmaildeckmaildeck', port: '', path: '/data/ai/callback.html', fragment: '#openrouter'}}});
+  assert.deepStrictEqual(plain(rule.condition.resourceTypes), ['main_frame']);
+  const re = new RegExp(rule.condition.regexFilter);
+  assert.ok(re.test('http://127.0.0.1:1456/callback?code=x&state=y') && re.test('http://127.0.0.1:1456/callback'));
+  assert.ok(!['http://localhost:1456/callback?code=x', 'http://127.0.0.1:1455/callback?code=x', 'http://127.0.0.1:1456/callbacks',
+    'http://127.0.0.1:1456/auth/callback?code=x', 'https://127.0.0.1:1456/callback', 'http://127.0.0.1:1455/auth/callback?code=x'].some(u => re.test(u)));
+  // the default opens a tab next to this one, and writes it down; ChatGPT's rule, underway too, stays
+  const t3 = load({session: {'ai.chatgpt.pending': {state: 's', verifier: 'v', created: Date.now()}}});
+  t3.rules.push({id: 900});
+  await t3.AI.openrouter.signIn();
+  assert.strictEqual(t3.tabs.created.length, 1);
+  assert.ok(t3.tabs.created[0].url.startsWith('https://openrouter.ai/auth?callback_url='));
+  assert.strictEqual(t3.tabs.created[0].openerTabId, 7);
+  assert.strictEqual(t3.store.session['ai.openrouter.pending'].opened, 99);
+  assert.deepStrictEqual(t3.rules.map(r => r.id).sort(), [900, 902]);
+  // Try again on the page it came back to: OpenRouter's page in that same tab
+  const t3b = load();
+  t3b.tabs.current = {id: 55};
+  await keyStarted(t3b, null);
+  assert.strictEqual(t3b.store.session['ai.openrouter.pending'].opened, 55);
+  // a second sign-in replaces the first: fresh state and verifier, one rule
+  const again = await keyStarted(t2);
+  assert.notStrictEqual(again.p.state, pending.state);
+  assert.notStrictEqual(again.p.verifier, pending.verifier);
+  assert.strictEqual(t2.rules.length, 1);
+  // the sites refused: nothing started
+  const t4 = load();
+  t4.perm.grant = false;
+  const no = await failsWith(t4.AI.openrouter.signIn({open: () => assert.fail('opened')}), 'no-access');
+  assert.ok(!('ai.openrouter.pending' in t4.store.session) && t4.rules.length === 0);
+  assert.ok(!no.reason, 'a no of the user\'s');
+  // Chrome would not ask: a Mail Deck from disk not reloaded, or another reason
+  const t5 = load();
+  t5.ctx.chrome.permissions.request = () => Promise.reject(new Error('Only permissions specified in the manifest may be requested.'));
+  assert.strictEqual((await failsWith(t5.AI.openrouter.signIn({open: () => assert.fail('opened')}), 'no-access')).reason, 'stale');
+  t5.ctx.chrome.permissions.request = () => {
+    throw new Error('Must be called during a user gesture');
+  };
+  const other = await failsWith(t5.AI.openrouter.signIn({open: () => assert.fail('opened')}), 'no-access');
+  assert.deepStrictEqual([other.reason, other.detail], ['error', 'Must be called during a user gesture']);
+  // known before Chrome is asked, from the manifest it loaded: the sites, and OpenRouter's pages
+  // allowed to reach the page the sign-in comes back to
+  let asked = 0;
+  t5.ctx.chrome.permissions.request = () => Promise.resolve(Boolean(asked += 1));
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '../../extension/manifest.json'), 'utf8'));
+  const older = structuredClone(manifest);
+  older.web_accessible_resources[0].matches = ['https://auth.openai.com/*', 'https://chatgpt.com/*'];
+  for (const m of [older, {...manifest, optional_host_permissions: ['https://api.openai.com/*', 'http://127.0.0.1/*']}]) {
+    t5.ctx.chrome.runtime.getManifest = () => m;
+    assert.strictEqual((await failsWith(t5.AI.openrouter.signIn({open: () => assert.fail('opened')}), 'no-access')).reason, 'stale');
+  }
+  assert.strictEqual(asked, 0);
+  t5.ctx.chrome.runtime.getManifest = () => manifest;
+  await t5.AI.openrouter.signIn({open: () => ({id: 3})});
+  assert.strictEqual(asked, 1);
+  // a page that cannot be opened: nothing left underway
+  const t6 = load();
+  await failsWith(t6.AI.openrouter.signIn({open: () => Promise.reject(new Error('No current window'))}), 'key-sign-in');
+  assert.ok(!('ai.openrouter.pending' in t6.store.session) && t6.rules.length === 0);
+});
+
+check('openrouter: the callback: the code and the verifier make a key, checked and kept as a pasted one; the rule gone', async () => {
+  const t = load();
+  const log = sessionLog(t);
+  const {p} = await keyStarted(t);
+  t.answers.push(keyExchanged(), keyChecked);
+  assert.deepStrictEqual(plain(await t.AI.openrouter.complete(keyBack(p))), {tab: 7});
+  const [exchange, key] = t.requests;
+  assert.strictEqual(exchange.url, 'https://openrouter.ai/api/v1/auth/keys');
+  assert.strictEqual(exchange.method, 'POST');
+  assert.strictEqual(exchange.headers['content-type'], 'application/json');
+  assert.strictEqual(exchange.headers['x-title'], 'Mail Deck');
+  assert.ok(!exchange.headers.authorization);
+  assert.deepStrictEqual(exchange.body, {code: 'c-or-1', code_verifier: p.verifier, code_challenge_method: 'S256'});
+  assert.deepStrictEqual([exchange.init.credentials, exchange.init.referrerPolicy], ['omit', 'no-referrer']);
+  // the key checked on its own page, as Connect does with one pasted
+  assert.strictEqual(key.url, 'https://openrouter.ai/api/v1/key');
+  assert.strictEqual(key.headers.authorization, 'Bearer ' + OR_KEY);
+  // kept where a pasted one is, and nothing else of the answer
+  assert.strictEqual(t.store.local['ai.openrouter.key'], OR_KEY);
+  assert.ok(!JSON.stringify(t.store).includes('user_2yOPcMpKoQhcd4bVgSMlELRaIah'));
+  // the record said how it went as it went; then no record, no rule, the loopback address given back,
+  // OpenRouter's site kept for the key
+  assert.deepStrictEqual(plain(log.at(-2).newValue?.ended), 'ok');
+  assert.ok(!('newValue' in log.at(-1)) && log.at(-1).oldValue.ended === 'ok');
+  assert.ok(!('ai.openrouter.pending' in t.store.session) && t.rules.length === 0);
+  assert.ok(t.perm.removed.includes('http://127.0.0.1/*') && !t.perm.removed.includes('https://openrouter.ai/*'));
+  // the module's requests with the key from then on, as with one pasted
+  t.store.local['ai.engine'] = 'openrouter';
+  t.answers.push(json(200, {data: [{id: 'openrouter/free', name: 'Free Models Router', architecture: {input_modalities: ['text'], output_modalities: ['text']},
+    pricing: {prompt: '0', completion: '0'}}]}));
+  assert.ok((await t.AI.models('openrouter', t.store.local['ai.openrouter.key'])).some(m => m.id === 'openrouter/free'));
+  assert.strictEqual(t.requests.at(-1).headers.authorization, 'Bearer ' + OR_KEY);
+  // the key's own page at OpenRouter: its SHA-256 in lowercase hex; the list when there is none
+  assert.strictEqual(await t.AI.openrouter.keyPage(OR_KEY), 'https://openrouter.ai/keys/' + require('crypto').createHash('sha256').update(OR_KEY).digest('hex'));
+  assert.strictEqual(await t.AI.openrouter.keyPage(''), 'https://openrouter.ai/settings/keys');
+});
+
+check('openrouter: the callback: another state is no answer; a decline, an error, no code, too late end it with their own words', async () => {
+  const t = load();
+  const {p} = await keyStarted(t);
+  // another state, or a code without one: the sign-in underway goes on, nothing is sent
+  const replaced = await failsWith(t.AI.openrouter.complete(keyBack({state: 'forged'})), 'key-replaced');
+  assert.ok(/earlier sign-in with OpenRouter/.test(replaced.message));
+  await failsWith(t.AI.openrouter.complete('?code=c-or-1'), 'key-replaced');
+  assert.deepStrictEqual(plain(t.store.session['ai.openrouter.pending']), plain(p));
+  assert.deepStrictEqual([t.rules.length, t.requests.length], [1, 0]);
+  // declined at OpenRouter: it comes back without the state or a code
+  const log = sessionLog(t);
+  for (const query of ['', '?error=access_denied']) {
+    const u = load();
+    const s = await keyStarted(u);
+    const ulog = sessionLog(u);
+    const e = await failsWith(u.AI.openrouter.complete(query), 'key-denied');
+    assert.ok(/did not allow Mail Deck to get a key from OpenRouter/.test(e.message));
+    assert.strictEqual(ulog.at(-1).oldValue.ended, 'key-denied');
+    assert.ok(!('ai.openrouter.pending' in u.store.session) && u.rules.length === 0 && u.requests.length === 0 && s.p);
+    // nothing came of it: both sites go back to Chrome
+    assert.ok(u.perm.removed.includes('http://127.0.0.1/*') && u.perm.removed.includes('https://openrouter.ai/*'));
+  }
+  assert.strictEqual(log.length, 0);
+  // with the state: an error, no code, too late
+  for (const [extra, code, older] of [['&error=access_denied', 'key-denied'], ['&error=server_error', 'key-sign-in'], [null, 'key-sign-in'],
+    ['', 'key-timeout', 16 * 60000]]) {
+    const u = load();
+    const s = await keyStarted(u);
+    if (older) {
+      u.store.session['ai.openrouter.pending'].created -= older;
+    }
+    const ulog = sessionLog(u);
+    await failsWith(u.AI.openrouter.complete(extra === null ? `?state=${s.p.state}` : keyBack(s.p, extra)), code);
+    assert.strictEqual(ulog.at(-1).oldValue.ended, code, code);
+    assert.ok(!('ai.openrouter.pending' in u.store.session) && u.rules.length === 0, code);
+    assert.ok(!('ai.openrouter.key' in u.store.local) && u.requests.length === 0, code);
+  }
+  // no sign-in underway: said, and a rule left behind goes
+  const v = load();
+  v.rules.push({id: 902});
+  await failsWith(v.AI.openrouter.complete('?code=c&state=s'), 'key-sign-in');
+  assert.strictEqual(v.rules.length, 0);
+});
+
+check('openrouter: the exchange refused (not the verifier\'s code, expired), no key in the answer, the key refused, no connection: nothing kept', async () => {
+  const cases = [
+    [json(403, {error: {message: 'Invalid code or code_verifier', code: 403}}), 'key-sign-in', 'Invalid code or code_verifier'],
+    [json(403, {error: {message: 'Authorization code expired', code: 403}}), 'key-timeout', 'Authorization code expired'],
+    [json(400, {error: {message: 'Invalid code_challenge_method', code: 400}}), 'key-sign-in', 'Invalid code_challenge_method'],
+    [json(405, {error: 'Method Not Allowed'}), 'key-sign-in', 'Method Not Allowed'],
+    [json(429, {error: {message: 'Rate limit exceeded', code: 429}}), 'rate'],
+    [json(502, {error: {message: 'Bad gateway', code: 502}}), 'server'],
+    [json(200, {user_id: 'u'}), 'key-sign-in', 'no key'],
+    [json(200, {key: 'sk-or-v1 with spaces'}), 'key-sign-in', 'no key'],
+    [() => {
+      throw new TypeError('Failed to fetch');
+    }, 'network']
+  ];
+  for (const [answer, code, detail] of cases) {
+    const t = load();
+    const {p} = await keyStarted(t);
+    const log = sessionLog(t);
+    t.answers.push(answer);
+    const e = await failsWith(t.AI.openrouter.complete(keyBack(p)), code);
+    if (detail) {
+      assert.strictEqual(e.detail, detail, code);
+    }
+    assert.strictEqual(log.at(-1).oldValue.ended, code, code);
+    assert.ok(!('ai.openrouter.pending' in t.store.session) && t.rules.length === 0, code);
+    assert.ok(!('ai.openrouter.key' in t.store.local), code);
+    assert.ok(t.perm.removed.includes('https://openrouter.ai/*'), code);
+    assert.strictEqual(t.requests.length, 1, code);
+  }
+  // a key OpenRouter's own check refuses at once: a sign-in to try again, not a key to copy again
+  const t = load();
+  const {p} = await keyStarted(t);
+  t.answers.push(keyExchanged(), json(401, {error: {message: 'User not found.', code: 401}}));
+  const e = await failsWith(t.AI.openrouter.complete(keyBack(p)), 'key-sign-in');
+  assert.strictEqual(e.detail, 'User not found.');
+  assert.ok(!('ai.openrouter.key' in t.store.local) && t.requests.length === 2);
+  // the key that OpenRouter's site no longer lets Mail Deck reach: no access, nothing kept
+  const u = load();
+  const s = await keyStarted(u);
+  u.perm.granted = false;
+  u.answers.push(keyExchanged());
+  await failsWith(u.AI.openrouter.complete(keyBack(s.p)), 'no-access');
+  assert.ok(!('ai.openrouter.key' in u.store.local));
+});
+
+check('openrouter: its tab closed before it came back, Cancel, too old: each ends the sign-in and says so', async () => {
+  // the tab OpenRouter's page is in closes: over, said as such; another tab closing is nothing
+  const t = load();
+  await t.AI.openrouter.signIn();
+  const log = sessionLog(t);
+  t.tabs.close(5);
+  await new Promise(r => setTimeout(r, 5));
+  assert.ok('ai.openrouter.pending' in t.store.session);
+  t.tabs.close(99);
+  await new Promise(r => setTimeout(r, 5));
+  assert.strictEqual(log.at(-1).oldValue.ended, 'key-cancelled');
+  assert.ok(!('ai.openrouter.pending' in t.store.session) && t.rules.length === 0);
+  assert.ok(t.perm.removed.includes('https://openrouter.ai/*') && t.perm.removed.includes('http://127.0.0.1/*'));
+  // the page OpenRouter sent back closes itself once the key is kept: nothing more happens
+  const t2 = load();
+  const {p} = await keyStarted(t2, {id: 99});
+  t2.answers.push(keyExchanged(), keyChecked);
+  await t2.AI.openrouter.complete(keyBack(p));
+  const log2 = sessionLog(t2);
+  t2.tabs.close(99);
+  await new Promise(r => setTimeout(r, 5));
+  assert.deepStrictEqual([log2.length, t2.store.local['ai.openrouter.key']], [0, OR_KEY]);
+  // Cancel: over without a word, and OpenRouter's page closed while the tab still shows it
+  const u = load();
+  await u.AI.openrouter.signIn();
+  u.tabs.pages[99] = 'https://openrouter.ai/auth?callback_url=x';
+  const ulog = sessionLog(u);
+  await u.AI.openrouter.cancel();
+  assert.strictEqual(ulog.at(-1).oldValue.ended, 'aborted');
+  assert.deepStrictEqual(u.tabs.removed, [99]);
+  assert.ok(!('ai.openrouter.pending' in u.store.session) && u.rules.length === 0);
+  // a tab that shows something else by now, or is gone, stays as it is
+  for (const page of ['https://example.com/', undefined]) {
+    const v = load();
+    await v.AI.openrouter.signIn();
+    if (page) {
+      v.tabs.pages[99] = page;
+    }
+    await v.AI.openrouter.cancel();
+    assert.deepStrictEqual(v.tabs.removed, []);
+    assert.ok(!('ai.openrouter.pending' in v.store.session));
+  }
+  // nothing underway: Cancel does nothing
+  const w = load();
+  const wlog = sessionLog(w);
+  await w.AI.openrouter.cancel();
+  assert.deepStrictEqual([wlog.length, w.tabs.removed.length], [0, 0]);
+  // too old, found as a page opens: over, said as such; a fresh one stays
+  const x = load({session: {'ai.openrouter.pending': {state: 's', verifier: 'v', created: Date.now() - 20 * 60000, opened: 3}}});
+  x.rules.push({id: 902});
+  const xlog = sessionLog(x);
+  load({with: x});
+  await new Promise(r => setTimeout(r, 5));
+  assert.strictEqual(xlog.at(-1).oldValue.ended, 'key-timeout');
+  assert.ok(!('ai.openrouter.pending' in x.store.session) && x.rules.length === 0);
+  const y = load({session: {'ai.openrouter.pending': {state: 's', verifier: 'v', created: Date.now()}}});
+  y.rules.push({id: 902});
+  load({with: y});
+  await new Promise(r => setTimeout(r, 5));
+  assert.strictEqual(y.rules.length, 1);
+  // a rule with nothing underway goes as well
+  const z = load();
+  z.rules.push({id: 902});
+  load({with: z});
+  await new Promise(r => setTimeout(r, 5));
+  assert.strictEqual(z.rules.length, 0);
+  // the page that finds one underway watches its tab too, once
+  const s = load({session: {'ai.openrouter.pending': {state: 's', verifier: 'v', created: Date.now(), opened: 12}}});
+  await s.AI.openrouter.watch();
+  await s.AI.openrouter.watch();
+  assert.strictEqual(s.tabs.closing.length, 1);
+  s.tabs.close(12);
+  await new Promise(r => setTimeout(r, 5));
+  assert.ok(!('ai.openrouter.pending' in s.store.session));
+});
+
+check('the loopback address stays with Chrome while the other sign-in still comes back to it', async () => {
+  // ChatGPT's sign-in ends while OpenRouter's waits, and the reverse
+  const t = load({session: {'ai.chatgpt.pending': {state: 's', verifier: 'v', created: 0},
+    'ai.openrouter.pending': {state: 'o', verifier: 'v', created: Date.now()}}});
+  await new Promise(r => setTimeout(r, 20));
+  assert.ok(!('ai.chatgpt.pending' in t.store.session) && !t.perm.removed.includes('http://127.0.0.1/*'));
+  const u = load({session: {'ai.openrouter.pending': {state: 'o', verifier: 'v', created: 0},
+    'ai.chatgpt.pending': {state: 's', verifier: 'v', created: Date.now()}}});
+  await new Promise(r => setTimeout(r, 20));
+  assert.ok(!('ai.openrouter.pending' in u.store.session) && !u.perm.removed.includes('http://127.0.0.1/*'));
+  // nor while a server on this computer is at it
+  const v = load({session: {'ai.openrouter.pending': {state: 'o', verifier: 'v', created: 0}}, local: {'ai.local.base': 'http://127.0.0.1:1234/v1'}});
+  await new Promise(r => setTimeout(r, 20));
+  assert.ok(!v.perm.removed.includes('http://127.0.0.1/*') && v.perm.removed.includes('https://openrouter.ai/*'));
+  // with a key kept, OpenRouter's site stays
+  const w = load({session: {'ai.openrouter.pending': {state: 'o', verifier: 'v', created: 0}}, local: {'ai.openrouter.key': OR_KEY}});
+  await new Promise(r => setTimeout(r, 20));
+  assert.ok(w.perm.removed.includes('http://127.0.0.1/*') && !w.perm.removed.includes('https://openrouter.ai/*'));
+});
+
 check('describe: the engine, its provider and model as a page names them', async () => {
   const cases = [
     [{}, {engine: 'off', provider: '', model: '', plan: false, local: false}],
@@ -2873,7 +3225,7 @@ check('the detail of an error never carries a key, a bearer token or a JWT', asy
   assert.ok(e.detail.includes('Bearer …'));
 });
 
-check('the page a sign-in comes back to: its strings, the module before it, reachable from OpenAI\'s pages only', async () => {
+check('the page a sign-in comes back to: its strings, the module before it, reachable from OpenAI\'s and OpenRouter\'s pages only', async () => {
   const dir = path.join(__dirname, '../../extension');
   const en = JSON.parse(fs.readFileSync(path.join(dir, '_locales/en/messages.json'), 'utf8'));
   const js = fs.readFileSync(path.join(dir, 'data/ai/callback.js'), 'utf8');
@@ -2884,9 +3236,11 @@ check('the page a sign-in comes back to: its strings, the module before it, reac
   assert.ok(html.indexOf('src="ai.js"') > 0 && html.indexOf('src="ai.js"') < html.indexOf('src="callback.js"'));
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
   const war = manifest.web_accessible_resources.find(w => w.resources.includes('data/ai/callback.html'));
-  assert.deepStrictEqual(war.matches, ['https://auth.openai.com/*', 'https://chatgpt.com/*']);
+  assert.deepStrictEqual(war.matches, ['https://auth.openai.com/*', 'https://chatgpt.com/*', 'https://openrouter.ai/*']);
   assert.ok(!war.use_dynamic_url);
-  for (const o of [...SIGN_IN, 'https://api.z.ai/*']) {
+  // the page tells the two apart by the mark OpenRouter's rule adds, and keeps it past the code
+  assert.ok(/location\.hash === '#openrouter'/.test(js) && /self\.AI\?\.openrouter/.test(js));
+  for (const o of [...SIGN_IN, ...KEY_SIGN_IN, 'https://api.z.ai/*']) {
     assert.ok(manifest.optional_host_permissions.includes(o) && !manifest.host_permissions.includes(o), o);
   }
   assert.ok(manifest.permissions.includes('declarativeNetRequestWithHostAccess'));
