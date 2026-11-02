@@ -1764,10 +1764,11 @@ html body {
     font-weight: 600;
     letter-spacing: .01em;
   }
+  /* as many tiles to a line as fit a name as long as OpenRouter: four on a wide page, fewer when narrow */
   .providers {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
     gap: 8px;
   }
   .engine.pick {
@@ -2412,9 +2413,6 @@ html body {
     .engines {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       padding: 12px;
-    }
-    .providers {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .row > .models {
       flex: 1 0 100%;
