@@ -15,6 +15,8 @@
   const STALE = 30 * 60 * 1000;
   // what an action or the reader waits for a service
   const WAIT = 15000;
+  // the threads of one Gmail request: a larger action goes in parts, one after the other
+  const CHUNK = 100;
   // the session rules that set a service's own Origin start here
   const RULE = 1000;
 
@@ -193,21 +195,23 @@
     const {[REFS]: refs = {}} = await chrome.storage.session.get(REFS);
     return links.map(link => refs[link]);
   };
-  const fail = (s, e) => ({message: (s ? s.name + ': ' : '') + (e?.message || String(e))});
+  // an error, with the links it leaves undone (failed) when that is not all of them
+  const fail = (s, e, failed) => ({message: (s ? s.name + ': ' : '') + (e?.message || String(e)), ...(failed ? {failed} : {})});
 
   // the links of one request may come from several mailboxes: each gets one call
   const action = async request => {
     const groups = new Map();
     const found = await lookup(request.links);
-    for (const r of found) {
+    for (const [i, r] of found.entries()) {
       if (!r || !self.MailServices[r.id]) {
         return fail(of(request.links[0]), chrome.i18n.getMessage('panel_actionFailed') || 'Unknown mail');
       }
       const key = r.id + ' ' + r.email;
       if (!groups.has(key)) {
-        groups.set(key, {s: self.MailServices[r.id], email: r.email, refs: []});
+        groups.set(key, {s: self.MailServices[r.id], email: r.email, refs: [], links: []});
       }
       groups.get(key).refs.push(r.ref);
+      groups.get(key).links.push(request.links[i]);
     }
     // nothing is sent while one of the mailboxes cannot take the command
     const unable = [...groups.values()].find(({s}) =>
@@ -225,7 +229,18 @@
         return fail(s, e);
       }
     }));
-    return results.find(r => r !== true) || true;
+    const failed = [...groups.values()].filter((g, i) => results[i] !== true).flatMap(g => g.links);
+    return failed.length ? {...results.find(r => r !== true), failed} : true;
+  };
+  // one Gmail account's mail, in parts: a part that fails leaves it and the ones after it undone
+  const gmail = async (request, links) => {
+    for (let i = 0; i < links.length; i += CHUNK) {
+      const r = await offscreen.command({cmd: 'gmail.action', request: {...request, links: links.slice(i, i + CHUNK)}});
+      if (r !== true) {
+        return {...(r || {message: 'No answer'}), failed: links.slice(i)};
+      }
+    }
+    return true;
   };
 
   self.Services = {
@@ -235,7 +250,11 @@
     enabled,
     collect,
     action,
-    // Gmail's links go to the offscreen document, a service's to the service
+    /*
+     * Gmail's links go to the offscreen document, a service's to the service. True when all of
+     * it is done; else the first error, with the links left undone (failed): mail of the other
+     * accounts may be done, and stays so.
+     */
     async dispatch(request) {
       const mine = request.links.filter(link => of(link));
       // Gmail takes one account's mail a request (its mail/u/N), so mail of several goes in one each
@@ -244,11 +263,12 @@
         const n = (link.match(/u\/(\d+)/) || [])[1] || '0';
         accounts.set(n, [...accounts.get(n) || [], link]);
       }
-      const results = await Promise.all([
-        mine.length ? action({...request, links: mine}) : true,
-        ...[...accounts.values()].map(links => offscreen.command({cmd: 'gmail.action', request: {...request, links}}))
-      ]);
-      return results.find(r => r !== true) ?? true;
+      // every account and service at once
+      const parts = await Promise.all([[mine, mine.length && action({...request, links: mine})],
+        ...[...accounts.values()].map(links => [links, gmail(request, links)])].map(async ([links, p]) =>
+        [links, p ? await p.catch(e => fail(null, e)) : true]));
+      const failed = parts.flatMap(([links, r]) => r === true ? [] : Array.isArray(r?.failed) ? r.failed : links);
+      return failed.length ? {...parts.find(([, r]) => r !== true)[1], failed} : true;
     },
     // the settings' diagnostics: what the service answers now, read only
     async check(id) {

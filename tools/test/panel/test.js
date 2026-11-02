@@ -1025,6 +1025,34 @@
       }
     }
 
+    if (scenario === 'reliable') {
+      const listed = () => [...document.querySelectorAll('#list .row')].map(r => gmail.get.id(r.dataset.link));
+      // a mail archived from Gmail's search leaves the feed's list too: the same thread, printed otherwise
+      document.getElementById('search').hidden = false;
+      document.getElementById('search-input').value = 'mockups';
+      document.getElementById('search').requestSubmit();
+      await until(() => document.querySelector('#list .row'));
+      out.searchFound = listed();
+      document.querySelector('#list .row').focus();
+      key(document, 'KeyE');
+      await wait(300);
+      key(document.getElementById('search-input'), 'Escape');
+      await wait(100);
+      out.afterSearchAction = listed();
+      undo();
+      await wait(250);
+      out.afterUndo = listed();
+
+      // an action over two accounts that one of them refuses: only that one's mail comes back
+      window.__actionFails = links => links.filter(l => l.includes('/u/1'));
+      const two = [...document.querySelectorAll('#list .row')].map(r => r.dataset.link).filter(l => /message_id=(a2|b1)&/.test(l));
+      act('rd', two);
+      await wait(400);
+      out.partial = listed();
+      out.partialToast = document.getElementById('toast').classList.contains('error');
+      window.__actionFails = null;
+    }
+
     if (scenario === 'narrow') {
       // a side panel 320px wide: the mailbox line keeps its buttons whole and its address
       // readable, the reader's bar stays inside

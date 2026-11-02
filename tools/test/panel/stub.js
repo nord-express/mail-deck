@@ -1,7 +1,8 @@
 // chrome.* and Gmail for the panel under test: three mailboxes, Gmail's search,
 // a three-message thread with an attachment, and a 700px newsletter (?wide=1).
 // It records what the panel sends (__sent), stores (__set) and prints (__prints).
-// A test may make Gmail fail: __printStatus answers the print view, __searchFails(m) the search.
+// A test may make Gmail fail: __printStatus answers the print view, __searchFails(m) the search,
+// __actionFails(links) names the links of an action Gmail refuses.
 (() => {
   const q = new URLSearchParams(location.search);
   const lang = q.get('lang') || 'ru';
@@ -207,6 +208,10 @@
       return [];
     }
     const n = Number(url.match(/u\/(\d+)/)[1]);
+    // a thread the feed lists too, found again by the search
+    if (query === 'mockups') {
+      return n === 0 ? [row('a1', 'Макеты на ревью', ['Anna Petrova', 'anna@figma.com'], '…', 4, ['^u', '^i'])] : [];
+    }
     if (query.includes('is:unread')) {
       return n === 0 ? [
         row('a1', 'Макеты на ревью', ['Anna Petrova', 'anna@figma.com'], '…', 4, ['^u', '^i', 'STARRED']),
@@ -226,6 +231,7 @@
     let r;
     if (m.method === 'gmail.search') r = window.__searchFails?.(m) ? null : search(m);
     if (m.method === 'get-at') r = 'AT';
+    if (m.method === 'gmail.action' && window.__actionFails?.(m.links)?.length) r = {message: 'refused', failed: window.__actionFails(m.links)};
     // what a service answers: markup that must not run in the reader
     // and markup that must not load before Show pictures, nor open a link over the panel
     const px = k => `${location.origin}/__pixel?k=services-svc-${k}`;

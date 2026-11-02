@@ -297,12 +297,12 @@ if (typeof importScripts !== 'undefined') {
               toast(errors.map(e => e.message).join('\n\n'));
             }
             // every button of a notification reduces the count, so the panel and
-            // the badge can be updated without waiting for the next check
-            const resolved = requests.filter((request, i) => arr[i] === true);
-            for (const request of resolved) {
-              await Resolved.record(request.links);
-            }
-            if (resolved.length) {
+            // the badge can be updated without waiting for the next check; an action
+            // done in some accounts and not in others reduces it by what is done
+            const done = requests.flatMap((request, i) => arr[i] === true ? request.links :
+              Array.isArray(arr[i]?.failed) ? request.links.filter(link => !arr[i].failed.includes(link)) : []);
+            if (done.length) {
+              await Resolved.record(done);
               await self.checkEmails.refresh();
             }
           }).finally(() => repeater.reset('action.command', 500));
@@ -474,6 +474,40 @@ if (typeof importScripts !== 'undefined') {
     }
   });
   /*
+   * The listed entries that are the given mail: the same link, or the same thread of the same
+   * account however it is printed (Gmail's search, the reader, a notification, the assistant
+   * print a thread otherwise than its feed). The account is the address a link names, or the
+   * one at the place (/u/<n>) it names.
+   */
+  self.checkEmails.same = async links => {
+    links = (typeof links === 'string' ? [links] : links || []).filter(l => typeof l === 'string');
+    if (links.length === 0) {
+      return [];
+    }
+    const objs = await self.checkEmails.getCached();
+    const slots = slotsOf(objs);
+    const wanted = links.map(link => {
+      const named = /[?&]account_id=([^&#]+)/.exec(link);
+      const n = helper.id(link);
+      return {
+        link,
+        account: named ? decodeURIComponent(named[1]) : n === undefined ? undefined : slots[n],
+        thread: helper.threadId(link)
+      };
+    });
+    const done = new Set();
+    for (const o of objs) {
+      for (const e of o.xml.entries) {
+        const thread = helper.threadId(e.link);
+        if (wanted.some(w => w.link === e.link ||
+          (!o.xml.service && w.account !== undefined && w.account === o.xml.title && w.thread !== '' && w.thread === thread))) {
+          done.add(e.link);
+        }
+      }
+    }
+    return [...done];
+  };
+  /*
    * Opening a mail marks it as read in Gmail, so it has to leave the panel and
    * the badge. The feed cannot report it yet, therefore the link is stored like
    * a resolved one and is forgotten as soon as the feed agrees.
@@ -481,38 +515,13 @@ if (typeof importScripts !== 'undefined') {
    * the mail body is not a mail the user has read.
    */
   self.checkEmails.opened = async links => {
-    if (typeof links === 'string') {
-      links = [links];
-    }
-    if (!links || links.length === 0) {
-      return;
-    }
-    const wanted = links.filter(l => typeof l === 'string').map(link => ({
-      link,
-      account: helper.id(link),
-      thread: helper.threadId(link)
-    }));
-    if (wanted.length === 0) {
-      return;
-    }
-    const done = new Set();
-    for (const o of await self.checkEmails.getCached()) {
-      for (const e of o.xml.entries) {
-        const account = helper.id(e.link);
-        const thread = helper.threadId(e.link);
-        if (wanted.some(w => w.link === e.link ||
-          // the same thread of the same account, however it is printed
-          (w.account !== undefined && w.account === account && w.thread !== '' && w.thread === thread))) {
-          done.add(e.link);
-        }
-      }
-    }
-    if (done.size === 0) {
+    const done = await self.checkEmails.same(links);
+    if (done.length === 0) {
       return;
     }
     // Gmail marks a mail read by itself when it is opened in a tab, which takes
     // longer to reach the feed than an action sent to the server
-    await Resolved.record([...done], 20000);
+    await Resolved.record(done, 20000);
     return self.checkEmails.refresh();
   };
   /*

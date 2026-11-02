@@ -305,6 +305,44 @@ const tests = [
     assert.strictEqual(r, true);
     eq(t.sent.offscreen.map(x => [...x.links]), [a, b]);
   }],
+  ['an action of two accounts that fails in one says which mail is left undone; the other\'s stays done', async () => {
+    const t = setup();
+    await t.Services.collect(signal(), 9000);
+    const a = ['https://mail.google.com/mail/u/0?message_id=a1', 'https://mail.google.com/mail/u/0?message_id=a2'];
+    const b = ['https://mail.google.com/mail/u/2?message_id=b1'];
+    t.ctx.offscreen.command = async o => {
+      t.sent.offscreen.push(o.request);
+      return o.request.links[0].includes('/u/2') ? {message: 'core.js -> action -> 500'} : true;
+    };
+    const r = await t.Services.dispatch({cmd: 'rc_^i', links: [a[0], b[0], a[1], 'https://mail.fake.test/m/1']});
+    eq([r.message, r.failed], ['core.js -> action -> 500', b]);
+    // a service mailbox that fails among others: its own mail only
+    t.service.boxes.push({email: 'bob@fake.test', inbox: 'https://mail.fake.test/inbox?b', unread: 1, entries: [
+      {id: 'fake:3', link: 'https://mail.fake.test/m/3', ref: {mid: '3'}, title: 'x', modified: new Date().toISOString(), author_email: 'dee@x.test'}
+    ]});
+    await t.Services.collect(signal(), 9000);
+    t.service.action = async o => {
+      if (o.email === 'bob@fake.test') {
+        throw Error('refused');
+      }
+      return true;
+    };
+    const s = await t.Services.dispatch({cmd: 'rd', links: ['https://mail.fake.test/m/1', 'https://mail.fake.test/m/3', a[0]]});
+    eq([s.message, s.failed], ['Fake Mail: refused', ['https://mail.fake.test/m/3']]);
+  }],
+  ['a large action reaches Gmail in parts of 100; a part that fails leaves the rest undone', async () => {
+    const t = setup();
+    const links = [...Array(250).keys()].map(i => 'https://mail.google.com/mail/u/0?message_id=t' + i);
+    assert.strictEqual(await t.Services.dispatch({cmd: 'rd', links}), true);
+    eq(t.sent.offscreen.map(x => x.links.length), [100, 100, 50]);
+    t.sent.offscreen.length = 0;
+    t.ctx.offscreen.command = async o => {
+      t.sent.offscreen.push(o.request);
+      return t.sent.offscreen.length === 2 ? {message: 'down'} : true;
+    };
+    const r = await t.Services.dispatch({cmd: 'rd', links});
+    eq([t.sent.offscreen.length, r.failed.length, r.failed[0]], [2, 150, links[100]]);
+  }],
   ['only Gmail: the services are not involved', async () => {
     const t = setup();
     await t.Services.dispatch({cmd: 'rd', links: ['https://mail.google.com/mail/u/1?message_id=x']});

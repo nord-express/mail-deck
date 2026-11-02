@@ -19,6 +19,7 @@ run 'scripts parse, no clashing globals, every locale complete' node tools/test/
 run 'quiet hours and word rules' node tools/test/quiet.test.js
 run 'settings: backups, labels by account, service access, quiet times' node tools/test/settings.test.js
 run 'background check: parallel, timeout, signed-out accounts' node tools/test/check.test.js
+run 'background messages: actions, their Undo window across a restart, partial failures' node tools/test/worker.test.js
 run 'other mail services: what is asked, actions, the reader' node tools/test/services.test.js
 for t in tools/test/services/*.test.js; do
   run "mail service $(basename "$t" .test.js)" node "$t"

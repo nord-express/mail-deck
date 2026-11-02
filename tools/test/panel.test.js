@@ -1,7 +1,8 @@
 // The panel in headless Chrome, with chrome.* and Gmail replaced by panel/stub.js.
 // A small server hands out the extension and the stub; each scenario of
 // panel/test.js posts what it saw, and the checks below decide.
-// CHROME names the browser; by default Google Chrome on macOS, google-chrome elsewhere.
+// CHROME names the browser; by default Google Chrome on macOS, google-chrome elsewhere. ONLY
+// names the scenarios to run (main,keys), all of them by default.
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -260,6 +261,12 @@ const checks = {
     'the real ai.js comes after the list\'s first frame; with no key the card says so, and nothing is classified':
       r.loadedAfter && r.noKey && r.noChip && r.consoleClean === true
   }),
+  reliable: r => ({
+    'a mail archived from Gmail\'s search leaves the feed\'s list as well; Undo brings it back':
+      JSON.stringify(r.searchFound) === '["a1"]' && JSON.stringify(r.afterSearchAction) === '["a2","b1"]' && JSON.stringify(r.afterUndo) === '["a1","a2","b1"]',
+    'an action over two accounts that one refuses brings back only that one\'s mail, and says it failed':
+      JSON.stringify(r.partial) === '["a1","b1"]' && r.partialToast
+  }),
   narrow: r => ({
     'a 320px side panel: the mailbox line keeps whole buttons, without copy and Meet, and a readable address':
       r.width === 320 && JSON.stringify(r.buttons) === '["readAll:32","archive:32","open:32"]' && r.addr >= 60,
@@ -273,7 +280,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real']]) {
+    ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

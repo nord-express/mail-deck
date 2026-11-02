@@ -120,8 +120,106 @@ const reply = (response, value) => {
   }
   catch (e) {}
 };
-// actions waiting out the panel's Undo window: id -> {links, response, timer}
+/* actions */
+// the links an action takes out of the badge and the panel: its own, and the feed's of the same
+// mail, which a search, the reader or the assistant print otherwise
+const hidden = async links => [...new Set([...links, ...await self.checkEmails.same(links)])];
+// An action as Gmail or a service takes it. Mail of several accounts may be done in some and
+// not in others: only what failed shows again, and the answer names it (failed).
+const perform = async ({cmd, links}, response) => {
+  const prefs = await chrome.storage.local.get({
+    doReadOnArchive: true
+  });
+  const e = await Services.dispatch({cmd, links, prefs}).catch(e => ({message: e?.message || String(e)}));
+  const failed = e === true ? [] : Array.isArray(e?.failed) ? links.filter(link => e.failed.includes(link)) : links;
+  const done = links.filter(link => !failed.includes(link));
+  try {
+    // the feed cannot report it yet; store the links and let the panel and the badge hide them
+    // until it does. A star changes no count.
+    if (done.length && cmd !== 'st' && cmd !== 'xst') {
+      await Resolved.record(await hidden(done));
+    }
+    if (failed.length) {
+      console.error(e);
+      await Resolved.forget(await hidden(failed));
+      // Gmail asks to confirm the sign-in first: its page opens in a tab
+      if (e?.details?.links?.length) {
+        self.openLink(e.details.links[0]);
+        toast(chrome.i18n.getMessage('msg_6'));
+      }
+      else {
+        toast(e?.message || 'Unknown Error - 1');
+      }
+    }
+    await self.checkEmails.refresh();
+  }
+  finally {
+    reply(response, failed.length ? {message: e?.message || 'Unknown Error - 1', failed} : undefined);
+    repeater.reset('popup.action', 500);
+  }
+};
+/*
+ * The panel's Undo window: the mail leaves the badge at once and reaches Gmail once the window
+ * is over, whether the panel is still open or not. Each action waiting is in the local storage
+ * as well ({id, cmd, links, due}), so one the browser quits, crashes or updates the extension in
+ * the middle of still goes when the worker starts again; an Undo takes it out.
+ */
+const PENDING = 'actions.pending';
+// id -> {request, response, timer, stored}; stored: known from the storage alone, after a restart
 const later = new Map();
+const waiting = {
+  queue: Promise.resolve(),
+  // the list changed by fn, one change after the other
+  change(fn) {
+    return waiting.queue = waiting.queue.then(async () => {
+      const {[PENDING]: list = []} = await chrome.storage.local.get(PENDING);
+      const [next, out] = fn(Array.isArray(list) ? list : []);
+      if (next) {
+        await chrome.storage.local.set({[PENDING]: next});
+        // the alarm wakes a worker gone meanwhile, which then runs what is due
+        if (next.length) {
+          chrome.alarms.create(PENDING, {when: Math.min(...next.map(o => o.due)) + 1000});
+        }
+        else {
+          chrome.alarms.clear(PENDING);
+        }
+      }
+      return out;
+    }).catch(e => console.error(e));
+  },
+  add: o => waiting.change(list => [[...list.filter(x => x.id !== o.id), o]]),
+  // the action taken out of the list, if it was still there
+  take: id => waiting.change(list => {
+    const o = list.find(x => x.id === id);
+    return o ? [list.filter(x => x !== o), o] : [null, undefined];
+  })
+};
+const go = async id => {
+  const o = later.get(id);
+  later.delete(id);
+  const kept = await waiting.take(id);
+  // one known from the storage alone runs only while the storage has it: an Undo may have come first
+  if (kept || (o && !o.stored)) {
+    perform(kept || o.request, o?.response);
+  }
+};
+const schedule = (o, response, stored = false) => later.set(o.id, {
+  request: o,
+  response,
+  stored,
+  timer: setTimeout(go, Math.max(0, o.due - Date.now()), o.id)
+});
+// a worker that starts finds what an earlier one left waiting; what is overdue goes after a
+// moment, for the network of a browser just started
+waiting.change(list => [null, list]).then(list => {
+  for (const o of list || []) {
+    if (!later.has(o.id) && o.id && Array.isArray(o.links)) {
+      Resolved.record(o.links, Math.max(0, o.due - Date.now()) + 10000);
+      schedule({...o, due: Math.max(o.due, Date.now() + 3000)}, undefined, true);
+    }
+  }
+});
+
 chrome.runtime.onMessage.addListener((request, sender, response) => {
   const method = request.method;
 
@@ -160,58 +258,32 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     if (o) {
       clearTimeout(o.timer);
       later.delete(request.id);
-      Resolved.forget(o.links).then(() => self.checkEmails.refresh());
-      // the panel still waits for an answer to the action itself
-      reply(o.response);
     }
+    waiting.take(request.id).then(async kept => {
+      const links = o?.request.links || kept?.links;
+      if (links) {
+        await Resolved.forget(await hidden(links));
+        await self.checkEmails.refresh();
+      }
+    });
+    // the panel still waits for an answer to the action itself
+    reply(o?.response);
   }
   else if (method === 'gmail.action') {
     const {cmd, links} = request;
-    const run = () => chrome.storage.local.get({
-      doReadOnArchive: true
-    }, prefs => {
-      request.prefs = prefs;
-      Services.dispatch(request).then(e => {
-        if (e === true) {
-          // the feed cannot report it yet; store the links and let the panel
-          // and the badge hide them until it does
-          if (cmd !== 'st' && cmd !== 'xst') {
-            Resolved.record(links).then(() => self.checkEmails.refresh());
-          }
-          reply(response);
-        }
-        else {
-          console.error(e);
-          Resolved.forget(links).then(() => self.checkEmails.refresh());
-          // Gmail asks to confirm the sign-in first: its page opens in a tab
-          if (e?.details?.links?.length) {
-            self.openLink(e.details.links[0]);
-            toast(chrome.i18n.getMessage('msg_6'));
-          }
-          else {
-            toast(e?.message || 'Unknown Error - 1');
-          }
-          reply(response, e || {message: 'Unknown Error - 1'});
-        }
-      }).finally(() => repeater.reset('popup.action', 500));
-    });
-    // the panel's Undo window: the mail leaves the badge now and reaches Gmail
-    // once the window is over, whether the panel is still open or not
+    if (!Array.isArray(links) || links.length === 0) {
+      reply(response);
+      return;
+    }
     if (request.delay) {
-      Resolved.record(links, request.delay + 10000).then(() => self.checkEmails.refresh());
-      later.set(request.id, {
-        links,
-        response,
-        timer: setTimeout(() => {
-          later.delete(request.id);
-          run();
-        }, request.delay)
-      });
+      const o = {id: String(request.id || Math.random()), cmd, links, due: Date.now() + request.delay};
+      hidden(links).then(all => Resolved.record(all, request.delay + 10000)).then(() => self.checkEmails.refresh());
+      waiting.add(o);
+      schedule(o, response);
     }
     else {
-      run();
+      perform({cmd, links}, response);
     }
-
     return true;
   }
   else if (method === 'gmail.search') {

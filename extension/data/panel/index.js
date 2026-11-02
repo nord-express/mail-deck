@@ -318,7 +318,12 @@ const openInbox = o => serviceOf(o) ? t('openInboxIn', serviceOf(o).name) : t('o
 // the accounts with what this panel already acted on taken out, in the order they were
 // dragged to; a mailbox keeps its colour wherever it goes, a new one comes last
 const view = () => {
-  const objs = Resolved.apply(state.objs, [...state.hidden].map(link => ({link})))
+  // mail acted on from Gmail's search or the assistant is the feed's mail too, printed otherwise:
+  // the same thread at the same place (/u/<n>)
+  const acted = new Set([...state.hidden].filter(link => gmail.get.id(link)).map(link => userOf(link) + '|' + thread(link)));
+  const copies = acted.size ? state.objs.filter(o => !serviceOf(o)).flatMap(o => o.xml.entries.filter(e =>
+    !state.hidden.has(e.link) && acted.has(userOf(o.xml.rootLink) + '|' + thread(e.link)))).map(e => e.link) : [];
+  const objs = Resolved.apply(state.objs, [...state.hidden, ...copies].map(link => ({link})))
     .map((o, i) => ({...o, color: PALETTE[i % PALETTE.length]}));
   const place = o => {
     const i = state.order.indexOf(accountName(o));
@@ -504,10 +509,11 @@ const ensureAt = async link => {
     await gmail.body(link, true).catch(() => {});
   }
 };
-// the background waits out the Undo window (delay) itself: the panel may close any moment
+// the background waits out the Undo window (delay) itself: the panel may close any moment. Mail
+// of several accounts may be done in some and not in others: only what failed comes back.
 const send = ({cmd, links, id}, delay = 0) => chrome.runtime.sendMessage({method: 'gmail.action', cmd, links, id, delay}, failure => {
   if (chrome.runtime.lastError || failure) {
-    links.forEach(link => state.hidden.delete(link));
+    (Array.isArray(failure?.failed) ? failure.failed : links).forEach(link => state.hidden.delete(link));
     render();
     toast(t('actionFailed'), true);
   }
