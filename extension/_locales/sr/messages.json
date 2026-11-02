@@ -1797,6 +1797,12 @@
     "panel_bulkList": {
         "message": "Билтени и рекламе"
     },
+    "panel_remindPick": {
+        "message": "Изабери датум и време…"
+    },
+    "panel_remindSet": {
+        "message": "Постави"
+    },
     "panel_assistant": {
         "message": "Асистент вештачке интелигенције"
     },

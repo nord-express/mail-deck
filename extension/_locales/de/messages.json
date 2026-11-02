@@ -1793,6 +1793,12 @@
     "panel_bulkList": {
         "message": "Newsletter und Werbung"
     },
+    "panel_remindPick": {
+        "message": "Datum und Uhrzeit wählen…"
+    },
+    "panel_remindSet": {
+        "message": "Festlegen"
+    },
     "panel_assistant": {
         "message": "KI-Assistent"
     },

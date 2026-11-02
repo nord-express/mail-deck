@@ -1797,6 +1797,12 @@
     "panel_bulkList": {
         "message": "Nieuwsbrieven en reclame"
     },
+    "panel_remindPick": {
+        "message": "Datum en tijd kiezen…"
+    },
+    "panel_remindSet": {
+        "message": "Instellen"
+    },
     "panel_assistant": {
         "message": "AI-assistent"
     },

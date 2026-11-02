@@ -1655,6 +1655,12 @@
   "panel_bulkList": {
     "message": "Newsletters and promotions"
   },
+  "panel_remindPick": {
+    "message": "Pick a date and time…"
+  },
+  "panel_remindSet": {
+    "message": "Set"
+  },
   "panel_assistant": {
     "message": "AI assistant"
   },

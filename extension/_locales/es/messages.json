@@ -1793,6 +1793,12 @@
     "panel_bulkList": {
         "message": "Boletines y promociones"
     },
+    "panel_remindPick": {
+        "message": "Elegir fecha y hora…"
+    },
+    "panel_remindSet": {
+        "message": "Programar"
+    },
     "panel_assistant": {
         "message": "Asistente de IA"
     },

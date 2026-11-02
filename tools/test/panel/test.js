@@ -1244,6 +1244,37 @@
       out.moreClosed = !$('menu') && document.activeElement === $('reader-bar').querySelector('.more-acts');
       key(document, 'Escape');
       await wait(50);
+
+      // remind me later: 2 picks the second time; a date and a time of one's own
+      rowOf('a2').focus();
+      key(document, 'KeyB');
+      await wait(30);
+      out.remindKeys = [...document.querySelectorAll('#menu [role="menuitem"] kbd')].map(k => k.textContent);
+      const second = Remind.times()[1].until;
+      window.__set = [];
+      key(document.activeElement, 'Digit2');
+      await wait(250);
+      const until = () => window.__set.find(o => o['remind.links'])?.['remind.links']?.at(-1)?.until;
+      out.remindByKey = Math.abs(until() - second) < 60000;
+      key(document, 'KeyZ');
+      await wait(100);
+      rowOf('a2').focus();
+      key(document, 'KeyB');
+      await wait(30);
+      [...document.querySelectorAll('#menu [role="menuitem"]')].at(-1).click();
+      await wait(30);
+      const input = document.querySelector('#menu input[type="datetime-local"]');
+      const at = new Date();
+      at.setDate(at.getDate() + 3);
+      at.setHours(15, 30, 0, 0);
+      window.__set = [];
+      input.value = new Date(at - at.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      out.pickFocused = document.activeElement === input;
+      input.form.requestSubmit();
+      await wait(250);
+      out.remindPicked = until() === at.getTime() && !$('menu');
+      key(document, 'KeyZ');
+      await wait(100);
     }
 
     if (scenario === 'boot') {

@@ -1797,6 +1797,12 @@
     "panel_bulkList": {
         "message": "订阅和推广邮件"
     },
+    "panel_remindPick": {
+        "message": "选择日期和时间…"
+    },
+    "panel_remindSet": {
+        "message": "设置"
+    },
     "panel_assistant": {
         "message": "AI 助手"
     },

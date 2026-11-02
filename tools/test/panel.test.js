@@ -294,7 +294,9 @@ const checks = {
     'in a message ? lists its keys (Esc for back, star, summary off), and Esc closes only the sheet': ['J', 'S', 'Esc', 'O'].every(k => r.sheetReader?.includes(k)) &&
       !r.sheetReader.includes('Enter') && r.sheetReaderClosed,
     'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, Spam and the keys': JSON.stringify(r.bar) ===
-      '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' && JSON.stringify(r.more) === '["O","!","?"]' && r.moreClosed
+      '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' && JSON.stringify(r.more) === '["O","!","?"]' && r.moreClosed,
+    'remind me later: its times have the keys 1-4; a date and a time of one\'s own': JSON.stringify(r.remindKeys?.slice(0, 3)) === '["1","2","3"]' && r.remindByKey &&
+      r.pickFocused && r.remindPicked
   }),
   boot: r => ({
     'after a browser start: lines stand for the mail, never Sign in, until the first list; then the list': r.skeleton && r.tools && r.listed,

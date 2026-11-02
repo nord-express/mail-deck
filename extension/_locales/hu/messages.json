@@ -1613,6 +1613,12 @@
   "panel_bulkList": {
     "message": "Hírlevelek és reklámok"
   },
+  "panel_remindPick": {
+    "message": "Dátum és idő kiválasztása…"
+  },
+  "panel_remindSet": {
+    "message": "Beállítás"
+  },
   "panel_assistant": {
     "message": "MI-asszisztens"
   },

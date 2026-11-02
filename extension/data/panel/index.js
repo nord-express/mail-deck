@@ -276,11 +276,12 @@ const shortDate = iso => {
   return isNaN(d) ? '' : d.toLocaleString(LANG, {weekday: 'short', day: 'numeric', month: 'short',
     ...(d.getFullYear() === new Date().getFullYear() ? {} : {year: 'numeric'}), hour: 'numeric', minute: '2-digit'});
 };
-// a reminder's moment: the time today, the day and the time later on
+// a reminder's moment: the time today, the day and the time this week, the date further on
 const later = ms => {
   const d = new Date(ms);
-  return d.toLocaleString(LANG, d.toDateString() === new Date().toDateString() ?
-    {hour: 'numeric', minute: '2-digit'} : {weekday: 'short', hour: 'numeric', minute: '2-digit'});
+  const days = (d - new Date()) / 86400000;
+  return d.toLocaleString(LANG, d.toDateString() === new Date().toDateString() ? {hour: 'numeric', minute: '2-digit'} :
+    days < 6 ? {weekday: 'short', hour: 'numeric', minute: '2-digit'} : {day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit'});
 };
 
 // the account's own picture when Google has one (core/avatars.js finds it), the coloured dot otherwise
@@ -760,7 +761,7 @@ const menuBtn = (name, label, key, open, extra) => {
   return el;
 };
 
-/* remind me later: a short menu of times under the clock */
+/* remind me later: a short menu of times under the clock, each with its key, and a moment of one's own */
 const remindAt = (links, until) => {
   closeMenu();
   if (state.reading) {
@@ -770,8 +771,40 @@ const remindAt = (links, until) => {
     act('remind', links, until);
   }
 };
-const remindMenu = (anchor, links) => openMenu(anchor, t('remind'),
-  Remind.times().map(o => ({label: t(o.key), hint: later(o.until), run: () => remindAt(links, o.until)})));
+const remindMenu = (anchor, links) => {
+  const menu = openMenu(anchor, t('remind'), [
+    ...Remind.times().map((o, i) => ({label: t(o.key), hint: later(o.until), key: String(i + 1), run: () => remindAt(links, o.until)})),
+    'sep',
+    {label: t('remindPick'), run: () => pickTime(menu, anchor, links)}
+  ]);
+};
+// the menu becomes a date and a time (tomorrow at nine to start from), and Set
+const pickTime = (menu, anchor, links) => {
+  const local = d => new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  const start = new Date();
+  start.setDate(start.getDate() + 1);
+  start.setHours(9, 0, 0, 0);
+  const input = h('input', {'type': 'datetime-local', 'value': local(start), 'min': local(new Date()), 'required': true, 'aria-label': t('remindPick')});
+  // Esc in the field closes the menu, not the reader under it
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      closeMenu(true);
+    }
+  });
+  // the menu keeps the focus meanwhile: its item taken away with it would close it
+  menu.focus();
+  menu.replaceChildren(h('p', {class: 'menu-title'}, t('remind')), h('form', {class: 'menu-pick', onsubmit: ev => {
+    ev.preventDefault();
+    const until = new Date(input.value).getTime();
+    if (until > Date.now()) {
+      remindAt(links, until);
+    }
+  }}, input, h('button', {class: 'primary-btn', type: 'submit'}, t('remindSet'))));
+  place(menu, anchor);
+  input.focus();
+};
 const remindBtn = links => menuBtn('clock', t('remind'), 'B', anchor => remindMenu(anchor, links), 'remind');
 // what the reader does less often: the mail service's own page, spam (not first, where the
 // focus lands), and the keys
@@ -3343,7 +3376,7 @@ const onKey = ev => {
   if (menu) {
     const items = [...menu.querySelectorAll('[role="menuitem"]')];
     const i = items.indexOf(document.activeElement);
-    // an item's own key: O and ! under ⋯
+    // an item's own key: 1-4 for the times, ! and O under ⋯
     const keyed = items.find(b => b.dataset.key === pressed(ev));
     if (ev.code === 'Escape') {
       closeMenu(true);

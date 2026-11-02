@@ -1625,6 +1625,12 @@
   "panel_bulkList": {
     "message": "Newsletter e promozioni"
   },
+  "panel_remindPick": {
+    "message": "Scegli data e ora…"
+  },
+  "panel_remindSet": {
+    "message": "Imposta"
+  },
   "panel_assistant": {
     "message": "Assistente IA"
   },

@@ -1793,6 +1793,12 @@
     "panel_bulkList": {
         "message": "Розсилки й реклама"
     },
+    "panel_remindPick": {
+        "message": "Вибрати дату й час…"
+    },
+    "panel_remindSet": {
+        "message": "Задати"
+    },
     "panel_assistant": {
         "message": "ШІ-асистент"
     },

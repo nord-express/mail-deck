@@ -1681,6 +1681,31 @@ kbd {
   margin: 6px 4px;
   background: var(--line);
 }
+/* a moment of one's own: a date and a time, and Set */
+.menu-pick {
+  display: flex;
+  gap: 6px;
+  margin: 2px 2px 0;
+}
+.menu-pick input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-md);
+}
+.menu-pick input:focus {
+  border-color: var(--focus);
+  outline: 1px solid var(--focus);
+}
+.menu-pick .primary-btn {
+  height: 32px;
+}
 /* the menu itself takes the focus of a click on its title or edge */
 .menu:focus {
   outline: none;

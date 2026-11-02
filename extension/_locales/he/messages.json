@@ -1793,6 +1793,12 @@
     "panel_bulkList": {
         "message": "ניוזלטרים ופרסומות"
     },
+    "panel_remindPick": {
+        "message": "בחר תאריך ושעה…"
+    },
+    "panel_remindSet": {
+        "message": "קבע"
+    },
     "panel_assistant": {
         "message": "עוזר בינה מלאכותית"
     },

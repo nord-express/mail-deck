@@ -1793,6 +1793,12 @@
     "panel_bulkList": {
         "message": "Bültenler ve tanıtımlar"
     },
+    "panel_remindPick": {
+        "message": "Tarih ve saat seç…"
+    },
+    "panel_remindSet": {
+        "message": "Ayarla"
+    },
     "panel_assistant": {
         "message": "Yapay zekâ asistanı"
     },

@@ -1625,6 +1625,12 @@
   "panel_bulkList": {
     "message": "ニュースレターと宣伝"
   },
+  "panel_remindPick": {
+    "message": "日時を指定…"
+  },
+  "panel_remindSet": {
+    "message": "設定"
+  },
   "panel_assistant": {
     "message": "AI アシスタント"
   },

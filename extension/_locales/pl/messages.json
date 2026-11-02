@@ -1797,6 +1797,12 @@
     "panel_bulkList": {
         "message": "Newslettery i reklamy"
     },
+    "panel_remindPick": {
+        "message": "Wybierz datę i godzinę…"
+    },
+    "panel_remindSet": {
+        "message": "Ustaw"
+    },
     "panel_assistant": {
         "message": "Asystent AI"
     },

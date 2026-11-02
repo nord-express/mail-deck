@@ -1652,6 +1652,12 @@
   "panel_bulkList": {
     "message": "Рассылкі і рэклама"
   },
+  "panel_remindPick": {
+    "message": "Выбраць дату і час…"
+  },
+  "panel_remindSet": {
+    "message": "Задаць"
+  },
   "panel_assistant": {
     "message": "ШІ-асістэнт"
   },

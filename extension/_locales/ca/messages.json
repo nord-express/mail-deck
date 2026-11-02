@@ -1797,6 +1797,12 @@
     "panel_bulkList": {
         "message": "Butlletins i promocions"
     },
+    "panel_remindPick": {
+        "message": "Tria la data i l'hora…"
+    },
+    "panel_remindSet": {
+        "message": "Programa"
+    },
     "panel_assistant": {
         "message": "Assistent d'IA"
     },
