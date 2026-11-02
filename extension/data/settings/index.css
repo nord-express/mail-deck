@@ -1315,6 +1315,19 @@ html body {
     font-weight: 650;
     transition: filter var(--t-control), opacity var(--t-control);
   }
+  /* Google's picture of the account, in the circle and over its letter (Google's own for an account
+     with no photo is a coloured square with a letter, as large as it was asked for) */
+  .avatar > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .avatar.pic {
+    color: transparent;
+  }
   .avatar .svc {
     position: absolute;
     inset-inline-end: -3px;

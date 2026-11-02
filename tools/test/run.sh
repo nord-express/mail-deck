@@ -29,6 +29,7 @@ for t in tools/test/services/*.test.js; do
 done
 run 'AI assistant: providers, streaming, summaries, waiting for reply' node tools/test/ai.test.js
 run 'ChatGPT and OpenRouter sign-ins coming back to the extension in a real Chrome' node tools/test/callback.test.js
+run 'the settings page in a real Chrome: its type, inbox pictures, provider tiles' node tools/test/settings-chrome.test.js
 run 'panel in headless Chrome' node tools/test/panel.test.js
 run 'welcome page: opened on install only; inboxes, pin and panel steps in headless Chrome' node tools/test/welcome.test.js
 exit $status
