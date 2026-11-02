@@ -1674,6 +1674,9 @@
     "ai_err_no_access": {
         "message": "Zezwól na dostęp do dostawcy w Ustawienia → AI."
     },
+    "ai_err_declined": {
+        "message": "Model odrzucił to polecenie."
+    },
     "ai_err_limit": {
         "message": "Osiągnięto limit użycia ChatGPT."
     },
@@ -2087,6 +2090,57 @@
     },
     "panel_aiCut": {
         "message": "Odpowiedź została ucięta."
+    },
+    "panel_translatedStart": {
+        "message": "Przetłumaczono tylko początek wiadomości."
+    },
+    "panel_notInThread": {
+        "message": "Ta wiadomość tego nie mówi."
+    },
+    "panel_notInMail": {
+        "message": "Znalezione wiadomości tego nie mówią."
+    },
+    "panel_unverified": {
+        "message": "Nie ma tego w wiadomościach: sprawdź"
+    },
+    "panel_searchedBroader": {
+        "message": "Szukałem szerzej: $1"
+    },
+    "panel_editSearch": {
+        "message": "Zmień wyszukiwanie"
+    },
+    "panel_nobodyWaits": {
+        "message": "Nikt nie czeka na twoją odpowiedź."
+    },
+    "panel_deleteAll": {
+        "message": "Usuń wszystkie"
+    },
+    "panel_rewrite": {
+        "message": "Przepisz"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "Przepisz: krócej, cieplej, odmów…"
+    },
+    "panel_rewriteShorter": {
+        "message": "Krócej"
+    },
+    "panel_rewriteLonger": {
+        "message": "Dłużej"
+    },
+    "panel_rewriteFormal": {
+        "message": "Bardziej oficjalnie"
+    },
+    "panel_rewriteFriendly": {
+        "message": "Przyjaźniej"
+    },
+    "panel_rewriteGrammar": {
+        "message": "Popraw błędy"
+    },
+    "panel_intentTimes": {
+        "message": "Zaproponuj terminy"
+    },
+    "panel_intentAccept": {
+        "message": "Przyjmij termin"
     },
     "panel_sameLanguage": {
         "message": "Ta wiadomość jest już w tym języku: $1."

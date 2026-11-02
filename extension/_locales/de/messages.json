@@ -1670,6 +1670,9 @@
     "ai_err_no_access": {
         "message": "Den Zugriff auf den Anbieter unter Einstellungen → KI erlauben."
     },
+    "ai_err_declined": {
+        "message": "Das Modell hat diese Anfrage abgelehnt."
+    },
     "ai_err_limit": {
         "message": "ChatGPT-Nutzungslimit erreicht."
     },
@@ -2083,6 +2086,57 @@
     },
     "panel_aiCut": {
         "message": "Die Antwort wurde abgeschnitten."
+    },
+    "panel_translatedStart": {
+        "message": "Nur der Anfang der Mail ist übersetzt."
+    },
+    "panel_notInThread": {
+        "message": "Davon steht nichts in dieser Mail."
+    },
+    "panel_notInMail": {
+        "message": "Davon steht nichts in den gefundenen Mails."
+    },
+    "panel_unverified": {
+        "message": "Nicht in den Mails gefunden: bitte prüfen"
+    },
+    "panel_searchedBroader": {
+        "message": "Breiter gesucht: $1"
+    },
+    "panel_editSearch": {
+        "message": "Suche ändern"
+    },
+    "panel_nobodyWaits": {
+        "message": "Niemand wartet auf eine Antwort von Ihnen."
+    },
+    "panel_deleteAll": {
+        "message": "Alle löschen"
+    },
+    "panel_rewrite": {
+        "message": "Umschreiben"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "Umschreiben: kürzer, herzlicher, ablehnen…"
+    },
+    "panel_rewriteShorter": {
+        "message": "Kürzer"
+    },
+    "panel_rewriteLonger": {
+        "message": "Länger"
+    },
+    "panel_rewriteFormal": {
+        "message": "Förmlicher"
+    },
+    "panel_rewriteFriendly": {
+        "message": "Freundlicher"
+    },
+    "panel_rewriteGrammar": {
+        "message": "Fehler korrigieren"
+    },
+    "panel_intentTimes": {
+        "message": "Termine vorschlagen"
+    },
+    "panel_intentAccept": {
+        "message": "Termin zusagen"
     },
     "panel_sameLanguage": {
         "message": "Diese E-Mail ist bereits auf $1."

@@ -1670,6 +1670,9 @@
     "ai_err_no_access": {
         "message": "اسمح بالوصول إلى المزوّد في الإعدادات ضمن «الذكاء الاصطناعي»."
     },
+    "ai_err_declined": {
+        "message": "رفض النموذج هذا الطلب."
+    },
     "ai_err_limit": {
         "message": "بلغت حدّ استخدام ChatGPT."
     },
@@ -2083,6 +2086,57 @@
     },
     "panel_aiCut": {
         "message": "انقطعت الإجابة قبل اكتمالها."
+    },
+    "panel_translatedStart": {
+        "message": "تُرجمت بداية الرسالة فقط."
+    },
+    "panel_notInThread": {
+        "message": "لا تذكر هذه الرسالة ذلك."
+    },
+    "panel_notInMail": {
+        "message": "لا تذكر الرسائل التي عُثر عليها ذلك."
+    },
+    "panel_unverified": {
+        "message": "غير موجود في الرسائل: تحقّق منه"
+    },
+    "panel_searchedBroader": {
+        "message": "بحث أوسع: $1"
+    },
+    "panel_editSearch": {
+        "message": "تعديل البحث"
+    },
+    "panel_nobodyWaits": {
+        "message": "لا أحد بانتظار ردّك."
+    },
+    "panel_deleteAll": {
+        "message": "حذف الكل"
+    },
+    "panel_rewrite": {
+        "message": "إعادة الصياغة"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "إعادة الصياغة: أقصر، أدفأ، رفض…"
+    },
+    "panel_rewriteShorter": {
+        "message": "أقصر"
+    },
+    "panel_rewriteLonger": {
+        "message": "أطول"
+    },
+    "panel_rewriteFormal": {
+        "message": "أكثر رسمية"
+    },
+    "panel_rewriteFriendly": {
+        "message": "أكثر ودًّا"
+    },
+    "panel_rewriteGrammar": {
+        "message": "تصحيح الأخطاء"
+    },
+    "panel_intentTimes": {
+        "message": "اقتراح مواعيد"
+    },
+    "panel_intentAccept": {
+        "message": "قبول الموعد"
     },
     "panel_sameLanguage": {
         "message": "هذه الرسالة مكتوبة أصلًا باللغة $1."

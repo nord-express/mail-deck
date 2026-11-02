@@ -1502,6 +1502,9 @@
   "ai_err_no_access": {
     "message": "Autorisez l’accès au fournisseur dans Paramètres → IA."
   },
+  "ai_err_declined": {
+    "message": "Le modèle a refusé cette demande."
+  },
   "ai_err_limit": {
     "message": "Limite d’utilisation de ChatGPT atteinte."
   },
@@ -1915,6 +1918,57 @@
   },
   "panel_aiCut": {
     "message": "La réponse a été tronquée."
+  },
+  "panel_translatedStart": {
+    "message": "Seul le début du message est traduit."
+  },
+  "panel_notInThread": {
+    "message": "Ce message ne le dit pas."
+  },
+  "panel_notInMail": {
+    "message": "Les messages trouvés ne le disent pas."
+  },
+  "panel_unverified": {
+    "message": "Introuvable dans les messages : à vérifier"
+  },
+  "panel_searchedBroader": {
+    "message": "Recherche élargie : $1"
+  },
+  "panel_editSearch": {
+    "message": "Modifier la recherche"
+  },
+  "panel_nobodyWaits": {
+    "message": "Personne n’attend votre réponse."
+  },
+  "panel_deleteAll": {
+    "message": "Tout supprimer"
+  },
+  "panel_rewrite": {
+    "message": "Réécrire"
+  },
+  "panel_rewritePlaceholder": {
+    "message": "Réécrire : plus court, plus chaleureux, dire non…"
+  },
+  "panel_rewriteShorter": {
+    "message": "Plus court"
+  },
+  "panel_rewriteLonger": {
+    "message": "Plus long"
+  },
+  "panel_rewriteFormal": {
+    "message": "Plus formel"
+  },
+  "panel_rewriteFriendly": {
+    "message": "Plus amical"
+  },
+  "panel_rewriteGrammar": {
+    "message": "Corriger les fautes"
+  },
+  "panel_intentTimes": {
+    "message": "Proposer des créneaux"
+  },
+  "panel_intentAccept": {
+    "message": "Accepter le créneau"
   },
   "panel_sameLanguage": {
     "message": "Ce message est déjà en $1."

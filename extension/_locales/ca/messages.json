@@ -1674,6 +1674,9 @@
     "ai_err_no_access": {
         "message": "Permet l'accés al proveïdor a Opcions → IA."
     },
+    "ai_err_declined": {
+        "message": "El model ha rebutjat aquesta sol·licitud."
+    },
     "ai_err_limit": {
         "message": "S’ha arribat al límit d’ús de ChatGPT."
     },
@@ -2087,6 +2090,57 @@
     },
     "panel_aiCut": {
         "message": "La resposta ha quedat tallada."
+    },
+    "panel_translatedStart": {
+        "message": "Només s'ha traduït el principi del correu."
+    },
+    "panel_notInThread": {
+        "message": "Aquest correu no ho diu."
+    },
+    "panel_notInMail": {
+        "message": "Els correus trobats no ho diuen."
+    },
+    "panel_unverified": {
+        "message": "No apareix als correus: comprova-ho"
+    },
+    "panel_searchedBroader": {
+        "message": "Cerca més àmplia: $1"
+    },
+    "panel_editSearch": {
+        "message": "Edita la cerca"
+    },
+    "panel_nobodyWaits": {
+        "message": "Ningú no espera la teva resposta."
+    },
+    "panel_deleteAll": {
+        "message": "Suprimeix-ho tot"
+    },
+    "panel_rewrite": {
+        "message": "Reescriu"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "Reescriu: més curt, més càlid, digues que no…"
+    },
+    "panel_rewriteShorter": {
+        "message": "Més curt"
+    },
+    "panel_rewriteLonger": {
+        "message": "Més llarg"
+    },
+    "panel_rewriteFormal": {
+        "message": "Més formal"
+    },
+    "panel_rewriteFriendly": {
+        "message": "Més proper"
+    },
+    "panel_rewriteGrammar": {
+        "message": "Corregeix els errors"
+    },
+    "panel_intentTimes": {
+        "message": "Proposa horaris"
+    },
+    "panel_intentAccept": {
+        "message": "Accepta l'horari"
     },
     "panel_sameLanguage": {
         "message": "Aquest missatge ja és en $1."

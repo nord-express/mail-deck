@@ -3009,3 +3009,124 @@ button.cite:hover {
 .ai-copy-fact.copied {
   color: var(--ok);
 }
+
+/* the intent chosen, and a rewrite asked: pressed */
+.suggestion.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  color: var(--accent);
+  font-weight: 600;
+}
+.rewrites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.rewrites .suggestion {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.ai-tool .draft[readonly] {
+  color: var(--soft);
+}
+
+/* the mail found: what can be done with it, each with its count */
+.found-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.found-acts .count {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.found-acts .primary-btn.danger {
+  background: var(--danger);
+}
+.found-acts .text-btn.danger {
+  color: var(--danger);
+}
+.ref.done {
+  opacity: .5;
+}
+.ref.done .ref-subject {
+  text-decoration: line-through;
+}
+.ref-why {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--soft);
+}
+.ref-why svg {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+}
+[dir="rtl"] .ref-why svg {
+  transform: scaleX(-1);
+}
+
+/* nothing found: the search that was made, the way to change it; or Gmail that did not answer */
+.found-empty p {
+  margin: 0;
+  color: var(--soft);
+}
+.found-empty .found-query {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--hover);
+  color: var(--ink);
+  font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
+}
+.found-empty[role="alert"] > p:first-child {
+  color: var(--danger);
+}
+.broader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.broader svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+/* a sentence whose number no mail has: shown, but as one to check */
+.doubt {
+  color: var(--muted);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+/* a row of buttons lines up: the empty list's own spacing of a quiet button is not theirs */
+.ai-tool .row-btns .text-btn,
+.turn .row-btns .text-btn,
+.found-acts .text-btn {
+  margin-top: 0;
+}
+/* a narrow panel leaves a card's field its room: its button says it by its icon */
+@media (max-width: 440px) {
+  .tool-ask .go-label {
+    display: none;
+  }
+}

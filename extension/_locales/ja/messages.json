@@ -1502,6 +1502,9 @@
   "ai_err_no_access": {
     "message": "設定 → AI アシスタントでプロバイダへのアクセスを許可してください。"
   },
+  "ai_err_declined": {
+    "message": "モデルがこの依頼を断りました。"
+  },
   "ai_err_limit": {
     "message": "ChatGPT の利用上限に達しました。"
   },
@@ -1915,6 +1918,57 @@
   },
   "panel_aiCut": {
     "message": "回答が途中で切れました。"
+  },
+  "panel_translatedStart": {
+    "message": "メールの冒頭だけを翻訳しました。"
+  },
+  "panel_notInThread": {
+    "message": "このメールには書かれていません。"
+  },
+  "panel_notInMail": {
+    "message": "見つかったメールには書かれていません。"
+  },
+  "panel_unverified": {
+    "message": "メールに見当たりません。確認してください"
+  },
+  "panel_searchedBroader": {
+    "message": "範囲を広げて検索: $1"
+  },
+  "panel_editSearch": {
+    "message": "検索を編集"
+  },
+  "panel_nobodyWaits": {
+    "message": "返信を待っている人はいません。"
+  },
+  "panel_deleteAll": {
+    "message": "すべて削除"
+  },
+  "panel_rewrite": {
+    "message": "書き直す"
+  },
+  "panel_rewritePlaceholder": {
+    "message": "書き直す: 短く、温かく、断る…"
+  },
+  "panel_rewriteShorter": {
+    "message": "短く"
+  },
+  "panel_rewriteLonger": {
+    "message": "長く"
+  },
+  "panel_rewriteFormal": {
+    "message": "フォーマルに"
+  },
+  "panel_rewriteFriendly": {
+    "message": "親しみやすく"
+  },
+  "panel_rewriteGrammar": {
+    "message": "誤りを直す"
+  },
+  "panel_intentTimes": {
+    "message": "日時を提案する"
+  },
+  "panel_intentAccept": {
+    "message": "日時を承諾する"
   },
   "panel_sameLanguage": {
     "message": "このメールはすでに$1です。"

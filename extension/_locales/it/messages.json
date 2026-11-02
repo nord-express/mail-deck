@@ -1502,6 +1502,9 @@
   "ai_err_no_access": {
     "message": "Consenti l’accesso al fornitore in Impostazioni → IA."
   },
+  "ai_err_declined": {
+    "message": "Il modello ha rifiutato questa richiesta."
+  },
   "ai_err_limit": {
     "message": "Limite di utilizzo di ChatGPT raggiunto."
   },
@@ -1915,6 +1918,57 @@
   },
   "panel_aiCut": {
     "message": "La risposta è stata troncata."
+  },
+  "panel_translatedStart": {
+    "message": "È tradotto solo l’inizio del messaggio."
+  },
+  "panel_notInThread": {
+    "message": "Questo messaggio non lo dice."
+  },
+  "panel_notInMail": {
+    "message": "I messaggi trovati non lo dicono."
+  },
+  "panel_unverified": {
+    "message": "Non trovato nei messaggi: controlla"
+  },
+  "panel_searchedBroader": {
+    "message": "Ricerca più ampia: $1"
+  },
+  "panel_editSearch": {
+    "message": "Modifica la ricerca"
+  },
+  "panel_nobodyWaits": {
+    "message": "Nessuno attende la tua risposta."
+  },
+  "panel_deleteAll": {
+    "message": "Elimina tutti"
+  },
+  "panel_rewrite": {
+    "message": "Riscrivi"
+  },
+  "panel_rewritePlaceholder": {
+    "message": "Riscrivi: più breve, più cordiale, rifiuta…"
+  },
+  "panel_rewriteShorter": {
+    "message": "Più breve"
+  },
+  "panel_rewriteLonger": {
+    "message": "Più lungo"
+  },
+  "panel_rewriteFormal": {
+    "message": "Più formale"
+  },
+  "panel_rewriteFriendly": {
+    "message": "Più amichevole"
+  },
+  "panel_rewriteGrammar": {
+    "message": "Correggi gli errori"
+  },
+  "panel_intentTimes": {
+    "message": "Proponi degli orari"
+  },
+  "panel_intentAccept": {
+    "message": "Accetta l’orario"
   },
   "panel_sameLanguage": {
     "message": "Questa email è già in $1."

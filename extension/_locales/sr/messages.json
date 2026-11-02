@@ -1674,6 +1674,9 @@
     "ai_err_no_access": {
         "message": "Дозволите приступ добављачу у „Подешавања → Вештачка интелигенција“."
     },
+    "ai_err_declined": {
+        "message": "Модел је одбио овај захтев."
+    },
     "ai_err_limit": {
         "message": "Достигнуто је ограничење коришћења за ChatGPT."
     },
@@ -2087,6 +2090,57 @@
     },
     "panel_aiCut": {
         "message": "Одговор је прекинут."
+    },
+    "panel_translatedStart": {
+        "message": "Преведен је само почетак поруке."
+    },
+    "panel_notInThread": {
+        "message": "У овој поруци то не пише."
+    },
+    "panel_notInMail": {
+        "message": "У пронађеним порукама то не пише."
+    },
+    "panel_unverified": {
+        "message": "Није пронађено у порукама: проверите"
+    },
+    "panel_searchedBroader": {
+        "message": "Тражио сам шире: $1"
+    },
+    "panel_editSearch": {
+        "message": "Измени претрагу"
+    },
+    "panel_nobodyWaits": {
+        "message": "Нико не чека ваш одговор."
+    },
+    "panel_deleteAll": {
+        "message": "Избриши све"
+    },
+    "panel_rewrite": {
+        "message": "Препиши"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "Препиши: краће, топлије, одбиј…"
+    },
+    "panel_rewriteShorter": {
+        "message": "Краће"
+    },
+    "panel_rewriteLonger": {
+        "message": "Опширније"
+    },
+    "panel_rewriteFormal": {
+        "message": "Формалније"
+    },
+    "panel_rewriteFriendly": {
+        "message": "Срдачније"
+    },
+    "panel_rewriteGrammar": {
+        "message": "Исправи грешке"
+    },
+    "panel_intentTimes": {
+        "message": "Предложи термине"
+    },
+    "panel_intentAccept": {
+        "message": "Прихвати термин"
     },
     "panel_sameLanguage": {
         "message": "Ова порука је већ на језику: $1."

@@ -1674,6 +1674,9 @@
     "ai_err_no_access": {
         "message": "Geef toegang tot de aanbieder bij Instellingen → AI."
     },
+    "ai_err_declined": {
+        "message": "Het model weigerde dit verzoek."
+    },
     "ai_err_limit": {
         "message": "Gebruikslimiet van ChatGPT bereikt."
     },
@@ -2087,6 +2090,57 @@
     },
     "panel_aiCut": {
         "message": "Het antwoord is afgebroken."
+    },
+    "panel_translatedStart": {
+        "message": "Alleen het begin van de mail is vertaald."
+    },
+    "panel_notInThread": {
+        "message": "Dat staat niet in deze mail."
+    },
+    "panel_notInMail": {
+        "message": "Dat staat niet in de gevonden mails."
+    },
+    "panel_unverified": {
+        "message": "Niet gevonden in de mails: controleer het"
+    },
+    "panel_searchedBroader": {
+        "message": "Breder gezocht: $1"
+    },
+    "panel_editSearch": {
+        "message": "Zoekopdracht wijzigen"
+    },
+    "panel_nobodyWaits": {
+        "message": "Niemand wacht op je antwoord."
+    },
+    "panel_deleteAll": {
+        "message": "Alles verwijderen"
+    },
+    "panel_rewrite": {
+        "message": "Herschrijven"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "Herschrijven: korter, hartelijker, nee zeggen…"
+    },
+    "panel_rewriteShorter": {
+        "message": "Korter"
+    },
+    "panel_rewriteLonger": {
+        "message": "Langer"
+    },
+    "panel_rewriteFormal": {
+        "message": "Formeler"
+    },
+    "panel_rewriteFriendly": {
+        "message": "Vriendelijker"
+    },
+    "panel_rewriteGrammar": {
+        "message": "Fouten verbeteren"
+    },
+    "panel_intentTimes": {
+        "message": "Tijden voorstellen"
+    },
+    "panel_intentAccept": {
+        "message": "Tijd bevestigen"
     },
     "panel_sameLanguage": {
         "message": "Deze mail is al in het $1."

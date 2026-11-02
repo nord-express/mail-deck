@@ -1532,6 +1532,9 @@
   "ai_err_no_access": {
     "message": "Allow access to the provider in Settings → AI."
   },
+  "ai_err_declined": {
+    "message": "The model declined this request."
+  },
   "ai_err_limit": {
     "message": "ChatGPT usage limit reached."
   },
@@ -1945,6 +1948,57 @@
   },
   "panel_aiCut": {
     "message": "The answer was cut short."
+  },
+  "panel_translatedStart": {
+    "message": "Only the start of the email is translated."
+  },
+  "panel_notInThread": {
+    "message": "This email does not say."
+  },
+  "panel_notInMail": {
+    "message": "The emails found do not say."
+  },
+  "panel_unverified": {
+    "message": "Not found in the emails: check it"
+  },
+  "panel_searchedBroader": {
+    "message": "Searched more broadly: $1"
+  },
+  "panel_editSearch": {
+    "message": "Edit search"
+  },
+  "panel_nobodyWaits": {
+    "message": "Nobody is waiting for your reply."
+  },
+  "panel_deleteAll": {
+    "message": "Delete all"
+  },
+  "panel_rewrite": {
+    "message": "Rewrite"
+  },
+  "panel_rewritePlaceholder": {
+    "message": "Rewrite: shorter, warmer, say no…"
+  },
+  "panel_rewriteShorter": {
+    "message": "Shorter"
+  },
+  "panel_rewriteLonger": {
+    "message": "Longer"
+  },
+  "panel_rewriteFormal": {
+    "message": "More formal"
+  },
+  "panel_rewriteFriendly": {
+    "message": "Friendlier"
+  },
+  "panel_rewriteGrammar": {
+    "message": "Fix grammar"
+  },
+  "panel_intentTimes": {
+    "message": "Propose times"
+  },
+  "panel_intentAccept": {
+    "message": "Accept the time"
   },
   "panel_sameLanguage": {
     "message": "This mail is already in $1."

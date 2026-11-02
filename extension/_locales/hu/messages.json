@@ -1490,6 +1490,9 @@
   "ai_err_no_access": {
     "message": "Engedélyezze a hozzáférést a szolgáltatóhoz a Beállítások → Mesterséges intelligencia részben."
   },
+  "ai_err_declined": {
+    "message": "A modell elutasította ezt a kérést."
+  },
   "ai_err_limit": {
     "message": "Betelt a ChatGPT használati kerete."
   },
@@ -1903,6 +1906,57 @@
   },
   "panel_aiCut": {
     "message": "A válasz félbeszakadt."
+  },
+  "panel_translatedStart": {
+    "message": "Csak a levél eleje van lefordítva."
+  },
+  "panel_notInThread": {
+    "message": "Ez a levél nem írja."
+  },
+  "panel_notInMail": {
+    "message": "A talált levelek nem írják."
+  },
+  "panel_unverified": {
+    "message": "Nem szerepel a levelekben: ellenőrizze"
+  },
+  "panel_searchedBroader": {
+    "message": "Tágabb keresés: $1"
+  },
+  "panel_editSearch": {
+    "message": "Keresés módosítása"
+  },
+  "panel_nobodyWaits": {
+    "message": "Senki sem vár válaszra."
+  },
+  "panel_deleteAll": {
+    "message": "Összes törlése"
+  },
+  "panel_rewrite": {
+    "message": "Átírás"
+  },
+  "panel_rewritePlaceholder": {
+    "message": "Átírás: rövidebben, kedvesebben, nemet mondva…"
+  },
+  "panel_rewriteShorter": {
+    "message": "Rövidebben"
+  },
+  "panel_rewriteLonger": {
+    "message": "Hosszabban"
+  },
+  "panel_rewriteFormal": {
+    "message": "Hivatalosabban"
+  },
+  "panel_rewriteFriendly": {
+    "message": "Barátságosabban"
+  },
+  "panel_rewriteGrammar": {
+    "message": "Hibák javítása"
+  },
+  "panel_intentTimes": {
+    "message": "Időpontok javaslata"
+  },
+  "panel_intentAccept": {
+    "message": "Időpont elfogadása"
   },
   "panel_sameLanguage": {
     "message": "Ez a levél már ezen a nyelven van: $1."

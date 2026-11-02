@@ -169,25 +169,57 @@
       // the assistant: a plan by the words of the request, answers that cite the first mail;
       // __ai.planFail fails the plan with that code, __ai.hold keeps an answer going until stopped
       describe: async () => ({engine: 'openai', provider: 'OpenAI', model: 'gpt-test', plan: false, local: false}),
-      plan: async ({request, signal}) => {
-        call('plan', {request});
+      // "archive …" asks to archive what it finds, "… them" is about the mail found before,
+      // "nothing" finds nothing even searched more broadly
+      plan: async ({request, previous, subjects, signal}) => {
+        call('plan', {request, previous, subjects: subjects?.length});
         await new Promise(r => setTimeout(r, 20));
         if (ai.planFail) {
           throw err(ai.planFail);
         }
-        return /^write|напиши/i.test(request) ? {action: 'write', query: '', words: [], title: 'A note'} :
-          /important|важн/i.test(request) ? {action: 'brief', query: '', words: [], title: 'Unread mail'} :
-            /^find/i.test(request) ? {action: 'find', query: 'invoice', words: ['invoice'], title: 'Invoices'} :
-              {action: 'answer', query: 'invoice', words: ['invoice'], title: 'The invoice'};
+        const p = {scope: 'new', terms: '', since: '', until: '', op: ''};
+        return /^write|напиши/i.test(request) ? {...p, action: 'write', query: '', words: [], title: 'A note'} :
+          /important|важн/i.test(request) ? {...p, action: 'brief', query: '', words: [], title: 'Unread mail'} :
+            /them$/i.test(request) ? {...p, action: /^archive/i.test(request) ? 'find' : 'answer', scope: 'previous', query: '', words: [],
+              op: /^archive/i.test(request) ? 'archive' : '', title: 'Those'} :
+              /nothing/i.test(request) ? {...p, action: 'find', query: 'subject:"zz nothing"', words: ['zzz'], title: 'Nothing'} :
+                /^(find|archive)/i.test(request) ? {...p, action: 'find', query: 'invoice', words: ['invoice'], op: /^archive/i.test(request) ? 'archive' : '', title: 'Invoices'} :
+                  {...p, action: 'answer', query: 'invoice', words: ['invoice'], title: 'The invoice'};
       },
-      answer: ({question, mail, signal, onUpdate}) => new Promise((resolve, reject) => {
-        call('answer', {question, n: mail.length, mail});
-        const text = 'The invoice #1042 is ready [1].';
-        onUpdate?.('The invoice');
+      broaden: (query, words) => [query, query.replace(/subject:|"/g, ''), ...(words.length ? [words.join(' OR ')] : [])]
+        .filter((q, i, all) => q && all.indexOf(q) === i),
+      warm: async tasks => call('warm', {tasks}),
+      // a question with "unknown" in it is answered by no mail; one about a thread reads it whole
+      answer: ({question, mail = [], thread, history, signal, onUpdate}) => new Promise((resolve, reject) => {
+        call('answer', {question, n: thread ? thread.messages.length : mail.length, mail, thread, history});
+        const none = /unknown|неизвест/i.test(question);
+        const text = 'The invoice #1042 is ready [1]. It was paid on 99999 [1].';
+        if (!none) {
+          onUpdate?.('The invoice');
+        }
         signal?.addEventListener('abort', () => reject(err('aborted')), {once: true});
         if (!ai.hold) {
-          setTimeout(() => resolve({text, cites: [1], engine: 'openai', model: 'gpt-test'}), 30);
+          setTimeout(() => resolve(none ? {text: '', cites: [], doubtful: [], notFound: true} :
+            {text, cites: [1], doubtful: ['It was paid on 99999 [1].'], engine: 'openai', model: 'gpt-test'}), 30);
         }
+      }),
+      // a rewrite streams in a few steps of __ai.step ms
+      rewrite: ({text, how, lang, signal, onUpdate}) => new Promise((resolve, reject) => {
+        call('rewrite', {text, how, lang});
+        const out = how === 'shorter' ? 'Аня, спасибо, посмотрю.' : text.toUpperCase();
+        let i = 0;
+        const timer = setInterval(() => {
+          i += 1;
+          onUpdate?.(out.slice(0, Math.ceil(out.length * i / 3)));
+          if (i === 3) {
+            clearInterval(timer);
+            resolve({text: out});
+          }
+        }, ai.step);
+        signal?.addEventListener('abort', () => {
+          clearInterval(timer);
+          reject(err('aborted'));
+        }, {once: true});
       }),
       compose: async ({request, onUpdate}) => {
         call('compose', {request});
@@ -195,9 +227,11 @@
         await new Promise(r => setTimeout(r, 20));
         return {to: 'anna@figma.com', subject: 'Встреча в пятницу', body: 'Анна, привет!\n\nВстреча переносится на пятницу.'};
       },
-      draft: async ({intent, reader, messages, onUpdate}) => {
-        call('draft', {intent, reader, n: messages.length});
+      draft: async ({intent, reader, lang, messages, onUpdate}) => {
+        call('draft', {intent, reader, lang, n: messages.length});
         onUpdate?.('Привет');
+        await new Promise(r => setTimeout(r, 20));
+        onUpdate?.('Привет, Аня!');
         await new Promise(r => setTimeout(r, 20));
         return {text: 'Привет, Аня!\n\nСпасибо, посмотрю до пятницы.'};
       },

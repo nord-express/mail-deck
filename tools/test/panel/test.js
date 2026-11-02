@@ -908,17 +908,79 @@
         await until(() => document.querySelectorAll('#assist .suggestion').length);
         out.opened = out.focused && document.querySelectorAll('#assist .suggestion').length === 5;
         out.engine = await until(() => $('assist-bar').querySelector('.engine')?.textContent) && $('assist-bar').querySelector('.engine').textContent;
+        // the sessions the first request needs, made ready as it opens
+        out.warmed = calls('warm').length === 1 && calls('warm')[0].tasks.join() === 'plan,answer';
         const input = $('assist-input');
         const enter = () => input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', code: 'Enter', bubbles: true, cancelable: true}));
         const last = () => [...document.querySelectorAll('#assist .turn')].at(-1);
         const settled = () => until(() => !assist.ctl && last() && !last().querySelector('.status'), 3000);
-        // find: every Gmail account searched with the planned query; what it found, listed
+        // who waits for a reply: the sorting knows, with no plan asked of the model
+        await until(() => state.replies.size > 0, 2000);
+        document.querySelectorAll('#assist .suggestion')[1].click();
+        await settled();
+        out.replies = {plans: calls('plan').length, refs: [...last().querySelectorAll('.ref-subject')].map(x => x.textContent),
+          why: last().querySelector('.ref-why')?.textContent, title: last().querySelector('.what')?.textContent === t('suggestReply')};
+        // find: every Gmail account searched with the planned query; what it found, listed, with what can be done with it
         input.value = 'find invoices';
         enter();
         await settled();
         out.findQuery = sent('gmail.search').filter(m => m.query === 'invoice').length;
         out.found = last().querySelectorAll('.ref').length;
         out.foundOpen = last().querySelector('.found')?.open;
+        out.acts = [...last().querySelectorAll('.found-acts button')].map(b => b.className.split(' ')[0] + ':' + b.textContent);
+        // "archive them": the mail found before, nothing searched, Archive all first; a click archives it, Z undoes it
+        const searches = sent('gmail.search').length;
+        input.value = 'archive them';
+        enter();
+        await settled();
+        const prev = calls('plan').at(-1).previous;
+        out.them = {searches: sent('gmail.search').length - searches, refs: last().querySelectorAll('.ref').length, prev: prev?.q + ':' + prev?.found,
+          first: last().querySelector('.found-acts button')?.className + ':' + last().querySelector('.found-acts button .count')?.textContent};
+        const actions = sent('gmail.action').length;
+        last().querySelector('.found-acts .primary-btn').click();
+        await wait(60);
+        const archived = sent('gmail.action').at(-1);
+        out.archived = sent('gmail.action').length === actions + 1 && archived.cmd === 'rc_^i' && archived.links.length === 4 && archived.delay === 5000 &&
+          last().querySelectorAll('.ref.done').length === 4 && !last().querySelector('.found-acts .primary-btn') &&
+          document.querySelector('#toast .undo') !== null;
+        key(document, 'KeyZ');
+        await until(() => !last().querySelector('.ref.done'), 1500);
+        out.undone = sent('gmail.action.cancel').at(-1)?.id === archived.id && last().querySelectorAll('.ref.done').length === 0 &&
+          Boolean(last().querySelector('.found-acts .primary-btn'));
+        // nothing found, even more broadly: what was searched, Edit search and Gmail's own search
+        input.value = 'find nothing';
+        enter();
+        await settled();
+        out.nothing = {searched: sent('gmail.search').slice(-9).map(m => m.query).filter((q, i, l) => l.indexOf(q) === i),
+          text: last().querySelector('.found-empty p')?.textContent, query: last().querySelector('.found-query')?.textContent,
+          buttons: [...last().querySelectorAll('.found-empty button')].map(b => b.textContent)};
+        last().querySelector('.found-empty button').click();
+        await wait(50);
+        out.edit = !$('app').classList.contains('assisting') && !$('search').hidden && $('search-input').value === 'subject:"zz nothing"' &&
+          document.activeElement === $('search-input');
+        closeSearch();
+        $('tools').querySelector('.assist-btn').click();
+        await until(() => $('app').classList.contains('assisting'));
+        // Gmail that does not answer is no "nothing found"
+        window.__searchFails = () => true;
+        input.value = 'find invoices';
+        enter();
+        await settled();
+        window.__searchFails = null;
+        out.failed = last().querySelector('.found-empty[role="alert"] p')?.textContent === t('searchFailed') &&
+          last().querySelector('.found-empty .primary-btn')?.textContent === t('signInAgain') && !last().querySelector('.found-query');
+        // a mail kept from before the accounts moved: it opens in its own account, under the number Gmail gives it now
+        const moved = {...[...assist.turns].reverse().find(x => x.mail?.length).mail.find(m => m.account === 'evgeny@example.com'),
+          account: 'work@arbitron.example'};
+        assist.turns.push({id: 'moved', q: 'moved', status: 'done', action: 'find', title: '', mail: [moved], cites: [], text: '', doubtful: []});
+        paintAssist();
+        document.querySelector('.turn[data-id="moved"] .ref').click();
+        await until(() => $('app').classList.contains('reading'));
+        out.moved = state.reading.o.xml.title === 'work@arbitron.example' && state.reading.e.link.includes('/u/1?') && moved.link.includes('/u/0?');
+        key(document, 'Escape');
+        await wait(50);
+        assist.turns = assist.turns.filter(x => x.id !== 'moved');
+        paintAssist();
         // a question: the first mail found read whole, an answer that cites it
         input.value = 'how much was the invoice?';
         enter();
@@ -927,6 +989,8 @@
         out.answerMail = calls('answer').at(-1)?.n;
         out.readWhole = calls('answer').at(-1)?.mail[0]?.text.length > 30;
         out.cite = Boolean(last().querySelector('button.cite'));
+        // a sentence whose number no mail has shows as one to check
+        out.doubt = last().querySelector('.answer .doubt')?.title === t('unverified') && last().querySelector('.answer .doubt').textContent === 'It was paid on 99999 1.';
         // its citation opens that mail in the reader; Esc comes back to the assistant
         last().querySelector('button.cite').click();
         await until(() => $('app').classList.contains('reading'));
@@ -951,13 +1015,19 @@
         enter();
         await settled();
         out.brief = calls('answer').at(-1)?.n;
+        out.flags = calls('answer').at(-1)?.mail.some(m => /waits for your reply \(asks for the mockups\)/.test(m.flags));
         out.kept = (chrome.storage.session.area['assist.turns'] || []).length;
+        // the emails do not say: said so, the mail found still listed
+        input.value = 'unknown invoice?';
+        enter();
+        await settled();
+        out.notFound = last().querySelector('.answer')?.textContent === t('notInMail') && last().querySelectorAll('.ref').length === 4;
         // stopped while it answers
         window.__ai.hold = true;
         input.value = 'how much was the invoice?';
         enter();
         await until(() => last().querySelector('.status') && assist.ctl, 2000);
-        await until(() => calls('answer').length === 3, 2000);
+        await until(() => calls('answer').length === 4, 2000);
         $('assist-send').click();
         await until(() => !assist.ctl, 2000);
         out.stopped = Boolean(last().querySelector('.text-btn')) && !last().querySelector('.status');
@@ -995,15 +1065,42 @@
         // the open mail's buttons: summary, reply, translation (the engine's, with no detector here), question
         await open('a1');
         out.strip = [...$('reader-ai').querySelectorAll('.ai-act')].filter(b => !b.hidden).map(b => b.dataset.focus);
-        // a reply: an intent drafts it, Gmail's compose window takes it
+        // a reply: an intent drafts it, marked as the one chosen; Gmail's compose window takes it
         $('reader-ai').querySelector('.ai-reply').click();
+        out.intents = [...$('ai-tool').querySelectorAll('.intents .suggestion')].map(b => b.textContent);
         $('ai-tool').querySelector('.intents .suggestion').click();
+        const chosen = $('ai-tool').querySelector('.intents .suggestion.on');
+        out.chosen = chosen?.textContent === t('intentYes') && chosen.getAttribute('aria-pressed') === 'true' && $('ai-tool').querySelectorAll('.suggestion.on').length === 1;
         await until(() => $('ai-tool').querySelector('.draft') && $('ai-tool').getAttribute('aria-busy') === 'false');
         out.draft = $('ai-tool').querySelector('.draft').value;
         out.draftCall = calls('draft').at(-1);
+        // with a draft, the intents and their field fold into one Rewrite… field with its buttons
+        out.folded = !$('ai-tool').querySelector('.intents') && $('ai-tool').querySelectorAll('.rewrites .suggestion').length === 5 &&
+          $('ai-tool').querySelector('.tool-input').placeholder === t('rewritePlaceholder');
         $('ai-tool').querySelector('.row-btns .primary-btn').click();
         await wait(30);
         out.replyUrl = sent('open').at(-1)?.url || '';
+        // the reader's own change, rewritten Shorter: it streams into the same field, Undo brings the change back
+        const draft = $('ai-tool').querySelector('.draft');
+        draft.value = 'Привет, Аня! Спасибо большое, посмотрю всё до пятницы.';
+        draft.dispatchEvent(new Event('input'));
+        $('ai-tool').querySelector('.rewrites .suggestion').click();
+        await until(() => $('ai-tool').getAttribute('aria-busy') === 'true' && $('ai-tool').querySelector('.draft').value, 1000);
+        const streaming = $('ai-tool').querySelector('.draft');
+        const partial = streaming.value;
+        await until(() => streaming.value !== partial, 1000);
+        out.inPlace = streaming.isConnected && streaming.readOnly && $('ai-tool').querySelector('.rewrites .suggestion.on')?.textContent === t('rewriteShorter');
+        await until(() => $('ai-tool').getAttribute('aria-busy') === 'false', 2000);
+        out.rewrite = {call: calls('rewrite').at(-1)?.how + ':' + calls('rewrite').at(-1)?.text, text: $('ai-tool').querySelector('.draft').value};
+        [...$('ai-tool').querySelectorAll('.row-btns .text-btn')].find(b => b.textContent === t('undo')).click();
+        out.undo = $('ai-tool').querySelector('.draft').value === 'Привет, Аня! Спасибо большое, посмотрю всё до пятницы.';
+        // the reader's own words in the field: a rewrite of its own
+        const field = $('ai-tool').querySelector('.tool-input');
+        field.value = 'теплее';
+        field.dispatchEvent(new Event('input'));
+        field.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}));
+        await until(() => calls('rewrite').length === 2 && $('ai-tool').getAttribute('aria-busy') === 'false', 2000);
+        out.ownWords = calls('rewrite').at(-1).how === 'теплее';
         // a question about the mail: its messages, an answer
         $('reader-ai').querySelector('.ai-ask').click();
         const q = $('ai-tool').querySelector('.tool-input');
@@ -1012,7 +1109,10 @@
         q.dispatchEvent(new Event('input'));
         q.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}));
         await until(() => $('ai-tool').querySelector('.answer') && $('ai-tool').getAttribute('aria-busy') === 'false');
-        out.ask = calls('answer').at(-1)?.question === 'Когда дедлайн?' && calls('answer').at(-1)?.n === 3;
+        // the thread read newest first, with the reader named
+        out.ask = calls('answer').at(-1)?.question === 'Когда дедлайн?' && calls('answer').at(-1)?.n === 3 &&
+          calls('answer').at(-1).thread?.reader === 'evgeny@example.com' && calls('answer').at(-1).mail.length === 0 &&
+          Boolean($('ai-tool').querySelector('.answer .doubt'));
         // Esc in its field closes the card, not the mail
         $('ai-tool').querySelector('.tool-input').dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true, cancelable: true}));
         await wait(30);

@@ -234,13 +234,27 @@ const checks = {
     '"automatically for long mail": a short thread waits for a click, a long one summarizes itself': r.shortWaits && r.longStarts && r.longDone
   }),
   aiassist: r => ({
-    'the assistant opens from the header, its field focused, its suggestions and engine shown': r.opened && r.engine === 'OpenAI · gpt-test',
-    'find: every Gmail account searched with the planned query, what it found listed': r.findQuery === 3 && r.found === 4 && r.foundOpen === true,
-    'a question: the mail found read whole, an answer with a citation': r.answer === 'The invoice #1042 is ready 1.' && r.answerMail === 4 && r.readWhole && r.cite,
+    'the assistant opens from the header, its field focused, its suggestions and engine shown; its first sessions made ready':
+      r.opened && r.engine === 'OpenAI · gpt-test' && r.warmed,
+    '"Who is waiting for my reply?" lists the sorting\'s mail with why, and asks no model to plan it':
+      JSON.stringify(r.replies) === JSON.stringify({plans: 0, refs: ['Макеты на ревью', 'Созвон'], why: 'asks for the mockups', title: true}),
+    'find: every Gmail account searched with the planned query, what it found listed, Mark all read and Archive all with their counts':
+      r.findQuery === 3 && r.found === 4 && r.foundOpen === true &&
+      JSON.stringify(r.acts) === JSON.stringify(['text-btn:' + T('markAllRead') + '2', 'text-btn:' + T('archiveAll') + '4']),
+    '"archive them": the mail found before, nothing searched; Archive all first and only on a click, with Undo':
+      JSON.stringify(r.them) === JSON.stringify({searches: 0, refs: 4, prev: 'find invoices:4', first: 'primary-btn:4'}) && r.archived && r.undone,
+    'nothing found, searched more broadly: the search shown, Edit search puts it in the search field': JSON.stringify(r.nothing) === JSON.stringify({
+      searched: ['subject:"zz nothing"', 'zz nothing', 'zzz'], text: T('nothingFound'), query: 'subject:"zz nothing"',
+      buttons: [T('editSearch'), T('searchInGmail')]}) && r.edit,
+    'Gmail not answering says so, with its sign-in, not "nothing found"': r.failed,
+    'a mail kept from before the accounts moved opens in its own account': r.moved,
+    'a question: the mail found read whole, an answer with a citation; a number no mail has, marked to check':
+      r.answer === 'The invoice #1042 is ready 1. It was paid on 99999 1.' && r.answerMail === 4 && r.readWhole && r.cite && r.doubt,
     'a citation opens its mail in the reader, and Esc comes back to the assistant': r.citeOpens && r.backToAssist,
     'a new mail: its fields filled and changed, then Gmail\'s compose window with them': JSON.stringify(r.email) === '["anna@figma.com","Встреча в пятницу"]' &&
       r.compose.includes('view=cm') && r.compose.includes('to=anna%40figma.com') && r.compose.includes('su=' + encodeURIComponent('Встреча: пятница')) && r.compose.includes('body=' + encodeURIComponent('Анна, привет!')),
-    'what is important: the unread mail read by its preview; the conversation kept for the session': r.brief >= 5 && r.kept === 4,
+    'what is important: the unread mail read by its preview, with how it was sorted; the conversation kept for the session': r.brief >= 5 && r.flags && r.kept === 8,
+    'the emails do not say: said so, what was found still listed': r.notFound,
     'stop ends an answer underway, with Ask again': r.stopped,
     'a usage limit offers Manage usage first': r.limit,
     'Esc in its field closes it': r.closed
@@ -249,9 +263,15 @@ const checks = {
     'the sorting: a chip for each kind found, the list narrowed with all of it read at once': JSON.stringify(r.chips) === '["reply","important","bulk"]' &&
       r.bar === T('importantShown', 1) && JSON.stringify(r.barShown) === JSON.stringify([T('importantList'), '1']) && r.narrowed === 1 && r.readAll,
     'the open mail offers a summary, a reply, a translation and a question': JSON.stringify(r.strip) === '["ai:sparkle","ai:reply","ai:translate","ai:ask"]',
-    'a reply drafted from an intent opens in Gmail\'s compose window with the text': r.draft.startsWith('Привет, Аня!') && r.draftCall.intent === T('intentYes') &&
-      r.draftCall.reader === 'evgeny@example.com' && r.replyUrl.includes('to=anna%40figma.com') && r.replyUrl.includes('su=Re%3A') && r.replyUrl.includes('body=' + encodeURIComponent('Привет, Аня!')),
-    'a question about the mail is answered from its messages; Esc in the field closes the card only': r.askFocused && r.ask && r.escCard,
+    'a reply drafted from an intent, marked as chosen, opens in Gmail\'s compose window with the text': r.chosen && r.draft.startsWith('Привет, Аня!') &&
+      r.draftCall.intent === T('intentYes') && r.draftCall.reader === 'evgeny@example.com' && r.replyUrl.includes('to=anna%40figma.com') &&
+      r.replyUrl.includes('su=Re%3A') && r.replyUrl.includes('body=' + encodeURIComponent('Привет, Аня!')) &&
+      JSON.stringify(r.intents) === JSON.stringify(['intentYes', 'intentNo', 'intentMore', 'intentTimes', 'intentAccept', 'intentThanks'].map(k => T(k))),
+    'with a draft, the intents fold into one Rewrite… field with its buttons': r.folded,
+    'a rewrite of the reader\'s own change streams into the same field; Undo brings the change back; the reader\'s words rewrite too':
+      r.inPlace && r.rewrite.call === 'shorter:Привет, Аня! Спасибо большое, посмотрю всё до пятницы.' && r.rewrite.text === 'Аня, спасибо, посмотрю.' &&
+      r.undo && r.ownWords,
+    'a question about the mail is answered from its thread, newest first; Esc in the field closes the card only': r.askFocused && r.ask && r.escCard,
     'a translation by the engine shows as a card': r.translation === 'Hi! The mockups are attached; please look before Friday.',
     'A asks about the open mail': r.keyA
   }),

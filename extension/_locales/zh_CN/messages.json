@@ -1674,6 +1674,9 @@
     "ai_err_no_access": {
         "message": "请在“设置 → AI 助手”中允许访问服务商。"
     },
+    "ai_err_declined": {
+        "message": "模型拒绝了这个请求。"
+    },
     "ai_err_limit": {
         "message": "已达到 ChatGPT 的用量上限。"
     },
@@ -2087,6 +2090,57 @@
     },
     "panel_aiCut": {
         "message": "回答被截断了。"
+    },
+    "panel_translatedStart": {
+        "message": "只翻译了邮件的开头部分。"
+    },
+    "panel_notInThread": {
+        "message": "这封邮件里没有提到。"
+    },
+    "panel_notInMail": {
+        "message": "找到的邮件里没有提到。"
+    },
+    "panel_unverified": {
+        "message": "邮件中找不到：请核实"
+    },
+    "panel_searchedBroader": {
+        "message": "扩大了搜索范围：$1"
+    },
+    "panel_editSearch": {
+        "message": "修改搜索"
+    },
+    "panel_nobodyWaits": {
+        "message": "没有人在等你回复。"
+    },
+    "panel_deleteAll": {
+        "message": "全部删除"
+    },
+    "panel_rewrite": {
+        "message": "改写"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "改写：更简短、更亲切、婉拒…"
+    },
+    "panel_rewriteShorter": {
+        "message": "更简短"
+    },
+    "panel_rewriteLonger": {
+        "message": "更详细"
+    },
+    "panel_rewriteFormal": {
+        "message": "更正式"
+    },
+    "panel_rewriteFriendly": {
+        "message": "更友好"
+    },
+    "panel_rewriteGrammar": {
+        "message": "修正错误"
+    },
+    "panel_intentTimes": {
+        "message": "提议时间"
+    },
+    "panel_intentAccept": {
+        "message": "接受时间"
     },
     "panel_sameLanguage": {
         "message": "这封邮件已经是$1了。"

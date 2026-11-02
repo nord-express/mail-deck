@@ -1674,6 +1674,9 @@
     "ai_err_no_access": {
         "message": "Разрешите доступ к провайдеру в разделе «Настройки → ИИ»."
     },
+    "ai_err_declined": {
+        "message": "Модель отказалась выполнить этот запрос."
+    },
     "ai_err_limit": {
         "message": "Достигнут лимит использования ChatGPT."
     },
@@ -2087,6 +2090,57 @@
     },
     "panel_aiCut": {
         "message": "Ответ оборвался."
+    },
+    "panel_translatedStart": {
+        "message": "Переведено только начало письма."
+    },
+    "panel_notInThread": {
+        "message": "В этом письме об этом не сказано."
+    },
+    "panel_notInMail": {
+        "message": "В найденных письмах об этом не сказано."
+    },
+    "panel_unverified": {
+        "message": "Этого нет в письмах: проверьте"
+    },
+    "panel_searchedBroader": {
+        "message": "Искал шире: $1"
+    },
+    "panel_editSearch": {
+        "message": "Изменить поиск"
+    },
+    "panel_nobodyWaits": {
+        "message": "Никто не ждёт вашего ответа."
+    },
+    "panel_deleteAll": {
+        "message": "Удалить все"
+    },
+    "panel_rewrite": {
+        "message": "Переписать"
+    },
+    "panel_rewritePlaceholder": {
+        "message": "Переписать: короче, теплее, отказать…"
+    },
+    "panel_rewriteShorter": {
+        "message": "Короче"
+    },
+    "panel_rewriteLonger": {
+        "message": "Подробнее"
+    },
+    "panel_rewriteFormal": {
+        "message": "Официальнее"
+    },
+    "panel_rewriteFriendly": {
+        "message": "Дружелюбнее"
+    },
+    "panel_rewriteGrammar": {
+        "message": "Исправить ошибки"
+    },
+    "panel_intentTimes": {
+        "message": "Предложить время"
+    },
+    "panel_intentAccept": {
+        "message": "Принять время"
     },
     "panel_sameLanguage": {
         "message": "Это письмо уже на языке: $1."
