@@ -374,6 +374,12 @@
   "opt_openIn": {
     "message": "Ouvrir Gmail dans"
   },
+  "opt_composePopup": {
+    "message": "Écrire et répondre dans une petite fenêtre"
+  },
+  "opt_composePopupText": {
+    "message": "Sinon, les nouveaux messages et les réponses s’ouvrent dans un onglet."
+  },
   "opt_newTab": {
     "message": "Un nouvel onglet"
   },

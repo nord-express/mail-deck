@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "Gmail öffnen in"
     },
+    "opt_composePopup": {
+        "message": "In einem kleinen Fenster schreiben und antworten"
+    },
+    "opt_composePopupText": {
+        "message": "Sonst öffnen sich neue Nachrichten und Antworten in einem Tab."
+    },
     "opt_newTab": {
         "message": "Neuem Tab"
     },

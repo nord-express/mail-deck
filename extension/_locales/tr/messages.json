@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "Gmail’i şurada aç"
     },
+    "opt_composePopup": {
+        "message": "Küçük bir pencerede yaz ve yanıtla"
+    },
+    "opt_composePopupText": {
+        "message": "Aksi halde yeni iletiler ve yanıtlar bir sekmede açılır."
+    },
     "opt_newTab": {
         "message": "Yeni sekme"
     },

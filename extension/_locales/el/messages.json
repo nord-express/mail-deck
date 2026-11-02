@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "Άνοιγμα του Gmail σε"
     },
+    "opt_composePopup": {
+        "message": "Σύνταξη και απάντηση σε μικρό παράθυρο"
+    },
+    "opt_composePopupText": {
+        "message": "Αλλιώς τα νέα μηνύματα και οι απαντήσεις ανοίγουν σε καρτέλα."
+    },
     "opt_newTab": {
         "message": "Νέα καρτέλα"
     },

@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "לפתוח את Gmail ב"
     },
+    "opt_composePopup": {
+        "message": "כתיבה ומענה בחלון קטן"
+    },
+    "opt_composePopupText": {
+        "message": "אחרת הודעות חדשות ותשובות נפתחות בכרטיסייה."
+    },
     "opt_newTab": {
         "message": "כרטיסייה חדשה"
     },

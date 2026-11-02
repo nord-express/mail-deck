@@ -153,7 +153,8 @@ const opener = ({tabs = [], windows = true, prefs = {}} = {}) => {
         out.created.push(o);
       }
     },
-    windows: {create: async o => out.windows.push(o.url), update() {}, getCurrent: async () => ({})},
+    windows: {create: async o => out.windows.push(o.type ? o : o.url), update() {}, getCurrent: async () => ({}),
+      getLastFocused: async () => windows === true ? {left: 100, top: 50, width: 1440, height: 900, state: 'normal'} : Promise.reject(Error('none'))},
     i18n: {getMessage: () => 'x'}
   };
   const ctx = {chrome, URL, Promise, console, toast() {}};
@@ -180,6 +181,25 @@ tests.push(
     const o = opener({windows: false});
     await o.open(mail);
     assert.deepStrictEqual(o.windows, [mail]);
+  }],
+  ['Gmail\'s compose window opens small, over the window in front, without tabs; the setting keeps it in a tab', async () => {
+    const compose = 'https://mail.google.com/mail/u/1/?view=cm&fs=1&to=a%40b.c&su=Re%3A%20x';
+    const o = opener({tabs: [{id: 3, index: 0, active: true, url: 'https://mail.google.com/mail/u/1/#inbox'}]});
+    await o.open(compose);
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(o.windows)), [{url: compose, type: 'popup', focused: true, width: 720, height: 640, left: 460, top: 137}]);
+    assert.deepStrictEqual([o.created, o.updated], [[], []]);
+    // the context menu's compose too
+    const menu = opener();
+    await menu.open('https://mail.google.com/mail/?ui=2&view=cm');
+    assert.strictEqual(menu.windows[0].type, 'popup');
+    // a tab, as before
+    const tab = opener({prefs: {'compose.popup': false}});
+    await tab.open(compose);
+    assert.deepStrictEqual([tab.windows, tab.created.map(c => c.url)], [[], [compose]]);
+    // a mail is no compose window
+    const read = opener();
+    await read.open(mail);
+    assert.deepStrictEqual([read.windows, read.created.map(c => c.url)], [[], [mail]]);
   }]
 );
 

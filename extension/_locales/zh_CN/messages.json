@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "在何处打开 Gmail"
     },
+    "opt_composePopup": {
+        "message": "在小窗口中撰写和回复"
+    },
+    "opt_composePopupText": {
+        "message": "否则新邮件和回复会在标签页中打开。"
+    },
     "opt_newTab": {
         "message": "新标签页"
     },

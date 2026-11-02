@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "Отваряй Gmail в"
     },
+    "opt_composePopup": {
+        "message": "Писане и отговаряне в малък прозорец"
+    },
+    "opt_composePopupText": {
+        "message": "Иначе новите писма и отговорите се отварят в раздел."
+    },
     "opt_newTab": {
         "message": "Нов раздел"
     },

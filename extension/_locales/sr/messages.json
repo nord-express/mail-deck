@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "Отварај Gmail у"
     },
+    "opt_composePopup": {
+        "message": "Пиши и одговарај у малом прозору"
+    },
+    "opt_composePopupText": {
+        "message": "У супротном се нове поруке и одговори отварају у картици."
+    },
     "opt_newTab": {
         "message": "Новој картици"
     },

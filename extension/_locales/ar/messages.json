@@ -374,6 +374,12 @@
     "opt_openIn": {
         "message": "فتح Gmail في"
     },
+    "opt_composePopup": {
+        "message": "الكتابة والرد في نافذة صغيرة"
+    },
+    "opt_composePopupText": {
+        "message": "وإلا تُفتح الرسائل الجديدة والردود في علامة تبويب."
+    },
     "opt_newTab": {
         "message": "علامة تبويب جديدة"
     },

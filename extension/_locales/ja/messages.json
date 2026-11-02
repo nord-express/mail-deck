@@ -374,6 +374,12 @@
   "opt_openIn": {
     "message": "Gmail を開く場所"
   },
+  "opt_composePopup": {
+    "message": "作成と返信を小さなウィンドウで行う"
+  },
+  "opt_composePopupText": {
+    "message": "オフにすると、新規メールと返信はタブで開きます。"
+  },
   "opt_newTab": {
     "message": "新しいタブ"
   },

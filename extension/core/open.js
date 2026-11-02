@@ -16,6 +16,21 @@
     return uri;
   };
 
+  // Gmail's compose window (view=cm): a new mail, a reply, an unsubscribe by mail
+  const COMPOSE = /^https:\/\/mail\.google\.com\/mail\/(u\/\d+\/)?\?(.*&)?view=cm(&|$)/;
+  const POPUP = {width: 720, height: 640};
+  // a window of its own, small and over the middle of the window in front, without the tabs and
+  // the address bar of a whole one
+  const popup = async url => {
+    const front = await chrome.windows.getLastFocused().catch(() => null);
+    const at = front?.width && front.state !== 'minimized' ? {
+      left: Math.round(front.left + Math.max(0, front.width - POPUP.width) / 2),
+      top: Math.round(front.top + Math.max(0, front.height - POPUP.height) / 3)
+    } : {};
+    return chrome.windows.create({url, type: 'popup', focused: true, ...POPUP, ...at})
+      .catch(() => chrome.windows.create({url, type: 'popup', focused: true, ...POPUP}));
+  };
+
   self.openLink = (url, inBackground, refresh) => {
     url = url.replace('@private', ''); // some urls might end with "@private" for private mode
 
@@ -26,8 +41,14 @@
       'currentTab': false,
       'newWindow': false,
       'relatedToCurrent': false,
-      'background': false
+      'background': false,
+      // Gmail's compose window opens as a window of its own; false: where Gmail opens
+      'compose.popup': true
     }, async prefs => {
+      if (prefs['compose.popup'] !== false && COMPOSE.test(url)) {
+        popup(url);
+        return;
+      }
       const mode = prefs.currentTab ? 2 : (prefs.newWindow ? 1 : 0);
 
       const tabs = prefs.ignoreOpens ? [] : await new Promise(resolve => {

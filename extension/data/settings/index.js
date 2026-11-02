@@ -43,6 +43,8 @@ const DEFAULTS = {
   'background': false,
   'relatedToCurrent': false,
   'onGmailNotification': true,
+  // Gmail's compose window, for a new mail and a reply, in a small window of its own (core/open.js)
+  'compose.popup': true,
   'doReadOnArchive': true,
   'quiet.hours': false,
   'quiet.from': '22:00',

@@ -466,6 +466,17 @@ check('the new settings default as the background does, and their rows and strin
   }
   assert.ok(en.opt_formatText.message.includes('[account]'));
 });
+check('compose in a small window: on by default as the background has it, its switch under Opening Gmail, kept in a backup', () => {
+  assert.strictEqual(page('DEFAULTS')['compose.popup'], true);
+  assert.ok(fs.readFileSync(path.join(EXT, 'core/open.js'), 'utf8').includes(`'compose.popup': true`));
+  const opening = /<section id="opening"[\s\S]*?<\/section>/.exec(html)[0];
+  assert.ok(/<label class="row">\s*<span class="text"><b data-i18n="composePopup">[^<]*<\/b><small data-i18n="composePopupText">[^<]*<\/small><\/span>\s*<input type="checkbox" role="switch" data-key="compose\.popup">/.test(opening));
+  assert.deepStrictEqual({...page('sanitize')({'compose.popup': false})}, {'compose.popup': false});
+  assert.deepStrictEqual({...page('sanitize')({'compose.popup': 'no'})}, {});
+  for (const key of ['opt_composePopup', 'opt_composePopupText']) {
+    assert.ok(en[key]?.message, key);
+  }
+});
 
 /* the notification's buttons: Later, the Copy button of a sign-in code, and where a click goes */
 check('the Copy switch asks Chrome for the clipboard from its click, and shows on only while Chrome gives it', async () => {
