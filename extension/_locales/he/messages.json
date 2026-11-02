@@ -2144,17 +2144,17 @@
     "panel_engineChatGPTNote": {
         "message": "התחבר עם חשבון ChatGPT Plus או Pro שלך."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (מפתח API של Anthropic)"
+    "panel_engineKey": {
+        "message": "מפתח API משלך"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (מפתח API)"
+    "panel_engineServer": {
+        "message": "במחשב הזה (Ollama או LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (מפתח API)"
+    "panel_engineServerNote": {
+        "message": "חינמי: מודל שאתה מריץ בעצמך. הדואר נשאר במחשב הזה."
     },
     "panel_engineKeyNote": {
-        "message": "מפתח API משלך, בתשלום לספק לפי שימוש."
+        "message": "Claude, OpenAI, Gemini, DeepSeek ועוד, בתשלום לספק לפי שימוש."
     },
     "panel_engineLocal": {
         "message": "$1 · במחשב הזה"

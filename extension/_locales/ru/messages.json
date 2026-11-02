@@ -2148,17 +2148,17 @@
     "panel_engineChatGPTNote": {
         "message": "Войдите с аккаунтом ChatGPT Plus или Pro."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (ключ API Anthropic)"
+    "panel_engineKey": {
+        "message": "Ваш ключ API"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (ключ API)"
+    "panel_engineServer": {
+        "message": "На этом компьютере (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (ключ API)"
+    "panel_engineServerNote": {
+        "message": "Бесплатно: модель, которую вы запускаете сами. Письма остаются на этом компьютере."
     },
     "panel_engineKeyNote": {
-        "message": "Ваш ключ API, оплата провайдеру по использованию."
+        "message": "Claude, OpenAI, Gemini, DeepSeek и другие, оплата провайдеру по использованию."
     },
     "panel_engineLocal": {
         "message": "$1 · на этом компьютере"

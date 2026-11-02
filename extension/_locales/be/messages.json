@@ -2003,17 +2003,17 @@
   "panel_engineChatGPTNote": {
     "message": "Увайдзіце з уліковым запісам ChatGPT Plus або Pro."
   },
-  "panel_engineAnthropic": {
-    "message": "Claude (ключ API Anthropic)"
+  "panel_engineKey": {
+    "message": "Ваш ключ API"
   },
-  "panel_engineOpenAI": {
-    "message": "OpenAI (ключ API)"
+  "panel_engineServer": {
+    "message": "На гэтым камп’ютары (Ollama, LM Studio)"
   },
-  "panel_engineZai": {
-    "message": "Z.ai GLM (ключ API)"
+  "panel_engineServerNote": {
+    "message": "Бясплатна: мадэль, якую вы запускаеце самі. Лісты застаюцца на гэтым камп’ютары."
   },
   "panel_engineKeyNote": {
-    "message": "Ваш ключ API, аплата правайдару за выкарыстанне."
+    "message": "Claude, OpenAI, Gemini, DeepSeek і іншыя, аплата правайдару за выкарыстанне."
   },
   "panel_engineLocal": {
     "message": "$1 · на гэтым камп’ютары"

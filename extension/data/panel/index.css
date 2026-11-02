@@ -2481,6 +2481,47 @@ kbd {
 .choice[data-engine="builtin"] svg {
   display: none;
 }
+.choice[aria-expanded] svg {
+  transition: transform .15s var(--ease);
+}
+.choice[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+/* the engine that is on, where the setup shows it again */
+.choice[aria-current="true"],
+.key-tile[aria-current="true"] {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+}
+/* the providers of a key: a compact row of their names under the choice */
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 2px 2px;
+}
+.keys[hidden] {
+  display: none;
+}
+.key-tile {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--card);
+  color: var(--soft);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.key-tile:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 4%, var(--card));
+}
+.key-tile:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
 .setup-foot {
   color: var(--muted) !important;
   font-size: 12px !important;

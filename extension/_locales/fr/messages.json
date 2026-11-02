@@ -1976,17 +1976,17 @@
   "panel_engineChatGPTNote": {
     "message": "Connectez-vous avec votre compte ChatGPT Plus ou Pro."
   },
-  "panel_engineAnthropic": {
-    "message": "Claude (clé API Anthropic)"
+  "panel_engineKey": {
+    "message": "Votre clé API"
   },
-  "panel_engineOpenAI": {
-    "message": "OpenAI (clé API)"
+  "panel_engineServer": {
+    "message": "Sur cet ordinateur (Ollama, LM Studio)"
   },
-  "panel_engineZai": {
-    "message": "Z.ai GLM (clé API)"
+  "panel_engineServerNote": {
+    "message": "Gratuit : un modèle que vous faites tourner vous-même. Les messages restent sur cet ordinateur."
   },
   "panel_engineKeyNote": {
-    "message": "Votre propre clé API, facturée à l’usage par le fournisseur."
+    "message": "Claude, OpenAI, Gemini, DeepSeek et d’autres, facturés à l’usage par le fournisseur."
   },
   "panel_engineLocal": {
     "message": "$1 · sur cet ordinateur"

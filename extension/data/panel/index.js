@@ -3584,15 +3584,35 @@ const readWhole = () => state.ai.engine === 'builtin' ? 2 : 5;
 const briefMax = () => state.ai.engine === 'builtin' ? 25 : 60;
 const FOUND_MAX = 30;
 const READ_MS = 8000;
-const assist = {turns: [], ctl: null, open: false, loaded: null, setup: false, local: '', warmed: false};
+// keys: the setup's row of key providers opened (true) or closed by the reader, null as it starts
+const assist = {turns: [], ctl: null, open: false, loaded: null, setup: false, keys: null, local: '', warmed: false};
 const USAGE = 'https://chatgpt.com/settings/usage';
-// the engines the assistant can be turned on with, as the setup offers them
+// The engines that take the user's own key, by the names people know them by (and the maker's,
+// where it adds something), in the order the setup shows them
+const KEYED = [
+  {engine: 'anthropic', name: 'Claude', full: 'Anthropic Claude'},
+  {engine: 'openai', name: 'OpenAI'},
+  {engine: 'gemini', name: 'Gemini', full: 'Google Gemini'},
+  {engine: 'xai', name: 'Grok', full: 'xAI Grok'},
+  {engine: 'deepseek', name: 'DeepSeek'},
+  {engine: 'mistral', name: 'Mistral', full: 'Mistral AI'},
+  {engine: 'qwen', name: 'Qwen', full: 'Alibaba Qwen'},
+  {engine: 'kimi', name: 'Kimi', full: 'Moonshot Kimi'},
+  {engine: 'zai', name: 'Z.ai', full: 'Z.ai GLM'},
+  {engine: 'groq', name: 'Groq'},
+  {engine: 'openrouter', name: 'OpenRouter'},
+  {engine: 'yandex', name: 'YandexGPT', full: 'Yandex AI Studio'}
+];
+// Every engine the assistant runs on, as ai.js names them: what else Settings → AI holds is off.
+// The panel knows them before ai.js is loaded, which it is only for an engine that is on.
+const ENGINES = ['builtin', 'chatgpt', 'local', ...KEYED.map(k => k.engine)];
+// the ways to turn the assistant on, as the setup offers them: the keys are one choice, which
+// opens the row of their providers
 const CHOICES = [
   {engine: 'builtin', name: 'engineBuiltin', note: 'engineBuiltinNote'},
   {engine: 'chatgpt', name: 'engineChatGPT', note: 'engineChatGPTNote'},
-  {engine: 'anthropic', name: 'engineAnthropic', note: 'engineKeyNote'},
-  {engine: 'openai', name: 'engineOpenAI', note: 'engineKeyNote'},
-  {engine: 'zai', name: 'engineZai', note: 'engineKeyNote'}
+  {engine: 'key', name: 'engineKey', note: 'engineKeyNote'},
+  {engine: 'local', name: 'engineServer', note: 'engineServerNote'}
 ];
 // The suggestions; those whose plan is known need no model to plan them: what is important, who
 // waits for a reply (the sorting knows, with no model at all), this week's mail with files
@@ -3646,6 +3666,7 @@ const openAssist = async ({question = '', setup = false, run: now = false} = {})
   }
   assist.open = true;
   assist.setup = setup;
+  assist.keys = null;
   $('app').classList.add('assisting');
   shade(true);
   const input = $('assist-input');
@@ -3681,7 +3702,9 @@ const sizeInput = () => {
   input.style.height = Math.min(input.scrollHeight, 140) + 'px';
 };
 
-// what the engine says of itself: "ChatGPT plan · gpt-6.1", "Chrome · on this computer"
+// What the engine says of itself: "ChatGPT plan · gpt-6.1", "Chrome · on this computer",
+// "qwen3:8b · on this computer" for a server here, "Anthropic · Claude Haiku 5.5". A model named
+// after its provider says it once: "Gemini 3.8 Flash", not "Gemini · Gemini 3.8 Flash".
 const engineLabel = async () => {
   const AI = aiOn() && await loadAI();
   if (!AI) {
@@ -3690,9 +3713,16 @@ const engineLabel = async () => {
   try {
     const d = await AI.describe?.();
     if (d) {
+      const model = String(d.model || '');
+      const provider = String(d.provider || '');
+      if (d.local || d.engine === 'local') {
+        return t('engineLocal', d.engine === 'builtin' ? provider : model || provider);
+      }
       // a plan with no model picked yet says the plan alone
-      return d.local ? t('engineLocal', d.provider) : d.plan ? t('enginePlan', d.provider, d.model || '').replace(/\s*·\s*$/, '') :
-        [d.provider, d.model].filter(Boolean).join(' · ');
+      if (d.plan) {
+        return t('enginePlan', provider, model).replace(/\s*·\s*$/, '');
+      }
+      return provider && model.toLowerCase().startsWith(provider.toLowerCase()) ? model : [provider, model].filter(Boolean).join(' · ');
     }
   }
   catch (e) {}
@@ -3764,14 +3794,40 @@ const setupCard = () => {
   if (self.LanguageModel) {
     loadAI();
   }
+  // the engine that is on, marked where the setup shows it again; its key's row starts open
+  const on = aiOn() ? state.ai.engine : '';
+  const open = assist.keys ?? KEYED.some(k => k.engine === on);
+  const current = engine => engine === on ? {'aria-current': 'true'} : {};
+  const keys = h('div', {class: 'keys', id: 'setup-keys', role: 'group', 'aria-label': t('engineKey'), hidden: !open}, KEYED.map(k => h('button', {
+    'class': 'key-tile',
+    'type': 'button',
+    'data-engine': k.engine,
+    ...k.full ? {'title': k.full, 'aria-label': k.full} : {},
+    ...current(k.engine),
+    'onclick': () => choose(k.engine)
+  }, k.name)));
+  // the keys open and close in place, the focus staying on their choice
+  const toggle = ev => {
+    assist.keys = keys.hidden;
+    keys.hidden = !keys.hidden;
+    ev.currentTarget.setAttribute('aria-expanded', String(!keys.hidden));
+  };
   const card = h('div', {class: 'setup'},
     h('span', {class: 'setup-mark'}, icon('sparkle')),
     h('h3', {}, t('setupTitle')),
     h('p', {class: 'setup-lede'}, t('setupLede')),
-    h('div', {class: 'choices'}, CHOICES.filter(c => c.engine !== 'builtin' || self.LanguageModel).map(c => h('button', {
+    h('div', {class: 'choices'}, CHOICES.filter(c => c.engine !== 'builtin' || self.LanguageModel).flatMap(c => c.engine === 'key' ? [h('button', {
       'class': 'choice',
       'type': 'button',
       'data-engine': c.engine,
+      'aria-expanded': String(open),
+      'aria-controls': 'setup-keys',
+      'onclick': toggle
+    }, h('span', {class: 'choice-name'}, t(c.name)), h('span', {class: 'choice-note'}, t(c.note)), icon('down')), keys] : h('button', {
+      'class': 'choice',
+      'type': 'button',
+      'data-engine': c.engine,
+      ...current(c.engine),
       'onclick': ev => choose(c.engine, ev.currentTarget)
     }, h('span', {class: 'choice-name'}, t(c.name)), h('span', {class: 'choice-note'}, t(c.note)), icon('open')))),
     h('p', {class: 'setup-foot'}, t('setupPrivacy')),
@@ -4693,7 +4749,7 @@ const prefsChanged = prefs => {
     state.badgeNew = prefs['badge.count'] === 'new';
   }
   if ('ai.engine' in prefs) {
-    state.ai.engine = ['builtin', 'chatgpt', 'openai', 'anthropic', 'zai'].includes(prefs['ai.engine']) ? prefs['ai.engine'] : 'off';
+    state.ai.engine = ENGINES.includes(prefs['ai.engine']) ? prefs['ai.engine'] : 'off';
   }
   if ('labels.beta' in prefs) {
     LABELS = prefs['labels.beta'] === true;
@@ -4721,6 +4777,9 @@ const prefsChanged = prefs => {
 };
 // what the panel reads of Settings → AI (the keys stay with ai.js)
 const AI_PREFS = {'ai.engine': 'off', 'ai.summary': 'click', 'ai.reply': true, 'ai.buttons': true};
+// what changes the assistant: the engine, the features, an engine's own key, model or sign-in
+// (ai.<engine>.…); not what it keeps (ai.replies, ai.summaries)
+const AI_CHANGES = new RegExp(`^ai\\.((engine|summary|reply|buttons)$|(${ENGINES.join('|')})\\.)`);
 // With the toolbar count at "mail since the panel was last opened", opening the panel starts it
 // again, and so does a side panel coming back into view. Never a list update: the background
 // sends one for the very redraw this asks for.
@@ -4742,8 +4801,8 @@ chrome.storage.onChanged.addListener((ps, area) => {
       loadCategories();
     }
   }
-  // the assistant's engine, key, model or features; not what it keeps (ai.replies, ai.summaries)
-  if (area === 'local' && Object.keys(ps).some(k => /^ai\.((engine|summary|reply|buttons)$|(openai|anthropic|zai|chatgpt)\.)/.test(k))) {
+  // the assistant's engine, key, model or features
+  if (area === 'local' && Object.keys(ps).some(k => AI_CHANGES.test(k))) {
     prefsChanged(Object.fromEntries(Object.keys(AI_PREFS).filter(k => k in ps).map(k => [k, ps[k].newValue])));
     aiChanged();
   }

@@ -1964,17 +1964,17 @@
   "panel_engineChatGPTNote": {
     "message": "Jelentkezzen be ChatGPT Plus- vagy Pro-fiókjával."
   },
-  "panel_engineAnthropic": {
-    "message": "Claude (Anthropic API-kulcs)"
+  "panel_engineKey": {
+    "message": "Saját API-kulcs"
   },
-  "panel_engineOpenAI": {
-    "message": "OpenAI (API-kulcs)"
+  "panel_engineServer": {
+    "message": "Ezen a számítógépen (Ollama, LM Studio)"
   },
-  "panel_engineZai": {
-    "message": "Z.ai GLM (API-kulcs)"
+  "panel_engineServerNote": {
+    "message": "Ingyenes: egy modell, amelyet Ön futtat. A levelek ezen a számítógépen maradnak."
   },
   "panel_engineKeyNote": {
-    "message": "Saját API-kulcs, a szolgáltatónak használat szerint fizetve."
+    "message": "Claude, OpenAI, Gemini, DeepSeek és mások, a szolgáltatónak használat szerint fizetve."
   },
   "panel_engineLocal": {
     "message": "$1 · ezen a számítógépen"

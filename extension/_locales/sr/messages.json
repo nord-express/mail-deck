@@ -2148,17 +2148,17 @@
     "panel_engineChatGPTNote": {
         "message": "Пријавите се ChatGPT Plus или Pro налогом."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (Anthropic API кључ)"
+    "panel_engineKey": {
+        "message": "Ваш API кључ"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (API кључ)"
+    "panel_engineServer": {
+        "message": "На овом рачунару (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (API кључ)"
+    "panel_engineServerNote": {
+        "message": "Бесплатно: модел који сами покрећете. Пошта остаје на овом рачунару."
     },
     "panel_engineKeyNote": {
-        "message": "Ваш API кључ, плаћање добављачу по коришћењу."
+        "message": "Claude, OpenAI, Gemini, DeepSeek и други, плаћање добављачу по коришћењу."
     },
     "panel_engineLocal": {
         "message": "$1 · на овом рачунару"

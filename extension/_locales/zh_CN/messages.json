@@ -2148,17 +2148,17 @@
     "panel_engineChatGPTNote": {
         "message": "使用你的 ChatGPT Plus 或 Pro 账号登录。"
     },
-    "panel_engineAnthropic": {
-        "message": "Claude（Anthropic API 密钥）"
+    "panel_engineKey": {
+        "message": "你自己的 API 密钥"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI（API 密钥）"
+    "panel_engineServer": {
+        "message": "在这台电脑上（Ollama、LM Studio）"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM（API 密钥）"
+    "panel_engineServerNote": {
+        "message": "免费：你自己运行的模型。邮件留在这台电脑上。"
     },
     "panel_engineKeyNote": {
-        "message": "你自己的 API 密钥，按用量向服务商付费。"
+        "message": "Claude、OpenAI、Gemini、DeepSeek 等，按用量向服务商付费。"
     },
     "panel_engineLocal": {
         "message": "$1 · 在这台电脑上"

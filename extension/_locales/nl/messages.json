@@ -2148,17 +2148,17 @@
     "panel_engineChatGPTNote": {
         "message": "Log in met je ChatGPT Plus- of Pro-account."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (API-sleutel van Anthropic)"
+    "panel_engineKey": {
+        "message": "Je eigen API-sleutel"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (API-sleutel)"
+    "panel_engineServer": {
+        "message": "Op deze computer (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (API-sleutel)"
+    "panel_engineServerNote": {
+        "message": "Gratis: een model dat je zelf draait. Mail blijft op deze computer."
     },
     "panel_engineKeyNote": {
-        "message": "Je eigen API-sleutel, je betaalt de aanbieder per gebruik."
+        "message": "Claude, OpenAI, Gemini, DeepSeek en meer, je betaalt de aanbieder per gebruik."
     },
     "panel_engineLocal": {
         "message": "$1 · op deze computer"

@@ -2144,17 +2144,17 @@
     "panel_engineChatGPTNote": {
         "message": "Melden Sie sich mit Ihrem ChatGPT-Plus- oder -Pro-Konto an."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (Anthropic-API-Schlüssel)"
+    "panel_engineKey": {
+        "message": "Ihr API-Schlüssel"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (API-Schlüssel)"
+    "panel_engineServer": {
+        "message": "Auf diesem Computer (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (API-Schlüssel)"
+    "panel_engineServerNote": {
+        "message": "Kostenlos: ein Modell, das Sie selbst betreiben. E-Mails bleiben auf diesem Computer."
     },
     "panel_engineKeyNote": {
-        "message": "Ihr eigener API-Schlüssel, Abrechnung nach Nutzung beim Anbieter."
+        "message": "Claude, OpenAI, Gemini, DeepSeek und mehr, Abrechnung nach Nutzung beim Anbieter."
     },
     "panel_engineLocal": {
         "message": "$1 · auf diesem Computer"

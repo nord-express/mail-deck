@@ -2144,17 +2144,17 @@
     "panel_engineChatGPTNote": {
         "message": "ChatGPT Plus veya Pro hesabınızla oturum açın."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (Anthropic API anahtarı)"
+    "panel_engineKey": {
+        "message": "Kendi API anahtarınız"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (API anahtarı)"
+    "panel_engineServer": {
+        "message": "Bu bilgisayarda (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (API anahtarı)"
+    "panel_engineServerNote": {
+        "message": "Ücretsiz: kendi çalıştırdığınız bir model. Postalar bu bilgisayarda kalır."
     },
     "panel_engineKeyNote": {
-        "message": "Kendi API anahtarınız; sağlayıcıya kullandıkça ödeme."
+        "message": "Claude, OpenAI, Gemini, DeepSeek ve daha fazlası; sağlayıcıya kullandıkça ödeme."
     },
     "panel_engineLocal": {
         "message": "$1 · bu bilgisayarda"

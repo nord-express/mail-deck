@@ -314,9 +314,29 @@ const checks = {
     'the assistant off and its buttons too: nothing of it shows, and nothing is loaded or asked': JSON.stringify(r.off) ===
       '{"calls":0,"button":false,"card":false,"offerCard":false,"chip":false,"offer":false,"header":false,"script":false,"hint":false}'
   }),
+  aisetup: r => ({
+    'the setup offers the built-in model where Chrome has one, the ChatGPT plan, a key and a server on this computer':
+      JSON.stringify(r.choices) === JSON.stringify([...r.builtin ? ['builtin'] : [], 'chatgpt', 'key', 'local']),
+    'the key\'s providers are one choice that opens their row in place, named as a group, the focus kept':
+      r.closed && r.expanded && r.group && r.keptOpen && r.closedAgain,
+    'every provider of a key has its tile, by the name people know it by':
+      JSON.stringify(r.tiles) === '["anthropic","openai","gemini","xai","deepseek","mistral","qwen","kimi","zai","groq","openrouter","yandex"]' &&
+      r.tileNames?.[0] === 'Anthropic Claude' && r.tileNames[2] === 'Google Gemini' && r.tileNames[4] === 'DeepSeek',
+    'a tile opens Settings at its provider, the server choice at its own': r.gemini === '#ai-gemini' && r.local === '#ai-local',
+    'every engine Settings can turn on turns the assistant on; an unknown one is off':
+      JSON.stringify(r.engines) === '["gemini","xai","deepseek","mistral","qwen","kimi","groq","openrouter","local","yandex","zai","off"]',
+    'an engine\'s own key, model or sign-in restarts the assistant; what it keeps does not':
+      JSON.stringify(r.restarts) === '[true,true,true,true,true,false,false,false]',
+    'with an engine on, the setup marks it and opens its keys': JSON.stringify(r.marked) === '["kimi"]' && r.openForKey,
+    'an engine says its model once, a server here its model on this computer, a plan the plan alone': JSON.stringify(r.labels) === JSON.stringify([
+      'Gemini 3.8 Flash', 'OpenRouter · Anthropic: Claude Sonnet 5', 'DeepSeek', T('engineLocal', 'qwen3:8b'), T('engineLocal', 'LM Studio'),
+      T('engineLocal', 'Chrome'), T('enginePlan', 'ChatGPT', '').replace(/\s*·\s*$/, '')]),
+    'nothing goes wrong unseen (setup)': r.consoleClean === true
+  }),
   aireal: r => ({
     'the real ai.js comes after the list\'s first frame; with no key the card says so, and nothing is classified':
-      r.loadedAfter && r.noKey && r.noChip && r.consoleClean === true
+      r.loadedAfter && r.noKey && r.noChip && r.consoleClean === true,
+    'every engine ai.js runs is one the panel turns the assistant on with': JSON.stringify(r.unknownEngines) === '[]'
   }),
   reliable: r => ({
     'a mail archived from Gmail\'s search leaves the feed\'s list as well; Undo brings it back':
@@ -447,7 +467,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ux', ''], ['acting', '&ai=on&read=1'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', ''], ['privacy', '&s=privacy'], ['privacyask', '&s=privacy&ask=1']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['acting', '&ai=on&read=1'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['aisetup', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', ''], ['privacy', '&s=privacy'], ['privacyask', '&s=privacy&ask=1']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

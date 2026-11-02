@@ -1976,17 +1976,17 @@
   "panel_engineChatGPTNote": {
     "message": "ChatGPT Plus または Pro のアカウントでログインします。"
   },
-  "panel_engineAnthropic": {
-    "message": "Claude（Anthropic API キー）"
+  "panel_engineKey": {
+    "message": "ご自身の API キー"
   },
-  "panel_engineOpenAI": {
-    "message": "OpenAI（API キー）"
+  "panel_engineServer": {
+    "message": "このパソコン上（Ollama、LM Studio）"
   },
-  "panel_engineZai": {
-    "message": "Z.ai GLM（API キー）"
+  "panel_engineServerNote": {
+    "message": "無料。ご自身で動かすモデルで、メールはこのパソコンから出ません。"
   },
   "panel_engineKeyNote": {
-    "message": "ご自身の API キーを使用（プロバイダへの従量課金）。"
+    "message": "Claude、OpenAI、Gemini、DeepSeek など（プロバイダへの従量課金）。"
   },
   "panel_engineLocal": {
     "message": "$1 · このパソコン上"

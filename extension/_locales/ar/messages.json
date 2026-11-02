@@ -2144,17 +2144,17 @@
     "panel_engineChatGPTNote": {
         "message": "سجّل الدخول بحساب ChatGPT Plus أو Pro."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (مفتاح API من Anthropic)"
+    "panel_engineKey": {
+        "message": "مفتاح API خاص بك"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (مفتاح API)"
+    "panel_engineServer": {
+        "message": "على هذا الكمبيوتر (Ollama أو LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (مفتاح API)"
+    "panel_engineServerNote": {
+        "message": "مجاني: نموذج تشغّله بنفسك. يبقى البريد على هذا الكمبيوتر."
     },
     "panel_engineKeyNote": {
-        "message": "مفتاح API خاص بك، والدفع للمزوّد حسب الاستخدام."
+        "message": "Claude وOpenAI وGemini وDeepSeek وغيرها، والدفع للمزوّد حسب الاستخدام."
     },
     "panel_engineLocal": {
         "message": "$1 · على هذا الكمبيوتر"

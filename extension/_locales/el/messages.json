@@ -2144,17 +2144,17 @@
     "panel_engineChatGPTNote": {
         "message": "Συνδεθείτε με τον λογαριασμό σας ChatGPT Plus ή Pro."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (κλειδί API της Anthropic)"
+    "panel_engineKey": {
+        "message": "Το κλειδί API σας"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (κλειδί API)"
+    "panel_engineServer": {
+        "message": "Σε αυτόν τον υπολογιστή (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (κλειδί API)"
+    "panel_engineServerNote": {
+        "message": "Δωρεάν: ένα μοντέλο που τρέχετε εσείς. Τα μηνύματα μένουν σε αυτόν τον υπολογιστή."
     },
     "panel_engineKeyNote": {
-        "message": "Το δικό σας κλειδί API, με χρέωση ανά χρήση από τον πάροχο."
+        "message": "Claude, OpenAI, Gemini, DeepSeek και άλλοι, με χρέωση ανά χρήση από τον πάροχο."
     },
     "panel_engineLocal": {
         "message": "$1 · σε αυτόν τον υπολογιστή"

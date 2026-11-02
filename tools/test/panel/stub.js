@@ -186,7 +186,8 @@
       },
       // the assistant: a plan by the words of the request, answers that cite the first mail;
       // __ai.planFail fails the plan with that code, __ai.hold keeps an answer going until stopped
-      describe: async () => ({engine: 'openai', provider: 'OpenAI', model: 'gpt-test', plan: false, local: false}),
+      // __ai.describe: what another engine would say of itself
+      describe: async () => ai.describe || {engine: 'openai', provider: 'OpenAI', model: 'gpt-test', plan: false, local: false},
       // "archive …" asks to archive what it finds, "… them" is about the mail found before,
       // "nothing" finds nothing even searched more broadly
       plan: async ({request, previous, subjects, signal}) => {
@@ -350,7 +351,8 @@
       // ?boot=1: a browser just started, the background has read no mail yet (__objs is what it will)
       session: (() => { const area = {...(q.get('boot') ? {} : {'cached-objects': objs}), 'resolved.links': [], ...(q.get('scenario') === 'files' ? {} : {'files.index': new Proxy({}, {get: (o, k) => typeof k === 'string' && k.includes('#') ? o[k] ?? [] : o[k], has: () => true})})}; return {get: store(area), set: o => { Object.assign(area, o); return Promise.resolve(); }, remove: k => { [k].flat().forEach(x => delete area[x]); return Promise.resolve(); }, getKeys: () => Promise.resolve(Object.keys(area)), area}; })(),
       local: {get: store(local), set: (o) => { window.__set.push(o); Object.assign(local, o); return Promise.resolve(); }},
-      onChanged: {addListener() {}}
+      // a change to the storage, as Chrome would tell it: __storageChanged(changes, area)
+      onChanged: {addListener: f => { window.__storageChanged = f; }}
     },
     sidePanel: {open: () => Promise.resolve()},
     // ?pinned=0: the toolbar button is not pinned; __pinChanged(settings) is Chrome saying it changed

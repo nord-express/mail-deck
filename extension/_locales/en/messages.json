@@ -2006,17 +2006,17 @@
   "panel_engineChatGPTNote": {
     "message": "Sign in with your ChatGPT Plus or Pro account."
   },
-  "panel_engineAnthropic": {
-    "message": "Claude (Anthropic API key)"
+  "panel_engineKey": {
+    "message": "Your API key"
   },
-  "panel_engineOpenAI": {
-    "message": "OpenAI (API key)"
+  "panel_engineServer": {
+    "message": "On this computer (Ollama, LM Studio)"
   },
-  "panel_engineZai": {
-    "message": "Z.ai GLM (API key)"
+  "panel_engineServerNote": {
+    "message": "Free: a model you run yourself. Mail stays on this computer."
   },
   "panel_engineKeyNote": {
-    "message": "Your own API key, paid by use to the provider."
+    "message": "Claude, OpenAI, Gemini, DeepSeek and more, paid by use to the provider."
   },
   "panel_engineLocal": {
     "message": "$1 · on this computer"

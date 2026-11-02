@@ -2148,17 +2148,17 @@
     "panel_engineChatGPTNote": {
         "message": "Inicia la sessió amb el teu compte de ChatGPT Plus o Pro."
     },
-    "panel_engineAnthropic": {
-        "message": "Claude (clau d'API d'Anthropic)"
+    "panel_engineKey": {
+        "message": "La teva clau d'API"
     },
-    "panel_engineOpenAI": {
-        "message": "OpenAI (clau d'API)"
+    "panel_engineServer": {
+        "message": "En aquest ordinador (Ollama, LM Studio)"
     },
-    "panel_engineZai": {
-        "message": "Z.ai GLM (clau d'API)"
+    "panel_engineServerNote": {
+        "message": "Gratuït: un model que executes tu mateix. El correu es queda en aquest ordinador."
     },
     "panel_engineKeyNote": {
-        "message": "La teva pròpia clau d'API, de pagament per ús al proveïdor."
+        "message": "Claude, OpenAI, Gemini, DeepSeek i més, de pagament per ús al proveïdor."
     },
     "panel_engineLocal": {
         "message": "$1 · en aquest ordinador"

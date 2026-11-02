@@ -1144,10 +1144,79 @@
         out.firstRow = window.__firstRow;
       }
 
+      if (scenario === 'aisetup') {
+        // the engine off: the header's button opens the setup, its keys behind one choice
+        await wait(300);
+        $('tools').querySelector('.assist-btn').click();
+        await until(() => $('assist-body').querySelector('.setup'));
+        const setup = $('assist-body').querySelector('.setup');
+        const keys = $('setup-keys');
+        const toggle = setup.querySelector('.choice[data-engine="key"]');
+        const opened = () => window.__tabsCreated?.at(-1)?.replace(/^.*\/data\/settings\/index\.html/, '');
+        out.builtin = Boolean(self.LanguageModel);
+        out.choices = [...setup.querySelectorAll('.choice')].map(c => c.dataset.engine);
+        out.closed = keys.hidden && !shown(keys) && toggle.getAttribute('aria-expanded') === 'false' && toggle.getAttribute('aria-controls') === keys.id;
+        toggle.focus();
+        toggle.click();
+        out.expanded = shown(keys) && toggle.getAttribute('aria-expanded') === 'true' && document.activeElement === toggle;
+        out.tiles = [...keys.querySelectorAll('.key-tile')].map(b => b.dataset.engine);
+        out.tileNames = [...keys.querySelectorAll('.key-tile')].map(b => b.getAttribute('aria-label') || b.textContent);
+        out.group = keys.getAttribute('role') === 'group' && keys.getAttribute('aria-label') === toggle.querySelector('.choice-name').textContent;
+        // a tile opens Settings at its provider; the server here at its own
+        keys.querySelector('[data-engine="gemini"]').click();
+        out.gemini = opened();
+        setup.querySelector('.choice[data-engine="local"]').click();
+        out.local = opened();
+        // the row stays open through a repaint, and closes again in place
+        paintAssist();
+        const again = $('setup-keys');
+        out.keptOpen = shown(again);
+        $('assist-body').querySelector('.choice[data-engine="key"]').click();
+        out.closedAgain = again.hidden && $('assist-body').querySelector('.choice[data-engine="key"]').getAttribute('aria-expanded') === 'false';
+        // what Settings → AI writes: a new engine turns it on, an unknown one is off; a new
+        // engine's key or model restarts it; what the assistant keeps does not
+        const change = (k, v) => window.__storageChanged({[k]: {newValue: v}}, 'local');
+        const restarts = k => {
+          state.ai.ok = 'kept';
+          change(k, 'x');
+          return state.ai.ok === false;
+        };
+        out.engines = ['gemini', 'xai', 'deepseek', 'mistral', 'qwen', 'kimi', 'groq', 'openrouter', 'local', 'yandex', 'zai', 'nonsense'].map(e => {
+          change('ai.engine', e);
+          return state.ai.engine;
+        });
+        out.restarts = ['ai.gemini.key', 'ai.openrouter.model', 'ai.local.url', 'ai.yandex.folder', 'ai.chatgpt.auth', 'ai.replies', 'ai.summaries', 'ai.geminikey']
+          .map(restarts);
+        // with one on, the setup marks it where it shows it again, its keys open
+        change('ai.engine', 'kimi');
+        assist.setup = true;
+        assist.keys = null;
+        paintAssist();
+        out.marked = [...$('assist-body').querySelectorAll('[aria-current="true"]')].map(b => b.dataset.engine);
+        out.openForKey = shown($('setup-keys'));
+        // what an engine says of itself
+        out.labels = [];
+        for (const d of [
+          {engine: 'gemini', provider: 'Gemini', model: 'Gemini 3.8 Flash'},
+          {engine: 'openrouter', provider: 'OpenRouter', model: 'Anthropic: Claude Sonnet 5'},
+          {engine: 'deepseek', provider: 'DeepSeek', model: ''},
+          {engine: 'local', provider: 'Ollama', model: 'qwen3:8b', local: true},
+          {engine: 'local', provider: 'LM Studio', model: ''},
+          {engine: 'builtin', provider: 'Chrome', model: 'Gemini Nano', local: true},
+          {engine: 'chatgpt', provider: 'ChatGPT', model: '', plan: true}
+        ]) {
+          ai.describe = d;
+          out.labels.push(await engineLabel());
+        }
+        out.consoleClean = window.__errors.length === 0 ? true : window.__errors;
+      }
+
       if (scenario === 'aireal') {
         // the real ai.js, with no key: loaded after the list's first frame, its error in the card
         await until(() => self.AI, 3000);
         out.loadedAfter = window.__aiScriptAt > window.__firstRow;
+        // every engine ai.js runs is one the panel knows before loading it (or it would say off)
+        out.unknownEngines = (self.AI?.ENGINES || ['none']).filter(e => e !== 'off' && !ENGINES.includes(e));
         out.times = {script: window.__aiScriptAt};
         out.firstRow = window.__firstRow;
         await open('a1');
