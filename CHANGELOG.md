@@ -3,6 +3,22 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.7.0
+
+Mail Deck 1.7.0 lets the assistant run on the AI you already use: ten more providers, or a model on your own computer that keeps your mail on it. It includes everything of 1.6.0, which did not reach the store on its own.
+
+**New**
+- **Twelve providers with your own key**: OpenAI, Anthropic, Google Gemini, xAI, DeepSeek, Z.ai, Mistral, OpenRouter, Groq, Qwen, Kimi and Yandex AI Studio, in one calm picker in Settings → AI. Each lists the models your key can use, newest first with a recommended one; OpenRouter's hundreds are grouped by maker, with a search and their prices. Several give some use for free (Gemini, Groq, OpenRouter's free models, Z.ai).
+- **Sign in with OpenRouter**: OpenRouter makes a key for Mail Deck when you sign in, with nothing to copy, and opens hundreds of models, some of them free.
+- **A model on your own computer**: connect Ollama or LM Studio (or another server that speaks OpenAI's API) and nothing leaves your computer, at no cost. Mail Deck sets what Ollama needs itself, and says exactly what to change when a server still refuses.
+- The panel's AI setup offers four clear ways in: Chrome's built-in model, your ChatGPT plan, your API key with any of the twelve providers, or a model on this computer.
+
+**Fixed**
+- A click on a mail's file opens it: with Gmail open in a tab, it only brought that tab to the front.
+- The settings page's text is drawn at its designed size: Chrome's own smaller size for extension pages had shrunk titles, the menu and buttons.
+- When Chrome still runs an older copy of Mail Deck (after an update, before a reload), connecting a provider says to reload Mail Deck instead of blaming a missing access.
+- A wrong Gemini key is called a wrong key, not a model the key cannot use.
+
 ## 1.6.0
 
 Mail Deck 1.6.0 is a release about trust and finish: trackers kept out of your mail, a new settings page, a sharper assistant, one-click unsubscribe, and dozens of fixes that make it hold up when Gmail, the network or the clock does not.
