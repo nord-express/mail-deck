@@ -2373,12 +2373,6 @@
     "opt_aiPlanText": {
         "message": "Twój plan, bez klucza API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · klucz API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · klucz API, niektóre bezpłatne"
-    },
     "opt_aiChecking": {
         "message": "Sprawdzanie…"
     },

@@ -2369,12 +2369,6 @@
     "opt_aiPlanText": {
         "message": "خطتك، دون مفتاح API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · مفتاح API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · مفتاح API، وبعضها مجاني"
-    },
     "opt_aiChecking": {
         "message": "جارٍ التحقق…"
     },

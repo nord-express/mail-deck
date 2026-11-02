@@ -2228,12 +2228,6 @@
   "opt_aiPlanText": {
     "message": "Ваша падпіска, без ключа API"
   },
-  "opt_aiCloudText": {
-    "message": "$1 · ключ API"
-  },
-  "opt_aiZaiText": {
-    "message": "GLM · ключ API, ёсць бясплатныя"
-  },
   "opt_aiChecking": {
     "message": "Правяраю…"
   },

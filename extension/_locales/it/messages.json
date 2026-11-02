@@ -2201,12 +2201,6 @@
   "opt_aiPlanText": {
     "message": "Il tuo piano, senza chiave API"
   },
-  "opt_aiCloudText": {
-    "message": "$1 · chiave API"
-  },
-  "opt_aiZaiText": {
-    "message": "GLM · chiave API, alcuni gratuiti"
-  },
   "opt_aiChecking": {
     "message": "Verifica in corso…"
   },

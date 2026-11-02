@@ -2373,12 +2373,6 @@
     "opt_aiPlanText": {
         "message": "Je abonnement, geen API-sleutel"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · API-sleutel"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · API-sleutel, sommige gratis"
-    },
     "opt_aiChecking": {
         "message": "Controleren…"
     },

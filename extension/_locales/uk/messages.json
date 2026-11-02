@@ -2369,12 +2369,6 @@
     "opt_aiPlanText": {
         "message": "Ваша підписка, без ключа API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · ключ API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · ключ API, є безкоштовні"
-    },
     "opt_aiChecking": {
         "message": "Перевіряю…"
     },

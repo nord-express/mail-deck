@@ -2373,12 +2373,6 @@
     "opt_aiPlanText": {
         "message": "你的套餐，无需 API 密钥"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · API 密钥"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · API 密钥，部分免费"
-    },
     "opt_aiChecking": {
         "message": "正在检查…"
     },

@@ -2369,12 +2369,6 @@
     "opt_aiPlanText": {
         "message": "Η συνδρομή σας, χωρίς κλειδί API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · κλειδί API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · κλειδί API, κάποια δωρεάν"
-    },
     "opt_aiChecking": {
         "message": "Έλεγχος…"
     },

@@ -2369,12 +2369,6 @@
     "opt_aiPlanText": {
         "message": "Planınız, API anahtarı gerekmez"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · API anahtarı"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · API anahtarı, bazıları ücretsiz"
-    },
     "opt_aiChecking": {
         "message": "Denetleniyor…"
     },

@@ -2201,12 +2201,6 @@
   "opt_aiPlanText": {
     "message": "Votre forfait, sans clé API"
   },
-  "opt_aiCloudText": {
-    "message": "$1 · clé API"
-  },
-  "opt_aiZaiText": {
-    "message": "GLM · clé API, certains gratuits"
-  },
   "opt_aiChecking": {
     "message": "Vérification…"
   },

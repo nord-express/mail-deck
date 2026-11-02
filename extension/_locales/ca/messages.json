@@ -2373,12 +2373,6 @@
     "opt_aiPlanText": {
         "message": "El teu pla, sense clau d’API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · clau d’API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · clau d’API, alguns gratuïts"
-    },
     "opt_aiChecking": {
         "message": "S’està comprovant…"
     },

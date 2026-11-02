@@ -2369,12 +2369,6 @@
     "opt_aiPlanText": {
         "message": "Tu plan, sin clave de API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · clave de API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · clave de API, algunos gratis"
-    },
     "opt_aiChecking": {
         "message": "Comprobando…"
     },

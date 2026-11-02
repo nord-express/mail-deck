@@ -2201,12 +2201,6 @@
   "opt_aiPlanText": {
     "message": "お持ちのプラン、API キー不要"
   },
-  "opt_aiCloudText": {
-    "message": "$1 · API キー"
-  },
-  "opt_aiZaiText": {
-    "message": "GLM · API キー、一部無料"
-  },
   "opt_aiChecking": {
     "message": "確認しています…"
   },

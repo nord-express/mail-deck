@@ -2369,12 +2369,6 @@
     "opt_aiPlanText": {
         "message": "התוכנית שלך, בלי מפתח API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · מפתח API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · מפתח API, חלקם בחינם"
-    },
     "opt_aiChecking": {
         "message": "בודק…"
     },

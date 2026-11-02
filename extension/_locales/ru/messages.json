@@ -2373,12 +2373,6 @@
     "opt_aiPlanText": {
         "message": "Ваша подписка, без ключа API"
     },
-    "opt_aiCloudText": {
-        "message": "$1 · ключ API"
-    },
-    "opt_aiZaiText": {
-        "message": "GLM · ключ API, есть бесплатные"
-    },
     "opt_aiChecking": {
         "message": "Проверяю…"
     },
