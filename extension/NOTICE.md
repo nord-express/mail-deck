@@ -21,6 +21,8 @@ The mail services in `core/services/` adapt code and request shapes from these p
 - `yandex.js`: Pulsar by Ilya Levin (`lib/providers/yandex.ts`), MIT License, https://github.com/ilyachase/pulsar; yandex-mail-proxy by Sergey Krashevich, Apache License 2.0, https://github.com/skrashevich/yandex-mail-proxy. Its MIME parser follows the approach of postal-mime by Andris Reinman (MIT-0).
 - `mailru.js`: Pulsar by Ilya Levin (`lib/providers/mailru.ts`), MIT License; 3MR mailru-notifier 1.5.1 by 3MR (`lib/mailapi.js`), MIT License, https://github.com/3MR-apps/mailru-notifier.
 
+The panel's list of open-tracking pixels (`data/panel/trackers.js`) is checked against, and partly drawn from, the list of MailTrackerBlocker by Aaron Lee, BSD 3-Clause License, https://github.com/apparition47/MailTrackerBlocker. The file's header carries that license's notice in full: Copyright (c) 2020, Aaron Lee. All rights reserved.
+
 The MIT License of the projects above (Copyright (c) 2026 Ilya Levin; Copyright (c) 2026 3MR; Copyright (c) Proton AG):
 
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:

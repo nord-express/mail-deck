@@ -1,3 +1,4 @@
+/* global Trackers */
 'use strict';
 
 const gmail = {};
@@ -337,21 +338,114 @@ gmail.get = {
       for (const n of body.querySelectorAll(HELD_SELECTOR)) {
         Object.keys(HELD).forEach(key => delete n.dataset[key]);
       }
-      for (const img of body.querySelectorAll('img[src]')) {
-        img.setAttribute('src', img.src);
-      }
+      const trackers = guard(body);
       const recipient = table.querySelector('.recipient');
+      const lines = recipient ? [...recipient.querySelectorAll('div')].map(d => d.textContent.trim()).filter(Boolean) : [];
       return {
         name: head.querySelector('b')?.textContent.trim() || head.cells[0]?.textContent.trim() || '',
         // the sender's address, after the name: the assistant tells the reader's own messages by it
         email: /<([^<>\s]+@[^<>\s]+)>/.exec(head.cells[0]?.textContent || '')?.[1] || '',
         date: head.cells.length > 1 ? head.cells[head.cells.length - 1].textContent.trim() : '',
-        to: recipient ? [...recipient.querySelectorAll('div')].map(d => d.textContent.trim()).filter(Boolean)
-          .join('\n') || recipient.textContent.trim() : '',
+        to: lines.join('\n') || recipient?.textContent.trim() || '',
         files: attachments(body),
+        trackers,
         body
       };
     }).filter(Boolean);
+  };
+  // A Gmail message's pictures, before anything of it loads (Trackers): a tracker becomes a
+  // blank of its size, never fetched, and is named; a blank spacer the same, unnamed; a picture
+  // of the sender's waits for the reader, which shows it at once (index.js, read). So do the
+  // backgrounds and the styles that ask for one. Gmail's own
+  // pictures (an attachment shown in the message) stay as they are. The trackers' names, in
+  // the order of the message.
+  const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  const URL_IN_CSS = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
+  const guard = body => {
+    const found = [];
+    const abs = value => {
+      try {
+        return new URL(value.trim(), body.ownerDocument.baseURI).href;
+      }
+      catch (e) {
+        return '';
+      }
+    };
+    const styled = Trackers.styledBy([...body.querySelectorAll('style')].map(s => s.textContent).join('\n'));
+    for (const img of body.querySelectorAll('img')) {
+      // Gmail allows no srcset; one that came through would load past all of this
+      img.removeAttribute('srcset');
+      if (!img.getAttribute('src')?.trim()) {
+        continue;
+      }
+      const src = img.src;
+      const verdict = Trackers.image({
+        src,
+        width: img.getAttribute('width'),
+        height: img.getAttribute('height'),
+        style: img.getAttribute('style'),
+        hidden: img.hasAttribute('hidden'),
+        styled: styled(img.getAttribute('class'))
+      });
+      if (verdict.kind === 'picture') {
+        if (Trackers.foreign(src)) {
+          img.removeAttribute('src');
+          img.dataset.held = src;
+        }
+        else {
+          img.setAttribute('src', src);
+        }
+        continue;
+      }
+      img.setAttribute('src', BLANK);
+      if (verdict.kind === 'tracker') {
+        img.dataset.tracker = verdict.name;
+        found.push(verdict.name);
+      }
+    }
+    for (const n of body.querySelectorAll('[background]')) {
+      const url = abs(n.getAttribute('background'));
+      const name = Trackers.css(url);
+      if (name) {
+        found.push(name);
+        n.removeAttribute('background');
+      }
+      else if (Trackers.foreign(url)) {
+        n.dataset.heldBackground = url;
+        n.removeAttribute('background');
+      }
+    }
+    // a style's url(): a known pixel goes for good, another of the sender's waits as a picture
+    const strip = (text, keep) => text.replace(URL_IN_CSS, (all, quote, raw) => {
+      const url = abs(raw);
+      const name = Trackers.css(url);
+      if (name) {
+        found.push(name);
+        return 'none';
+      }
+      return keep(url) ? all : 'none';
+    });
+    for (const n of body.querySelectorAll('[style]')) {
+      const style = n.getAttribute('style');
+      if (!/url\s*\(/i.test(style)) {
+        continue;
+      }
+      const clean = strip(style, () => true);
+      const shown = strip(clean, url => !Trackers.foreign(url));
+      if (shown !== clean) {
+        n.dataset.heldStyle = clean;
+      }
+      n.setAttribute('style', shown);
+    }
+    for (const n of body.querySelectorAll('style')) {
+      const clean = strip(n.textContent, () => true);
+      const shown = strip(clean, url => !Trackers.foreign(url));
+      if (shown !== clean) {
+        n.dataset.heldCss = clean;
+      }
+      n.textContent = shown;
+    }
+    return found;
   };
   // Gmail lists a file with a View and a Download link, its name in bold next to them
   const collect = body => {
@@ -443,7 +537,8 @@ gmail.get = {
   // what the browser reads in a style attribute that can fetch, or hide what it fetches
   const FETCH = /url\(|var\(|attr\(/i;
   const remote = url => /^https?:/i.test(url);
-  const sanitize = (html, href, into) => {
+  // found: the names of the trackers it took out
+  const sanitize = (html, href, into, found = []) => {
     const doc = new DOMParser().parseFromString(html || '', 'text/html');
     doc.querySelectorAll(DROP).forEach(n => n.remove());
     const base = doc.createElement('base');
@@ -460,7 +555,7 @@ gmail.get = {
     for (const n of doc.querySelectorAll('*')) {
       const svg = n.namespaceURI === SVG;
       for (const {name, value} of [...n.attributes]) {
-        if (/^on/i.test(name) || /^(ping|contenteditable|srcset|data-held(-poster|-href)?)$/i.test(name) ||
+        if (/^on/i.test(name) || /^(ping|contenteditable|srcset|data-held(-[\w-]+)?)$/i.test(name) ||
           (/^(href|src|xlink:href|action|formaction|background|poster)$/i.test(name) && /^\s*(javascript|vbscript|data:text\/html)/i.test(value)) ||
           (svg && name !== 'style' && /url\s*\(|\\/i.test(value) && !LOCAL.test(value))) {
           n.removeAttribute(name);
@@ -487,7 +582,8 @@ gmail.get = {
     }
     // Gmail shows pictures through its own proxy; a service may hand the sender's addresses,
     // which tell the sender the mail was opened. Pictures, sounds, videos and the pictures of
-    // an SVG wait for the reader's Show pictures (gmail.render.show).
+    // an SVG wait for the reader's Show pictures (gmail.render.show); a tracker among them
+    // (Trackers) never comes back, and a picture of it becomes a blank.
     const hold = (n, attr, key, ns = null) => {
       const raw = n.getAttributeNS(ns, attr);
       if (raw === null || !raw.trim() || (key === 'heldHref' && raw.trim().startsWith('#'))) {
@@ -496,8 +592,24 @@ gmail.get = {
       const url = abs(raw);
       if (remote(url)) {
         n.removeAttributeNS(ns, attr);
-        if (n.dataset) {
-          n.dataset[key] = url;
+        // a picture is judged by its look too; a sound, a video or an SVG's picture by the list
+        const img = n.localName === 'img' && key === 'held';
+        const vendor = img ? '' : Trackers.css(url);
+        const verdict = img ? Trackers.image({src: url, width: n.getAttribute('width'), height: n.getAttribute('height'),
+          style: n.getAttribute('style'), hidden: n.hasAttribute('hidden'), styled: false}) :
+          vendor ? {kind: 'tracker', name: vendor} : {kind: 'picture'};
+        if (verdict.kind === 'picture') {
+          if (n.dataset) {
+            n.dataset[key] = url;
+          }
+          return;
+        }
+        if (img) {
+          n.setAttribute('src', BLANK);
+        }
+        if (verdict.kind === 'tracker') {
+          n.setAttribute('data-tracker', verdict.name);
+          found.push(verdict.name);
         }
       }
     };
@@ -562,28 +674,51 @@ gmail.get = {
     );
   };
 
-  // what waits for Show pictures, and the attribute it goes back to
-  const HELD = {held: 'src', heldPoster: 'poster', heldHref: 'href'};
-  const HELD_SELECTOR = '[data-held], [data-held-poster], [data-held-href]';
+  // what waits for Show pictures, and the attribute it goes back to ('' for a style sheet's text)
+  const HELD = {held: 'src', heldPoster: 'poster', heldHref: 'href', heldBackground: 'background', heldStyle: 'style', heldCss: ''};
+  const HELD_SELECTOR = Object.keys(HELD).map(key => `[data-${key.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}]`).join(', ');
+  // The rendered thread keeps what the reader says over it: the trackers taken out
+  const mark = (node, messages) => {
+    if (node) {
+      node.dataset.trackers = JSON.stringify(messages.flatMap(m => m.trackers || []));
+    }
+    return node;
+  };
+  const parse = text => {
+    try {
+      return JSON.parse(text || '[]');
+    }
+    catch (e) {
+      return [];
+    }
+  };
 
   gmail.render = {
     getHTMLText(content, href) {
       const messages = getMessages(content, href);
       // the bodies stay in the print view's parsed document, and so does all around them
-      return thread(messages, maker(messages[0]?.body.ownerDocument || document.implementation.createHTMLDocument('')));
+      return mark(thread(messages, maker(messages[0]?.body.ownerDocument || document.implementation.createHTMLDocument(''))), messages);
     },
     // a service's messages, oldest first: {name, email, date, to, html, files: [{name, url}]}
     messages(list, href) {
       const doc = document.implementation.createHTMLDocument('');
-      return thread(list.map(m => ({
-        name: m.name || m.email || '',
-        email: m.email || '',
-        date: date(m.date),
-        to: m.to ? chrome.i18n.getMessage('panel_to', [m.to]) || m.to : '',
-        files: (m.files || []).filter(f => f?.url).map(f => ({name: f.name, view: f.url})),
-        body: sanitize(m.html, href, doc)
-      })), maker(doc));
+      const messages = list.map(m => {
+        const trackers = [];
+        return {
+          name: m.name || m.email || '',
+          email: m.email || '',
+          date: date(m.date),
+          to: m.to ? chrome.i18n.getMessage('panel_to', [m.to]) || m.to : '',
+          files: (m.files || []).filter(f => f?.url).map(f => ({name: f.name, view: f.url})),
+          trackers,
+          body: sanitize(m.html, href, doc, trackers)
+        };
+      });
+      return mark(thread(messages, maker(doc)), messages);
     },
+    // what a rendered thread tells the reader: {trackers: [name]}, by the vendor's name or the
+    // domain they report to ('' when neither is known)
+    about: node => ({trackers: parse(node?.dataset?.trackers)}),
     // the files of every message of a print view, the page left as it is: [{name, view, download}]
     fileList(content, href) {
       const doc = new DOMParser().parseFromString(content, 'text/html');
@@ -599,7 +734,12 @@ gmail.get = {
       for (const n of node.querySelectorAll(HELD_SELECTOR)) {
         for (const [key, attr] of Object.entries(HELD)) {
           if (key in n.dataset) {
-            n.setAttribute(attr, n.dataset[key]);
+            if (attr) {
+              n.setAttribute(attr, n.dataset[key]);
+            }
+            else {
+              n.textContent = n.dataset[key];
+            }
             delete n.dataset[key];
           }
         }

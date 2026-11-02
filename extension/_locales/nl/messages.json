@@ -1608,6 +1608,9 @@
     "panel_doneRemind": {
         "message": "Herinnering ingesteld voor $1"
     },
+    "panel_keyRemind": {
+        "message": "later"
+    },
     "panel_search": {
         "message": "Mail doorzoeken"
     },
@@ -1734,6 +1737,27 @@
     "panel_showPictures": {
         "message": "Afbeeldingen tonen"
     },
+    "panel_trackersBlocked": {
+        "message": "Trackers geblokkeerd: $1"
+    },
+    "panel_trackersTip": {
+        "message": "Verborgen afbeeldingen die de afzender laten weten wanneer je het bericht opent. Mail Deck laadt ze niet; de rest van het bericht blijft zoals het is."
+    },
+    "panel_keyRead": {
+        "message": "gelezen"
+    },
+    "panel_keyArchive": {
+        "message": "archiveren"
+    },
+    "panel_keyDelete": {
+        "message": "verwijderen"
+    },
+    "panel_keyStar": {
+        "message": "ster"
+    },
+    "panel_keyBack": {
+        "message": "terug"
+    },
     "label_15": {
         "message": "Postvakken"
     },
@@ -1751,6 +1775,12 @@
     },
     "panel_copyCodeFailed": {
         "message": "Kan de code niet kopiëren"
+    },
+    "panel_keyNext": {
+        "message": "volgende"
+    },
+    "panel_keyPrev": {
+        "message": "vorige"
     },
     "panel_nextMessage": {
         "message": "Volgend bericht"
@@ -1871,6 +1901,9 @@
     },
     "panel_summary": {
         "message": "Samenvatting"
+    },
+    "panel_summaryKey": {
+        "message": "samenvatting"
     },
     "panel_summarizing": {
         "message": "Bezig met samenvatten…"

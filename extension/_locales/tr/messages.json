@@ -1604,6 +1604,9 @@
     "panel_doneRemind": {
         "message": "Hatırlatıcı kuruldu: $1"
     },
+    "panel_keyRemind": {
+        "message": "sonra"
+    },
     "panel_search": {
         "message": "Postalarda ara"
     },
@@ -1730,6 +1733,27 @@
     "panel_showPictures": {
         "message": "Resimleri göster"
     },
+    "panel_trackersBlocked": {
+        "message": "Engellenen izleyiciler: $1"
+    },
+    "panel_trackersTip": {
+        "message": "İletiyi ne zaman açtığınızı gönderene bildiren gizli resimler. Mail Deck bunları yüklemez; iletinin geri kalanı değişmez."
+    },
+    "panel_keyRead": {
+        "message": "okundu"
+    },
+    "panel_keyArchive": {
+        "message": "arşivle"
+    },
+    "panel_keyDelete": {
+        "message": "sil"
+    },
+    "panel_keyStar": {
+        "message": "yıldız"
+    },
+    "panel_keyBack": {
+        "message": "geri"
+    },
     "label_15": {
         "message": "Gelen kutuları"
     },
@@ -1747,6 +1771,12 @@
     },
     "panel_copyCodeFailed": {
         "message": "Kod kopyalanamadı"
+    },
+    "panel_keyNext": {
+        "message": "sonraki"
+    },
+    "panel_keyPrev": {
+        "message": "önceki"
     },
     "panel_nextMessage": {
         "message": "Sonraki ileti"
@@ -1867,6 +1897,9 @@
     },
     "panel_summary": {
         "message": "Özet"
+    },
+    "panel_summaryKey": {
+        "message": "özet"
     },
     "panel_summarizing": {
         "message": "Özetleniyor…"

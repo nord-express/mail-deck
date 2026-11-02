@@ -13,6 +13,8 @@ const ICONS = {
   archive: ['M4.5 4h15A1.5 1.5 0 0 1 21 5.5v2A1.5 1.5 0 0 1 19.5 9h-15A1.5 1.5 0 0 1 3 7.5v-2A1.5 1.5 0 0 1 4.5 4Z', 'M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9', 'M10 13h4'],
   trash: ['M4 7h16', 'M6.5 7l.9 12a1.5 1.5 0 0 0 1.5 1.4h6.2a1.5 1.5 0 0 0 1.5-1.4l.9-12', 'M9.5 7V4.5h5V7'],
   spam: ['M12 3l8 3.5v5.5c0 4.5-3.4 7.7-8 9-4.6-1.3-8-4.5-8-9V6.5Z', 'M12 8.5v4', 'M12 15.8v.2'],
+  shield: ['M12 3l8 3.5v5.5c0 4.5-3.4 7.7-8 9-4.6-1.3-8-4.5-8-9V6.5Z', 'M8.8 12.2l2.2 2.2 4.2-4.4'],
+  info: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M12 11v5', 'M12 7.9v.1'],
   back: ['M15 5l-7 7 7 7'],
   up: ['M6 15l6-6 6 6'],
   down: ['M6 9l6 6 6-6'],
@@ -2444,6 +2446,9 @@ const read = async (e, o, trail) => {
   $('reader-date').textContent = shortDate(e.modified);
   $('reader-date').dateTime = e.modified || '';
   $('reader-date').title = fullDate(e.modified);
+  // the trackers of the mail before go; this one's are known once its body is
+  r.trackers = [];
+  paintNotes(r);
   // the files the line knew of show at once; the message's own replace them
   paintReaderFiles(state.files.get(fileKey(e)));
   $('app').classList.add('reading');
@@ -2473,14 +2478,21 @@ const read = async (e, o, trail) => {
     doc.body.className = '';
     doc.body.replaceChildren(node);
     paintReaderFiles(filesIn(node));
-    // a service's remote pictures, sounds and videos load only when asked for
-    if (gmail.render.held(doc.body)) {
+    // a service's remote pictures, sounds and videos load only when asked for; Gmail's at once,
+    // as Gmail shows them. A tracker never loads (gmail.js)
+    if (gmail.render.held(doc.body) && serviceOf(o)) {
       const bar = h('p', {class: 'pictures'}, h('button', {type: 'button', onclick: () => {
         bar.remove();
         gmail.render.show(doc.body);
       }}, t('showPictures')));
       doc.body.prepend(bar);
     }
+    else {
+      gmail.render.show(doc.body);
+    }
+    const about = gmail.render.about(node);
+    r.trackers = about.trackers;
+    paintNotes(r);
     fit(doc);
     shown = true;
     gotTexts(messagesOf(doc, e));
@@ -2521,6 +2533,25 @@ const read = async (e, o, trail) => {
     render();
     send({cmd: 'rd', links: [e.link]});
   }
+};
+// The reader's quiet line under the sender: the trackers kept from loading (gmail.js). It says
+// more in its tooltip.
+const NOTE_NAMES = 3;
+// a domain or a name in the line keeps its own direction (Hebrew, Arabic)
+const isolate = text => '\u2068' + text + '\u2069';
+const readerNote = (kind, name, text, tip) => h('p', {'class': 'reader-note ' + kind, 'tabIndex': 0, 'data-tip': tip},
+  icon(name), h('span', {class: 'note-text'}, text), h('span', {class: 'sr'}, tip), h('span', {'class': 'note-info', 'aria-hidden': 'true'}, icon('info')));
+const paintNotes = r => {
+  // the vendors and domains, the first few; the tooltip has them all
+  const named = [...new Set(r.trackers.filter(Boolean))];
+  const list = named.length ? ' · ' + new Intl.ListFormat(LANG, {type: 'unit', style: 'short'}).format(named.slice(0, NOTE_NAMES).map(isolate)) +
+    (named.length > NOTE_NAMES ? ' +' + (named.length - NOTE_NAMES) : '') : '';
+  const lines = [
+    r.trackers.length > 0 && readerNote('ok', 'shield', t('trackersBlocked', r.trackers.length) + list,
+      t('trackersTip') + (named.length > NOTE_NAMES ? '\n' + named.join(', ') : ''))
+  ].filter(Boolean);
+  $('reader-notes').hidden = lines.length === 0;
+  $('reader-notes').replaceChildren(...lines);
 };
 const back = () => {
   const r = state.reading;

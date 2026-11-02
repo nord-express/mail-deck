@@ -210,6 +210,7 @@
       }
       await wait(200);
       out.pixelsAfter = await pixels('services-svc-');
+      out.serviceTrackers = document.querySelector('#reader-notes .ok .note-text')?.textContent.replace(/[\u2068\u2069]/g, '');
 
       // a link of the mail opens through chrome.tabs, never over the panel or in the reader
       const created = [];
@@ -1157,6 +1158,52 @@
         out.noChip = !$('chips').querySelector('.reply-chip');
         out.consoleClean = window.__errors.length === 0 ? true : window.__errors;
       }
+    }
+
+    if (scenario === 'privacy') {
+      // the reader of a mail, its body shown and its lines said: what they say, without the
+      // marks that keep a domain's direction
+      const doc = document.getElementById('body').contentDocument;
+      const rowFor = x => [...document.querySelectorAll('#list .row')].find(r => r.dataset.link.includes('message_id=' + x + '&'));
+      const open = async x => {
+        if (state.reading) {
+          back();
+        }
+        rowFor(x).click();
+        await until(() => doc.querySelector('.thread') && !document.getElementById('reader').classList.contains('loading'));
+        await wait(100);
+      };
+      const lines = () => [...document.querySelectorAll('#reader-notes .reader-note')]
+        .map(n => n.classList[1] + ':' + n.querySelector('.note-text').textContent.replace(/[⁨⁩]/g, ''));
+      const mine = async () => Object.fromEntries(Object.entries(await pixels(scenario + '-')).map(([k, v]) => [k.slice(scenario.length + 1), v]));
+      // pointed at first: built ahead of the click, it loads nothing
+      rowFor('t1').dispatchEvent(new MouseEvent('mouseenter'));
+      await wait(500);
+      out.hover = await mine();
+      await open('t1');
+      out.trackerLine = lines();
+      out.tip = document.querySelector('#reader-notes .ok')?.dataset.tip;
+      out.focusable = document.querySelector('#reader-notes .ok')?.tabIndex === 0;
+      out.blanks = [...doc.querySelectorAll('img')].filter(i => i.getAttribute('src')?.startsWith('data:')).length;
+      out.named = [...doc.querySelectorAll('img[data-tracker]')].map(i => i.dataset.tracker);
+      out.litmusGone = ![...doc.querySelectorAll('[style]')].some(n => n.getAttribute('style').includes('emltrk'));
+      out.bar = Boolean(doc.querySelector('.pictures'));
+      await wait(600);
+      out.before = await mine();
+      doc.querySelector('.pictures button')?.click();
+      for (const end = Date.now() + 2000; Date.now() < end; await wait(50)) {
+        out.after = await mine();
+        if (out.after.pic && out.after.bg && out.after.css) {
+          break;
+        }
+      }
+      await wait(300);
+      out.after = await mine();
+      // a mail without trackers says nothing
+      await open('n1');
+      out.normal = lines();
+      out.notesHidden = document.getElementById('reader-notes').hidden;
+      out.consoleClean = window.__errors.length === 0 ? true : window.__errors;
     }
 
     if (scenario === 'reliable') {

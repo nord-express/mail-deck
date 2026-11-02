@@ -1608,6 +1608,9 @@
     "panel_doneRemind": {
         "message": "Ustawiono przypomnienie na $1"
     },
+    "panel_keyRemind": {
+        "message": "później"
+    },
     "panel_search": {
         "message": "Przeszukaj pocztę"
     },
@@ -1734,6 +1737,27 @@
     "panel_showPictures": {
         "message": "Pokaż obrazy"
     },
+    "panel_trackersBlocked": {
+        "message": "Zablokowane elementy śledzące: $1"
+    },
+    "panel_trackersTip": {
+        "message": "Ukryte obrazy, które informują nadawcę, kiedy otwierasz wiadomość. Mail Deck ich nie wczytuje; reszta wiadomości pozostaje bez zmian."
+    },
+    "panel_keyRead": {
+        "message": "przeczytane"
+    },
+    "panel_keyArchive": {
+        "message": "archiwizuj"
+    },
+    "panel_keyDelete": {
+        "message": "usuń"
+    },
+    "panel_keyStar": {
+        "message": "gwiazdka"
+    },
+    "panel_keyBack": {
+        "message": "wstecz"
+    },
     "label_15": {
         "message": "Skrzynki"
     },
@@ -1751,6 +1775,12 @@
     },
     "panel_copyCodeFailed": {
         "message": "Nie udało się skopiować kodu"
+    },
+    "panel_keyNext": {
+        "message": "następna"
+    },
+    "panel_keyPrev": {
+        "message": "poprzednia"
     },
     "panel_nextMessage": {
         "message": "Następna wiadomość"
@@ -1871,6 +1901,9 @@
     },
     "panel_summary": {
         "message": "Streszczenie"
+    },
+    "panel_summaryKey": {
+        "message": "streszczenie"
     },
     "panel_summarizing": {
         "message": "Streszczanie…"

@@ -17,6 +17,7 @@ run() {
 }
 run 'scripts parse, no clashing globals, every locale complete' node tools/test/static.test.js
 run 'quiet hours and word rules' node tools/test/quiet.test.js
+run 'open trackers in mail: known by name and by look, on sample mail' node tools/test/trackers.test.js
 run 'settings: backups, labels by account, service access, quiet times' node tools/test/settings.test.js
 run 'background check: parallel, timeout, signed-out accounts' node tools/test/check.test.js
 run 'background messages: actions, their Undo window across a restart, partial failures' node tools/test/worker.test.js

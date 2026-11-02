@@ -1600,6 +1600,9 @@
     "panel_doneRemind": {
         "message": "Ορίστηκε υπενθύμιση για $1"
     },
+    "panel_keyRemind": {
+        "message": "αργότερα"
+    },
     "panel_search": {
         "message": "Αναζήτηση στην αλληλογραφία"
     },
@@ -1726,6 +1729,27 @@
     "panel_showPictures": {
         "message": "Εμφάνιση εικόνων"
     },
+    "panel_trackersBlocked": {
+        "message": "Ιχνηλάτες που αποκλείστηκαν: $1"
+    },
+    "panel_trackersTip": {
+        "message": "Κρυφές εικόνες που ενημερώνουν τον αποστολέα πότε ανοίγετε το μήνυμα. Το Mail Deck δεν τις αφήνει να φορτωθούν· το υπόλοιπο μήνυμα μένει ως έχει."
+    },
+    "panel_keyRead": {
+        "message": "αναγνωσμένο"
+    },
+    "panel_keyArchive": {
+        "message": "αρχειοθέτηση"
+    },
+    "panel_keyDelete": {
+        "message": "διαγραφή"
+    },
+    "panel_keyStar": {
+        "message": "αστέρι"
+    },
+    "panel_keyBack": {
+        "message": "πίσω"
+    },
     "gmail": {
         "message": "Mail Deck",
         "description": ""
@@ -1747,6 +1771,12 @@
     },
     "panel_copyCodeFailed": {
         "message": "Δεν ήταν δυνατή η αντιγραφή του κωδικού"
+    },
+    "panel_keyNext": {
+        "message": "επόμενο"
+    },
+    "panel_keyPrev": {
+        "message": "προηγούμενο"
     },
     "panel_nextMessage": {
         "message": "Επόμενο μήνυμα"
@@ -1867,6 +1897,9 @@
     },
     "panel_summary": {
         "message": "Σύνοψη"
+    },
+    "panel_summaryKey": {
+        "message": "σύνοψη"
     },
     "panel_summarizing": {
         "message": "Γίνεται σύνοψη…"

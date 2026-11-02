@@ -137,7 +137,8 @@ const checks = {
     'nothing of the service\'s markup can run or leave': r.safeText.startsWith('second') && r.dangerous === 0 && !r.ran && r.relative.startsWith('https://mail.yahoo.com/'),
     'a service mail\'s pictures load only when asked for': r.heldBefore === 1 && r.loadedBefore === 0 && r.loadedAfter === 1 && r.barGone,
     'nothing of a service mail loads before Show pictures: SVG, video, poster, URL() styles': JSON.stringify(r.pixelsBefore) === '{}' && JSON.stringify(r.heldOther) === '[1,1,1]',
-    'Show pictures brings back its SVG images and posters; a style that fetches never does': r.pixelsAfter?.['services-svc-svg'] >= 1 && r.pixelsAfter?.['services-svc-poster'] >= 1 && !r.pixelsAfter?.['services-svc-css'],
+    'Show pictures brings back its SVG images and posters; a style that fetches never does, nor a tracker': r.pixelsAfter?.['services-svc-svg'] >= 1 && r.pixelsAfter?.['services-svc-poster'] >= 1 && !r.pixelsAfter?.['services-svc-css'] &&
+      !r.pixelsAfter?.['services-svc-track'] && r.serviceTrackers === T('trackersBlocked', 1) + ' · 127.0.0.1',
     'a service mail\'s links open in a tab, never over the panel; no ping, nothing editable': r.links?.target === '_blank' && r.links.rel === 'noopener noreferrer' && !r.links.ping && !r.links.editable,
     'a click opens a web link in front, Ctrl and the middle button behind, Shift in a window; other links open nothing':
       JSON.stringify(r.opened) === JSON.stringify([['https://evil.test/top', true, 3], ['https://evil.test/top', false, 3], ['https://evil.test/top', false, 3]]) &&
@@ -148,6 +149,18 @@ const checks = {
     'pointing at a service mail fetches nothing': r.hoverFetched === 0,
     'search asks Gmail only': JSON.stringify(r.searchUrls) === '["https://mail.google.com/mail/u/0"]',
     'with a service\'s chip chosen, search asks Gmail instead of failing': r.yahooChosen && JSON.stringify(r.chipSearchUrls) === '["https://mail.google.com/mail/u/0"]' && !r.chipSearchFailed
+  }),
+  privacy: r => ({
+    'a mail pointed at loads none of its pictures, trackers or not': JSON.stringify(r.hover) === '{}',
+    'a Gmail mail\'s trackers never load, known by name (behind Gmail\'s proxy too) or by look; a blank spacer neither':
+      !r.before.tiny && !r.before.hidden && !r.after.tiny && !r.after.hidden && r.blanks === 5 &&
+      JSON.stringify(r.named) === '["127.0.0.1","127.0.0.1","Mailchimp","SendGrid"]' && r.litmusGone,
+    'its other pictures, backgrounds and styled pictures load at once, as Gmail shows them': !r.bar && r.before.pic >= 1 && r.before.bg >= 1 && r.before.css >= 1,
+    'the reader says how many trackers it blocked and whose; the tooltip says what they are and names them all':
+      JSON.stringify(r.trackerLine) === JSON.stringify(['ok:' + T('trackersBlocked', 5) + ' · 127.0.0.1, Mailchimp, SendGrid +1']) &&
+      r.tip === T('trackersTip') + '\n127.0.0.1, Mailchimp, SendGrid, Litmus' && r.focusable,
+    'a mail without trackers says nothing': JSON.stringify(r.normal) === '[]' && r.notesHidden,
+    'nothing goes wrong unseen': r.consoleClean === true
   }),
   wide: r => ({
     'a 700px newsletter fits without a sideways scroll': r.clientWidth > 0 && r.scrollWidth <= r.clientWidth + 1
@@ -425,7 +438,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ux', ''], ['acting', '&ai=on&read=1'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['acting', '&ai=on&read=1'], ['boot', '&boot=1'], ['pin', '&pinned=0'], ['cats', ''], ['catsearch', '&cats=search'], ['catsai', '&ai=on'], ['saved', '&saved=1'], ['rate', '&rate=due'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', ''], ['privacy', '&s=privacy']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

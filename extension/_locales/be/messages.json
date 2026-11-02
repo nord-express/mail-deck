@@ -1460,6 +1460,9 @@
   "panel_doneRemind": {
     "message": "Напамін на $1"
   },
+  "panel_keyRemind": {
+    "message": "пазней"
+  },
   "panel_search": {
     "message": "Пошук у пошце"
   },
@@ -1586,6 +1589,27 @@
   "panel_showPictures": {
     "message": "Паказаць выявы"
   },
+  "panel_trackersBlocked": {
+    "message": "Заблакавана трэкераў: $1"
+  },
+  "panel_trackersTip": {
+    "message": "Схаваныя выявы, якія паведамляюць адпраўніку, калі вы адкрываеце ліст. Mail Deck не дае ім загрузіцца, астатняе ў лісце не змяняецца."
+  },
+  "panel_keyRead": {
+    "message": "прачытана"
+  },
+  "panel_keyArchive": {
+    "message": "архіў"
+  },
+  "panel_keyDelete": {
+    "message": "выдаліць"
+  },
+  "panel_keyStar": {
+    "message": "зорка"
+  },
+  "panel_keyBack": {
+    "message": "назад"
+  },
   "settings_open_title": {
     "message": "Адкрыць старонку параметраў (налад)"
   },
@@ -1606,6 +1630,12 @@
   },
   "panel_copyCodeFailed": {
     "message": "Не ўдалося скапіяваць код"
+  },
+  "panel_keyNext": {
+    "message": "наступны"
+  },
+  "panel_keyPrev": {
+    "message": "папярэдні"
   },
   "panel_nextMessage": {
     "message": "Наступны ліст"
@@ -1726,6 +1756,9 @@
   },
   "panel_summary": {
     "message": "Зводка"
+  },
+  "panel_summaryKey": {
+    "message": "зводка"
   },
   "panel_summarizing": {
     "message": "Складаю зводку…"

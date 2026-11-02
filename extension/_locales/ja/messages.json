@@ -1436,6 +1436,9 @@
   "panel_doneRemind": {
     "message": "$1 にリマインドします"
   },
+  "panel_keyRemind": {
+    "message": "後で"
+  },
   "panel_search": {
     "message": "メールを検索"
   },
@@ -1562,6 +1565,27 @@
   "panel_showPictures": {
     "message": "画像を表示"
   },
+  "panel_trackersBlocked": {
+    "message": "ブロックしたトラッカー: $1"
+  },
+  "panel_trackersTip": {
+    "message": "メールを開いたことを送信者に知らせる隠れた画像です。Mail Deck はこれを読み込みません。メールのほかの部分はそのままです。"
+  },
+  "panel_keyRead": {
+    "message": "既読"
+  },
+  "panel_keyArchive": {
+    "message": "アーカイブ"
+  },
+  "panel_keyDelete": {
+    "message": "削除"
+  },
+  "panel_keyStar": {
+    "message": "スター"
+  },
+  "panel_keyBack": {
+    "message": "戻る"
+  },
   "label_15": {
     "message": "受信トレイ"
   },
@@ -1579,6 +1603,12 @@
   },
   "panel_copyCodeFailed": {
     "message": "コードをコピーできませんでした"
+  },
+  "panel_keyNext": {
+    "message": "次へ"
+  },
+  "panel_keyPrev": {
+    "message": "前へ"
   },
   "panel_nextMessage": {
     "message": "次のメール"
@@ -1698,6 +1728,9 @@
     "message": "内蔵モデルは英語で回答します。"
   },
   "panel_summary": {
+    "message": "要約"
+  },
+  "panel_summaryKey": {
     "message": "要約"
   },
   "panel_summarizing": {

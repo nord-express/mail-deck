@@ -1608,6 +1608,9 @@
     "panel_doneRemind": {
         "message": "Напоминание на $1"
     },
+    "panel_keyRemind": {
+        "message": "позже"
+    },
     "panel_search": {
         "message": "Поиск в почте"
     },
@@ -1734,6 +1737,27 @@
     "panel_showPictures": {
         "message": "Показать картинки"
     },
+    "panel_trackersBlocked": {
+        "message": "Заблокировано трекеров: $1"
+    },
+    "panel_trackersTip": {
+        "message": "Скрытые картинки, которые сообщают отправителю, когда вы открыли письмо. Mail Deck не даёт им загрузиться, остальное письмо не меняется."
+    },
+    "panel_keyRead": {
+        "message": "прочитано"
+    },
+    "panel_keyArchive": {
+        "message": "архив"
+    },
+    "panel_keyDelete": {
+        "message": "удалить"
+    },
+    "panel_keyStar": {
+        "message": "звёздочка"
+    },
+    "panel_keyBack": {
+        "message": "назад"
+    },
     "label_15": {
         "message": "Ящики"
     },
@@ -1751,6 +1775,12 @@
     },
     "panel_copyCodeFailed": {
         "message": "Не удалось скопировать код"
+    },
+    "panel_keyNext": {
+        "message": "следующее"
+    },
+    "panel_keyPrev": {
+        "message": "предыдущее"
     },
     "panel_nextMessage": {
         "message": "Следующее письмо"
@@ -1871,6 +1901,9 @@
     },
     "panel_summary": {
         "message": "Сводка"
+    },
+    "panel_summaryKey": {
+        "message": "сводка"
     },
     "panel_summarizing": {
         "message": "Составляю сводку…"

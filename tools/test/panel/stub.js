@@ -52,8 +52,13 @@
     ]),
     acc(1, 'work@arbitron.example', [entry(1, 'g6', 'GitHub', 'noreply@github.com', '[GitHub] Sign-in from a new device', 'We noticed a new sign-in.', 5)])
   ];
+  // ?s=privacy: a newsletter with trackers, and an ordinary mail
+  const privacy = q.get('s') === 'privacy' && [acc(0, 'evgeny@arbitron.app', [
+    entry(0, 't1', 'Shop', 'news@shop.example', 'Weekly deals', 'This week only', 2),
+    entry(0, 'n1', 'GitHub', 'noreply@github.com', 'New sign-in', 'A new sign-in to your account', 14)
+  ])];
   const nine = ['bychkovea@gmail.com', 'evgeny@arbitron.app', 'abrahamlincolncrypto@gmail.com', 'georgewashingtoncypto@gmail.com', 'knivesmagician@gmail.com', 'thomasjeffersoncrypto@gmail.com', 'codewithevgeny@gmail.com', 'cryptobychkov@gmail.com', 'eco.toplivo.msk@gmail.com'];
-  const objs = services || codes || site || (q.get('s') === 'nine' ? nine.map((m, i) => acc(i, m, [])) : caught ? [acc(0, 'evgeny@example.com', []), acc(1, 'work@arbitron.example', [])] : [
+  const objs = services || codes || site || privacy || (q.get('s') === 'nine' ? nine.map((m, i) => acc(i, m, [])) : caught ? [acc(0, 'evgeny@example.com', []), acc(1, 'work@arbitron.example', [])] : [
     acc(0, 'evgeny@example.com', [
       entry(0, 'a1', 'Anna Petrova', 'anna@figma.com', 'Макеты на ревью', 'Посмотри, пожалуйста, до пятницы', 4),
       entry(0, 'a2', 'GitHub', 'noreply@github.com', 'New sign-in', 'A new sign-in to your account', 95)
@@ -62,7 +67,7 @@
     acc(2, 'old@example.org', [])
   ]);
   const local = {accounts: services ? {'evgeny@example.com': {}, 'ev@yahoo.com': {service: 'yahoo'}, 'ev@proton.me': {service: 'proton'}, 'gone@yahoo.com': {service: 'yahoo'}} :
-    q.get('s') === 'nine' ? Object.fromEntries(nine.map(m => [m, {}])) : {'evgeny@example.com': {}, 'work@arbitron.example': {}, 'old@example.org': {}, 'gone@example.com': {}},
+    privacy ? {'evgeny@arbitron.app': {}} : q.get('s') === 'nine' ? Object.fromEntries(nine.map(m => [m, {}])) : {'evgeny@example.com': {}, 'work@arbitron.example': {}, 'old@example.org': {}, 'gone@example.com': {}},
     accountOrder: [], panelScale: Number(q.get('scale') || 1), readOnOpen: q.get('read') === '1', 'remind.links': [],
     // the label actions, not proven against Gmail yet, are tried where a scenario asks for them
     ...(q.get('scenario') === 'acting' ? {'labels.beta': true} : {}),
@@ -314,7 +319,7 @@
       {name: 'Cy', email: 'cy@x.test', date: '2026-10-31T09:00:00Z', to: 'ev@yahoo.com',
         html: '<html><head><style>p{color:red}</style></head><body><p id="safe">second <a href="javascript:alert(1)">x</a><a href="/rel">rel</a></p><script>window.parent.__ran=1</script><img src="x.png" onerror="window.parent.__ran=1"><iframe src="https://evil.test"></iframe><form action="https://evil.test"><input></form>' +
           `<div style="width:9px;height:9px;background:URL(${px('css')})"></div><svg width="9" height="9"><image href="${px('svg')}" width="9" height="9"/></svg>` +
-          `<video src="${px('video')}" poster="${px('poster')}" width="9" height="9"></video>` +
+          `<video src="${px('video')}" poster="${px('poster')}" width="9" height="9"></video><img width="1" height="1" alt="" src="${px('track')}">` +
           `<a id="top" href="https://evil.test/top" target="_top" ping="${px('ping')}">top</a> <a id="hash" href="#safe">hash</a> <a id="data" href="data:text/plain,x">data</a>` +
           '<div id="editable" contenteditable>edit</div></body></html>'}
     ]};
@@ -366,7 +371,7 @@
     msg('Evgeny', 'evgeny@example.com', 'Mon, Oct 26 at 10:02', '', 'Аня, пришли, пожалуйста, макеты к пятнице.'),
     msg('Anna Petrova', 'anna@figma.com', 'Tue, Oct 27 at 18:40', '<div>Cc: design@figma.com</div>', 'Почти готово, завтра пришлю. <a href="https://www.google.com/url?q=https://figma.com/file/x&sa=D">Черновик</a>'),
     msg('Anna Petrova', 'anna@figma.com', 'Fri, Oct 30 at 19:51', '', 'Привет! Макеты во вложении, посмотри, пожалуйста, до пятницы.<br><br>— Аня' +
-      `<img width=1 height=1 src="${location.origin}/__pixel?k=${q.get('scenario')}-gmail">`, att)
+      `<img width=24 height=16 src="${location.origin}/__pixel?k=${q.get('scenario')}-gmail">`, att)
   ].join('<hr>') + `</body></html>`;
   // __printLong: the same thread with a long newest message, a summary's work
   const long = page.replace('— Аня', '— Аня<br>' + 'The final layout keeps the cards, the reader and the settings in one grid. '.repeat(30));
@@ -377,6 +382,22 @@
 <tr><td colspan=2><table width=100% cellpadding=12 cellspacing=0 border=0><tr><td><div style="overflow: hidden;"><font size=-1>
 <table width="700" style="width:700px;background:#000" cellpadding=30><tr><td><img width="640" src="data:image/svg+xml,${encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'640\' height=\'420\'><rect width=\'640\' height=\'420\' fill=\'%23e98a2c\'/><circle cx=\'320\' cy=\'210\' r=\'150\' fill=\'%23234\'/></svg>')}"><p style="color:#fff;font:20px Arial">Пройдите опрос о самокатах</p></td></tr></table>
 </font></div></td></tr></table></td></tr></table></body></html>`;
+  // ?s=privacy: each mail's own print view. The newsletter's pictures: one to see, two trackers
+  // by their look (a pixel, a hidden one) and two by name (Mailchimp's behind Gmail's proxy,
+  // SendGrid's), a blank spacer, a background, a styled picture and a style's tracker (Litmus)
+  const k = name => `${location.origin}/__pixel?k=${q.get('scenario')}-${name}`;
+  const print = (name, email, body, to = '') => `<html><body>${msg(name, email, 'Mon, Nov 2 at 09:00', to, body)}</body></html>`;
+  const pages = privacy ? {
+    t1: print('Shop', 'news@shop.example', '<p>Deals of the week</p>' +
+      `<img width=40 height=20 alt="Deals" src="${k('pic')}"><img width=1 height=1 src="${k('tiny')}&uid=a1b2c3d4e5">` +
+      `<img style="display:none" src="${k('hidden')}&r=zz9988">` +
+      '<img width=1 height=1 src="https://ci3.googleusercontent.com/meips/ADKq_NZtest=s0-d-e1-ft#https://shop.us1.list-manage.com/track/open.php?u=1&id=2&e=3">' +
+      `<img src="${location.origin}/wf/open?upn=abcdef123456"><img width=1 height=1 src="${location.origin}/spacer.gif">` +
+      `<table background="${k('bg')}" width=40 height=20><tr><td>&nbsp;</td></tr></table>` +
+      `<div style="width:20px;height:10px;background-image:url(${k('css')})">&nbsp;</div>` +
+      '<div style="background:url(https://emltrk.com/v2/abc?d=x)">&nbsp;</div>'),
+    n1: print('GitHub', 'noreply@github.com', 'A new sign-in to your account.')
+  } : {};
   const realFetch = window.fetch;
   window.__prints = 0;
   window.__printed = [];
@@ -394,7 +415,7 @@
     if (window.__printHang) {
       return new Promise((resolve, reject) => o?.signal?.addEventListener('abort', () => reject(new DOMException('timeout', 'TimeoutError'))));
     }
-    const body = window.__printBig ? page.replace('— Аня', '— Аня' + 'ж'.repeat(window.__printBig)) : q.get('wide') ? wide : window.__printLong ? long : page;
+    const body = pages[/[?&](?:msg|th)=([^&]+)/.exec(url)?.[1]] || (window.__printBig ? page.replace('— Аня', '— Аня' + 'ж'.repeat(window.__printBig)) : q.get('wide') ? wide : window.__printLong ? long : page);
     return Promise.resolve(new Response(body, {status: window.__printStatus || 200}));
   };
 })();

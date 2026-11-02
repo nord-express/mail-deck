@@ -1469,6 +1469,9 @@
   "panel_doneRemind": {
     "message": "Reminder set for $1"
   },
+  "panel_keyRemind": {
+    "message": "later"
+  },
   "panel_search": {
     "message": "Search mail"
   },
@@ -1595,6 +1598,27 @@
   "panel_showPictures": {
     "message": "Show pictures"
   },
+  "panel_trackersBlocked": {
+    "message": "Trackers blocked: $1"
+  },
+  "panel_trackersTip": {
+    "message": "Hidden pictures that tell the sender when you open the mail. Mail Deck keeps them from loading; the rest of the mail stays as it is."
+  },
+  "panel_keyRead": {
+    "message": "read"
+  },
+  "panel_keyArchive": {
+    "message": "archive"
+  },
+  "panel_keyDelete": {
+    "message": "delete"
+  },
+  "panel_keyStar": {
+    "message": "star"
+  },
+  "panel_keyBack": {
+    "message": "back"
+  },
   "opt_quietSame": {
     "message": "Start and end are the same, so this sets no quiet hours."
   },
@@ -1609,6 +1633,12 @@
   },
   "panel_copyCodeFailed": {
     "message": "Could not copy the code"
+  },
+  "panel_keyNext": {
+    "message": "next"
+  },
+  "panel_keyPrev": {
+    "message": "previous"
   },
   "panel_nextMessage": {
     "message": "Next message"
@@ -1729,6 +1759,9 @@
   },
   "panel_summary": {
     "message": "Summary"
+  },
+  "panel_summaryKey": {
+    "message": "summary"
   },
   "panel_summarizing": {
     "message": "Summarizing…"
