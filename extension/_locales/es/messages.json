@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "sin acceso a $1"
+    },
+    "welcome_title": {
+        "message": "Te damos la bienvenida a Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "El correo no leído de todas tus bandejas, a un clic. Tres pasos breves y listo."
+    },
+    "welcome_allSet": {
+        "message": "Todo listo. El correo nuevo aparece en el icono y el panel está a un clic."
+    },
+    "welcome_inboxes": {
+        "message": "Tus bandejas de entrada"
+    },
+    "welcome_done": {
+        "message": "Hecho"
+    },
+    "welcome_looking": {
+        "message": "Buscando las cuentas de Gmail con sesión iniciada en este navegador…"
+    },
+    "welcome_found": {
+        "message": "El correo de estas bandejas aparece en el panel y en el icono."
+    },
+    "welcome_unread": {
+        "message": "$1 sin leer"
+    },
+    "welcome_noUnread": {
+        "message": "Nada sin leer"
+    },
+    "welcome_addAccount": {
+        "message": "Añadir otra cuenta"
+    },
+    "welcome_none": {
+        "message": "Aún no hay ninguna cuenta de Gmail con sesión iniciada en este navegador."
+    },
+    "welcome_noneText": {
+        "message": "Inicia sesión y Mail Deck encontrará la cuenta por sí solo, igual que cada cuenta que añadas después."
+    },
+    "welcome_signIn": {
+        "message": "Iniciar sesión en Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Volver a comprobar"
+    },
+    "welcome_otherMail": {
+        "message": "El correo de otros servicios también puede aparecer aquí:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Configuración → Otro correo"
+    },
+    "welcome_pin": {
+        "message": "Fija Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "Mantén su icono en la barra de herramientas, con el número de correos sin leer."
+    },
+    "welcome_menuTitle": {
+        "message": "Extensiones"
+    },
+    "welcome_pinHow": {
+        "message": "Haz clic en la pieza de puzle junto a la barra de direcciones y luego en la chincheta junto a Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Haz clic en la pieza de puzle junto a la barra de direcciones y luego en el ojo junto a Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Fijado. El número de correos sin leer ya está en el icono."
+    },
+    "welcome_pinDone": {
+        "message": "Hecho"
+    },
+    "welcome_tryIt": {
+        "message": "Pruébalo"
+    },
+    "welcome_tryText": {
+        "message": "Abre el panel para leer, archivar o eliminar correo sin salir de la página en la que estás."
+    },
+    "welcome_openSide": {
+        "message": "Abrir el panel lateral"
+    },
+    "welcome_orIcon": {
+        "message": "o haz clic en el icono de Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Haz clic en el icono de Mail Deck en la barra de herramientas para abrir el panel."
+    },
+    "welcome_sideFailed": {
+        "message": "El panel lateral no se ha abierto. Haz clic en el icono de Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "Desde cualquier pestaña, $1 abre el panel."
+    },
+    "welcome_setShortcut": {
+        "message": "Asignar un atajo de teclado al panel"
+    },
+    "welcome_test": {
+        "message": "Enviar una notificación de prueba"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck funciona"
+    },
+    "welcome_testText": {
+        "message": "Así se ve el correo nuevo: quién lo envía y de qué trata."
+    },
+    "welcome_testSent": {
+        "message": "Enviada. ¿No ha aparecido nada? Puede que tu sistema oculte las notificaciones de Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Las notificaciones de Mail Deck están desactivadas en Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: hecho"
+    },
+    "welcome_optional": {
+        "message": "Opcional"
+    },
+    "welcome_ai": {
+        "message": "Asistente de IA"
+    },
+    "welcome_aiText": {
+        "message": "Resúmenes, borradores de respuesta y respuestas sobre tu correo, con el motor que elijas. Está desactivado hasta que lo actives."
+    },
+    "welcome_aiLink": {
+        "message": "Configuración → IA"
+    },
+    "welcome_privacy": {
+        "message": "Privacidad"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck no tiene servidores: nada sale de tu navegador salvo hacia tus servicios de correo, y hacia un motor de IA solo si activas uno."
+    },
+    "welcome_website": {
+        "message": "Sitio web"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Política de privacidad"
+    },
+    "welcome_settings": {
+        "message": "Configuración"
     }
 }

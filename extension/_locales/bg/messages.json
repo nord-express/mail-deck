@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "няма достъп до $1"
+    },
+    "welcome_title": {
+        "message": "Добре дошли в Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "Непрочетената поща от всички кутии е на един клик разстояние. Три кратки стъпки и сте готови."
+    },
+    "welcome_allSet": {
+        "message": "Всичко е готово. Новата поща се вижда на иконата, а панелът е на един клик разстояние."
+    },
+    "welcome_inboxes": {
+        "message": "Вашите пощенски кутии"
+    },
+    "welcome_done": {
+        "message": "Готово"
+    },
+    "welcome_looking": {
+        "message": "Търсят се профилите в Gmail, в които сте влезли в този браузър…"
+    },
+    "welcome_found": {
+        "message": "Пощата от тези кутии се показва в панела и на иконата."
+    },
+    "welcome_unread": {
+        "message": "Непрочетени: $1"
+    },
+    "welcome_noUnread": {
+        "message": "Няма непрочетени"
+    },
+    "welcome_addAccount": {
+        "message": "Добавяне на друг профил"
+    },
+    "welcome_none": {
+        "message": "В този браузър все още няма вход в профил в Gmail."
+    },
+    "welcome_noneText": {
+        "message": "Влезте и Mail Deck сам ще открие профила, както и всеки, който добавите след това."
+    },
+    "welcome_signIn": {
+        "message": "Вход в Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Нова проверка"
+    },
+    "welcome_otherMail": {
+        "message": "Пощата от други услуги също може да се показва тук:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Настройки → Друга поща"
+    },
+    "welcome_pin": {
+        "message": "Закачете Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "Дръжте иконата в лентата с инструменти, с броя непрочетени писма върху нея."
+    },
+    "welcome_menuTitle": {
+        "message": "Разширения"
+    },
+    "welcome_pinHow": {
+        "message": "Щракнете върху иконата с пъзел до адресната лента, след това върху кабърчето до Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Щракнете върху иконата с пъзел до адресната лента, след това върху окото до Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Закачено. Броят непрочетени вече е на иконата."
+    },
+    "welcome_pinDone": {
+        "message": "Готово"
+    },
+    "welcome_tryIt": {
+        "message": "Опитайте"
+    },
+    "welcome_tryText": {
+        "message": "Отворете панела, за да четете, архивирате или изтривате поща, без да напускате страницата."
+    },
+    "welcome_openSide": {
+        "message": "Отваряне на страничния панел"
+    },
+    "welcome_orIcon": {
+        "message": "или щракнете върху иконата на Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Щракнете върху иконата на Mail Deck в лентата, за да отворите панела."
+    },
+    "welcome_sideFailed": {
+        "message": "Страничният панел не се отвори. Щракнете върху иконата на Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "От всеки раздел панелът се отваря с $1."
+    },
+    "welcome_setShortcut": {
+        "message": "Задаване на клавишна комбинация за панела"
+    },
+    "welcome_test": {
+        "message": "Изпращане на пробно известие"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck работи"
+    },
+    "welcome_testText": {
+        "message": "Така изглежда новата поща: от кого е и за какво се отнася."
+    },
+    "welcome_testSent": {
+        "message": "Изпратено. Нищо не се появи? Може би системата ви скрива известията на Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Известията от Mail Deck са изключени в Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: готово"
+    },
+    "welcome_optional": {
+        "message": "По желание"
+    },
+    "welcome_ai": {
+        "message": "ИИ асистент"
+    },
+    "welcome_aiText": {
+        "message": "Обобщения, чернови на отговори и отговори за пощата ви, с ИИ по ваш избор. Изключен е, докато не го включите."
+    },
+    "welcome_aiLink": {
+        "message": "Настройки → ИИ"
+    },
+    "welcome_privacy": {
+        "message": "Поверителност"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck няма сървъри: нищо не напуска браузъра ви освен към пощенските ви услуги, а към ИИ — само ако включите такъв."
+    },
+    "welcome_website": {
+        "message": "Уебсайт"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Политика за поверителност"
+    },
+    "welcome_settings": {
+        "message": "Настройки"
     }
 }

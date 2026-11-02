@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "kein Zugriff auf $1"
+    },
+    "welcome_title": {
+        "message": "Willkommen bei Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "Ungelesene E-Mails aus jedem Postfach, einen Klick entfernt. Drei kurze Schritte, und alles ist bereit."
+    },
+    "welcome_allSet": {
+        "message": "Alles bereit. Neue E-Mails zeigt das Symbol an, und das Panel ist einen Klick entfernt."
+    },
+    "welcome_inboxes": {
+        "message": "Ihre Postfächer"
+    },
+    "welcome_done": {
+        "message": "Erledigt"
+    },
+    "welcome_looking": {
+        "message": "Gmail-Konten werden gesucht, bei denen Sie in diesem Browser angemeldet sind…"
+    },
+    "welcome_found": {
+        "message": "E-Mails aus diesen Postfächern erscheinen im Panel und am Symbol."
+    },
+    "welcome_unread": {
+        "message": "$1 ungelesen"
+    },
+    "welcome_noUnread": {
+        "message": "Keine ungelesenen E-Mails"
+    },
+    "welcome_addAccount": {
+        "message": "Weiteres Konto hinzufügen"
+    },
+    "welcome_none": {
+        "message": "In diesem Browser ist noch kein Gmail-Konto angemeldet."
+    },
+    "welcome_noneText": {
+        "message": "Melden Sie sich an, und Mail Deck findet das Konto von selbst, wie auch jedes weitere, das Sie hinzufügen."
+    },
+    "welcome_signIn": {
+        "message": "In Gmail anmelden"
+    },
+    "welcome_checkAgain": {
+        "message": "Erneut prüfen"
+    },
+    "welcome_otherMail": {
+        "message": "Auch andere E-Mail-Dienste können hier erscheinen:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Einstellungen → Weitere E-Mail-Dienste"
+    },
+    "welcome_pin": {
+        "message": "Mail Deck anpinnen"
+    },
+    "welcome_pinText": {
+        "message": "Behalten Sie das Symbol in der Symbolleiste, mit der Zahl ungelesener E-Mails darauf."
+    },
+    "welcome_menuTitle": {
+        "message": "Erweiterungen"
+    },
+    "welcome_pinHow": {
+        "message": "Klicken Sie auf das Puzzleteil neben der Adressleiste und dann auf die Stecknadel neben Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Klicken Sie auf das Puzzleteil neben der Adressleiste und dann auf das Auge neben Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Angepinnt. Die Zahl ungelesener E-Mails steht jetzt am Symbol."
+    },
+    "welcome_pinDone": {
+        "message": "Erledigt"
+    },
+    "welcome_tryIt": {
+        "message": "Ausprobieren"
+    },
+    "welcome_tryText": {
+        "message": "Öffnen Sie das Panel, um E-Mails zu lesen, zu archivieren oder zu löschen, ohne die aktuelle Seite zu verlassen."
+    },
+    "welcome_openSide": {
+        "message": "Seitenleiste öffnen"
+    },
+    "welcome_orIcon": {
+        "message": "oder auf das Symbol von Mail Deck klicken"
+    },
+    "welcome_clickIcon": {
+        "message": "Klicken Sie auf das Symbol von Mail Deck in der Symbolleiste, um das Panel zu öffnen."
+    },
+    "welcome_sideFailed": {
+        "message": "Die Seitenleiste ließ sich nicht öffnen. Klicken Sie stattdessen auf das Symbol von Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "In jedem Tab öffnet $1 das Panel."
+    },
+    "welcome_setShortcut": {
+        "message": "Tastenkürzel für das Panel festlegen"
+    },
+    "welcome_test": {
+        "message": "Testbenachrichtigung senden"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck funktioniert"
+    },
+    "welcome_testText": {
+        "message": "So erscheinen neue E-Mails: von wem sie sind und worum es geht."
+    },
+    "welcome_testSent": {
+        "message": "Gesendet. Nichts erschienen? Vielleicht blendet Ihr System die Benachrichtigungen von Chrome aus."
+    },
+    "welcome_testDenied": {
+        "message": "Benachrichtigungen von Mail Deck sind in Chrome ausgeschaltet."
+    },
+    "welcome_stepDone": {
+        "message": "$1: erledigt"
+    },
+    "welcome_optional": {
+        "message": "Optional"
+    },
+    "welcome_ai": {
+        "message": "KI-Assistent"
+    },
+    "welcome_aiText": {
+        "message": "Zusammenfassungen, Antwortentwürfe und Antworten zu Ihren E-Mails, mit der KI Ihrer Wahl. Er bleibt aus, bis Sie ihn einschalten."
+    },
+    "welcome_aiLink": {
+        "message": "Einstellungen → KI"
+    },
+    "welcome_privacy": {
+        "message": "Datenschutz"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck hat keine Server: Nichts verlässt Ihren Browser außer zu Ihren E-Mail-Diensten, und zu einer KI nur, wenn Sie eine einschalten."
+    },
+    "welcome_website": {
+        "message": "Website"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Datenschutzerklärung"
+    },
+    "welcome_settings": {
+        "message": "Einstellungen"
     }
 }

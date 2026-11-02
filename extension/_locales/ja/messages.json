@@ -2134,5 +2134,143 @@
   },
   "opt_aiDiagNoAccess": {
     "message": "$1 へのアクセスなし"
+  },
+  "welcome_title": {
+    "message": "Mail Deck へようこそ"
+  },
+  "welcome_lede": {
+    "message": "すべての受信トレイの未読メールを、ワンクリックで。3 つの簡単なステップで準備が整います。"
+  },
+  "welcome_allSet": {
+    "message": "準備ができました。新着メールはアイコンに表示され、パネルはワンクリックで開きます。"
+  },
+  "welcome_inboxes": {
+    "message": "受信トレイ"
+  },
+  "welcome_done": {
+    "message": "完了"
+  },
+  "welcome_looking": {
+    "message": "このブラウザでログインしている Gmail アカウントを探しています…"
+  },
+  "welcome_found": {
+    "message": "これらの受信トレイのメールが、パネルとアイコンに表示されます。"
+  },
+  "welcome_unread": {
+    "message": "未読 $1 件"
+  },
+  "welcome_noUnread": {
+    "message": "未読メールはありません"
+  },
+  "welcome_addAccount": {
+    "message": "別のアカウントを追加"
+  },
+  "welcome_none": {
+    "message": "このブラウザでは、まだどの Gmail アカウントにもログインしていません。"
+  },
+  "welcome_noneText": {
+    "message": "ログインすると、Mail Deck がそのアカウントを自動で見つけます。後から追加するアカウントも同じです。"
+  },
+  "welcome_signIn": {
+    "message": "Gmail にログイン"
+  },
+  "welcome_checkAgain": {
+    "message": "もう一度確認"
+  },
+  "welcome_otherMail": {
+    "message": "ほかのメールサービスのメールもここに表示できます："
+  },
+  "welcome_otherMailLink": {
+    "message": "設定 → その他のメール"
+  },
+  "welcome_pin": {
+    "message": "Mail Deck を固定する"
+  },
+  "welcome_pinText": {
+    "message": "アイコンをツールバーに置いておけば、未読メールの数がいつでも見えます。"
+  },
+  "welcome_menuTitle": {
+    "message": "拡張機能"
+  },
+  "welcome_pinHow": {
+    "message": "アドレスバーの横にあるパズルのピースのアイコンをクリックし、Mail Deck の横にあるピンをクリックします。"
+  },
+  "welcome_pinHowEdge": {
+    "message": "アドレスバーの横にあるパズルのピースのアイコンをクリックし、Mail Deck の横にある目のアイコンをクリックします。"
+  },
+  "welcome_pinned": {
+    "message": "固定しました。未読メールの数がアイコンに表示されます。"
+  },
+  "welcome_pinDone": {
+    "message": "完了"
+  },
+  "welcome_tryIt": {
+    "message": "使ってみる"
+  },
+  "welcome_tryText": {
+    "message": "パネルを開けば、今のページを離れずにメールを読んだり、アーカイブしたり、削除したりできます。"
+  },
+  "welcome_openSide": {
+    "message": "サイドパネルを開く"
+  },
+  "welcome_orIcon": {
+    "message": "または Mail Deck のアイコンをクリック"
+  },
+  "welcome_clickIcon": {
+    "message": "ツールバーの Mail Deck のアイコンをクリックすると、パネルが開きます。"
+  },
+  "welcome_sideFailed": {
+    "message": "サイドパネルが開きませんでした。Mail Deck のアイコンをクリックしてください。"
+  },
+  "welcome_shortcut": {
+    "message": "どのタブからでも $1 でパネルが開きます。"
+  },
+  "welcome_setShortcut": {
+    "message": "パネルを開くショートカットを設定"
+  },
+  "welcome_test": {
+    "message": "テスト通知を送る"
+  },
+  "welcome_testTitle": {
+    "message": "Mail Deck は動作しています"
+  },
+  "welcome_testText": {
+    "message": "新着メールはこのように表示されます。差出人と内容がひと目でわかります。"
+  },
+  "welcome_testSent": {
+    "message": "送信しました。表示されない場合は、システムが Chrome の通知を非表示にしている可能性があります。"
+  },
+  "welcome_testDenied": {
+    "message": "Chrome で Mail Deck の通知がオフになっています。"
+  },
+  "welcome_stepDone": {
+    "message": "$1：完了"
+  },
+  "welcome_optional": {
+    "message": "オプション"
+  },
+  "welcome_ai": {
+    "message": "AI アシスタント"
+  },
+  "welcome_aiText": {
+    "message": "選んだエンジンで、メールの要約や返信の下書きを作り、メールについての質問に答えます。オンにするまではオフのままです。"
+  },
+  "welcome_aiLink": {
+    "message": "設定 → AI アシスタント"
+  },
+  "welcome_privacy": {
+    "message": "プライバシー"
+  },
+  "welcome_privacyText": {
+    "message": "Mail Deck にはサーバーがありません。ブラウザから外に出るのは、お使いのメールサービスへの通信と、オンにした場合の AI エンジンへの通信だけです。"
+  },
+  "welcome_website": {
+    "message": "ウェブサイト"
+  },
+  "welcome_privacyPolicy": {
+    "message": "プライバシーポリシー"
+  },
+  "welcome_settings": {
+    "message": "設定"
   }
 }

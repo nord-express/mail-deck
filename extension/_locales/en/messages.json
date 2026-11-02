@@ -2164,5 +2164,143 @@
   },
   "opt_aiDiagNoAccess": {
     "message": "no access to $1"
+  },
+  "welcome_title": {
+    "message": "Welcome to Mail Deck"
+  },
+  "welcome_lede": {
+    "message": "Unread mail from every inbox, one click away. Three short steps and you’re set."
+  },
+  "welcome_allSet": {
+    "message": "You’re all set. New mail shows on the icon, and the panel is one click away."
+  },
+  "welcome_inboxes": {
+    "message": "Your inboxes"
+  },
+  "welcome_done": {
+    "message": "Done"
+  },
+  "welcome_looking": {
+    "message": "Looking for the Gmail accounts signed in to this browser…"
+  },
+  "welcome_found": {
+    "message": "Mail from these inboxes shows in the panel and on the icon."
+  },
+  "welcome_unread": {
+    "message": "$1 unread"
+  },
+  "welcome_noUnread": {
+    "message": "No unread mail"
+  },
+  "welcome_addAccount": {
+    "message": "Add another account"
+  },
+  "welcome_none": {
+    "message": "No Gmail account is signed in to this browser yet."
+  },
+  "welcome_noneText": {
+    "message": "Sign in, and Mail Deck finds the account on its own, as it will every account you add."
+  },
+  "welcome_signIn": {
+    "message": "Sign in to Gmail"
+  },
+  "welcome_checkAgain": {
+    "message": "Check again"
+  },
+  "welcome_otherMail": {
+    "message": "Other mail services can show here too:"
+  },
+  "welcome_otherMailLink": {
+    "message": "Settings → Other mail"
+  },
+  "welcome_pin": {
+    "message": "Pin Mail Deck"
+  },
+  "welcome_pinText": {
+    "message": "Keep its icon on the toolbar, with the count of unread mail on it."
+  },
+  "welcome_menuTitle": {
+    "message": "Extensions"
+  },
+  "welcome_pinHow": {
+    "message": "Click the puzzle piece next to the address bar, then the pin next to Mail Deck."
+  },
+  "welcome_pinHowEdge": {
+    "message": "Click the puzzle piece next to the address bar, then the eye next to Mail Deck."
+  },
+  "welcome_pinned": {
+    "message": "Pinned. The count of unread mail is on the icon now."
+  },
+  "welcome_pinDone": {
+    "message": "Done"
+  },
+  "welcome_tryIt": {
+    "message": "Try it"
+  },
+  "welcome_tryText": {
+    "message": "Open the panel to read, archive or delete mail without leaving the page you’re on."
+  },
+  "welcome_openSide": {
+    "message": "Open the side panel"
+  },
+  "welcome_orIcon": {
+    "message": "or click the Mail Deck icon"
+  },
+  "welcome_clickIcon": {
+    "message": "Click the Mail Deck icon on the toolbar to open the panel."
+  },
+  "welcome_sideFailed": {
+    "message": "The side panel did not open. Click the Mail Deck icon instead."
+  },
+  "welcome_shortcut": {
+    "message": "From any tab, $1 opens the panel."
+  },
+  "welcome_setShortcut": {
+    "message": "Set a keyboard shortcut for the panel"
+  },
+  "welcome_test": {
+    "message": "Send a test notification"
+  },
+  "welcome_testTitle": {
+    "message": "Mail Deck works"
+  },
+  "welcome_testText": {
+    "message": "New mail shows up like this: who it is from and what it is about."
+  },
+  "welcome_testSent": {
+    "message": "Sent. Nothing showed up? Your system may be keeping Chrome’s notifications hidden."
+  },
+  "welcome_testDenied": {
+    "message": "Notifications from Mail Deck are turned off in Chrome."
+  },
+  "welcome_stepDone": {
+    "message": "$1: done"
+  },
+  "welcome_optional": {
+    "message": "Optional"
+  },
+  "welcome_ai": {
+    "message": "AI assistant"
+  },
+  "welcome_aiText": {
+    "message": "Summaries, reply drafts and answers about your mail, with the engine you choose. It stays off until you turn it on."
+  },
+  "welcome_aiLink": {
+    "message": "Settings → AI"
+  },
+  "welcome_privacy": {
+    "message": "Privacy"
+  },
+  "welcome_privacyText": {
+    "message": "Mail Deck has no servers: nothing leaves your browser except to your mail services, and to an AI engine only if you turn one on."
+  },
+  "welcome_website": {
+    "message": "Website"
+  },
+  "welcome_privacyPolicy": {
+    "message": "Privacy policy"
+  },
+  "welcome_settings": {
+    "message": "Settings"
   }
 }

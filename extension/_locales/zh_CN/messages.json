@@ -2306,5 +2306,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "无法访问 $1"
+    },
+    "welcome_title": {
+        "message": "欢迎使用 Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "所有收件箱的未读邮件，一键即达。只需三个简单步骤即可完成设置。"
+    },
+    "welcome_allSet": {
+        "message": "一切就绪。新邮件会显示在图标上，点一下就能打开面板。"
+    },
+    "welcome_inboxes": {
+        "message": "你的收件箱"
+    },
+    "welcome_done": {
+        "message": "已完成"
+    },
+    "welcome_looking": {
+        "message": "正在查找你在此浏览器中登录的 Gmail 账号…"
+    },
+    "welcome_found": {
+        "message": "这些收件箱的邮件会显示在面板和图标上。"
+    },
+    "welcome_unread": {
+        "message": "$1 封未读"
+    },
+    "welcome_noUnread": {
+        "message": "没有未读邮件"
+    },
+    "welcome_addAccount": {
+        "message": "添加其他账号"
+    },
+    "welcome_none": {
+        "message": "此浏览器中还没有登录任何 Gmail 账号。"
+    },
+    "welcome_noneText": {
+        "message": "登录后，Mail Deck 会自动找到该账号，之后添加的每个账号也一样。"
+    },
+    "welcome_signIn": {
+        "message": "登录 Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "重新检查"
+    },
+    "welcome_otherMail": {
+        "message": "其他邮件服务的邮件也可以显示在这里："
+    },
+    "welcome_otherMailLink": {
+        "message": "设置 → 其他邮箱"
+    },
+    "welcome_pin": {
+        "message": "固定 Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "把图标固定在工具栏上，随时看到未读邮件数。"
+    },
+    "welcome_menuTitle": {
+        "message": "扩展程序"
+    },
+    "welcome_pinHow": {
+        "message": "点击地址栏旁边的拼图图标，然后点击 Mail Deck 旁边的图钉。"
+    },
+    "welcome_pinHowEdge": {
+        "message": "点击地址栏旁边的拼图图标，然后点击 Mail Deck 旁边的眼睛图标。"
+    },
+    "welcome_pinned": {
+        "message": "已固定。未读邮件数现在会显示在图标上。"
+    },
+    "welcome_pinDone": {
+        "message": "完成"
+    },
+    "welcome_tryIt": {
+        "message": "试一试"
+    },
+    "welcome_tryText": {
+        "message": "打开面板，无需离开当前页面即可阅读、归档或删除邮件。"
+    },
+    "welcome_openSide": {
+        "message": "打开侧边栏"
+    },
+    "welcome_orIcon": {
+        "message": "或点击 Mail Deck 图标"
+    },
+    "welcome_clickIcon": {
+        "message": "点击工具栏上的 Mail Deck 图标即可打开面板。"
+    },
+    "welcome_sideFailed": {
+        "message": "侧边栏未能打开。请改为点击 Mail Deck 图标。"
+    },
+    "welcome_shortcut": {
+        "message": "在任何标签页中按 $1 都能打开面板。"
+    },
+    "welcome_setShortcut": {
+        "message": "为面板设置键盘快捷键"
+    },
+    "welcome_test": {
+        "message": "发送测试通知"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck 运行正常"
+    },
+    "welcome_testText": {
+        "message": "新邮件会这样显示：发件人和邮件内容一目了然。"
+    },
+    "welcome_testSent": {
+        "message": "已发送。没有看到？可能是系统隐藏了 Chrome 的通知。"
+    },
+    "welcome_testDenied": {
+        "message": "Chrome 中已关闭 Mail Deck 的通知。"
+    },
+    "welcome_stepDone": {
+        "message": "$1：已完成"
+    },
+    "welcome_optional": {
+        "message": "可选"
+    },
+    "welcome_ai": {
+        "message": "AI 助手"
+    },
+    "welcome_aiText": {
+        "message": "使用你选择的引擎，为邮件生成摘要和回复草稿，并回答有关邮件的问题。在你开启之前，它一直处于关闭状态。"
+    },
+    "welcome_aiLink": {
+        "message": "设置 → AI 助手"
+    },
+    "welcome_privacy": {
+        "message": "隐私"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck 没有服务器：除了发往你的邮件服务的请求，以及在你开启后发往 AI 引擎的请求，任何内容都不会离开你的浏览器。"
+    },
+    "welcome_website": {
+        "message": "网站"
+    },
+    "welcome_privacyPolicy": {
+        "message": "隐私政策"
+    },
+    "welcome_settings": {
+        "message": "设置"
     }
 }

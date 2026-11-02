@@ -2306,5 +2306,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "нет доступа к $1"
+    },
+    "welcome_title": {
+        "message": "Добро пожаловать в Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "Непрочитанная почта из всех ящиков — в один клик. Три коротких шага, и всё готово."
+    },
+    "welcome_allSet": {
+        "message": "Всё готово. Новая почта видна на значке, а панель открывается одним кликом."
+    },
+    "welcome_inboxes": {
+        "message": "Ваши почтовые ящики"
+    },
+    "welcome_done": {
+        "message": "Готово"
+    },
+    "welcome_looking": {
+        "message": "Ищем аккаунты Gmail, в которые вы вошли в этом браузере…"
+    },
+    "welcome_found": {
+        "message": "Почта из этих ящиков появится в панели и на значке."
+    },
+    "welcome_unread": {
+        "message": "Непрочитанных: $1"
+    },
+    "welcome_noUnread": {
+        "message": "Нет непрочитанных"
+    },
+    "welcome_addAccount": {
+        "message": "Добавить ещё аккаунт"
+    },
+    "welcome_none": {
+        "message": "В этом браузере пока не выполнен вход ни в один аккаунт Gmail."
+    },
+    "welcome_noneText": {
+        "message": "Войдите, и Mail Deck сам найдёт аккаунт, как и каждый, который вы добавите потом."
+    },
+    "welcome_signIn": {
+        "message": "Войти в Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Проверить снова"
+    },
+    "welcome_otherMail": {
+        "message": "Почта других сервисов тоже может быть здесь:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Настройки → Другая почта"
+    },
+    "welcome_pin": {
+        "message": "Закрепите Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "Пусть значок будет на панели браузера, с числом непрочитанных писем."
+    },
+    "welcome_menuTitle": {
+        "message": "Расширения"
+    },
+    "welcome_pinHow": {
+        "message": "Нажмите на значок пазла рядом с адресной строкой, а затем на булавку рядом с Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Нажмите на значок пазла рядом с адресной строкой, а затем на значок глаза рядом с Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Закреплено. Число непрочитанных теперь на значке."
+    },
+    "welcome_pinDone": {
+        "message": "Готово"
+    },
+    "welcome_tryIt": {
+        "message": "Попробуйте"
+    },
+    "welcome_tryText": {
+        "message": "Откройте панель, чтобы читать, архивировать и удалять почту, не уходя со страницы."
+    },
+    "welcome_openSide": {
+        "message": "Открыть боковую панель"
+    },
+    "welcome_orIcon": {
+        "message": "или нажмите на значок Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Нажмите на значок Mail Deck на панели браузера, чтобы открыть панель."
+    },
+    "welcome_sideFailed": {
+        "message": "Боковая панель не открылась. Нажмите на значок Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "С любой вкладки панель открывается сочетанием $1."
+    },
+    "welcome_setShortcut": {
+        "message": "Задать сочетание клавиш для панели"
+    },
+    "welcome_test": {
+        "message": "Отправить тестовое уведомление"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck работает"
+    },
+    "welcome_testText": {
+        "message": "Так выглядит новое письмо: от кого оно и о чём."
+    },
+    "welcome_testSent": {
+        "message": "Отправлено. Ничего не появилось? Возможно, система скрывает уведомления Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Уведомления от Mail Deck отключены в Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: готово"
+    },
+    "welcome_optional": {
+        "message": "По желанию"
+    },
+    "welcome_ai": {
+        "message": "ИИ-ассистент"
+    },
+    "welcome_aiText": {
+        "message": "Сводки, черновики ответов и ответы на вопросы о почте — на выбранном вами движке. Выключен, пока вы его не включите."
+    },
+    "welcome_aiLink": {
+        "message": "Настройки → ИИ"
+    },
+    "welcome_privacy": {
+        "message": "Конфиденциальность"
+    },
+    "welcome_privacyText": {
+        "message": "У Mail Deck нет серверов: ничто не покидает браузер, кроме запросов к вашим почтовым сервисам, а к ИИ-движку — только если вы его включите."
+    },
+    "welcome_website": {
+        "message": "Сайт"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Политика конфиденциальности"
+    },
+    "welcome_settings": {
+        "message": "Настройки"
     }
 }

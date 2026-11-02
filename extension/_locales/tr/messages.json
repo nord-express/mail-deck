@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "$1 erişimi yok"
+    },
+    "welcome_title": {
+        "message": "Mail Deck’e hoş geldiniz"
+    },
+    "welcome_lede": {
+        "message": "Tüm gelen kutularınızdaki okunmamış postalar bir tık uzağınızda. Üç kısa adımda hazırsınız."
+    },
+    "welcome_allSet": {
+        "message": "Her şey hazır. Yeni postalar simgede görünür, panel de bir tık uzağınızda."
+    },
+    "welcome_inboxes": {
+        "message": "Gelen kutularınız"
+    },
+    "welcome_done": {
+        "message": "Tamam"
+    },
+    "welcome_looking": {
+        "message": "Bu tarayıcıda oturum açtığınız Gmail hesapları aranıyor…"
+    },
+    "welcome_found": {
+        "message": "Bu gelen kutularındaki postalar panelde ve simgede görünür."
+    },
+    "welcome_unread": {
+        "message": "$1 okunmamış"
+    },
+    "welcome_noUnread": {
+        "message": "Okunmamış posta yok"
+    },
+    "welcome_addAccount": {
+        "message": "Başka bir hesap ekle"
+    },
+    "welcome_none": {
+        "message": "Bu tarayıcıda henüz hiçbir Gmail hesabında oturum açılmamış."
+    },
+    "welcome_noneText": {
+        "message": "Oturum açın; Mail Deck hesabı kendisi bulur, sonradan eklediğiniz her hesabı da."
+    },
+    "welcome_signIn": {
+        "message": "Gmail’de oturum aç"
+    },
+    "welcome_checkAgain": {
+        "message": "Yeniden denetle"
+    },
+    "welcome_otherMail": {
+        "message": "Diğer e-posta hizmetlerinin postaları da burada görünebilir:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Ayarlar → Diğer e-posta hizmetleri"
+    },
+    "welcome_pin": {
+        "message": "Mail Deck’i sabitleyin"
+    },
+    "welcome_pinText": {
+        "message": "Simgesini, okunmamış posta sayısıyla birlikte araç çubuğunda tutun."
+    },
+    "welcome_menuTitle": {
+        "message": "Uzantılar"
+    },
+    "welcome_pinHow": {
+        "message": "Adres çubuğunun yanındaki yapboz parçasını, ardından Mail Deck’in yanındaki raptiyeyi tıklayın."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Adres çubuğunun yanındaki yapboz parçasını, ardından Mail Deck’in yanındaki göz simgesini tıklayın."
+    },
+    "welcome_pinned": {
+        "message": "Sabitlendi. Okunmamış posta sayısı artık simgede."
+    },
+    "welcome_pinDone": {
+        "message": "Tamam"
+    },
+    "welcome_tryIt": {
+        "message": "Deneyin"
+    },
+    "welcome_tryText": {
+        "message": "Bulunduğunuz sayfadan ayrılmadan postaları okumak, arşivlemek ya da silmek için paneli açın."
+    },
+    "welcome_openSide": {
+        "message": "Yan paneli aç"
+    },
+    "welcome_orIcon": {
+        "message": "ya da Mail Deck simgesini tıklayın"
+    },
+    "welcome_clickIcon": {
+        "message": "Paneli açmak için araç çubuğundaki Mail Deck simgesini tıklayın."
+    },
+    "welcome_sideFailed": {
+        "message": "Yan panel açılmadı. Bunun yerine Mail Deck simgesini tıklayın."
+    },
+    "welcome_shortcut": {
+        "message": "Her sekmede $1 paneli açar."
+    },
+    "welcome_setShortcut": {
+        "message": "Panel için bir klavye kısayolu belirleyin"
+    },
+    "welcome_test": {
+        "message": "Deneme bildirimi gönder"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck çalışıyor"
+    },
+    "welcome_testText": {
+        "message": "Yeni postalar böyle görünür: kimden geldiği ve ne hakkında olduğu."
+    },
+    "welcome_testSent": {
+        "message": "Gönderildi. Bir şey görünmedi mi? Sisteminiz Chrome bildirimlerini gizliyor olabilir."
+    },
+    "welcome_testDenied": {
+        "message": "Mail Deck bildirimleri Chrome’da kapalı."
+    },
+    "welcome_stepDone": {
+        "message": "$1: tamam"
+    },
+    "welcome_optional": {
+        "message": "İsteğe bağlı"
+    },
+    "welcome_ai": {
+        "message": "Yapay zekâ asistanı"
+    },
+    "welcome_aiText": {
+        "message": "Postalarınız için özetler, yanıt taslakları ve sorularınıza yanıtlar, seçtiğiniz motorla. Siz açana kadar kapalı kalır."
+    },
+    "welcome_aiLink": {
+        "message": "Ayarlar → Yapay zekâ"
+    },
+    "welcome_privacy": {
+        "message": "Gizlilik"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck’in sunucusu yok: e-posta hizmetleriniz dışında hiçbir şey tarayıcınızdan çıkmaz; bir yapay zekâ motoruna da yalnızca siz açarsanız gider."
+    },
+    "welcome_website": {
+        "message": "Web sitesi"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Gizlilik politikası"
+    },
+    "welcome_settings": {
+        "message": "Ayarlar"
     }
 }

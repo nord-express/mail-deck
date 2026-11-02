@@ -2306,5 +2306,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "нема приступа адреси $1"
+    },
+    "welcome_title": {
+        "message": "Добро дошли у Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "Непрочитана пошта из свих сандучића, на један клик. Три кратка корака и спремни сте."
+    },
+    "welcome_allSet": {
+        "message": "Све је спремно. Нова пошта се види на икони, а панел је на један клик."
+    },
+    "welcome_inboxes": {
+        "message": "Ваши сандучићи"
+    },
+    "welcome_done": {
+        "message": "Готово"
+    },
+    "welcome_looking": {
+        "message": "Тражимо Gmail налоге на које сте пријављени у овом прегледачу…"
+    },
+    "welcome_found": {
+        "message": "Пошта из ових сандучића приказује се у панелу и на икони."
+    },
+    "welcome_unread": {
+        "message": "Непрочитано: $1"
+    },
+    "welcome_noUnread": {
+        "message": "Нема непрочитаних"
+    },
+    "welcome_addAccount": {
+        "message": "Додај још један налог"
+    },
+    "welcome_none": {
+        "message": "У овом прегледачу још нисте пријављени ни на један Gmail налог."
+    },
+    "welcome_noneText": {
+        "message": "Пријавите се и Mail Deck ће сам пронаћи налог, као и сваки који касније додате."
+    },
+    "welcome_signIn": {
+        "message": "Пријави се на Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Провери поново"
+    },
+    "welcome_otherMail": {
+        "message": "И пошта других услуга може да се приказује овде:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Подешавања → Друга пошта"
+    },
+    "welcome_pin": {
+        "message": "Закачите Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "Нека икона остане на траци са алаткама, са бројем непрочитаних порука."
+    },
+    "welcome_menuTitle": {
+        "message": "Додаци"
+    },
+    "welcome_pinHow": {
+        "message": "Кликните на икону слагалице поред траке за адресу, па на чиоду поред Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Кликните на икону слагалице поред траке за адресу, па на око поред Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Закачено. Број непрочитаних порука сада је на икони."
+    },
+    "welcome_pinDone": {
+        "message": "Готово"
+    },
+    "welcome_tryIt": {
+        "message": "Испробајте"
+    },
+    "welcome_tryText": {
+        "message": "Отворите панел да бисте читали, архивирали или брисали пошту без напуштања странице."
+    },
+    "welcome_openSide": {
+        "message": "Отвори бочну таблу"
+    },
+    "welcome_orIcon": {
+        "message": "или кликните на икону Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Кликните на икону Mail Deck на траци да бисте отворили панел."
+    },
+    "welcome_sideFailed": {
+        "message": "Бочна табла се није отворила. Кликните на икону Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "Са било које картице панел се отвара пречицом $1."
+    },
+    "welcome_setShortcut": {
+        "message": "Подеси пречицу на тастатури за панел"
+    },
+    "welcome_test": {
+        "message": "Пошаљи пробно обавештење"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck ради"
+    },
+    "welcome_testText": {
+        "message": "Овако изгледа нова пошта: ко је шаље и о чему је."
+    },
+    "welcome_testSent": {
+        "message": "Послато. Ништа се није појавило? Можда систем скрива обавештења прегледача Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Обавештења за Mail Deck су искључена у прегледачу Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: готово"
+    },
+    "welcome_optional": {
+        "message": "По жељи"
+    },
+    "welcome_ai": {
+        "message": "Асистент вештачке интелигенције"
+    },
+    "welcome_aiText": {
+        "message": "Сажеци, нацрти одговора и одговори о вашој пошти, са моделом који изаберете. Искључен је док га не укључите."
+    },
+    "welcome_aiLink": {
+        "message": "Подешавања → Вештачка интелигенција"
+    },
+    "welcome_privacy": {
+        "message": "Приватност"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck нема сервере: ништа не напушта прегледач осим ка вашим услугама е-поште, а ка моделу вештачке интелигенције само ако га укључите."
+    },
+    "welcome_website": {
+        "message": "Сајт"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Политика приватности"
+    },
+    "welcome_settings": {
+        "message": "Подешавања"
     }
 }

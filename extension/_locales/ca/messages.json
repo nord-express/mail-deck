@@ -2306,5 +2306,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "sense accés a $1"
+    },
+    "welcome_title": {
+        "message": "Et donem la benvinguda a Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "El correu no llegit de totes les safates, a un clic. Tres passos breus i ja està."
+    },
+    "welcome_allSet": {
+        "message": "Ja està tot a punt. El correu nou apareix a la icona i el tauler és a un clic."
+    },
+    "welcome_inboxes": {
+        "message": "Les teves safates d’entrada"
+    },
+    "welcome_done": {
+        "message": "Fet"
+    },
+    "welcome_looking": {
+        "message": "S’estan cercant els comptes de Gmail amb què has iniciat la sessió en aquest navegador…"
+    },
+    "welcome_found": {
+        "message": "El correu d’aquestes safates apareix al tauler i a la icona."
+    },
+    "welcome_unread": {
+        "message": "$1 per llegir"
+    },
+    "welcome_noUnread": {
+        "message": "Res per llegir"
+    },
+    "welcome_addAccount": {
+        "message": "Afegeix un altre compte"
+    },
+    "welcome_none": {
+        "message": "Encara no has iniciat la sessió a cap compte de Gmail en aquest navegador."
+    },
+    "welcome_noneText": {
+        "message": "Inicia la sessió i Mail Deck trobarà el compte tot sol, igual que cada compte que afegeixis després."
+    },
+    "welcome_signIn": {
+        "message": "Inicia la sessió a Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Torna-ho a comprovar"
+    },
+    "welcome_otherMail": {
+        "message": "El correu d’altres serveis també pot aparèixer aquí:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Opcions → Altre correu"
+    },
+    "welcome_pin": {
+        "message": "Fixa Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "Mantén la icona a la barra d’eines, amb el nombre de missatges per llegir."
+    },
+    "welcome_menuTitle": {
+        "message": "Extensions"
+    },
+    "welcome_pinHow": {
+        "message": "Fes clic a la peça de trencaclosques al costat de la barra d’adreces i després a la xinxeta al costat de Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Fes clic a la peça de trencaclosques al costat de la barra d’adreces i després a l’ull al costat de Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Fixada. El nombre de missatges per llegir ja és a la icona."
+    },
+    "welcome_pinDone": {
+        "message": "Fet"
+    },
+    "welcome_tryIt": {
+        "message": "Prova-ho"
+    },
+    "welcome_tryText": {
+        "message": "Obre el tauler per llegir, arxivar o suprimir correu sense sortir de la pàgina on ets."
+    },
+    "welcome_openSide": {
+        "message": "Obre el tauler lateral"
+    },
+    "welcome_orIcon": {
+        "message": "o fes clic a la icona de Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Fes clic a la icona de Mail Deck a la barra d’eines per obrir el tauler."
+    },
+    "welcome_sideFailed": {
+        "message": "El tauler lateral no s’ha obert. Fes clic a la icona de Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "Des de qualsevol pestanya, $1 obre el tauler."
+    },
+    "welcome_setShortcut": {
+        "message": "Defineix una drecera de teclat per al tauler"
+    },
+    "welcome_test": {
+        "message": "Envia una notificació de prova"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck funciona"
+    },
+    "welcome_testText": {
+        "message": "Així es veu el correu nou: qui l’envia i de què tracta."
+    },
+    "welcome_testSent": {
+        "message": "Enviada. No ha aparegut res? Potser el sistema amaga les notificacions de Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Les notificacions de Mail Deck estan desactivades a Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: fet"
+    },
+    "welcome_optional": {
+        "message": "Opcional"
+    },
+    "welcome_ai": {
+        "message": "Assistent d’IA"
+    },
+    "welcome_aiText": {
+        "message": "Resums, esborranys de resposta i respostes sobre el teu correu, amb el motor que triïs. Està desactivat fins que l’activis."
+    },
+    "welcome_aiLink": {
+        "message": "Opcions → IA"
+    },
+    "welcome_privacy": {
+        "message": "Privadesa"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck no té servidors: res no surt del navegador, tret de cap als teus serveis de correu i, només si n’actives un, cap a un motor d’IA."
+    },
+    "welcome_website": {
+        "message": "Lloc web"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Política de privadesa"
+    },
+    "welcome_settings": {
+        "message": "Opcions"
     }
 }

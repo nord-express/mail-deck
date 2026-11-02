@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "لا وصول إلى $1"
+    },
+    "welcome_title": {
+        "message": "مرحبًا بك في Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "البريد غير المقروء من كل صناديق الوارد على بُعد نقرة واحدة. ثلاث خطوات قصيرة وتصبح جاهزًا."
+    },
+    "welcome_allSet": {
+        "message": "كل شيء جاهز. يظهر البريد الجديد على الرمز، واللوحة على بُعد نقرة واحدة."
+    },
+    "welcome_inboxes": {
+        "message": "صناديق الوارد"
+    },
+    "welcome_done": {
+        "message": "تم"
+    },
+    "welcome_looking": {
+        "message": "جارٍ البحث عن حسابات Gmail التي سجّلت الدخول إليها في هذا المتصفح…"
+    },
+    "welcome_found": {
+        "message": "يظهر بريد هذه الصناديق في اللوحة وعلى الرمز."
+    },
+    "welcome_unread": {
+        "message": "غير مقروءة: $1"
+    },
+    "welcome_noUnread": {
+        "message": "لا يوجد بريد غير مقروء"
+    },
+    "welcome_addAccount": {
+        "message": "إضافة حساب آخر"
+    },
+    "welcome_none": {
+        "message": "لم يُسجَّل الدخول إلى أي حساب Gmail في هذا المتصفح بعد."
+    },
+    "welcome_noneText": {
+        "message": "سجّل الدخول وسيعثر Mail Deck على الحساب تلقائيًا، وكذلك على كل حساب تضيفه لاحقًا."
+    },
+    "welcome_signIn": {
+        "message": "تسجيل الدخول إلى Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "التحقق مجددًا"
+    },
+    "welcome_otherMail": {
+        "message": "يمكن أن يظهر هنا أيضًا بريد خدمات أخرى:"
+    },
+    "welcome_otherMailLink": {
+        "message": "الإعدادات ضمن «بريد آخر»"
+    },
+    "welcome_pin": {
+        "message": "ثبّت Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "أبقِ الرمز في شريط الأدوات، وعليه عدد الرسائل غير المقروءة."
+    },
+    "welcome_menuTitle": {
+        "message": "الإضافات"
+    },
+    "welcome_pinHow": {
+        "message": "انقر على رمز قطعة الأحجية بجانب شريط العناوين، ثم على الدبوس بجانب Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "انقر على رمز قطعة الأحجية بجانب شريط العناوين، ثم على رمز العين بجانب Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "تم التثبيت. أصبح عدد الرسائل غير المقروءة على الرمز."
+    },
+    "welcome_pinDone": {
+        "message": "تم"
+    },
+    "welcome_tryIt": {
+        "message": "جرّبه"
+    },
+    "welcome_tryText": {
+        "message": "افتح اللوحة لقراءة البريد أو أرشفته أو حذفه دون مغادرة الصفحة التي أنت فيها."
+    },
+    "welcome_openSide": {
+        "message": "فتح اللوحة الجانبية"
+    },
+    "welcome_orIcon": {
+        "message": "أو انقر على رمز Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "انقر على رمز Mail Deck في شريط الأدوات لفتح اللوحة."
+    },
+    "welcome_sideFailed": {
+        "message": "لم تُفتح اللوحة الجانبية. انقر على رمز Mail Deck بدلًا من ذلك."
+    },
+    "welcome_shortcut": {
+        "message": "من أي علامة تبويب، يفتح الاختصار $1 اللوحة."
+    },
+    "welcome_setShortcut": {
+        "message": "تعيين اختصار لوحة مفاتيح للوحة"
+    },
+    "welcome_test": {
+        "message": "إرسال إشعار تجريبي"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck يعمل"
+    },
+    "welcome_testText": {
+        "message": "هكذا يظهر البريد الجديد: ممن هو وعمّ يتحدث."
+    },
+    "welcome_testSent": {
+        "message": "تم الإرسال. لم يظهر شيء؟ ربما يُخفي نظامك إشعارات Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "إشعارات Mail Deck متوقفة في Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: تم"
+    },
+    "welcome_optional": {
+        "message": "اختياري"
+    },
+    "welcome_ai": {
+        "message": "مساعد الذكاء الاصطناعي"
+    },
+    "welcome_aiText": {
+        "message": "ملخّصات ومسودات ردود وإجابات عن بريدك، بالمحرك الذي تختاره. يبقى متوقفًا حتى تشغّله."
+    },
+    "welcome_aiLink": {
+        "message": "الإعدادات ضمن «الذكاء الاصطناعي»"
+    },
+    "welcome_privacy": {
+        "message": "الخصوصية"
+    },
+    "welcome_privacyText": {
+        "message": "ليس لدى Mail Deck خوادم: لا يغادر شيء متصفحك إلا إلى خدمات بريدك، وإلى محرك ذكاء اصطناعي فقط إذا شغّلت واحدًا."
+    },
+    "welcome_website": {
+        "message": "الموقع"
+    },
+    "welcome_privacyPolicy": {
+        "message": "سياسة الخصوصية"
+    },
+    "welcome_settings": {
+        "message": "الإعدادات"
     }
 }

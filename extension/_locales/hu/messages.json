@@ -2122,5 +2122,143 @@
   },
   "opt_aiDiagNoAccess": {
     "message": "nincs hozzáférés: $1"
+  },
+  "welcome_title": {
+    "message": "Üdvözli a Mail Deck"
+  },
+  "welcome_lede": {
+    "message": "Minden postafiók olvasatlan levelei, egy kattintásnyira. Három rövid lépés, és kész."
+  },
+  "welcome_allSet": {
+    "message": "Minden kész. Az új levelek megjelennek az ikonon, a panel pedig egy kattintásnyira van."
+  },
+  "welcome_inboxes": {
+    "message": "Postafiókjai"
+  },
+  "welcome_done": {
+    "message": "Kész"
+  },
+  "welcome_looking": {
+    "message": "Azoknak a Gmail-fiókoknak a keresése, amelyekbe ebben a böngészőben bejelentkezett…"
+  },
+  "welcome_found": {
+    "message": "Ezeknek a postafiókoknak a levelei megjelennek a panelen és az ikonon."
+  },
+  "welcome_unread": {
+    "message": "$1 olvasatlan"
+  },
+  "welcome_noUnread": {
+    "message": "Nincs olvasatlan levél"
+  },
+  "welcome_addAccount": {
+    "message": "Másik fiók hozzáadása"
+  },
+  "welcome_none": {
+    "message": "Ebben a böngészőben még nincs bejelentkezve egyetlen Gmail-fiókba sem."
+  },
+  "welcome_noneText": {
+    "message": "Jelentkezzen be, és a Mail Deck magától megtalálja a fiókot, ahogy minden később hozzáadott fiókot is."
+  },
+  "welcome_signIn": {
+    "message": "Bejelentkezés a Gmailbe"
+  },
+  "welcome_checkAgain": {
+    "message": "Újbóli ellenőrzés"
+  },
+  "welcome_otherMail": {
+    "message": "Más levelezőszolgáltatások levelei is megjelenhetnek itt:"
+  },
+  "welcome_otherMailLink": {
+    "message": "Beállítások → Más levelezőszolgáltatók"
+  },
+  "welcome_pin": {
+    "message": "Rögzítse a Mail Decket"
+  },
+  "welcome_pinText": {
+    "message": "Tartsa az ikonját az eszköztáron, rajta az olvasatlan levelek számával."
+  },
+  "welcome_menuTitle": {
+    "message": "Bővítmények"
+  },
+  "welcome_pinHow": {
+    "message": "Kattintson a címsor melletti puzzle-darabra, majd a Mail Deck melletti gombostűre."
+  },
+  "welcome_pinHowEdge": {
+    "message": "Kattintson a címsor melletti puzzle-darabra, majd a Mail Deck melletti szem ikonra."
+  },
+  "welcome_pinned": {
+    "message": "Rögzítve. Az olvasatlan levelek száma most már az ikonon látható."
+  },
+  "welcome_pinDone": {
+    "message": "Kész"
+  },
+  "welcome_tryIt": {
+    "message": "Próbálja ki"
+  },
+  "welcome_tryText": {
+    "message": "Nyissa meg a panelt, és olvassa, archiválja vagy törölje a leveleit anélkül, hogy elhagyná az oldalt."
+  },
+  "welcome_openSide": {
+    "message": "Oldalsó panel megnyitása"
+  },
+  "welcome_orIcon": {
+    "message": "vagy kattintson a Mail Deck ikonjára"
+  },
+  "welcome_clickIcon": {
+    "message": "A panel megnyitásához kattintson a Mail Deck ikonjára az eszköztáron."
+  },
+  "welcome_sideFailed": {
+    "message": "Az oldalsó panel nem nyílt meg. Kattintson inkább a Mail Deck ikonjára."
+  },
+  "welcome_shortcut": {
+    "message": "Bármelyik lapon a(z) $1 billentyűparancs nyitja meg a panelt."
+  },
+  "welcome_setShortcut": {
+    "message": "Billentyűparancs beállítása a panelhez"
+  },
+  "welcome_test": {
+    "message": "Próbaértesítés küldése"
+  },
+  "welcome_testTitle": {
+    "message": "A Mail Deck működik"
+  },
+  "welcome_testText": {
+    "message": "Így jelennek meg az új levelek: kitől jöttek és miről szólnak."
+  },
+  "welcome_testSent": {
+    "message": "Elküldve. Nem jelent meg semmi? Lehet, hogy a rendszer elrejti a Chrome értesítéseit."
+  },
+  "welcome_testDenied": {
+    "message": "A Mail Deck értesítései ki vannak kapcsolva a Chrome-ban."
+  },
+  "welcome_stepDone": {
+    "message": "$1: kész"
+  },
+  "welcome_optional": {
+    "message": "Nem kötelező"
+  },
+  "welcome_ai": {
+    "message": "MI-asszisztens"
+  },
+  "welcome_aiText": {
+    "message": "Összefoglalók, válaszvázlatok és válaszok a leveleivel kapcsolatban, az Ön által választott motorral. Kikapcsolva marad, amíg be nem kapcsolja."
+  },
+  "welcome_aiLink": {
+    "message": "Beállítások → Mesterséges intelligencia"
+  },
+  "welcome_privacy": {
+    "message": "Adatvédelem"
+  },
+  "welcome_privacyText": {
+    "message": "A Mail Decknek nincsenek szerverei: semmi sem hagyja el a böngészőt, csak a levelezőszolgáltatásai felé, egy MI-motor felé pedig csak akkor, ha bekapcsol egyet."
+  },
+  "welcome_website": {
+    "message": "Weboldal"
+  },
+  "welcome_privacyPolicy": {
+    "message": "Adatvédelmi irányelvek"
+  },
+  "welcome_settings": {
+    "message": "Beállítások"
   }
 }

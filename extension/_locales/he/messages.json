@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "אין גישה אל $1"
+    },
+    "welcome_title": {
+        "message": "ברוך הבא ל-Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "דואר שלא נקרא מכל תיבות הדואר, במרחק לחיצה. שלושה צעדים קצרים ואתה מוכן."
+    },
+    "welcome_allSet": {
+        "message": "הכל מוכן. דואר חדש מופיע על הסמל, והחלונית במרחק לחיצה."
+    },
+    "welcome_inboxes": {
+        "message": "תיבות הדואר שלך"
+    },
+    "welcome_done": {
+        "message": "בוצע"
+    },
+    "welcome_looking": {
+        "message": "מחפש את חשבונות Gmail שהתחברת אליהם בדפדפן זה…"
+    },
+    "welcome_found": {
+        "message": "הדואר מתיבות אלה מופיע בחלונית ועל הסמל."
+    },
+    "welcome_unread": {
+        "message": "לא נקראו: $1"
+    },
+    "welcome_noUnread": {
+        "message": "אין דואר שלא נקרא"
+    },
+    "welcome_addAccount": {
+        "message": "הוסף חשבון נוסף"
+    },
+    "welcome_none": {
+        "message": "עדיין לא התחברת לאף חשבון Gmail בדפדפן זה."
+    },
+    "welcome_noneText": {
+        "message": "התחבר, ו-Mail Deck ימצא את החשבון בעצמו, וכך גם כל חשבון שתוסיף אחריו."
+    },
+    "welcome_signIn": {
+        "message": "התחבר ל-Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "בדוק שוב"
+    },
+    "welcome_otherMail": {
+        "message": "גם דואר משירותים אחרים יכול להופיע כאן:"
+    },
+    "welcome_otherMailLink": {
+        "message": "הגדרות, תחת ״דואר אחר״"
+    },
+    "welcome_pin": {
+        "message": "הצמד את Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "השאר את הסמל בסרגל הכלים, עם מספר ההודעות שלא נקראו."
+    },
+    "welcome_menuTitle": {
+        "message": "תוספים"
+    },
+    "welcome_pinHow": {
+        "message": "לחץ על סמל חלק הפאזל ליד שורת הכתובת, ואז על הנעץ ליד Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "לחץ על סמל חלק הפאזל ליד שורת הכתובת, ואז על סמל העין ליד Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "הוצמד. מספר ההודעות שלא נקראו מופיע עכשיו על הסמל."
+    },
+    "welcome_pinDone": {
+        "message": "בוצע"
+    },
+    "welcome_tryIt": {
+        "message": "נסה את זה"
+    },
+    "welcome_tryText": {
+        "message": "פתח את החלונית כדי לקרוא, להעביר לארכיון או למחוק דואר בלי לעזוב את הדף שבו אתה נמצא."
+    },
+    "welcome_openSide": {
+        "message": "פתח את חלונית הצד"
+    },
+    "welcome_orIcon": {
+        "message": "או לחץ על הסמל של Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "לחץ על הסמל של Mail Deck בסרגל הכלים כדי לפתוח את החלונית."
+    },
+    "welcome_sideFailed": {
+        "message": "חלונית הצד לא נפתחה. לחץ על הסמל של Mail Deck במקום זאת."
+    },
+    "welcome_shortcut": {
+        "message": "מכל כרטיסייה, $1 פותח את החלונית."
+    },
+    "welcome_setShortcut": {
+        "message": "הגדר קיצור מקשים לחלונית"
+    },
+    "welcome_test": {
+        "message": "שלח התראת בדיקה"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck עובד"
+    },
+    "welcome_testText": {
+        "message": "כך נראה דואר חדש: ממי הוא ועל מה."
+    },
+    "welcome_testSent": {
+        "message": "נשלחה. לא הופיע כלום? ייתכן שהמערכת מסתירה את ההתראות של Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "ההתראות של Mail Deck כבויות ב-Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: בוצע"
+    },
+    "welcome_optional": {
+        "message": "אופציונלי"
+    },
+    "welcome_ai": {
+        "message": "עוזר בינה מלאכותית"
+    },
+    "welcome_aiText": {
+        "message": "סיכומים, טיוטות תשובה ותשובות על הדואר שלך, עם המנוע שתבחר. הוא כבוי עד שתפעיל אותו."
+    },
+    "welcome_aiLink": {
+        "message": "הגדרות, תחת ״בינה מלאכותית״"
+    },
+    "welcome_privacy": {
+        "message": "פרטיות"
+    },
+    "welcome_privacyText": {
+        "message": "ל-Mail Deck אין שרתים: שום דבר לא יוצא מהדפדפן שלך מלבד אל שירותי הדואר שלך, ואל מנוע בינה מלאכותית רק אם תפעיל אחד."
+    },
+    "welcome_website": {
+        "message": "אתר"
+    },
+    "welcome_privacyPolicy": {
+        "message": "מדיניות פרטיות"
+    },
+    "welcome_settings": {
+        "message": "הגדרות"
     }
 }

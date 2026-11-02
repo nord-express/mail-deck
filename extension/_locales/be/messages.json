@@ -2161,5 +2161,143 @@
   },
   "opt_aiDiagNoAccess": {
     "message": "няма доступу да $1"
+  },
+  "welcome_title": {
+    "message": "Вітаем у Mail Deck"
+  },
+  "welcome_lede": {
+    "message": "Непрачытаная пошта з усіх скрынак — за адзін клік. Тры кароткія крокі, і ўсё гатова."
+  },
+  "welcome_allSet": {
+    "message": "Усё гатова. Новую пошту відаць на значку, а панэль адкрываецца адным клікам."
+  },
+  "welcome_inboxes": {
+    "message": "Вашы паштовыя скрыні"
+  },
+  "welcome_done": {
+    "message": "Гатова"
+  },
+  "welcome_looking": {
+    "message": "Шукаем уліковыя запісы Gmail, у якія вы ўвайшлі ў гэтым браўзеры…"
+  },
+  "welcome_found": {
+    "message": "Пошта з гэтых скрынак з’явіцца на панэлі і на значку."
+  },
+  "welcome_unread": {
+    "message": "Непрачытаных: $1"
+  },
+  "welcome_noUnread": {
+    "message": "Няма непрачытаных"
+  },
+  "welcome_addAccount": {
+    "message": "Дадаць іншы ўліковы запіс"
+  },
+  "welcome_none": {
+    "message": "У гэтым браўзеры яшчэ не выкананы ўваход ні ў адзін уліковы запіс Gmail."
+  },
+  "welcome_noneText": {
+    "message": "Увайдзіце, і Mail Deck сам знойдзе ўліковы запіс, як і кожны, які вы дадасце пасля."
+  },
+  "welcome_signIn": {
+    "message": "Увайсці ў Gmail"
+  },
+  "welcome_checkAgain": {
+    "message": "Праверыць зноў"
+  },
+  "welcome_otherMail": {
+    "message": "Пошта іншых сэрвісаў таксама можа быць тут:"
+  },
+  "welcome_otherMailLink": {
+    "message": "Налады → Іншая пошта"
+  },
+  "welcome_pin": {
+    "message": "Замацуйце Mail Deck"
+  },
+  "welcome_pinText": {
+    "message": "Трымайце значок на панэлі браўзера, з колькасцю непрачытаных лістоў."
+  },
+  "welcome_menuTitle": {
+    "message": "Пашырэнні"
+  },
+  "welcome_pinHow": {
+    "message": "Націсніце значок пазла побач з адрасным радком, а потым шпільку побач з Mail Deck."
+  },
+  "welcome_pinHowEdge": {
+    "message": "Націсніце значок пазла побач з адрасным радком, а потым значок вока побач з Mail Deck."
+  },
+  "welcome_pinned": {
+    "message": "Замацавана. Колькасць непрачытаных цяпер на значку."
+  },
+  "welcome_pinDone": {
+    "message": "Гатова"
+  },
+  "welcome_tryIt": {
+    "message": "Паспрабуйце"
+  },
+  "welcome_tryText": {
+    "message": "Адкрыйце панэль, каб чытаць, архіваваць і выдаляць пошту, не пакідаючы старонку."
+  },
+  "welcome_openSide": {
+    "message": "Адкрыць бакавую панэль"
+  },
+  "welcome_orIcon": {
+    "message": "або націсніце значок Mail Deck"
+  },
+  "welcome_clickIcon": {
+    "message": "Націсніце значок Mail Deck на панэлі браўзера, каб адкрыць панэль."
+  },
+  "welcome_sideFailed": {
+    "message": "Бакавая панэль не адкрылася. Націсніце значок Mail Deck."
+  },
+  "welcome_shortcut": {
+    "message": "З любой укладкі панэль адкрываецца спалучэннем $1."
+  },
+  "welcome_setShortcut": {
+    "message": "Задаць спалучэнне клавіш для панэлі"
+  },
+  "welcome_test": {
+    "message": "Адправіць тэставае апавяшчэнне"
+  },
+  "welcome_testTitle": {
+    "message": "Mail Deck працуе"
+  },
+  "welcome_testText": {
+    "message": "Так выглядае новы ліст: ад каго ён і пра што."
+  },
+  "welcome_testSent": {
+    "message": "Адпраўлена. Нічога не з’явілася? Магчыма, сістэма хавае апавяшчэнні Chrome."
+  },
+  "welcome_testDenied": {
+    "message": "Апавяшчэнні ад Mail Deck адключаны ў Chrome."
+  },
+  "welcome_stepDone": {
+    "message": "$1: гатова"
+  },
+  "welcome_optional": {
+    "message": "Па жаданні"
+  },
+  "welcome_ai": {
+    "message": "ШІ-асістэнт"
+  },
+  "welcome_aiText": {
+    "message": "Зводкі, чарнавікі адказаў і адказы на пытанні пра пошту — з рухавіком, які вы выберыце. Выключаны, пакуль вы яго не ўключыце."
+  },
+  "welcome_aiLink": {
+    "message": "Налады → ШІ"
+  },
+  "welcome_privacy": {
+    "message": "Прыватнасць"
+  },
+  "welcome_privacyText": {
+    "message": "У Mail Deck няма сервераў: нічога не пакідае браўзер, акрамя запытаў да вашых паштовых сэрвісаў, а да ШІ-рухавіка — толькі калі вы яго ўключыце."
+  },
+  "welcome_website": {
+    "message": "Сайт"
+  },
+  "welcome_privacyPolicy": {
+    "message": "Палітыка прыватнасці"
+  },
+  "welcome_settings": {
+    "message": "Налады"
   }
 }

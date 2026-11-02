@@ -2302,5 +2302,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "немає доступу до $1"
+    },
+    "welcome_title": {
+        "message": "Вітаємо в Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "Непрочитана пошта з усіх скриньок — за один клік. Три короткі кроки, і все готово."
+    },
+    "welcome_allSet": {
+        "message": "Усе готово. Нову пошту видно на значку, а панель відкривається одним кліком."
+    },
+    "welcome_inboxes": {
+        "message": "Ваші поштові скриньки"
+    },
+    "welcome_done": {
+        "message": "Готово"
+    },
+    "welcome_looking": {
+        "message": "Шукаємо облікові записи Gmail, у які ви увійшли в цьому браузері…"
+    },
+    "welcome_found": {
+        "message": "Пошта з цих скриньок з’являтиметься на панелі та на значку."
+    },
+    "welcome_unread": {
+        "message": "Непрочитаних: $1"
+    },
+    "welcome_noUnread": {
+        "message": "Немає непрочитаних"
+    },
+    "welcome_addAccount": {
+        "message": "Додати інший обліковий запис"
+    },
+    "welcome_none": {
+        "message": "У цьому браузері ще не виконано вхід у жоден обліковий запис Gmail."
+    },
+    "welcome_noneText": {
+        "message": "Увійдіть, і Mail Deck сам знайде обліковий запис, як і кожен, який ви додасте згодом."
+    },
+    "welcome_signIn": {
+        "message": "Увійти в Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Перевірити знову"
+    },
+    "welcome_otherMail": {
+        "message": "Пошта інших сервісів теж може бути тут:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Налаштування → Інша пошта"
+    },
+    "welcome_pin": {
+        "message": "Закріпіть Mail Deck"
+    },
+    "welcome_pinText": {
+        "message": "Тримайте значок на панелі браузера, з кількістю непрочитаних листів."
+    },
+    "welcome_menuTitle": {
+        "message": "Розширення"
+    },
+    "welcome_pinHow": {
+        "message": "Натисніть значок пазла поруч з адресним рядком, а потім шпильку поруч із Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Натисніть значок пазла поруч з адресним рядком, а потім значок ока поруч із Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Закріплено. Кількість непрочитаних тепер на значку."
+    },
+    "welcome_pinDone": {
+        "message": "Готово"
+    },
+    "welcome_tryIt": {
+        "message": "Спробуйте"
+    },
+    "welcome_tryText": {
+        "message": "Відкрийте панель, щоб читати, архівувати й видаляти пошту, не залишаючи сторінку."
+    },
+    "welcome_openSide": {
+        "message": "Відкрити бічну панель"
+    },
+    "welcome_orIcon": {
+        "message": "або натисніть значок Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Натисніть значок Mail Deck на панелі браузера, щоб відкрити панель."
+    },
+    "welcome_sideFailed": {
+        "message": "Бічна панель не відкрилася. Натисніть значок Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "З будь-якої вкладки панель відкривається поєднанням $1."
+    },
+    "welcome_setShortcut": {
+        "message": "Задати поєднання клавіш для панелі"
+    },
+    "welcome_test": {
+        "message": "Надіслати тестове сповіщення"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck працює"
+    },
+    "welcome_testText": {
+        "message": "Так виглядає новий лист: від кого він і про що."
+    },
+    "welcome_testSent": {
+        "message": "Надіслано. Нічого не з’явилося? Можливо, система приховує сповіщення Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Сповіщення від Mail Deck вимкнено в Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: готово"
+    },
+    "welcome_optional": {
+        "message": "За бажанням"
+    },
+    "welcome_ai": {
+        "message": "ШІ-асистент"
+    },
+    "welcome_aiText": {
+        "message": "Підсумки, чернетки відповідей і відповіді на запитання про пошту — з рушієм, який ви оберете. Вимкнений, доки ви його не ввімкнете."
+    },
+    "welcome_aiLink": {
+        "message": "Налаштування → ШІ"
+    },
+    "welcome_privacy": {
+        "message": "Конфіденційність"
+    },
+    "welcome_privacyText": {
+        "message": "У Mail Deck немає серверів: ніщо не залишає браузер, окрім запитів до ваших поштових сервісів, а до ШІ-рушія — лише якщо ви його ввімкнете."
+    },
+    "welcome_website": {
+        "message": "Сайт"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Політика конфіденційності"
+    },
+    "welcome_settings": {
+        "message": "Налаштування"
     }
 }

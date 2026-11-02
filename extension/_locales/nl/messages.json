@@ -2306,5 +2306,143 @@
     },
     "opt_aiDiagNoAccess": {
         "message": "geen toegang tot $1"
+    },
+    "welcome_title": {
+        "message": "Welkom bij Mail Deck"
+    },
+    "welcome_lede": {
+        "message": "Ongelezen mail uit elke inbox, één klik verderop. Drie korte stappen en je bent klaar."
+    },
+    "welcome_allSet": {
+        "message": "Alles is klaar. Nieuwe mail zie je op het pictogram, en het paneel is één klik verderop."
+    },
+    "welcome_inboxes": {
+        "message": "Je inboxen"
+    },
+    "welcome_done": {
+        "message": "Klaar"
+    },
+    "welcome_looking": {
+        "message": "Bezig met zoeken naar de Gmail-accounts waarmee je in deze browser bent ingelogd…"
+    },
+    "welcome_found": {
+        "message": "Mail uit deze inboxen verschijnt in het paneel en op het pictogram."
+    },
+    "welcome_unread": {
+        "message": "$1 ongelezen"
+    },
+    "welcome_noUnread": {
+        "message": "Niets ongelezen"
+    },
+    "welcome_addAccount": {
+        "message": "Nog een account toevoegen"
+    },
+    "welcome_none": {
+        "message": "Je bent in deze browser nog niet ingelogd bij een Gmail-account."
+    },
+    "welcome_noneText": {
+        "message": "Log in, en Mail Deck vindt het account vanzelf, net als elk account dat je daarna toevoegt."
+    },
+    "welcome_signIn": {
+        "message": "Inloggen bij Gmail"
+    },
+    "welcome_checkAgain": {
+        "message": "Opnieuw controleren"
+    },
+    "welcome_otherMail": {
+        "message": "Mail van andere diensten kan hier ook verschijnen:"
+    },
+    "welcome_otherMailLink": {
+        "message": "Instellingen → Andere mail"
+    },
+    "welcome_pin": {
+        "message": "Zet Mail Deck vast"
+    },
+    "welcome_pinText": {
+        "message": "Houd het pictogram in de werkbalk, met het aantal ongelezen mails erop."
+    },
+    "welcome_menuTitle": {
+        "message": "Extensies"
+    },
+    "welcome_pinHow": {
+        "message": "Klik op het puzzelstukje naast de adresbalk en daarna op de punaise naast Mail Deck."
+    },
+    "welcome_pinHowEdge": {
+        "message": "Klik op het puzzelstukje naast de adresbalk en daarna op het oogje naast Mail Deck."
+    },
+    "welcome_pinned": {
+        "message": "Vastgezet. Het aantal ongelezen mails staat nu op het pictogram."
+    },
+    "welcome_pinDone": {
+        "message": "Klaar"
+    },
+    "welcome_tryIt": {
+        "message": "Probeer het"
+    },
+    "welcome_tryText": {
+        "message": "Open het paneel om mail te lezen, te archiveren of te verwijderen zonder de pagina te verlaten waar je bent."
+    },
+    "welcome_openSide": {
+        "message": "Zijpaneel openen"
+    },
+    "welcome_orIcon": {
+        "message": "of klik op het pictogram van Mail Deck"
+    },
+    "welcome_clickIcon": {
+        "message": "Klik op het pictogram van Mail Deck in de werkbalk om het paneel te openen."
+    },
+    "welcome_sideFailed": {
+        "message": "Het zijpaneel ging niet open. Klik in plaats daarvan op het pictogram van Mail Deck."
+    },
+    "welcome_shortcut": {
+        "message": "Vanuit elk tabblad opent $1 het paneel."
+    },
+    "welcome_setShortcut": {
+        "message": "Een sneltoets voor het paneel instellen"
+    },
+    "welcome_test": {
+        "message": "Testmelding sturen"
+    },
+    "welcome_testTitle": {
+        "message": "Mail Deck werkt"
+    },
+    "welcome_testText": {
+        "message": "Zo ziet nieuwe mail eruit: van wie hij komt en waar hij over gaat."
+    },
+    "welcome_testSent": {
+        "message": "Verstuurd. Niets gezien? Misschien verbergt je systeem de meldingen van Chrome."
+    },
+    "welcome_testDenied": {
+        "message": "Meldingen van Mail Deck staan uit in Chrome."
+    },
+    "welcome_stepDone": {
+        "message": "$1: klaar"
+    },
+    "welcome_optional": {
+        "message": "Optioneel"
+    },
+    "welcome_ai": {
+        "message": "AI-assistent"
+    },
+    "welcome_aiText": {
+        "message": "Samenvattingen, conceptantwoorden en antwoorden over je mail, met de AI die je kiest. Hij staat uit tot je hem aanzet."
+    },
+    "welcome_aiLink": {
+        "message": "Instellingen → AI"
+    },
+    "welcome_privacy": {
+        "message": "Privacy"
+    },
+    "welcome_privacyText": {
+        "message": "Mail Deck heeft geen servers: niets verlaat je browser, behalve naar je maildiensten, en naar een AI alleen als je er een aanzet."
+    },
+    "welcome_website": {
+        "message": "Website"
+    },
+    "welcome_privacyPolicy": {
+        "message": "Privacybeleid"
+    },
+    "welcome_settings": {
+        "message": "Instellingen"
     }
 }
