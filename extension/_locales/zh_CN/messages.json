@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "按 Gmail 自己的分类，在列表上方以筛选标签显示“推广”“社交”“动态”。由 AI 整理邮件时，它的“订阅邮件”标签已包含推广和社交。"
     },
+    "opt_savedSearches": {
+        "message": "已保存的搜索"
+    },
+    "opt_savedSearchesText": {
+        "message": "每个都会成为面板里的一个筛选标签，在 Gmail 中搜索：所有收件箱，或你选定的那一个。"
+    },
+    "opt_savedName": {
+        "message": "名称"
+    },
+    "opt_savedQuery": {
+        "message": "Gmail 搜索"
+    },
+    "opt_savedQueryHint": {
+        "message": "Gmail 搜索，例如 has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "搜索范围"
+    },
+    "opt_savedAll": {
+        "message": "所有 Gmail 收件箱"
+    },
+    "opt_savedRemove": {
+        "message": "删除此搜索"
+    },
+    "opt_addSaved": {
+        "message": "添加搜索"
+    },
     "opt_forgotten": {
         "message": "已清除邮箱列表"
     },

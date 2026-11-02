@@ -452,6 +452,33 @@
   "opt_gmailCategoriesText": {
     "message": "プロモーション、ソーシャル、新着を、Gmail の分類のままリストの上にフィルタとして表示します。AI が仕分けている間は、その「ニュースレター」フィルタにプロモーションとソーシャルが含まれます。"
   },
+  "opt_savedSearches": {
+    "message": "保存した検索"
+  },
+  "opt_savedSearchesText": {
+    "message": "それぞれがパネルのフィルタになり、Gmail を検索します。すべての受信トレイ、または選んだ受信トレイが対象です。"
+  },
+  "opt_savedName": {
+    "message": "名前"
+  },
+  "opt_savedQuery": {
+    "message": "Gmail の検索"
+  },
+  "opt_savedQueryHint": {
+    "message": "Gmail の検索（例: has:attachment newer_than:30d）"
+  },
+  "opt_savedIn": {
+    "message": "検索する場所"
+  },
+  "opt_savedAll": {
+    "message": "すべての Gmail 受信トレイ"
+  },
+  "opt_savedRemove": {
+    "message": "この検索を削除"
+  },
+  "opt_addSaved": {
+    "message": "検索を追加"
+  },
   "opt_forgotten": {
     "message": "受信トレイの一覧を消去しました"
   },

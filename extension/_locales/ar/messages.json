@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "العروض الترويجية والشبكات الاجتماعية والتحديثات كمرشحات فوق القائمة، كما يصنّف Gmail بريدك. وما دام الذكاء الاصطناعي يصنّفه، يضمّ مرشّح «النشرات» العروض الترويجية والشبكات الاجتماعية."
     },
+    "opt_savedSearches": {
+        "message": "عمليات البحث المحفوظة"
+    },
+    "opt_savedSearchesText": {
+        "message": "يصبح كلٌّ منها مرشحًا في اللوحة يبحث في Gmail: في كل صناديق البريد أو في الصندوق الذي تختاره."
+    },
+    "opt_savedName": {
+        "message": "الاسم"
+    },
+    "opt_savedQuery": {
+        "message": "بحث Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "بحث Gmail، مثل has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "البحث في"
+    },
+    "opt_savedAll": {
+        "message": "كل صناديق Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "إزالة هذا البحث"
+    },
+    "opt_addSaved": {
+        "message": "إضافة بحث"
+    },
     "opt_forgotten": {
         "message": "مُسحت قائمة الصناديق"
     },

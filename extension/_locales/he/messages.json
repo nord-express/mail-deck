@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "קידומי מכירות, רשתות חברתיות ועדכונים כמסננים מעל הרשימה, כפי ש-Gmail ממיין את הדואר. כל עוד הבינה המלאכותית ממיינת, המסנן ״ניוזלטרים״ שלה כולל קידומי מכירות ורשתות חברתיות."
     },
+    "opt_savedSearches": {
+        "message": "חיפושים שמורים"
+    },
+    "opt_savedSearchesText": {
+        "message": "כל אחד הופך למסנן בחלונית שמחפש ב-Gmail: בכל התיבות או בזו שתבחר."
+    },
+    "opt_savedName": {
+        "message": "שם"
+    },
+    "opt_savedQuery": {
+        "message": "חיפוש ב-Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "חיפוש ב-Gmail, למשל has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "לחפש ב"
+    },
+    "opt_savedAll": {
+        "message": "כל תיבות Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "הסרת החיפוש"
+    },
+    "opt_addSaved": {
+        "message": "הוספת חיפוש"
+    },
     "opt_forgotten": {
         "message": "רשימת התיבות נוקתה"
     },

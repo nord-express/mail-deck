@@ -53,8 +53,9 @@ const DEFAULTS = {
   // an action in an open message opens the next one instead of the list
   'autoAdvance': false,
   'senderLogos': true,
-  // Gmail's own categories as chips over the panel's list
+  // Gmail's own categories as chips over the panel's list, and the searches saved as chips there
   'gmailCategories': true,
+  'savedSearches': [],
   // the other mail services turned on (core/services/)
   'services': [],
   // the AI (data/ai/ai.js): which engine, each one's model, what it does. The keys and the
@@ -385,6 +386,61 @@ $('add-rule').onclick = () => {
   paintRules();
   // the rows go in their order, so the new one is not always the last
   $('sound-rules').querySelector(`[data-rule="${free}"] input`).focus();
+};
+
+/* saved searches: each a chip in the panel that asks Gmail what it finds (data/panel/index.js) */
+const SAVED_MAX = 10;
+// What one may hold, from this page or a backup: a name, a Gmail search, and the address of the
+// inbox it searches, or none for every one. One without a search is not kept.
+const cleanSaved = list => (Array.isArray(list) ? list : []).filter(x => x && typeof x === 'object' && typeof x.query === 'string')
+  .map(x => ({
+    name: typeof x.name === 'string' ? x.name.trim().slice(0, 60) : '',
+    query: x.query.trim().slice(0, 500),
+    account: typeof x.account === 'string' && x.account.includes('@') && x.account.length <= 320 ? x.account : ''
+  })).filter(x => x.query).slice(0, SAVED_MAX);
+// the rows on the page: a new one stays here, unsaved, until it has a search
+let savedRows = null;
+const saveSaved = () => save({savedSearches: cleanSaved(savedRows)});
+const paintSaved = async () => {
+  savedRows ||= cleanSaved(prefs.savedSearches);
+  const {accounts} = await store.get({accounts: {}});
+  // the Gmail inboxes, and one a search names that is signed out now
+  const gmails = Object.keys(accounts).filter(name => name.includes('@') && !accounts[name]?.service);
+  $('saved-list').replaceChildren(...savedRows.map((x, i) => {
+    const name = h('input', {type: 'text', value: x.name, placeholder: t('savedName'), maxLength: 60});
+    name.setAttribute('aria-label', t('savedName'));
+    name.onchange = () => {
+      savedRows[i].name = name.value.trim();
+      saveSaved();
+    };
+    const query = h('input', {type: 'text', value: x.query, placeholder: t('savedQueryHint'), spellcheck: false, maxLength: 500, dir: 'auto'});
+    query.setAttribute('aria-label', t('savedQuery'));
+    query.onchange = () => {
+      savedRows[i].query = query.value.trim();
+      saveSaved();
+    };
+    const account = h('select', {}, h('option', {value: '', textContent: t('savedAll')}),
+      ...[...new Set([...gmails, x.account].filter(Boolean))].map(a => h('option', {value: a, textContent: a})));
+    account.value = x.account;
+    account.setAttribute('aria-label', t('savedIn'));
+    account.onchange = () => {
+      savedRows[i].account = account.value;
+      saveSaved();
+    };
+    const remove = h('button', {type: 'button', className: 'icon-btn', title: t('savedRemove')}, self.UI?.icon('close') || '×');
+    remove.setAttribute('aria-label', t('savedRemove'));
+    // the row and its button go: the focus stays in the list, on adding another
+    remove.onclick = () => {
+      savedRows.splice(i, 1);
+      saveSaved().then(paintSaved).then(() => $('add-saved').focus());
+    };
+    return h('div', {className: 'saved'}, name, query, account, remove);
+  }));
+  $('add-saved').hidden = savedRows.length >= SAVED_MAX;
+};
+$('add-saved').onclick = () => {
+  savedRows.push({name: '', query: '', account: ''});
+  paintSaved().then(() => $('saved-list').lastElementChild?.querySelector('input')?.focus());
 };
 
 /* inboxes */
@@ -1408,7 +1464,7 @@ const sanitize = data => {
     if (AI_SECRETS.includes(k)) {
       continue;
     }
-    if (k in DEFAULTS && k !== 'sync.settings' && k !== 'services' && typeof v === typeof DEFAULTS[k] &&
+    if (k in DEFAULTS && k !== 'sync.settings' && k !== 'services' && k !== 'savedSearches' && typeof v === typeof DEFAULTS[k] &&
       (typeof v !== 'number' || (Number.isFinite(v) && v >= 0)) && (!VALID[k] || VALID[k](v))) {
       out[k] = v;
     }
@@ -1428,6 +1484,9 @@ const sanitize = data => {
     }
     else if (k === 'services' && Array.isArray(v)) {
       out.services = v.filter(id => typeof id === 'string' && self.MailServices?.[id]);
+    }
+    else if (k === 'savedSearches' && Array.isArray(v)) {
+      out.savedSearches = cleanSaved(v);
     }
     else if (SOUND_FILES.includes(k) && (v === null || (k.endsWith('.file') ? soundFile(v) : soundMime(v)))) {
       out[k] = v;
@@ -1764,6 +1823,7 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   // the page's look on the settings as they are: More options, the search, the hero, word lists as chips
   self.UI?.start();
   paintRules();
+  paintSaved();
   syncNeeds();
   paintShortcut();
   // the background adds inboxes on its own; the copy catches up when the page opens
@@ -1791,6 +1851,10 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
     }
     if (ps.accounts) {
       followAccounts(ps.accounts.newValue || {});
+      // the inboxes a saved search may name; not while one is being written
+      if (!$('saved-list').contains(document.activeElement)) {
+        paintSaved();
+      }
     }
     followAI(ps);
   });

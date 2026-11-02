@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Promocions, Xarxes socials i Notificacions com a filtres sobre la llista, tal com Gmail ordena el correu. Mentre l’IA l’ordena, el seu filtre «Butlletins» inclou Promocions i Xarxes socials."
     },
+    "opt_savedSearches": {
+        "message": "Cerques desades"
+    },
+    "opt_savedSearchesText": {
+        "message": "Cadascuna esdevé un filtre del tauler que cerca a Gmail: a totes les safates o a la que triïs."
+    },
+    "opt_savedName": {
+        "message": "Nom"
+    },
+    "opt_savedQuery": {
+        "message": "Cerca de Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "Cerca de Gmail, p. ex. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Cerca a"
+    },
+    "opt_savedAll": {
+        "message": "Totes les safates de Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "Elimina aquesta cerca"
+    },
+    "opt_addSaved": {
+        "message": "Afegeix una cerca"
+    },
     "opt_forgotten": {
         "message": "Llista de safates esborrada"
     },

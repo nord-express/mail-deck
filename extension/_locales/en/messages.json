@@ -449,6 +449,33 @@
   "opt_gmailCategoriesText": {
     "message": "Promotions, Social and Updates as filters over the list, sorted by Gmail itself. While the AI sorts your mail, its Newsletters filter takes in Promotions and Social."
   },
+  "opt_savedSearches": {
+    "message": "Saved searches"
+  },
+  "opt_savedSearchesText": {
+    "message": "Each becomes a filter over the panel’s list that searches Gmail: every inbox, or the one you pick."
+  },
+  "opt_savedName": {
+    "message": "Name"
+  },
+  "opt_savedQuery": {
+    "message": "Gmail search"
+  },
+  "opt_savedQueryHint": {
+    "message": "Gmail search, e.g. has:attachment newer_than:30d"
+  },
+  "opt_savedIn": {
+    "message": "Search in"
+  },
+  "opt_savedAll": {
+    "message": "Every Gmail inbox"
+  },
+  "opt_savedRemove": {
+    "message": "Remove this search"
+  },
+  "opt_addSaved": {
+    "message": "Add a saved search"
+  },
   "opt_forgotten": {
     "message": "Inbox list cleared"
   },

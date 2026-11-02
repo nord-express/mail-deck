@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Промоции, Социални и Актуализации като филтри над списъка, както ги подрежда самият Gmail. Докато ИИ подрежда пощата, неговият филтър „Бюлетини“ обхваща Промоции и Социални."
     },
+    "opt_savedSearches": {
+        "message": "Запазени търсения"
+    },
+    "opt_savedSearchesText": {
+        "message": "Всяко става филтър в панела, който търси в Gmail: във всички пощенски кутии или в избраната."
+    },
+    "opt_savedName": {
+        "message": "Име"
+    },
+    "opt_savedQuery": {
+        "message": "Търсене в Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "Търсене в Gmail, напр. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Търсене в"
+    },
+    "opt_savedAll": {
+        "message": "Всички пощенски кутии в Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "Премахни търсенето"
+    },
+    "opt_addSaved": {
+        "message": "Добави търсене"
+    },
     "opt_forgotten": {
         "message": "Списъкът с кутии е изчистен"
     },

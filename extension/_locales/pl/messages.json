@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Oferty, Społeczności i Powiadomienia jako filtry nad listą, tak jak Gmail porządkuje pocztę. Gdy porządkuje ją AI, jej filtr „Newslettery” obejmuje Oferty i Społeczności."
     },
+    "opt_savedSearches": {
+        "message": "Zapisane wyszukiwania"
+    },
+    "opt_savedSearchesText": {
+        "message": "Każde staje się filtrem w panelu, który szuka w Gmailu: we wszystkich skrzynkach lub w wybranej."
+    },
+    "opt_savedName": {
+        "message": "Nazwa"
+    },
+    "opt_savedQuery": {
+        "message": "Wyszukiwanie w Gmailu"
+    },
+    "opt_savedQueryHint": {
+        "message": "Wyszukiwanie w Gmailu, np. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Szukaj w"
+    },
+    "opt_savedAll": {
+        "message": "Wszystkie skrzynki Gmaila"
+    },
+    "opt_savedRemove": {
+        "message": "Usuń to wyszukiwanie"
+    },
+    "opt_addSaved": {
+        "message": "Dodaj wyszukiwanie"
+    },
     "opt_forgotten": {
         "message": "Lista skrzynek wyczyszczona"
     },

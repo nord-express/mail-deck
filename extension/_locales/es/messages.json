@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Promociones, Social y Notificaciones como filtros sobre la lista, tal como Gmail ordena tu correo. Mientras la IA lo ordena, su filtro «Boletines» incluye Promociones y Social."
     },
+    "opt_savedSearches": {
+        "message": "Búsquedas guardadas"
+    },
+    "opt_savedSearchesText": {
+        "message": "Cada una se convierte en un filtro del panel que busca en Gmail: en todas las bandejas o en la que elijas."
+    },
+    "opt_savedName": {
+        "message": "Nombre"
+    },
+    "opt_savedQuery": {
+        "message": "Búsqueda de Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "Búsqueda de Gmail, p. ej. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Buscar en"
+    },
+    "opt_savedAll": {
+        "message": "Todas las bandejas de Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "Quitar esta búsqueda"
+    },
+    "opt_addSaved": {
+        "message": "Añadir una búsqueda"
+    },
     "opt_forgotten": {
         "message": "Lista de bandejas borrada"
     },

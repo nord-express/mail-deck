@@ -456,6 +456,12 @@
             <span class="text"><b data-i18n="gmailCategories">Show Gmail’s categories</b><small data-i18n="gmailCategoriesText">Promotions, Social and Updates as filters over the list, sorted by Gmail itself. While the AI sorts your mail, its Newsletters filter takes in Promotions and Social.</small></span>
             <input type="checkbox" role="switch" data-key="gmailCategories">
           </label>
+          <!-- searches the panel runs from a chip: a name, a Gmail search, every inbox or one -->
+          <div class="row stack" id="saved-row">
+            <span class="text"><b data-i18n="savedSearches">Saved searches</b><small data-i18n="savedSearchesText">Each becomes a filter over the panel’s list that searches Gmail: every inbox, or the one you pick.</small></span>
+            <div class="saved-list" id="saved-list"></div>
+            <button type="button" class="btn" id="add-saved"><i data-icon="plus"></i><span data-i18n="addSaved">Add a saved search</span></button>
+          </div>
           <div class="row">
             <span class="text"><b data-i18n="shortcut">Open the panel with</b></span>
             <span class="inline">

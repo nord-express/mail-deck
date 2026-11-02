@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Промоакции, Соцсети и Оповещения — фильтры над списком, как их разбирает сам Gmail. Пока почту разбирает ИИ, его фильтр «Рассылки» включает Промоакции и Соцсети."
     },
+    "opt_savedSearches": {
+        "message": "Сохранённые поиски"
+    },
+    "opt_savedSearchesText": {
+        "message": "Каждый становится фильтром в панели, который ищет в Gmail: во всех ящиках или в выбранном."
+    },
+    "opt_savedName": {
+        "message": "Название"
+    },
+    "opt_savedQuery": {
+        "message": "Поиск в Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "Поиск в Gmail, например has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Где искать"
+    },
+    "opt_savedAll": {
+        "message": "Все ящики Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "Удалить поиск"
+    },
+    "opt_addSaved": {
+        "message": "Добавить поиск"
+    },
     "opt_forgotten": {
         "message": "Список ящиков очищен"
     },

@@ -69,7 +69,10 @@
     ...(q.get('ai') ? {'ai.engine': q.get('ai') === 'off' ? 'off' : 'openai', 'ai.summary': q.get('summary') || 'click', 'ai.reply': q.get('reply') !== '0',
       'ai.buttons': q.get('buttons') !== '0'} : {}),
     // ?cats=off: Gmail's categories turned off in the settings
-    ...(q.get('cats') === 'off' ? {gmailCategories: false} : {})};
+    ...(q.get('cats') === 'off' ? {gmailCategories: false} : {}),
+    // ?saved=1: searches saved in the settings, one of them for an account not signed in, one empty
+    ...(q.get('saved') ? {savedSearches: [{name: 'Invoices', query: 'invoice', account: ''}, {name: 'Work invoices', query: ' invoice ', account: 'work@arbitron.example'},
+      {name: '', query: 'from:gone', account: 'gone@example.com'}, {name: 'Empty', query: '  ', account: ''}]} : {})};
   window.__sent = []; window.__set = []; window.__objs = objs;
   window.__tabUrl = q.get('url') || ''; window.__tabEvents = {};
   // what the panel copies (__copied): a page under test has no clipboard of its own to ask

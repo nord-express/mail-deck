@@ -1568,6 +1568,28 @@
     width: auto;
   }
 
+  /* saved searches: a name, the search (the widest), the inbox it asks, remove */
+  .saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .saved-list:empty {
+    display: none;
+  }
+  .saved {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr) minmax(0, 12em) auto;
+    align-items: center;
+    gap: 8px;
+  }
+  .saved input,
+  .saved select {
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+  }
+
   /* the count's colour */
   .swatches {
     display: flex;
@@ -2289,6 +2311,24 @@
     .rule .icon-btn {
       justify-self: start;
     }
+    /* its name beside remove, then the search, then the inbox, each as wide as the row */
+    .saved-list {
+      gap: 16px;
+    }
+    .saved {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .saved > * {
+      grid-column: 1 / -1;
+    }
+    .saved > :first-child {
+      grid-column: 1;
+    }
+    .saved > .icon-btn {
+      grid-row: 1;
+      grid-column: 2;
+    }
+
     .diag li {
       grid-template-columns: 18px minmax(0, 1fr);
     }

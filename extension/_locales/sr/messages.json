@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Промоције, Друштвене мреже и Ажурирања као филтери изнад листе, онако како Gmail разврстава пошту. Док пошту разврстава асистент, његов филтер „Билтени“ обухвата Промоције и Друштвене мреже."
     },
+    "opt_savedSearches": {
+        "message": "Сачуване претраге"
+    },
+    "opt_savedSearchesText": {
+        "message": "Свака постаје филтер у панелу који претражује Gmail: у свим сандучићима или у оном који изаберете."
+    },
+    "opt_savedName": {
+        "message": "Назив"
+    },
+    "opt_savedQuery": {
+        "message": "Gmail претрага"
+    },
+    "opt_savedQueryHint": {
+        "message": "Gmail претрага, нпр. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Претражи у"
+    },
+    "opt_savedAll": {
+        "message": "Сва Gmail сандучад"
+    },
+    "opt_savedRemove": {
+        "message": "Уклони ову претрагу"
+    },
+    "opt_addSaved": {
+        "message": "Додај претрагу"
+    },
     "opt_forgotten": {
         "message": "Списак сандучића је очишћен"
     },

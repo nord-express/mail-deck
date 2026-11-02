@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Promosyonlar, Sosyal ve Güncellemeler, Gmail’in postanızı sıraladığı gibi listenin üstünde filtre olarak. Yapay zekâ sıralarken onun Bültenler filtresi Promosyonlar ve Sosyal’i kapsar."
     },
+    "opt_savedSearches": {
+        "message": "Kayıtlı aramalar"
+    },
+    "opt_savedSearchesText": {
+        "message": "Her biri panelde Gmail’de arama yapan bir filtre olur: tüm gelen kutularında ya da seçtiğinizde."
+    },
+    "opt_savedName": {
+        "message": "Ad"
+    },
+    "opt_savedQuery": {
+        "message": "Gmail araması"
+    },
+    "opt_savedQueryHint": {
+        "message": "Gmail araması, ör. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Aranacak yer"
+    },
+    "opt_savedAll": {
+        "message": "Tüm Gmail gelen kutuları"
+    },
+    "opt_savedRemove": {
+        "message": "Bu aramayı kaldır"
+    },
+    "opt_addSaved": {
+        "message": "Arama ekle"
+    },
     "opt_forgotten": {
         "message": "Kutu listesi temizlendi"
     },

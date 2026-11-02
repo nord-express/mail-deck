@@ -452,6 +452,33 @@
   "opt_gmailCategoriesText": {
     "message": "Promozioni, Social e Aggiornamenti come filtri sopra l’elenco, come Gmail smista la tua posta. Mentre la smista l’IA, il suo filtro «Newsletter» comprende Promozioni e Social."
   },
+  "opt_savedSearches": {
+    "message": "Ricerche salvate"
+  },
+  "opt_savedSearchesText": {
+    "message": "Ognuna diventa un filtro del pannello che cerca in Gmail: in tutte le caselle o in quella che scegli."
+  },
+  "opt_savedName": {
+    "message": "Nome"
+  },
+  "opt_savedQuery": {
+    "message": "Ricerca Gmail"
+  },
+  "opt_savedQueryHint": {
+    "message": "Ricerca Gmail, ad es. has:attachment newer_than:30d"
+  },
+  "opt_savedIn": {
+    "message": "Cerca in"
+  },
+  "opt_savedAll": {
+    "message": "Tutte le caselle Gmail"
+  },
+  "opt_savedRemove": {
+    "message": "Rimuovi questa ricerca"
+  },
+  "opt_addSaved": {
+    "message": "Aggiungi una ricerca"
+  },
   "opt_forgotten": {
     "message": "Elenco delle caselle svuotato"
   },

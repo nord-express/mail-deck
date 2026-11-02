@@ -452,6 +452,33 @@
   "opt_gmailCategoriesText": {
     "message": "Promotions, Réseaux sociaux et Notifications en filtres au-dessus de la liste, tels que Gmail trie vos messages. Quand l’IA les trie, son filtre « Newsletters » réunit Promotions et Réseaux sociaux."
   },
+  "opt_savedSearches": {
+    "message": "Recherches enregistrées"
+  },
+  "opt_savedSearchesText": {
+    "message": "Chacune devient un filtre du panneau qui cherche dans Gmail : dans toutes les boîtes, ou celle que vous choisissez."
+  },
+  "opt_savedName": {
+    "message": "Nom"
+  },
+  "opt_savedQuery": {
+    "message": "Recherche Gmail"
+  },
+  "opt_savedQueryHint": {
+    "message": "Recherche Gmail, p. ex. has:attachment newer_than:30d"
+  },
+  "opt_savedIn": {
+    "message": "Chercher dans"
+  },
+  "opt_savedAll": {
+    "message": "Toutes les boîtes Gmail"
+  },
+  "opt_savedRemove": {
+    "message": "Supprimer cette recherche"
+  },
+  "opt_addSaved": {
+    "message": "Ajouter une recherche"
+  },
   "opt_forgotten": {
     "message": "Liste des boîtes effacée"
   },

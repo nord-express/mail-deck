@@ -1616,8 +1616,10 @@ kbd {
   stroke-width: 2.4;
 }
 
-/* Gmail's own categories, as the sorting's chips are, with Gmail's quieter colours */
-.chip.cat-chip svg {
+/* Gmail's own categories, as the sorting's chips are, with Gmail's quieter colours; and the
+   searches saved in the settings, by their names */
+.chip.cat-chip svg,
+.chip.saved-chip svg {
   width: 13px;
   height: 13px;
   stroke-width: 2.1;
@@ -1631,8 +1633,16 @@ kbd {
 .chip.updates-chip:not(.on) svg {
   color: #138fa8;
 }
+.chip.saved-chip:not(.on) svg {
+  color: var(--muted);
+}
 .cat-chip .short {
   display: none;
+}
+.saved-chip .name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* a row too long for the panel (fitChips), and a narrow panel: the kinds' chips say their count */
 .chips.tight .chip.sort-chip,
@@ -1684,6 +1694,9 @@ kbd {
   }
   .cat-chip .short {
     display: inline;
+  }
+  .saved-chip .name {
+    max-width: 110px;
   }
 }
 

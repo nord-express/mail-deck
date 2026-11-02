@@ -111,7 +111,8 @@ const state = {
   // that stand for it, never "Sign in" to someone signed in
   booting: false,
   unpinned: false, // the toolbar button is not pinned, and the hint about it not closed (pinHint)
-  categories: true // Gmail's own categories as chips over the list (Settings → Panel)
+  categories: true, // Gmail's own categories as chips over the list (Settings → Panel)
+  saved: [] // the searches saved in the settings, a chip each: [{name, query, account}]
 };
 let refreshing = false;
 // the list drawn as one types in the search: nothing it draws may ask the network (searchList)
@@ -484,7 +485,8 @@ let extraForgot = 0;
 const forgetExtra = () => {
   extraForgot = Date.now();
   extraSaved = Promise.resolve({});
-  chrome.storage.session.remove(EXTRA);
+  savedFound.clear();
+  chrome.storage.session.remove([EXTRA, SAVED]);
 };
 const loadExtra = async () => {
   if (state.objs.length === 0) {
@@ -1131,9 +1133,9 @@ const renderChips = objs => {
   }, state.site.domain, icon('close'));
   paintChipsEdge.observed ||= ($('chips').addEventListener('scroll', paintChipsEdge, {passive: true}), true);
   // the kinds of mail first: the assistant's sorting before Gmail's categories, its offer after
-  // them; then the site's mail
+  // them; then the site's mail and the searches saved in the settings
   const kinds = aiOn() ? [...sortChips(objs), ...categoryChips(objs)] : [...categoryChips(objs), ...sortChips(objs)];
-  const sorts = [...kinds, site].filter(Boolean);
+  const sorts = [...kinds, site, ...savedChips(objs)].filter(Boolean);
   const boxes = busy.length < 2 || state.search ? [] : [
     chip(null, t('all'), busy.reduce((p, o) => p + o.xml.fullcount, 0)),
     ...busy.map(o => chip(o, short(o, busy) + (o.xml.label ? ` [${o.xml.label}]` : ''), o.xml.fullcount))
@@ -1189,6 +1191,10 @@ const typeSearch = typed => {
   if (state.search.results === null && s.q) {
     say('');
   }
+  // words other than a saved search's let go of its chip
+  if (s.saved && !state.search.saved) {
+    renderChips(view());
+  }
   renderList(view());
 };
 // a mail with every word typed in its sender, subject or preview; a Gmail operator counts for
@@ -1216,7 +1222,8 @@ const closeSearch = () => {
 const say = text => {
   $('status').textContent = text;
 };
-const runSearch = q => {
+// saved: a search saved in the settings (savedChips), which keeps to its own account if it names one
+const runSearch = (q, saved = null) => {
   q = q.trim();
   if (!q) {
     return;
@@ -1224,9 +1231,26 @@ const runSearch = q => {
   // a mailbox watched through labels is one account all the same; only Gmail can be searched,
   // so a chip of another service searches every Gmail account
   const gmails = view().filter(o => !serviceOf(o));
-  const chosen = gmails.filter(o => o.xml.link === state.only);
-  const accounts = (chosen.length ? chosen : gmails).filter((o, i, l) => l.findIndex(x => x.xml.title === o.xml.title) === i);
-  const s = state.search = {typed: $('search-input').value, q, busy: true, results: null};
+  const chosen = saved ? gmails.filter(o => o.xml.title === saved.account) : gmails.filter(o => o.xml.link === state.only);
+  const accounts = (chosen.length || saved?.account ? chosen : gmails).filter((o, i, l) => l.findIndex(x => x.xml.title === o.xml.title) === i);
+  const key = saved ? savedKey(saved) : null;
+  const s = state.search = {typed: $('search-input').value, q, busy: true, results: null, saved: key};
+  const show = results => {
+    s.busy = false;
+    s.results = results;
+    results.flatMap(r => r.entries).filter(e => e.starred).forEach(e => state.starred.add(thread(e.link)));
+    render();
+    const n = results.reduce((p, r) => p + r.entries.length, 0);
+    say(results.every(r => r.failed) ? t('searchFailed') : n ? t('found', n) : t('searchNone'));
+  };
+  // what a saved search found a moment ago, of these same accounts at their places, shows at once
+  const kept = key && savedFound.get(key);
+  const back = kept && Date.now() - kept.at < SAVED_MS ?
+    kept.results.map(r => ({o: accounts.find(o => o.xml.title === r.account && o.xml.rootLink === r.rootLink), entries: r.entries, failed: false})) : [];
+  if (back.length && back.length === accounts.length && back.every(r => r.o)) {
+    show(back);
+    return;
+  }
   render();
   say(t('searching'));
   Promise.all(accounts.map(o => searchIn(o, q).then(entries => ({o, entries: entries || [], failed: !entries}))))
@@ -1234,13 +1258,48 @@ const runSearch = q => {
       if (state.search !== s) {
         return;
       }
-      s.busy = false;
-      s.results = results;
-      results.flatMap(r => r.entries).filter(e => e.starred).forEach(e => state.starred.add(thread(e.link)));
-      render();
-      const n = results.reduce((p, r) => p + r.entries.length, 0);
-      say(results.every(r => r.failed) ? t('searchFailed') : n ? t('found', n) : t('searchNone'));
+      if (key && results.every(r => !r.failed)) {
+        keepSaved(key, results);
+      }
+      show(results);
     });
+};
+/* searches saved in the settings: a chip each, which asks Gmail what the search finds */
+// What one found shows again at once for a while, in this panel and the next; an action here
+// forgets it (forgetExtra), since the mail it lists is not as it was
+const SAVED = 'saved.cache';
+const SAVED_MS = 2 * 60 * 1000;
+// key -> {at, results: [{account, rootLink, entries}]}
+const savedFound = new Map();
+const savedKey = x => (x.account || '') + '|' + x.query.trim();
+const keepSaved = (key, results) => {
+  const now = Date.now();
+  savedFound.set(key, {at: now, results: results.map(r => ({account: r.o.xml.title, rootLink: r.o.xml.rootLink, entries: r.entries}))});
+  [...savedFound].filter(([, f]) => now - f.at >= SAVED_MS).forEach(([k]) => savedFound.delete(k));
+  chrome.storage.session.set({[SAVED]: Object.fromEntries(savedFound)}).catch(() => {});
+};
+// the search field shows what is asked, for a look or a change; the chip keeps the focus
+const runSaved = x => {
+  $('search').hidden = false;
+  $('search-input').value = x.query.trim();
+  runSearch(x.query, x);
+};
+// After the kinds of mail: those with a Gmail account signed in to ask, the one shown pressed. A
+// click asks Gmail, a second one (or Esc) goes back to the list; its tooltip says the search.
+const savedChips = objs => {
+  const gmails = new Set(objs.filter(o => !serviceOf(o)).map(o => o.xml.title));
+  return state.saved.filter((x, i, all) => x.query.trim() && (!x.account || gmails.has(x.account)) && gmails.size > 0 &&
+    all.findIndex(y => savedKey(y) === savedKey(x)) === i).map(x => {
+    const on = state.search?.saved === savedKey(x);
+    return h('button', {
+      'class': 'chip saved-chip' + (on ? ' on' : ''),
+      'type': 'button',
+      'aria-pressed': String(on),
+      'data-tip': x.query.trim() + (x.account ? ' · ' + x.account : ''),
+      'data-focus': 'chip:saved:' + savedKey(x),
+      'onclick': () => on ? closeSearch() : runSaved(x)
+    }, icon('search'), h('span', {class: 'name'}, x.name.trim() || x.query.trim()));
+  });
 };
 const note = text => h('div', {class: 'empty'}, h('p', {}, text));
 // lines that stand for mail on its way
@@ -4255,6 +4314,10 @@ const prefsChanged = prefs => {
   if ('gmailCategories' in prefs) {
     state.categories = prefs.gmailCategories !== false;
   }
+  if ('savedSearches' in prefs) {
+    state.saved = (Array.isArray(prefs.savedSearches) ? prefs.savedSearches : []).filter(x => typeof x?.query === 'string')
+      .map(x => ({name: typeof x.name === 'string' ? x.name : '', query: x.query, account: typeof x.account === 'string' ? x.account : ''}));
+  }
 };
 // what the panel reads of Settings → AI (the keys stay with ai.js)
 const AI_PREFS = {'ai.engine': 'off', 'ai.summary': 'click', 'ai.reply': true, 'ai.buttons': true};
@@ -4269,7 +4332,7 @@ const markSeen = () => {
 document.addEventListener('visibilitychange', markSeen);
 chrome.storage.onChanged.addListener((ps, area) => {
   const changed = Object.fromEntries(['panelScale', 'readOnOpen', 'accounts', 'accountOrder', 'senderLogos', 'avatars', 'autoAdvance', 'badge.count',
-    'gmailCategories'].filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
+    'gmailCategories', 'savedSearches'].filter(k => area === 'local' && ps[k]).map(k => [k, ps[k].newValue]));
   if (Object.keys(changed).length) {
     prefsChanged(changed);
     render();
@@ -4309,15 +4372,16 @@ const endBoot = () => {
 };
 Promise.all([
   chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, avatars: {},
-    autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true}),
+    autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true, savedSearches: []}),
   // no default for the accounts: none at all is not the same as none read yet
-  chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos']),
+  chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos', SAVED]),
   // the files the session knows, for the first lines to show theirs
   gmail.filesLoad()
 ]).then(([local, session]) => {
   prefsChanged(local);
   markSeen();
   Object.entries(session.logos || {}).forEach(([domain, has]) => logos.set(domain, has));
+  Object.entries(session[SAVED] || {}).forEach(([key, found]) => savedFound.set(key, found));
   const cached = session['cached-objects'];
   // (an update from the background may have come first: drawn says the list was drawn)
   if (cached === undefined && session['accounts.count'] === undefined && drawn === '' && Object.keys(state.accounts).some(a => a.includes('@'))) {

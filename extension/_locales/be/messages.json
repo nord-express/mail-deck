@@ -449,6 +449,33 @@
   "opt_gmailCategoriesText": {
     "message": "Акцыі, Сацсеткі і Апавяшчэнні — фільтры над спісам, як іх разбірае сам Gmail. Пакуль пошту разбірае ШІ, яго фільтр «Рассылкі» ўключае Акцыі і Сацсеткі."
   },
+  "opt_savedSearches": {
+    "message": "Захаваныя пошукі"
+  },
+  "opt_savedSearchesText": {
+    "message": "Кожны становіцца фільтрам на панэлі, які шукае ў Gmail: ва ўсіх скрынях або ў выбранай."
+  },
+  "opt_savedName": {
+    "message": "Назва"
+  },
+  "opt_savedQuery": {
+    "message": "Пошук у Gmail"
+  },
+  "opt_savedQueryHint": {
+    "message": "Пошук у Gmail, напрыклад has:attachment newer_than:30d"
+  },
+  "opt_savedIn": {
+    "message": "Дзе шукаць"
+  },
+  "opt_savedAll": {
+    "message": "Усе скрыні Gmail"
+  },
+  "opt_savedRemove": {
+    "message": "Выдаліць пошук"
+  },
+  "opt_addSaved": {
+    "message": "Дадаць пошук"
+  },
   "opt_forgotten": {
     "message": "Спіс скрынь ачышчаны"
   },

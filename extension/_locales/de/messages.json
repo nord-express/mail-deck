@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Werbung, Soziale Netzwerke und Benachrichtigungen als Filter über der Liste, so wie Gmail Ihre E-Mails sortiert. Solange die KI sortiert, umfasst ihr Filter „Newsletter“ Werbung und Soziale Netzwerke."
     },
+    "opt_savedSearches": {
+        "message": "Gespeicherte Suchen"
+    },
+    "opt_savedSearchesText": {
+        "message": "Jede wird zu einem Filter im Panel, der in Gmail sucht: in allen Postfächern oder im gewählten."
+    },
+    "opt_savedName": {
+        "message": "Name"
+    },
+    "opt_savedQuery": {
+        "message": "Gmail-Suche"
+    },
+    "opt_savedQueryHint": {
+        "message": "Gmail-Suche, z. B. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Suchen in"
+    },
+    "opt_savedAll": {
+        "message": "Alle Gmail-Postfächer"
+    },
+    "opt_savedRemove": {
+        "message": "Diese Suche entfernen"
+    },
+    "opt_addSaved": {
+        "message": "Suche hinzufügen"
+    },
     "opt_forgotten": {
         "message": "Postfachliste geleert"
     },

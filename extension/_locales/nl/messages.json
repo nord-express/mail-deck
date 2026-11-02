@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Reclame, Sociaal en Updates als filters boven de lijst, zoals Gmail je mail sorteert. Zolang de AI sorteert, omvat het filter ‘Nieuwsbrieven’ Reclame en Sociaal."
     },
+    "opt_savedSearches": {
+        "message": "Opgeslagen zoekopdrachten"
+    },
+    "opt_savedSearchesText": {
+        "message": "Elke wordt een filter in het paneel dat in Gmail zoekt: in alle inboxen of in de gekozen."
+    },
+    "opt_savedName": {
+        "message": "Naam"
+    },
+    "opt_savedQuery": {
+        "message": "Gmail-zoekopdracht"
+    },
+    "opt_savedQueryHint": {
+        "message": "Gmail-zoekopdracht, bijv. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Zoeken in"
+    },
+    "opt_savedAll": {
+        "message": "Alle Gmail-inboxen"
+    },
+    "opt_savedRemove": {
+        "message": "Deze zoekopdracht verwijderen"
+    },
+    "opt_addSaved": {
+        "message": "Zoekopdracht toevoegen"
+    },
     "opt_forgotten": {
         "message": "Lijst met postvakken gewist"
     },

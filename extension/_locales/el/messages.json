@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Προσφορές, Κοινωνικά δίκτυα και Ενημερώσεις ως φίλτρα πάνω από τη λίστα, όπως ταξινομεί το Gmail την αλληλογραφία σας. Όσο την ταξινομεί η τεχνητή νοημοσύνη, το φίλτρο «Ενημερωτικά» περιλαμβάνει τις Προσφορές και τα Κοινωνικά δίκτυα."
     },
+    "opt_savedSearches": {
+        "message": "Αποθηκευμένες αναζητήσεις"
+    },
+    "opt_savedSearchesText": {
+        "message": "Καθεμία γίνεται φίλτρο στον πίνακα που αναζητά στο Gmail: σε όλα τα γραμματοκιβώτια ή σε αυτό που θα επιλέξετε."
+    },
+    "opt_savedName": {
+        "message": "Όνομα"
+    },
+    "opt_savedQuery": {
+        "message": "Αναζήτηση Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "Αναζήτηση Gmail, π.χ. has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Αναζήτηση σε"
+    },
+    "opt_savedAll": {
+        "message": "Όλα τα γραμματοκιβώτια Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "Αφαίρεση αναζήτησης"
+    },
+    "opt_addSaved": {
+        "message": "Προσθήκη αναζήτησης"
+    },
     "opt_forgotten": {
         "message": "Η λίστα γραμματοκιβωτίων διαγράφηκε"
     },

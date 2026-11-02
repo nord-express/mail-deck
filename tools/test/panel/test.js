@@ -1568,6 +1568,54 @@
       out.withoutSorting = [...$('chips').querySelectorAll('.sort-chip, .cat-chip')].map(c => c.dataset.focus.slice(5));
     }
 
+    if (scenario === 'saved') {
+      // a chip for each search saved for an account signed in, after the kinds of mail
+      const $ = id => document.getElementById(id);
+      const chip = name => [...$('chips').querySelectorAll('.saved-chip')].find(c => c.textContent === name);
+      const searches = () => sent('gmail.search').filter(m => m.query === 'invoice').map(m => m.url.slice(-1));
+      await until(() => $('chips').querySelector('.saved-chip'));
+      out.chips = [...$('chips').children].map(c => c.matches('.chip-sep') ? '|' : c.matches('.saved-chip') ? c.textContent : c.matches('.cat-chip') ? 'cat' : c.matches('.ai-offer') ? 'ai' : 'box');
+      out.tip = chip('Work invoices').dataset.tip;
+      // a click asks every Gmail account, the search field shows what, the chip keeps the focus
+      chip('Invoices').focus();
+      chip('Invoices').click();
+      await until(() => rows() > 0 && !state.search?.busy);
+      out.asked = searches();
+      out.field = !$('search').hidden && $('search-input').value === 'invoice';
+      out.pressed = chip('Invoices')?.getAttribute('aria-pressed') === 'true' && document.activeElement === chip('Invoices');
+      out.found = rows();
+      out.kept = Object.keys(chrome.storage.session.area['saved.cache'] || {});
+      // a second click goes back to the list; a third shows what was found, asking nothing
+      chip('Invoices').click();
+      await wait(50);
+      out.closed = $('search').hidden && !state.search && Boolean($('list').querySelector('.section-head .grip'));
+      chip('Invoices').click();
+      out.atOnce = rows() === out.found && searches().length === 3;
+      // one for an account asks that account only
+      chip('Work invoices').click();
+      await until(() => !state.search?.busy);
+      out.work = searches().slice(3);
+      // an action forgets what was found: the chip asks again
+      chip('Invoices').click();
+      await wait(50);
+      act('rd', [document.querySelector('#list .row').dataset.link]);
+      await wait(300);
+      chip('Invoices').click();
+      await wait(50);
+      chip('Invoices').click();
+      await until(() => !state.search?.busy);
+      out.askedAgain = searches().length;
+      // words typed in the field are a search of their own: the chip lets go; Esc closes
+      $('search-input').value = 'invoice 2';
+      $('search-input').dispatchEvent(new Event('input'));
+      await wait(50);
+      out.typedLetGo = !$('chips').querySelector('.saved-chip.on');
+      key($('search-input'), 'Escape');
+      await wait(50);
+      out.esc = !state.search && $('search').hidden;
+      out.consoleClean = window.__errors.length === 0 || window.__errors;
+    }
+
     if (scenario === 'wide') {
       // a 700px newsletter fits the reader without a sideways scroll
       document.querySelector('#list .row').click();

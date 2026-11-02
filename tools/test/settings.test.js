@@ -386,6 +386,62 @@ check('Gmail\'s categories in the panel: on by default, a switch under Panel, in
     assert.ok(en[key]?.message, key);
   }
 });
+check('saved searches: none by default, in a backup only as they may be', () => {
+  assert.deepStrictEqual([...page('DEFAULTS').savedSearches], []);
+  const sanitize = page('sanitize');
+  // a name, a search and an address or none; one without a search, or not an object, is left out
+  const out = sanitize({savedSearches: [
+    {name: ' Invoices ', query: ' has:attachment invoice ', account: 'a@gmail.com', notify: true},
+    {name: 'No search', query: '   '},
+    {query: 'from:bank', account: 'not an address'},
+    'junk', null, {name: 5, query: 7}
+  ]});
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(out.savedSearches)), [
+    {name: 'Invoices', query: 'has:attachment invoice', account: 'a@gmail.com'},
+    {name: '', query: 'from:bank', account: ''}]);
+  assert.strictEqual(sanitize({savedSearches: Array.from({length: 30}, (_, i) => ({query: 'q' + i}))}).savedSearches.length, 10);
+  assert.deepStrictEqual({...sanitize({savedSearches: 'invoice'})}, {});
+  assert.ok(/id="saved-list"/.test(html) && /id="add-saved"/.test(html));
+  for (const key of ['opt_savedSearches', 'opt_savedSearchesText', 'opt_savedName', 'opt_savedQuery',
+    'opt_savedQueryHint', 'opt_savedIn', 'opt_savedAll', 'opt_savedRemove', 'opt_addSaved']) {
+    assert.ok(en[key]?.message, key);
+  }
+});
+check('a saved search is a row of its name, its search and its inbox; one with a search is saved, a new one waits for it', async () => {
+  local.accounts = {'a@gmail.com': {}, 'b@gmail.com': {}, 'c@yahoo.com': {service: 'yahoo'}};
+  page(`savedRows = null; prefs.savedSearches = [{name: 'Invoices', query: 'invoice', account: ''}, {name: 'Old', query: 'from:x', account: 'gone@gmail.com'}]`);
+  await page('paintSaved()');
+  const rows = () => element('saved-list').kids;
+  assert.strictEqual(rows().length, 2);
+  const [name, query, account, remove] = rows()[1].kids;
+  assert.deepStrictEqual([name.value, query.value, account.value], ['Old', 'from:x', 'gone@gmail.com']);
+  // every Gmail inbox, each Gmail address, and the one it names though signed out; no other service
+  assert.deepStrictEqual(account.kids.map(o => o.value), ['', 'a@gmail.com', 'b@gmail.com', 'gone@gmail.com']);
+  assert.strictEqual(remove.getAttribute('aria-label'), msg('opt_savedRemove'));
+  set.length = 0;
+  query.value = ' from:y ';
+  query.onchange();
+  await tick();
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(set.at(-1).savedSearches)), [{name: 'Invoices', query: 'invoice', account: ''}, {name: 'Old', query: 'from:y', account: 'gone@gmail.com'}]);
+  // added: on the page at once, saved once it has a search
+  set.length = 0;
+  element('add-saved').onclick();
+  await tick();
+  assert.strictEqual(rows().length, 3);
+  assert.strictEqual(set.length, 0);
+  rows()[2].kids[1].value = 'is:starred';
+  rows()[2].kids[1].onchange();
+  rows()[2].kids[2].value = 'b@gmail.com';
+  rows()[2].kids[2].onchange();
+  await tick();
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(set.at(-1).savedSearches)).at(-1), {name: '', query: 'is:starred', account: 'b@gmail.com'});
+  // removed: gone from the page and from what is saved
+  rows()[0].kids[3].onclick();
+  await tick();
+  await tick();
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(set.at(-1).savedSearches)).map(x => x.query), ['from:y', 'is:starred']);
+  assert.strictEqual(rows().length, 2);
+});
 check('an export holds the new settings, not the time the panel was last opened', async () => {
   Object.assign(local, {'badge.count': 'new', 'badge.seen': 123, 'notify.repeat': 30});
   const out = await page('collect(false)');

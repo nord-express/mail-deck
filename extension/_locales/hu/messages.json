@@ -452,6 +452,33 @@
   "opt_gmailCategoriesText": {
     "message": "Promóciók, Közösségi és Frissítések szűrőként a lista fölött, ahogy a Gmail rendezi a leveleket. Amíg az MI rendez, a Hírlevelek szűrője magában foglalja a Promóciókat és a Közösségit."
   },
+  "opt_savedSearches": {
+    "message": "Mentett keresések"
+  },
+  "opt_savedSearchesText": {
+    "message": "Mindegyik szűrő lesz a panelen, amely a Gmailben keres: minden postafiókban vagy a kiválasztottban."
+  },
+  "opt_savedName": {
+    "message": "Név"
+  },
+  "opt_savedQuery": {
+    "message": "Gmail-keresés"
+  },
+  "opt_savedQueryHint": {
+    "message": "Gmail-keresés, pl. has:attachment newer_than:30d"
+  },
+  "opt_savedIn": {
+    "message": "Keresés itt"
+  },
+  "opt_savedAll": {
+    "message": "Minden Gmail-postafiók"
+  },
+  "opt_savedRemove": {
+    "message": "Keresés törlése"
+  },
+  "opt_addSaved": {
+    "message": "Keresés hozzáadása"
+  },
   "opt_forgotten": {
     "message": "Postafióklista törölve"
   },

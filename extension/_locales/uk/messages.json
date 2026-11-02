@@ -452,6 +452,33 @@
     "opt_gmailCategoriesText": {
         "message": "Промоакції, Соцмережі та Сповіщення — фільтри над списком, як їх розбирає сам Gmail. Поки пошту розбирає ШІ, його фільтр «Розсилки» охоплює Промоакції та Соцмережі."
     },
+    "opt_savedSearches": {
+        "message": "Збережені пошуки"
+    },
+    "opt_savedSearchesText": {
+        "message": "Кожен стає фільтром на панелі, що шукає в Gmail: в усіх скриньках або у вибраній."
+    },
+    "opt_savedName": {
+        "message": "Назва"
+    },
+    "opt_savedQuery": {
+        "message": "Пошук у Gmail"
+    },
+    "opt_savedQueryHint": {
+        "message": "Пошук у Gmail, наприклад has:attachment newer_than:30d"
+    },
+    "opt_savedIn": {
+        "message": "Де шукати"
+    },
+    "opt_savedAll": {
+        "message": "Усі скриньки Gmail"
+    },
+    "opt_savedRemove": {
+        "message": "Видалити пошук"
+    },
+    "opt_addSaved": {
+        "message": "Додати пошук"
+    },
     "opt_forgotten": {
         "message": "Список скриньок очищено"
     },
