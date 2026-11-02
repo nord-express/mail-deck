@@ -1685,6 +1685,12 @@
   "ai_err_declined": {
     "message": "A modell elutasította ezt a kérést."
   },
+  "ai_err_no_server": {
+    "message": "A gépen futó MI-kiszolgáló nem válaszolt. Biztosan fut?"
+  },
+  "ai_err_origin": {
+    "message": "A gépen futó MI-kiszolgáló elutasította a Mail Decket. Lásd: Beállítások → Mesterséges intelligencia."
+  },
   "ai_err_limit": {
     "message": "Betelt a ChatGPT használati kerete."
   },

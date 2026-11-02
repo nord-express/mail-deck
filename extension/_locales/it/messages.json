@@ -1697,6 +1697,12 @@
   "ai_err_declined": {
     "message": "Il modello ha rifiutato questa richiesta."
   },
+  "ai_err_no_server": {
+    "message": "Il server IA su questo computer non ha risposto. È in esecuzione?"
+  },
+  "ai_err_origin": {
+    "message": "Il server IA su questo computer ha rifiutato Mail Deck. Vedi Impostazioni → IA."
+  },
   "ai_err_limit": {
     "message": "Limite di utilizzo di ChatGPT raggiunto."
   },

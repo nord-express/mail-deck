@@ -1697,6 +1697,12 @@
   "ai_err_declined": {
     "message": "モデルがこの依頼を断りました。"
   },
+  "ai_err_no_server": {
+    "message": "このコンピュータの AI サーバーから応答がありません。起動していますか？"
+  },
+  "ai_err_origin": {
+    "message": "このコンピュータの AI サーバーが Mail Deck を拒否しました。設定 → AI アシスタントをご覧ください。"
+  },
   "ai_err_limit": {
     "message": "ChatGPT の利用上限に達しました。"
   },

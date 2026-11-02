@@ -823,7 +823,8 @@ check('prefs and state: defaults, the key only for a cloud engine, the reasons',
   const t = load({lang: 'he'});
   assert.deepStrictEqual(plain(await t.AI.prefs()), {engine: 'off', model: '', summary: 'click', reply: true, buttons: true, fast: true});
   assert.deepStrictEqual(plain(await t.AI.state()), {ok: false, reason: 'off', lang: 'he'});
-  assert.deepStrictEqual(plain(t.AI.ENGINES), ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai']);
+  assert.deepStrictEqual(plain(t.AI.ENGINES), ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek',
+    'mistral', 'openrouter', 'groq', 'qwen', 'kimi', 'yandex', 'local']);
   const b = load({local: {'ai.engine': 'builtin', 'ai.openai.key': 'sk-x', 'ai.summary': 'auto', 'ai.reply': false, 'ai.buttons': false, 'ai.fast': false}});
   assert.deepStrictEqual(plain(await b.AI.prefs()), {engine: 'builtin', model: '', summary: 'auto', reply: false, buttons: false, fast: false});
   // the plan has a model, but no key: its sign-in is read where it is used
@@ -844,7 +845,7 @@ check('prefs and state: defaults, the key only for a cloud engine, the reasons',
   const d = load({local: {'ai.engine': 'openai'}});
   assert.strictEqual((await d.AI.state()).reason, 'no-key');
   await failsWith(d.AI.summarize(THREAD), 'auth');
-  const e = load({local: {'ai.engine': 'gemini'}});
+  const e = load({local: {'ai.engine': 'cohere'}});
   assert.strictEqual((await e.AI.prefs()).engine, 'off');
   await failsWith(e.AI.summarize(THREAD), 'unavailable');
   assert.strictEqual(e.requests.length, 0);
@@ -1529,6 +1530,585 @@ check('zai: the models are Z.ai\'s, listed here; a key is checked with the small
   u.answers.push(stream(zaiEvents(SUMMARY)));
   await u.AI.summarize(THREAD);
   assert.deepStrictEqual(u.requests.map(x => x.body.model), ['glm-5.3']);
+});
+
+/* the providers in OpenAI's form: one table */
+// each provider as a check sees it: its settings, where its requests go, what they carry besides
+// the key, the request a summary makes, the JSON it asks for
+const COMPAT = {
+  gemini: {local: {'ai.gemini.key': 'AIzaSECRETSECRET', 'ai.gemini.model': 'gemini-3.8-flash'},
+    url: 'https://generativelanguage.googleapis.com/v1beta/openai/', auth: 'Bearer AIzaSECRETSECRET',
+    body: {model: 'gemini-3.8-flash', reasoning_effort: 'low', max_tokens: 2000 + 4000}, json: 'json_schema'},
+  xai: {local: {'ai.xai.key': 'xai-SECRETSECRET', 'ai.xai.model': 'grok-4.7'},
+    url: 'https://api.x.ai/v1/', auth: 'Bearer xai-SECRETSECRET',
+    body: {model: 'grok-4.7', reasoning_effort: 'low', max_completion_tokens: 2000 + 4000}, json: 'json_schema'},
+  deepseek: {local: {'ai.deepseek.key': 'sk-SECRETSECRET', 'ai.deepseek.model': 'deepseek-flash'},
+    url: 'https://api.deepseek.com/', auth: 'Bearer sk-SECRETSECRET',
+    body: {model: 'deepseek-flash', thinking: {type: 'disabled'}, max_tokens: 2000}, json: 'json_object'},
+  mistral: {local: {'ai.mistral.key': 'MSECRETSECRET', 'ai.mistral.model': 'mistral-small-latest'},
+    url: 'https://api.mistral.ai/v1/', auth: 'Bearer MSECRETSECRET',
+    body: {model: 'mistral-small-latest', reasoning_effort: 'none', max_tokens: 2000}, json: 'json_schema'},
+  openrouter: {local: {'ai.openrouter.key': 'sk-or-v1-SECRETSECRET', 'ai.openrouter.model': 'google/gemini-3.8-flash'},
+    url: 'https://openrouter.ai/api/v1/', auth: 'Bearer sk-or-v1-SECRETSECRET',
+    headers: {'http-referer': 'https://nord-express.github.io/mail-deck/', 'x-title': 'Mail Deck', 'x-openrouter-title': 'Mail Deck'},
+    body: {model: 'google/gemini-3.8-flash', reasoning: {effort: 'low'}, max_tokens: 2000 + 4000}, json: 'json_schema'},
+  groq: {local: {'ai.groq.key': 'gsk_SECRETSECRET', 'ai.groq.model': 'openai/gpt-oss-120b'},
+    url: 'https://api.groq.com/openai/v1/', auth: 'Bearer gsk_SECRETSECRET',
+    body: {model: 'openai/gpt-oss-120b', reasoning_effort: 'low', include_reasoning: false, max_completion_tokens: 3000}, json: 'json_schema'},
+  qwen: {local: {'ai.qwen.key': 'sk-SECRETSECRET', 'ai.qwen.model': 'qwen3.8-flash'},
+    url: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/', auth: 'Bearer sk-SECRETSECRET',
+    body: {model: 'qwen3.8-flash', enable_thinking: false, max_tokens: 2000}, json: 'json_object'},
+  kimi: {local: {'ai.kimi.key': 'sk-SECRETSECRET', 'ai.kimi.model': 'kimi-k3.1-pro'},
+    url: 'https://api.moonshot.ai/v1/', auth: 'Bearer sk-SECRETSECRET',
+    body: {model: 'kimi-k3.1-pro', reasoning_effort: 'low', max_completion_tokens: 2000 + 4000}, json: 'json_schema'},
+  yandex: {local: {'ai.yandex.key': 'AQVNSECRETSECRET', 'ai.yandex.folder': 'b1gfolder01', 'ai.yandex.model': 'aliceai-llm/latest'},
+    url: 'https://ai.api.cloud.yandex.net/v1/', auth: 'Bearer AQVNSECRETSECRET', headers: {'openai-project': 'b1gfolder01'},
+    body: {model: 'gpt://b1gfolder01/aliceai-llm/latest', max_tokens: 2000}, json: 'json_object'},
+  local: {local: {'ai.local.base': 'http://localhost:11434/v1', 'ai.local.model': 'llama3.2:latest'},
+    url: 'http://localhost:11434/v1/', auth: undefined,
+    body: {model: 'llama3.2:latest', reasoning_effort: 'none', max_tokens: 2000 + 4000}, json: 'json_schema'}
+};
+const compatOf = (engine, extra = {}) => ({'ai.engine': engine, ...COMPAT[engine].local, ...extra});
+const compatJSON = (content, {model = 'm', finish = 'stop'} = {}) => json(200, {id: 'c1', model,
+  choices: [{index: 0, finish_reason: finish, message: {role: 'assistant', content}}]});
+const REPLY = '{"results": [{"i": 1, "reply": true, "why": "Asks for the file"}]}';
+
+check('the table\'s providers: a summary streams to each one\'s address, with its key, its headers and its way of thinking briefly', async () => {
+  for (const [engine, want] of Object.entries(COMPAT)) {
+    const t = load({local: compatOf(engine)});
+    t.answers.push(stream(openaiEvents(SUMMARY, {model: want.body.model})));
+    const s = await t.AI.summarize(THREAD);
+    const r = t.requests[0];
+    assert.strictEqual(r.url, want.url + 'chat/completions', engine);
+    assert.strictEqual(r.method, 'POST');
+    assert.strictEqual(r.headers.authorization, want.auth, engine);
+    assert.strictEqual(r.init.credentials, 'omit');
+    for (const [k, v] of Object.entries(want.headers || {})) {
+      assert.strictEqual(r.headers[k], v, engine + ' ' + k);
+    }
+    for (const [k, v] of Object.entries(want.body)) {
+      assert.deepStrictEqual(r.body[k], v, engine + ' ' + k);
+    }
+    assert.strictEqual(r.body.stream, true);
+    assert.deepStrictEqual(r.body.messages.map(m => m.role), ['system', 'user']);
+    for (const k of ['temperature', 'top_p', 'presence_penalty', 'frequency_penalty', 'stop', 'response_format', 'provider']) {
+      assert.ok(!(k in r.body), engine + ' ' + k);
+    }
+    assert.strictEqual(s.points.length, 2, engine);
+    assert.strictEqual(s.engine, engine);
+    // the model as the request named it: Yandex's without its folder
+    assert.strictEqual(s.model, engine === 'yandex' ? 'aliceai-llm/latest' : want.body.model, engine);
+    assert.ok(!JSON.stringify(s).includes('SECRET'));
+  }
+});
+
+check('the table\'s providers: JSON as each takes it, a schema or an object, read past any prose; OpenRouter asks for a provider that takes it', async () => {
+  for (const [engine, want] of Object.entries(COMPAT)) {
+    const t = load({local: compatOf(engine, {'ai.fast': false})});
+    t.answers.push(compatJSON('Here: ' + REPLY + ' Done.'));
+    const out = await t.AI.needsReply({items: [person('a', 'anna@work.test')]});
+    const r = t.requests[0];
+    assert.strictEqual(r.body.response_format.type, want.json, engine);
+    if (want.json === 'json_schema') {
+      assert.strictEqual(r.body.response_format.json_schema.strict, true);
+      assert.ok(r.body.response_format.json_schema.schema.properties, engine);
+    }
+    assert.deepStrictEqual(r.body.provider, engine === 'openrouter' ? {require_parameters: true} : undefined, engine);
+    assert.ok(!('stream' in r.body));
+    assert.match(r.body.messages[0].content, /JSON/);
+    assert.deepStrictEqual(plain(out.get('a')), {reply: true, important: false, bulk: false, why: 'Asks for the file'}, engine);
+  }
+  // Qwen's JSON comes whole only without a cap
+  const q = load({local: compatOf('qwen')});
+  q.answers.push(compatJSON(REPLY));
+  await q.AI.needsReply({items: [person('a', 'anna@work.test')]});
+  assert.ok(!('max_tokens' in q.requests[0].body) && !('max_completion_tokens' in q.requests[0].body));
+});
+
+check('the table\'s providers: thinking per model, briefly or not at all, with room where it counts against the answer', async () => {
+  const body = async (engine, model, run = 'summary', extra = {}) => {
+    const t = load({local: compatOf(engine, {[`ai.${engine}.model`]: model, ...extra})});
+    t.answers.push(run === 'summary' ? stream(openaiEvents(SUMMARY)) : compatJSON(REPLY));
+    await (run === 'summary' ? t.AI.summarize(THREAD) : t.AI.needsReply({items: [person('a', 'anna@work.test')]}));
+    return t.requests[0].body;
+  };
+  // Grok 4.3 does not think for a quick task; 4.5 and later always do; a non-reasoning model is told nothing
+  assert.deepStrictEqual([(await body('xai', 'grok-4.3', 'reply')).reasoning_effort, (await body('xai', 'grok-4.3', 'reply')).max_completion_tokens],
+    ['none', 1500]);
+  assert.strictEqual((await body('xai', 'grok-4.3')).reasoning_effort, 'low');
+  assert.strictEqual((await body('xai', 'grok-4.7', 'reply', {'ai.fast': false})).reasoning_effort, 'low');
+  assert.ok(!('reasoning_effort' in await body('xai', 'grok-4.20-0309-non-reasoning')));
+  // Mistral Large 4 thinks briefly, with room; a small model not at all
+  const large = await body('mistral', 'mistral-large-4');
+  assert.deepStrictEqual([large.reasoning_effort, large.max_tokens], ['low', 6000]);
+  assert.ok(!('reasoning_effort' in await body('mistral', 'ministral-8b-2512')));
+  // Groq: gpt-oss briefly and its thinking not sent back; Qwen there not at all; within the free plan's minute
+  const qwen = await body('groq', 'qwen/qwen3.8-27b');
+  assert.deepStrictEqual([qwen.reasoning_effort, qwen.include_reasoning, qwen.max_completion_tokens], ['none', undefined, 2000]);
+  // DeepSeek's best model is not let think either
+  assert.deepStrictEqual((await body('deepseek', 'deepseek-v4-pro')).thinking, {type: 'disabled'});
+});
+
+check('the table\'s providers: Mistral\'s answer in pieces, a model\'s <think> in the answer, OpenRouter\'s comments: the text alone', async () => {
+  // Mistral, while its model thinks: a list of pieces, the thinking among them
+  const ev = o => `data: ${JSON.stringify({id: 'm1', model: 'mistral-large-4', ...o})}\n\n`;
+  let s = ev({choices: [{index: 0, delta: {role: 'assistant', content: [{type: 'thinking', thinking: [{type: 'text', text: 'POINTS\n- a secret thought\n'}]}]}}]});
+  s += ev({choices: [{index: 0, delta: {content: [{type: 'text', text: 'POINTS\n- one\n'}]}}]});
+  s += ev({choices: [{index: 0, delta: {content: '- two\n'}, finish_reason: 'stop'}]}) + 'data: [DONE]\n\n';
+  const m = load({local: compatOf('mistral', {'ai.mistral.model': 'mistral-large-4'})});
+  m.answers.push(stream(s, {size: 7}));
+  const updates = [];
+  const got = await m.AI.summarize({...THREAD, onUpdate: u => updates.push(plain(u))});
+  assert.deepStrictEqual(plain(got.points), ['one', 'two']);
+  assert.ok(!JSON.stringify(updates).includes('secret thought'));
+  // a model that thinks aloud first (Qwen on Groq, a server here): nothing shows until it is done
+  const g = load({local: compatOf('groq', {'ai.groq.model': 'qwen/qwen3.8-27b'})});
+  g.answers.push(stream(openaiEvents('<think>POINTS\n- a secret thought\n</think>\n\n' + SUMMARY), {size: 3}));
+  const seen = [];
+  const out = await g.AI.summarize({...THREAD, onUpdate: u => seen.push(plain(u))});
+  assert.strictEqual(out.points.length, 2);
+  assert.ok(!JSON.stringify(seen).includes('secret thought') && !JSON.stringify(out).includes('think'));
+  assert.strictEqual(g.AI._internal.unthink('<think>half a thought'), '');
+  assert.strictEqual(g.AI._internal.unthink('no <think> here'), 'no <think> here');
+  // OpenRouter's comment lines while it waits for the model
+  const o = load({local: compatOf('openrouter')});
+  o.answers.push(stream(': OPENROUTER PROCESSING\n\n: OPENROUTER PROCESSING\n\n' + openaiEvents(SUMMARY)));
+  assert.strictEqual((await o.AI.summarize(THREAD)).points.length, 2);
+});
+
+check('the table\'s providers: a parameter a model refused is left out once, and from then on; a schema becomes a JSON object', async () => {
+  // Gemini: a schema it will not take (its error in a list): a JSON object, at once the next time
+  const t = load({local: compatOf('gemini', {'ai.fast': false})});
+  t.answers.push(json(400, [{error: {code: 400, message: 'Invalid JSON payload received. Unknown name "strict" at \'response_format.json_schema\'', status: 'INVALID_ARGUMENT'}}]),
+    compatJSON(REPLY), compatJSON(REPLY));
+  await t.AI.needsReply({items: [person('a', 'anna@work.test')]});
+  await t.AI.needsReply({items: [person('b', 'boris@work.test')]});
+  assert.deepStrictEqual(t.requests.map(r => r.body.response_format.type), ['json_schema', 'json_object', 'json_object']);
+  // OpenRouter: no provider of the model takes them all; the parameters are kept, the requirement goes
+  const o = load({local: compatOf('openrouter', {'ai.fast': false})});
+  o.answers.push(json(404, {error: {code: 404, message: 'No endpoints found that can handle the requested parameters.'}}), compatJSON(REPLY));
+  await o.AI.needsReply({items: [person('a', 'anna@work.test')]});
+  assert.deepStrictEqual(o.requests.map(r => Boolean(r.body.provider)), [true, false]);
+  assert.strictEqual(o.requests[1].body.response_format.type, 'json_schema');
+  // a server here whose model cannot be told not to think (gpt-oss): told nothing
+  const l = load({local: compatOf('local', {'ai.local.model': 'gpt-oss:20b'})});
+  l.answers.push(json(400, {error: {message: 'think value "none" is not supported for this model', type: 'invalid_request_error'}}), stream(openaiEvents(SUMMARY)));
+  await l.AI.summarize(THREAD);
+  assert.deepStrictEqual(l.requests.map(r => 'reasoning_effort' in r.body), [true, false]);
+  // a model gone is not asked again without its parameters
+  const g = load({local: compatOf('kimi')});
+  g.answers.push(json(404, {error: {type: 'resource_not_found_error', message: 'Not found the model kimi-k3.1-pro or Permission denied'}}));
+  await failsWith(g.AI.summarize(THREAD), 'model');
+  assert.strictEqual(g.requests.length, 1);
+  // a system role the model has none of (a server here): the instructions go with the request
+  const r = load({local: compatOf('local', {'ai.local.model': 'gemma-3'})});
+  r.answers.push(json(400, {error: {message: 'System role not supported'}}), stream(openaiEvents(SUMMARY)));
+  await r.AI.summarize(THREAD);
+  assert.deepStrictEqual(r.requests[1].body.messages.map(m => m.role), ['user']);
+  assert.match(r.requests[1].body.messages[0].content, /email_thread/);
+});
+
+check('the table\'s providers: each one\'s refusals as ours, whatever their shape; the key never in the detail', async () => {
+  const cases = [
+    // Gemini: a key refused as a 400, its error in a list; its 429 a limit, not a balance
+    ['gemini', 400, [{error: {code: 400, message: 'API key not valid. Please pass a valid API key. AIzaSECRETSECRET', status: 'INVALID_ARGUMENT',
+      details: [{reason: 'API_KEY_INVALID'}]}}], 'auth'],
+    ['gemini', 429, [{error: {code: 429, message: 'You exceeded your current quota, please check your plan and billing details.', status: 'RESOURCE_EXHAUSTED'}}], 'rate'],
+    ['gemini', 402, [{error: {code: 402, message: 'Your prepayment credits are depleted.'}}], 'quota'],
+    ['gemini', 403, [{error: {code: 403, message: 'Your API key was reported as leaked.', status: 'PERMISSION_DENIED'}}], 'auth'],
+    // xAI: {code, error}
+    ['xai', 400, {code: 'invalid-argument', error: 'Incorrect API key provided: xa***ET. You can obtain an API key from https://console.x.ai.'}, 'auth'],
+    ['xai', 429, {code: 'resource-exhausted', error: 'Too many requests'}, 'rate'],
+    ['deepseek', 402, {error: {message: 'Insufficient Balance', type: 'unknown_error'}}, 'quota'],
+    ['deepseek', 401, {error: {message: 'Authentication Fails, Your api key: ****CRET is invalid', type: 'authentication_error'}}, 'auth'],
+    ['deepseek', 503, {error: {message: 'Server overloaded'}}, 'server'],
+    // Mistral: {detail} and {object: "error"}; a model its plan does not have
+    ['mistral', 401, {detail: 'Invalid API Key'}, 'auth'],
+    ['mistral', 403, {object: 'error', message: 'Model mistral-large-4 is not available on your plan', type: 'invalid_request_error'}, 'model'],
+    ['mistral', 402, {object: 'error', message: 'Payment required: spend limit reached'}, 'quota'],
+    ['openrouter', 401, {error: {code: 401, message: 'User not found.'}}, 'auth'],
+    ['openrouter', 402, {error: {code: 402, message: 'Insufficient credits'}}, 'quota'],
+    ['openrouter', 403, {error: {code: 403, message: 'Input was flagged', metadata: {reasons: ['harassment']}}}, 'refusal'],
+    ['openrouter', 502, {error: {code: 502, message: 'Provider returned error'}}, 'server'],
+    ['groq', 401, {error: {message: 'Invalid API Key', type: 'invalid_request_error', code: 'invalid_api_key'}}, 'auth'],
+    ['groq', 413, {error: {message: 'Request too large for model on tokens per minute (TPM): Limit 8000, Requested 9500', type: 'tokens'}}, 'too-long'],
+    ['groq', 498, {error: {message: 'Flex tier capacity exceeded'}}, 'server'],
+    ['qwen', 401, {error: {code: 'invalid_api_key', message: 'Incorrect API key provided.'}}, 'auth'],
+    ['qwen', 400, {error: {code: 'Arrearage', message: 'Access denied, please make sure your account is in good standing.'}}, 'quota'],
+    ['qwen', 403, {error: {code: 'AllocationQuota.FreeTierOnly', message: 'The free tier of the model has been exhausted.'}}, 'quota'],
+    ['qwen', 400, {error: {code: 'data_inspection_failed', message: 'Input data may contain inappropriate content.'}}, 'refusal'],
+    ['qwen', 400, {error: {code: 'InvalidParameter', message: 'Range of input length should be [1, 98304]'}}, 'too-long'],
+    ['kimi', 401, {error: {type: 'invalid_authentication_error', message: 'Invalid Authentication'}}, 'auth'],
+    ['kimi', 429, {error: {type: 'exceeded_current_quota_error', message: 'Your account is suspended, please check your plan and billing details'}}, 'quota'],
+    ['kimi', 429, {error: {type: 'rate_limit_reached_error', message: 'Your account reached max request'}}, 'rate'],
+    ['kimi', 400, {error: {type: 'content_filter', message: 'The request was rejected because it was considered high risk'}}, 'refusal'],
+    ['kimi', 400, {error: {type: 'invalid_request_error', message: 'Invalid request: Your request exceeded model token limit: 262144'}}, 'too-long'],
+    ['yandex', 401, {error: {message: 'Unknown api key', type: 'authentication_error'}}, 'auth'],
+    // a server here: a key it asks for; the extension's origin refused, with no words
+    ['local', 401, {error: {message: 'Invalid token'}}, 'auth'],
+    ['local', 404, {error: {message: 'model "llama3.2:latest" not found, try pulling it first'}}, 'model']
+  ];
+  for (const [engine, status, body, want] of cases) {
+    const t = load({local: compatOf(engine)});
+    t.answers.push(json(status, body));
+    const e = await failsWith(t.AI.summarize(THREAD), want);
+    assert.strictEqual(e.status, status, engine);
+    assert.ok(!e.detail.includes('SECRETSECRET'), engine + ': ' + e.detail);
+  }
+  const t = load({local: compatOf('local')});
+  t.answers.push(() => new Response('', {status: 403}));
+  await failsWith(t.AI.summarize(THREAD), 'origin');
+});
+
+check('the table\'s providers: how an answer stops: OpenRouter\'s error in a 200 or in the stream, DeepSeek\'s full servers or spaces alone', async () => {
+  // in the stream, after the 200, with the status it stands for
+  const o = load({local: compatOf('openrouter')});
+  o.answers.push(stream(openaiEvents('POINTS\n- one\n') .replace('data: [DONE]', 'data: {"error": {"code": 502, "message": "Provider returned error"}, "choices": [{"index": 0, "delta": {}, "finish_reason": "error"}]}\n\ndata: [DONE]')));
+  await failsWith(o.AI.summarize(THREAD), 'server');
+  const p = load({local: compatOf('openrouter', {'ai.fast': false})});
+  p.answers.push(json(200, {error: {code: 402, message: 'Insufficient credits'}}));
+  await failsWith(p.AI.needsReply({items: [person('a', 'anna@work.test')]}), 'quota');
+  const q = load({local: compatOf('openrouter')});
+  q.answers.push(stream(openaiEvents('POINTS\n- one\n', {finish: 'error'})));
+  await failsWith(q.AI.summarize(THREAD), 'server');
+  const d = load({local: compatOf('deepseek')});
+  d.answers.push(stream(openaiEvents('POINTS\n- one\n', {finish: 'insufficient_system_resource'})));
+  await failsWith(d.AI.summarize(THREAD), 'server');
+  // DeepSeek's answer of spaces: asked again, once
+  const b = load({local: compatOf('deepseek', {'ai.fast': false})});
+  b.answers.push(compatJSON('   \n  '), compatJSON(REPLY));
+  assert.strictEqual((await b.AI.needsReply({items: [person('a', 'anna@work.test')]})).get('a').reply, true);
+  assert.strictEqual(b.requests.length, 2);
+  const c = load({local: compatOf('deepseek', {'ai.fast': false})});
+  c.answers.push(compatJSON('   '), compatJSON('  '));
+  await failsWith(c.AI.needsReply({items: [person('a', 'anna@work.test')]}), 'bad-output');
+  // a safety filter's stop
+  const g = load({local: compatOf('gemini')});
+  g.answers.push(stream(openaiEvents('', {finish: 'content_filter'})));
+  await failsWith(g.AI.summarize(THREAD), 'refusal');
+});
+
+check('the table\'s providers: the models each key may use, the ones that chat, with the best, the fastest and the one to start with', async () => {
+  const lists = {
+    gemini: [[{id: 'models/gemini-3.8-flash'}, {id: 'models/gemini-4-argon'}, {id: 'models/gemini-3.5-flash-lite'}, {id: 'models/gemini-embedding-001'},
+      {id: 'models/gemini-3.1-flash-image'}, {id: 'models/gemini-2.5-flash-preview-tts'}, {id: 'models/gemma-3-27b-it'}, {id: 'models/gemini-2.5-flash-native-audio'}],
+    ['gemini-4-argon', 'gemini-3.8-flash', 'gemini-3.5-flash-lite'], 'gemini-3.8-flash', {best: 'gemini-4-argon', fast: 'gemini-3.5-flash-lite'}],
+    xai: [[{id: 'grok-4.3', created: 1}, {id: 'grok-4.7', created: 3}, {id: 'grok-imagine-image', created: 4}, {id: 'grok-4.20-0309-non-reasoning', created: 2}],
+      ['grok-4.7', 'grok-4.20-0309-non-reasoning', 'grok-4.3'], 'grok-4.3', {best: 'grok-4.7', fast: 'grok-4.3'}],
+    deepseek: [[{id: 'deepseek-flash'}, {id: 'deepseek-v4-pro'}], ['deepseek-v4-pro', 'deepseek-flash'], 'deepseek-flash', {best: 'deepseek-v4-pro', fast: 'deepseek-flash'}],
+    mistral: [[{id: 'mistral-small-latest', capabilities: {completion_chat: true}}, {id: 'mistral-large-4', capabilities: {completion_chat: true}},
+      {id: 'mistral-embed', capabilities: {completion_chat: false}}, {id: 'mistral-medium-3-5', capabilities: {completion_chat: true}, deprecation: '2026-10-31T00:00:00Z'},
+      {id: 'codestral-2508', capabilities: {completion_chat: true}}, {id: 'mistral-ocr-4-1'}, {id: 'ministral-8b-2512', capabilities: {completion_chat: true}}],
+    ['mistral-small-latest', 'mistral-large-4', 'ministral-8b-2512'], 'mistral-small-latest', {best: 'mistral-large-4', fast: 'mistral-small-latest'}],
+    groq: [[{id: 'openai/gpt-oss-120b', active: true}, {id: 'openai/gpt-oss-20b', active: true}, {id: 'whisper-large-v3'}, {id: 'meta-llama/llama-prompt-guard-2-86m'},
+      {id: 'qwen/qwen3.8-27b'}, {id: 'groq/compound'}, {id: 'old-model', active: false}, {id: 'canopylabs/orpheus-v1-english'}],
+    ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b'], 'openai/gpt-oss-120b', {fast: 'openai/gpt-oss-20b'}],
+    qwen: [[{id: 'qwen3.8-max'}, {id: 'qwen3.8-flash'}, {id: 'qwen3.7-plus'}, {id: 'qwen3-vl-plus'}, {id: 'qwen3-omni-flash'}, {id: 'qwen3-coder-plus'}, {id: 'text-embedding-v4'}],
+      ['qwen3.8-max', 'qwen3.8-flash', 'qwen3.7-plus'], 'qwen3.8-flash', {best: 'qwen3.8-max', fast: 'qwen3.8-flash'}],
+    kimi: [[{id: 'kimi-k3.1-pro', created: 3}, {id: 'kimi-k3.1-pro-highspeed', created: 3}, {id: 'kimi-k3', created: 2}, {id: 'moonshot-v1-8k-vision-preview', created: 1}],
+      ['kimi-k3.1-pro-highspeed', 'kimi-k3.1-pro', 'kimi-k3'], 'kimi-k3.1-pro-highspeed', {best: 'kimi-k3.1-pro', fast: 'kimi-k3.1-pro-highspeed'}],
+    yandex: [[{id: 'emb://b1gfolder01/text-embeddings/latest'}, {id: 'gpt://b1gfolder01/aliceai-llm/latest'}, {id: 'gpt://b1gfolder01/aliceai-llm-flash/latest'},
+      {id: 'gpt://b1gfolder01/yandexgpt/rc'}],
+    ['yandexgpt/rc', 'aliceai-llm/latest', 'aliceai-llm-flash/latest'], 'aliceai-llm-flash/latest', {best: 'aliceai-llm/latest', fast: 'aliceai-llm-flash/latest'}],
+    // a server here: in its own order, the last used first; what it cannot chat with left out
+    local: [[{id: 'qwen3:8b'}, {id: 'nomic-embed-text:latest'}, {id: 'llama3.2:latest'}], ['qwen3:8b', 'llama3.2:latest'], 'qwen3:8b', {}]
+  };
+  for (const [engine, [data, ids, start, tags]] of Object.entries(lists)) {
+    const t = load();
+    const auth = {key: COMPAT[engine].local[`ai.${engine}.key`], folder: COMPAT[engine].local['ai.yandex.folder'], base: COMPAT[engine].local['ai.local.base']};
+    t.answers.push(json(200, {object: 'list', data}));
+    const list = plain(await t.AI.models(engine, auth));
+    const r = t.requests[0];
+    assert.strictEqual(r.url, COMPAT[engine].url + 'models', engine);
+    assert.strictEqual(r.headers.authorization, COMPAT[engine].auth, engine);
+    assert.deepStrictEqual(list.map(m => m.id), ids, engine);
+    assert.deepStrictEqual(list.filter(m => m.default).map(m => m.id), [start], engine);
+    for (const [tag, id] of Object.entries(tags)) {
+      assert.ok(list.some(m => m.id === id && m.tag === tag && m.recommended), `${engine} ${tag} ${id}`);
+    }
+  }
+  // Yandex's list, asked in its folder
+  const y = load();
+  y.answers.push(json(200, {data: []}));
+  await y.AI.models('yandex', {key: 'AQVNSECRETSECRET', folder: 'b1gfolder01'});
+  assert.strictEqual(y.requests[0].headers['openai-project'], 'b1gfolder01');
+  await failsWith(y.AI.models('yandex', {key: 'AQVNSECRETSECRET', folder: ''}), 'auth');
+  await failsWith(y.AI.models('yandex', {key: 'AQVNSECRETSECRET', folder: 'b1g folder'}), 'auth');
+  assert.strictEqual(y.requests.length, 1, 'no folder, no request');
+});
+
+check('OpenRouter: hundreds of models, by maker, with their price a million tokens; free ones marked; a key checked on its own', async () => {
+  const model = (id, name, prompt, completion, created, extra = {}) => ({id, name, created, pricing: {prompt, completion},
+    architecture: {input_modalities: ['text', 'image'], output_modalities: ['text']}, ...extra});
+  const data = [
+    model('google/gemini-3.8-flash', 'Google: Gemini 3.8 Flash', '0.000000825', '0.000004125', 3),
+    model('openrouter/free', 'Free Models Router', '0', '0', 1),
+    model('openrouter/auto', 'Auto Router', '-1', '-1', 9),
+    model('google/gemini-3.8-flash:batch', 'Google: Gemini 3.8 Flash (batch)', '0.000000375', '0.000001875', 3),
+    model('google/gemini-nano-banana-2.1', 'Google: Nano Banana 2.1', '0.0000015', '0.0000075', 8, {architecture: {input_modalities: ['text'], output_modalities: ['image', 'text']}}),
+    model('anthropic/claude-opus-5.5', 'Anthropic: Claude Opus 5.5', '0.000004', '0.00002', 5),
+    model('google/gemma-4-31b-it:free', 'Google: Gemma 4 31B (free)', '0', '0', 2),
+    model('~openai/gpt-luna-latest', 'OpenAI: GPT Luna Latest', '0.0000001', '0.0000005', 4)
+  ];
+  const t = load();
+  t.answers.push(json(200, {data}));
+  const list = plain(await t.AI.models('openrouter', 'sk-or-v1-SECRETSECRET'));
+  assert.deepStrictEqual(list.map(m => m.id), ['anthropic/claude-opus-5.5', '~openai/gpt-luna-latest', 'google/gemini-3.8-flash', 'google/gemma-4-31b-it:free', 'openrouter/free']);
+  assert.deepStrictEqual(list[0], {id: 'anthropic/claude-opus-5.5', name: 'Claude Opus 5.5', group: 'Anthropic', price: [4, 20]});
+  assert.deepStrictEqual(list.find(m => m.id === 'google/gemini-3.8-flash'),
+    {id: 'google/gemini-3.8-flash', name: 'Gemini 3.8 Flash', group: 'Google', price: [0.83, 4.13], default: true, recommended: true});
+  assert.deepStrictEqual(list.find(m => m.id === 'openrouter/free'),
+    {id: 'openrouter/free', name: 'Free Models Router', group: 'openrouter', price: [0, 0], tag: 'free', recommended: true});
+  assert.deepStrictEqual(list.find(m => m.id === 'google/gemma-4-31b-it:free').tag, 'free');
+  assert.strictEqual(list.find(m => m.id.startsWith('~')).group, 'OpenAI');
+  // its list is no one's: the key is checked on its own page, and only then
+  t.answers.push(json(200, {data: {label: 'sk-or-v1-abc...', usage: 0, limit: null, is_free_tier: true}}));
+  assert.strictEqual(await t.AI.check('openrouter', 'sk-or-v1-SECRETSECRET'), true);
+  assert.strictEqual(t.requests[1].url, 'https://openrouter.ai/api/v1/key');
+  assert.strictEqual(t.requests[1].headers.authorization, 'Bearer sk-or-v1-SECRETSECRET');
+  t.answers.push(json(401, {error: {code: 401, message: 'User not found.'}}));
+  await failsWith(t.AI.check('openrouter', 'sk-or-v1-bad'), 'auth');
+  // a model of its own name and price, kept as it is in a backup
+  assert.ok(list.every(m => /^[\w~][\w.:/@~+-]{0,99}$/.test(m.id)));
+});
+
+check('the table\'s providers: a key is checked with its model list, which the page\'s next ask takes; no key, no site, no request', async () => {
+  for (const engine of ['gemini', 'xai', 'deepseek', 'mistral', 'groq', 'qwen', 'kimi', 'yandex']) {
+    const t = load();
+    const auth = {key: COMPAT[engine].local[`ai.${engine}.key`], folder: COMPAT[engine].local['ai.yandex.folder']};
+    t.answers.push(json(200, {data: [{id: engine === 'yandex' ? 'gpt://b1gfolder01/aliceai-llm/latest' : 'x-model'}]}));
+    assert.strictEqual(await t.AI.check(engine, auth), true, engine);
+    assert.strictEqual(t.requests[0].url, COMPAT[engine].url + 'models');
+    // the list comes from the check: one request for both
+    assert.strictEqual((await t.AI.models(engine, auth)).length, engine === 'yandex' || engine === 'mistral' || engine === 'groq' ? 1 : 0, engine);
+    assert.strictEqual(t.requests.length, 1, engine);
+    t.answers.push(json(401, {error: {message: 'Invalid API key', type: 'invalid_request_error'}}));
+    await failsWith(t.AI.check(engine, {...auth, key: 'other-key'}), 'auth');
+    t.answers.push(() => {
+      throw new TypeError('Failed to fetch');
+    });
+    await failsWith(t.AI.check(engine, {...auth, key: 'other-key'}), 'network');
+    t.perm.granted = false;
+    await failsWith(t.AI.check(engine, auth), 'no-access');
+    t.perm.granted = true;
+    const n = t.requests.length;
+    await failsWith(t.AI.check(engine, {...auth, key: ' '}), 'auth');
+    assert.strictEqual(t.requests.length, n, 'no key, no request');
+    assert.ok(t.perm.asked.includes(COMPAT[engine].url.replace(/^(https:\/\/[^/]+\/).*$/, '$1*')), engine);
+  }
+});
+
+check('the table\'s providers: the faster model for a plan and the sorting; OpenRouter\'s and a server\'s here are the one picked', async () => {
+  const plan = {action: 'find', scope: 'new', query: 'x', since: '', until: '', words: [], op: '', title: 'T'};
+  const want = {gemini: ['gemini-4-argon', 'gemini-3.5-flash-lite'], xai: ['grok-4.7', 'grok-4.3'], deepseek: ['deepseek-v4-pro', 'deepseek-flash'],
+    mistral: ['mistral-large-4', 'mistral-small-latest'], groq: ['qwen/qwen3.8-27b', 'openai/gpt-oss-20b'], qwen: ['qwen3.8-max', 'qwen3.8-flash'],
+    kimi: ['kimi-k3.1-pro', 'kimi-k3.1-pro-highspeed'], yandex: ['aliceai-llm/latest', 'gpt://b1gfolder01/aliceai-llm-flash/latest'],
+    openrouter: ['anthropic/claude-opus-5.5', 'anthropic/claude-opus-5.5'], local: ['qwen3:8b', 'qwen3:8b']};
+  for (const [engine, [main, fast]] of Object.entries(want)) {
+    const t = load({local: compatOf(engine, {[`ai.${engine}.model`]: main})});
+    t.answers.push(compatJSON(JSON.stringify(plan)));
+    await t.AI.plan({request: 'x'});
+    assert.strictEqual(t.requests.length, 1, engine);
+    assert.strictEqual(t.requests[0].body.model, fast, engine);
+  }
+  // the one picked, when the key has no faster one
+  const t = load({local: compatOf('gemini', {'ai.gemini.model': 'gemini-4-argon'})});
+  t.answers.push(json(404, [{error: {code: 404, message: 'models/gemini-3.5-flash-lite is not found for API version v1beta', status: 'NOT_FOUND'}}]),
+    compatJSON(JSON.stringify(plan)), compatJSON(JSON.stringify(plan)));
+  await t.AI.plan({request: 'x'});
+  await t.AI.plan({request: 'y'});
+  assert.deepStrictEqual(t.requests.map(r => r.body.model), ['gemini-3.5-flash-lite', 'gemini-4-argon', 'gemini-4-argon']);
+  // no model picked yet: the one the list marks, asked once a page
+  const u = load({local: compatOf('deepseek', {'ai.deepseek.model': ''})});
+  u.answers.push(json(200, {data: [{id: 'deepseek-v4-pro'}, {id: 'deepseek-flash'}]}), stream(openaiEvents(SUMMARY)), stream(openaiEvents(SUMMARY)));
+  await u.AI.summarize(THREAD);
+  await u.AI.summarize({...THREAD, subject: 'Another'});
+  assert.deepStrictEqual(u.requests.map(r => r.body?.model || r.url), ['https://api.deepseek.com/models', 'deepseek-flash', 'deepseek-flash']);
+});
+
+check('Groq: within the free plan\'s minute: shorter parts of long mail, the sorting one request at a time', async () => {
+  const long = {subject: 'Long', messages: Array.from({length: 12}, (_, i) => ({from: 'Anna <anna@work.test>', date: Date.now() - (20 - i) * 3600000,
+    text: ('Paragraph ' + i + ' of a long thread about the budget. ').repeat(80)}))};
+  const t = load({local: compatOf('groq')});
+  t.answers.push(stream(openaiEvents(SUMMARY)));
+  await t.AI.summarize(long);
+  assert.ok(t.requests[0].body.messages[1].content.length < 12000, String(t.requests[0].body.messages[1].content.length));
+  const items = Array.from({length: 50}, (_, i) => person('p' + i, `p${i}@work.test`));
+  const u = load({local: compatOf('groq')});
+  let open = 0;
+  let most = 0;
+  for (let i = 0; i < 3; i += 1) {
+    u.answers.push(async () => {
+      open += 1;
+      most = Math.max(most, open);
+      await new Promise(r => setTimeout(r, 5));
+      open -= 1;
+      return compatJSON('{"reply": [], "important": [], "bulk": []}')();
+    });
+  }
+  await u.AI.needsReply({items});
+  assert.deepStrictEqual(u.requests.map(r => listed(r).length), [22, 22, 6]);
+  assert.strictEqual(most, 1);
+  // an answer's tokens within the minute too
+  const v = load({local: compatOf('groq')});
+  v.answers.push(stream(openaiEvents('Hallo')));
+  await v.AI.translate({subject: 'S', messages: [{from: 'a', text: 'Hello'}]});
+  assert.strictEqual(v.requests[0].body.max_completion_tokens, 3000);
+});
+
+/* a server on this computer: Ollama, LM Studio */
+check('local: its address as written, made one: this computer only, a port, /v1 when no path', async () => {
+  const {localBase} = load().AI;
+  const cases = {
+    'http://localhost:11434/v1': 'http://localhost:11434/v1',
+    'localhost:11434': 'http://localhost:11434/v1',
+    ' http://127.0.0.1:1234/v1/ ': 'http://127.0.0.1:1234/v1',
+    'http://LOCALHOST:8080': 'http://localhost:8080/v1',
+    'http://localhost:8080/api/v1': 'http://localhost:8080/api/v1',
+    'http://localhost/v1': 'http://localhost/v1',
+    'https://localhost:11434/v1': '',
+    'http://192.168.1.5:11434/v1': '',
+    'http://example.com:11434/v1': '',
+    'http://localhost.example.com/v1': '',
+    'http://127.0.0.2:11434/v1': '',
+    'http://[::1]:11434/v1': '',
+    'http://localhost:99999/v1': '',
+    'http://localhost:0/v1': '',
+    'http://user:pass@localhost:11434/v1': '',
+    'http://localhost:11434/v1?x=1': '',
+    'ftp://localhost:21': '',
+    '': '',
+    'not a url at all': ''
+  };
+  for (const [text, want] of Object.entries(cases)) {
+    assert.strictEqual(localBase(text), want, text);
+  }
+  const {localOrigin, localName} = load().AI._internal;
+  assert.deepStrictEqual(['http://localhost:11434/v1', 'http://127.0.0.1:1234/v1', ''].map(localOrigin), ['http://localhost/*', 'http://127.0.0.1/*', '']);
+  assert.deepStrictEqual(['http://localhost:11434/v1', 'http://127.0.0.1:1234/v1', 'http://localhost:8080/v1'].map(localName),
+    ['Ollama', 'LM Studio', 'localhost:8080']);
+});
+
+check('local: no key unless the server asks; the server\'s own origin by a session rule of ours; offline it still answers', async () => {
+  // a sign-in under way, with its rule, and a mail service's
+  const t = load({local: compatOf('local'), online: false, session: {'ai.chatgpt.pending': {state: 's', verifier: 'v', created: Date.now()}}});
+  t.rules.push({id: 900, priority: 1, action: {type: 'redirect'}, condition: {}}, {id: 1000, priority: 1, action: {type: 'modifyHeaders'}, condition: {}});
+  t.answers.push(stream(openaiEvents(SUMMARY)), stream(openaiEvents(SUMMARY)));
+  await t.AI.summarize(THREAD);
+  assert.ok(!('authorization' in t.requests[0].headers));
+  const rule = t.rules.find(r => r.id === 901);
+  assert.deepStrictEqual(plain(rule), {id: 901, priority: 1,
+    action: {type: 'modifyHeaders', requestHeaders: [{header: 'origin', operation: 'set', value: 'http://localhost:11434'}]},
+    condition: {urlFilter: '|http://localhost:11434/', initiatorDomains: ['maildeckmaildeckmaildeckmaildeck'], resourceTypes: ['xmlhttprequest']}});
+  assert.deepStrictEqual(t.rules.map(r => r.id).sort(), [1000, 900, 901], 'the others\' rules stay');
+  // made once a page
+  await t.AI.summarize({...THREAD, subject: 'Again'});
+  assert.strictEqual(t.rules.filter(r => r.id === 901).length, 1);
+  // a key, when the server asks for one; another address, another rule
+  const u = load({local: compatOf('local', {'ai.local.key': 'lm-SECRET', 'ai.local.base': 'http://127.0.0.1:1234/v1'})});
+  u.answers.push(stream(openaiEvents(SUMMARY)));
+  await u.AI.summarize(THREAD);
+  assert.strictEqual(u.requests[0].url, 'http://127.0.0.1:1234/v1/chat/completions');
+  assert.strictEqual(u.requests[0].headers.authorization, 'Bearer lm-SECRET');
+  assert.strictEqual(u.rules.find(r => r.id === 901).action.requestHeaders[0].value, 'http://127.0.0.1:1234');
+  assert.ok(u.perm.asked.includes('http://127.0.0.1/*') && !u.perm.asked.includes('http://localhost/*'));
+  // a model of the server's own: in a request as it is, its whole name
+  assert.strictEqual(u.requests[0].body.model, 'llama3.2:latest');
+});
+
+check('local: not running, the origin refused, no address, the site taken back: each says what to do', async () => {
+  const t = load({local: compatOf('local')});
+  t.answers.push(() => {
+    throw new TypeError('Failed to fetch');
+  });
+  await failsWith(t.AI.summarize(THREAD), 'no-server');
+  t.answers.push(() => {
+    t.perm.granted = false;
+    throw new TypeError('Failed to fetch');
+  });
+  await failsWith(t.AI.summarize({...THREAD, subject: 'x'}), 'no-access');
+  // the check and the list say the same
+  const u = load();
+  const auth = {base: 'localhost:11434'};
+  u.answers.push(() => {
+    throw new TypeError('Failed to fetch');
+  }, () => new Response('', {status: 403}), json(200, {data: [{id: 'llama3.2:latest'}]}));
+  await failsWith(u.AI.check('local', auth), 'no-server');
+  await failsWith(u.AI.check('local', auth), 'origin');
+  assert.strictEqual(await u.AI.check('local', auth), true);
+  assert.strictEqual(u.requests[2].url, 'http://localhost:11434/v1/models');
+  assert.ok(u.rules.some(r => r.id === 901), 'the rule is there before the first request');
+  await failsWith(u.AI.check('local', {base: 'http://example.com/v1'}), 'no-server');
+  assert.strictEqual(u.requests.length, 3);
+  // no address: set up first
+  const v = load({local: {'ai.engine': 'local'}});
+  assert.strictEqual((await v.AI.state()).reason, 'no-key');
+  assert.deepStrictEqual(plain(await load({local: compatOf('local')}).AI.prefs()),
+    {engine: 'local', model: 'llama3.2:latest', summary: 'click', reply: true, buttons: true, fast: true, key: '', base: 'http://localhost:11434/v1'});
+  assert.deepStrictEqual(plain(await load({local: compatOf('local')}).AI.state()), {ok: true, lang: 'en'});
+  // Yandex without its folder
+  assert.strictEqual((await load({local: compatOf('yandex', {'ai.yandex.folder': ''})}).AI.state()).reason, 'no-key');
+});
+
+check('local: what a small context takes: a short part of long mail, the sorting in small batches, one at a time', async () => {
+  const long = {subject: 'Long', messages: Array.from({length: 12}, (_, i) => ({from: 'Anna <anna@work.test>', date: Date.now() - (20 - i) * 3600000,
+    text: ('Paragraph ' + i + ' of a long thread about the budget. ').repeat(80)}))};
+  const t = load({local: compatOf('local')});
+  t.answers.push(stream(openaiEvents(SUMMARY)));
+  await t.AI.summarize(long);
+  assert.ok(t.requests[0].body.messages[1].content.length < 8000);
+  const u = load({local: compatOf('local')});
+  for (let i = 0; i < 4; i += 1) {
+    u.answers.push(compatJSON('{"reply": [], "important": [], "bulk": []}'));
+  }
+  await u.AI.needsReply({items: Array.from({length: 40}, (_, i) => person('p' + i, `p${i}@work.test`))});
+  assert.deepStrictEqual(u.requests.map(r => listed(r).length), [13, 13, 13, 1]);
+});
+
+check('the ChatGPT sign-in gives the loopback address back, but not while a server on this computer is at it', async () => {
+  for (const [base, gone] of [['http://127.0.0.1:1234/v1', false], ['http://localhost:11434/v1', true], ['', true]]) {
+    // a sign-in left unfinished long ago: over as the page opens
+    const t = load({session: {'ai.chatgpt.pending': {state: 's', verifier: 'v', created: 0}}, local: base ? {'ai.local.base': base} : {}});
+    await new Promise(r => setTimeout(r, 20));
+    assert.strictEqual(t.perm.removed.includes('http://127.0.0.1/*'), gone, base);
+    assert.ok(!t.perm.removed.includes('http://localhost/*'));
+  }
+});
+
+check('describe: each provider by its name; a server on this computer by its own, on this computer', async () => {
+  const d = async local => plain(await load({local}).AI.describe());
+  assert.deepStrictEqual(await d(compatOf('gemini')), {engine: 'gemini', provider: 'Gemini', model: 'gemini-3.8-flash', plan: false, local: false});
+  assert.deepStrictEqual(await d(compatOf('local')), {engine: 'local', provider: 'Ollama', model: 'llama3.2:latest', plan: false, local: true});
+  assert.strictEqual((await d(compatOf('local', {'ai.local.base': 'http://127.0.0.1:1234/v1'}))).provider, 'LM Studio');
+  assert.strictEqual((await d(compatOf('local', {'ai.local.base': 'http://localhost:8080/v1'}))).provider, 'localhost:8080');
+  const names = {xai: 'xAI', deepseek: 'DeepSeek', mistral: 'Mistral', openrouter: 'OpenRouter', groq: 'Groq', qwen: 'Qwen', kimi: 'Kimi', yandex: 'Yandex'};
+  for (const [engine, name] of Object.entries(names)) {
+    assert.strictEqual((await d(compatOf(engine))).provider, name);
+  }
+});
+
+check('every provider\'s site is an optional one of the manifest, asked for only when connecting; a change of a key or an address stops what runs', async () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '../../extension/manifest.json'), 'utf8'));
+  const {CLOUD} = load().AI._internal;
+  for (const [engine, c] of Object.entries(CLOUD)) {
+    for (const o of c.origins) {
+      assert.ok(manifest.optional_host_permissions.includes(o), engine + ' ' + o);
+      assert.ok(!manifest.host_permissions.includes(o));
+    }
+  }
+  // a summary under way for the server's old address stops when it changes
+  const t = load({local: compatOf('local')});
+  t.answers.push(stream(openaiEvents(SUMMARY), {hang: true}));
+  const p = t.AI.summarize(THREAD);
+  await new Promise(r => setTimeout(r, 10));
+  await t.set({'ai.local.base': 'http://localhost:1234/v1'});
+  await failsWith(p, 'aborted');
+  const u = load({local: compatOf('yandex')});
+  u.answers.push(stream(openaiEvents(SUMMARY), {hang: true}));
+  const q = u.AI.summarize(THREAD);
+  await new Promise(r => setTimeout(r, 10));
+  await u.set({'ai.yandex.folder': 'b1gother'});
+  await failsWith(q, 'aborted');
 });
 
 /* the ChatGPT plan */

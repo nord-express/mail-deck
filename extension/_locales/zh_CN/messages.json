@@ -1869,6 +1869,12 @@
     "ai_err_declined": {
         "message": "模型拒绝了这个请求。"
     },
+    "ai_err_no_server": {
+        "message": "这台电脑上的 AI 服务器没有响应。它在运行吗？"
+    },
+    "ai_err_origin": {
+        "message": "这台电脑上的 AI 服务器拒绝了 Mail Deck。请查看“设置 → AI 助手”。"
+    },
     "ai_err_limit": {
         "message": "已达到 ChatGPT 的用量上限。"
     },

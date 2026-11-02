@@ -1727,6 +1727,12 @@
   "ai_err_declined": {
     "message": "The model declined this request."
   },
+  "ai_err_no_server": {
+    "message": "The AI server on this computer did not answer. Is it running?"
+  },
+  "ai_err_origin": {
+    "message": "The AI server on this computer refused Mail Deck. See Settings → AI."
+  },
   "ai_err_limit": {
     "message": "ChatGPT usage limit reached."
   },

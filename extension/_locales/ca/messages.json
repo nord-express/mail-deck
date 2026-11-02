@@ -1869,6 +1869,12 @@
     "ai_err_declined": {
         "message": "El model ha rebutjat aquesta sol·licitud."
     },
+    "ai_err_no_server": {
+        "message": "El servidor d'IA d'aquest ordinador no ha respost. Està en marxa?"
+    },
+    "ai_err_origin": {
+        "message": "El servidor d'IA d'aquest ordinador ha rebutjat Mail Deck. Consulta Opcions → IA."
+    },
     "ai_err_limit": {
         "message": "S’ha arribat al límit d’ús de ChatGPT."
     },

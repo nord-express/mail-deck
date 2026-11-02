@@ -1869,6 +1869,12 @@
     "ai_err_declined": {
         "message": "Het model weigerde dit verzoek."
     },
+    "ai_err_no_server": {
+        "message": "De AI-server op deze computer gaf geen antwoord. Draait hij?"
+    },
+    "ai_err_origin": {
+        "message": "De AI-server op deze computer weigerde Mail Deck. Zie Instellingen → AI."
+    },
     "ai_err_limit": {
         "message": "Gebruikslimiet van ChatGPT bereikt."
     },

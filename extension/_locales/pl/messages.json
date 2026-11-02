@@ -1869,6 +1869,12 @@
     "ai_err_declined": {
         "message": "Model odrzucił to polecenie."
     },
+    "ai_err_no_server": {
+        "message": "Serwer AI na tym komputerze nie odpowiedział. Czy jest uruchomiony?"
+    },
+    "ai_err_origin": {
+        "message": "Serwer AI na tym komputerze odrzucił Mail Deck. Zobacz Ustawienia → AI."
+    },
     "ai_err_limit": {
         "message": "Osiągnięto limit użycia ChatGPT."
     },

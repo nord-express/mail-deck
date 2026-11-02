@@ -1865,6 +1865,12 @@
     "ai_err_declined": {
         "message": "Model bu isteği reddetti."
     },
+    "ai_err_no_server": {
+        "message": "Bu bilgisayardaki yapay zekâ sunucusu yanıt vermedi. Çalışıyor mu?"
+    },
+    "ai_err_origin": {
+        "message": "Bu bilgisayardaki yapay zekâ sunucusu Mail Deck’i reddetti. Ayarlar → Yapay zekâ bölümüne bakın."
+    },
     "ai_err_limit": {
         "message": "ChatGPT kullanım sınırına ulaşıldı."
     },

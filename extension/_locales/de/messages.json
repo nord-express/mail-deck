@@ -1865,6 +1865,12 @@
     "ai_err_declined": {
         "message": "Das Modell hat diese Anfrage abgelehnt."
     },
+    "ai_err_no_server": {
+        "message": "Der KI-Server auf diesem Computer hat nicht geantwortet. Läuft er?"
+    },
+    "ai_err_origin": {
+        "message": "Der KI-Server auf diesem Computer hat Mail Deck abgewiesen. Siehe Einstellungen → KI."
+    },
     "ai_err_limit": {
         "message": "ChatGPT-Nutzungslimit erreicht."
     },

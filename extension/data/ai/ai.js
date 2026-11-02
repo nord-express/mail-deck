@@ -1,23 +1,43 @@
 'use strict';
 // The AI assistant (Settings → AI): a summary of the mail open in the reader, and which unread
-// mail waits for a reply. Five engines: Chrome's built-in model, the user's ChatGPT plan (signed
-// in with ChatGPT), or OpenAI, Anthropic or Z.ai with the user's own key. A request goes from
-// this page straight to the provider, there is no server of ours in between, and nothing at
-// all is sent while the engine or the feature is off. Loaded by the panel, the settings page
-// and the page a ChatGPT sign-in comes back to; it needs nothing else. Every failure comes out
-// as an AIError with a code and a short text the page can show as it is.
+// mail waits for a reply. The engines: Chrome's built-in model, the user's ChatGPT plan (signed
+// in with ChatGPT), a provider with the user's own key (OpenAI, Anthropic, Z.ai, and the others
+// that take OpenAI's form of a request: Gemini, xAI, DeepSeek, Mistral, OpenRouter, Groq, Qwen,
+// Kimi, Yandex), or a model server on this computer (Ollama, LM Studio). A request goes from this
+// page straight to the provider, there is no server of ours in between, and nothing at all is
+// sent while the engine or the feature is off. Loaded by the panel, the settings page and the
+// page a ChatGPT sign-in comes back to; it needs nothing else. Every failure comes out as an
+// AIError with a code and a short text the page can show as it is.
 
 {
-  const ENGINES = ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai'];
+  const ENGINES = ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek', 'mistral', 'openrouter',
+    'groq', 'qwen', 'kimi', 'yandex', 'local'];
   const CLOUD = {
     // the ChatGPT plan: OpenAI's API with the tokens of a sign-in, renewed at auth.openai.com
     chatgpt: {origins: ['https://api.openai.com/*', 'https://auth.openai.com/*'], base: 'https://api.openai.com/v1/'},
     openai: {origins: ['https://api.openai.com/*'], base: 'https://api.openai.com/v1/'},
     anthropic: {origins: ['https://api.anthropic.com/*'], base: 'https://api.anthropic.com/v1/'},
-    zai: {origins: ['https://api.z.ai/*'], base: 'https://api.z.ai/api/paas/v4/'}
+    zai: {origins: ['https://api.z.ai/*'], base: 'https://api.z.ai/api/paas/v4/'},
+    gemini: {origins: ['https://generativelanguage.googleapis.com/*'], base: 'https://generativelanguage.googleapis.com/v1beta/openai/'},
+    xai: {origins: ['https://api.x.ai/*'], base: 'https://api.x.ai/v1/'},
+    deepseek: {origins: ['https://api.deepseek.com/*'], base: 'https://api.deepseek.com/'},
+    mistral: {origins: ['https://api.mistral.ai/*'], base: 'https://api.mistral.ai/v1/'},
+    openrouter: {origins: ['https://openrouter.ai/*'], base: 'https://openrouter.ai/api/v1/'},
+    groq: {origins: ['https://api.groq.com/*'], base: 'https://api.groq.com/openai/v1/'},
+    // Alibaba Cloud Model Studio, international: a key works only in the region it was made in
+    qwen: {origins: ['https://dashscope-intl.aliyuncs.com/*'], base: 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/'},
+    kimi: {origins: ['https://api.moonshot.ai/*'], base: 'https://api.moonshot.ai/v1/'},
+    yandex: {origins: ['https://ai.api.cloud.yandex.net/*'], base: 'https://ai.api.cloud.yandex.net/v1/'},
+    // a server on this computer, at the address the user gave (ai.local.base), on one of these hosts
+    local: {origins: ['http://localhost/*', 'http://127.0.0.1/*'], base: ''}
   };
-  // the engines that take the user's own key; the ChatGPT plan signs in instead
-  const KEYED = ['openai', 'anthropic', 'zai'];
+  // the engines that take the user's own key; the ChatGPT plan signs in instead, and a server on
+  // this computer takes one only when it asks for it
+  const KEYED = ENGINES.filter(e => CLOUD[e] && e !== 'chatgpt');
+  // what a provider needs besides a key: the Yandex Cloud folder its models are in, the local
+  // server's address; both stay on this computer as the keys do
+  const FOLDER_KEY = 'ai.yandex.folder';
+  const BASE_KEY = 'ai.local.base';
   const ANTHROPIC_VERSION = '2026-10-21';
   const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
   const LOCAL_MODEL = 'gemini-nano';
@@ -94,6 +114,9 @@
     'denied': [() => chrome.i18n.getMessage('ai_err_denied'), 'Mail Deck was not allowed to use your ChatGPT plan.'],
     'sign-in': [() => chrome.i18n.getMessage('ai_err_sign_in'), 'Signing in with ChatGPT did not finish. Try again.'],
     'other-account': [() => chrome.i18n.getMessage('ai_err_other_account'), 'This is not the ChatGPT account Mail Deck was set up with. Try again to set it up with this one.'],
+    // a server on this computer: not running, or not taking requests from this extension
+    'no-server': [() => chrome.i18n.getMessage('ai_err_no_server'), 'The AI server on this computer did not answer. Is it running?'],
+    'origin': [() => chrome.i18n.getMessage('ai_err_origin'), 'The AI server on this computer refused Mail Deck. See Settings → AI.'],
     // never shown: the page that stopped a request knows why
     'aborted': [() => '', 'Stopped.']
   };
@@ -110,6 +133,8 @@
   // ID token, an access token)
   const redact = s => String(s ?? '')
     .replace(/\b(sk|key)-[\w*.-]+/gi, '$1-…')
+    // Google's, Groq's, xAI's and Yandex Cloud's keys
+    .replace(/\b(AIza|gsk_|xai-|AQVN|y[0-3]_)[\w*.-]{6,}/g, '$1…')
     .replace(/\b(bearer)\s+[\w.~+/=-]+/gi, '$1 …')
     .replace(/\beyJ[\w-]*\.[\w-]*(\.[\w-]*)?/g, '…')
     .slice(0, 500);
@@ -821,13 +846,16 @@
     return new AIError(otherwise, e?.message || String(e));
   };
 
+  // an address on this computer
+  const LOOPBACK = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//;
   // one request to a provider: the answer when it is a 200, an AIError otherwise (refuse reads
   // a provider's own words for the refusal)
   const call = async (url, init, signal, ms, refuse = refused) => {
     if (signal?.aborted) {
       throw aborted();
     }
-    if (self.navigator?.onLine === false) {
+    // a server on this computer answers offline as well
+    if (self.navigator?.onLine === false && !LOOPBACK.test(url)) {
       throw new AIError('network', 'offline');
     }
     const w = watch(signal, ms);
@@ -1125,7 +1153,11 @@
     }
     return false;
   };
-  // the stream of a chat completion, OpenAI's or one in its form (Z.ai's: fail reads its errors)
+  // what a chat completion's content is: a string, or (Mistral's, while its model thinks) a list
+  // of pieces, of which only the text is the answer
+  const contentOf = c => typeof c === 'string' ? c : Array.isArray(c) ?
+    c.filter(p => p?.type === 'text' && typeof p.text === 'string').map(p => p.text).join('') : '';
+  // the stream of a chat completion, OpenAI's or one in its form (fail reads the provider's errors)
   const openaiStream = async (r, w, model, onText, fail = failed) => {
     let text = '';
     let stop = '';
@@ -1143,8 +1175,9 @@
       }
       model = j.model || model;
       const c = Array.isArray(j.choices) ? j.choices[0] : null;
-      if (typeof c?.delta?.content === 'string' && c.delta.content) {
-        text += c.delta.content;
+      const piece = contentOf(c?.delta?.content);
+      if (piece) {
+        text += piece;
         onText(text);
       }
       if (c?.delta?.refusal) {
@@ -1158,47 +1191,69 @@
     }
     return {text, model, stop};
   };
-  const openaiOnce = async (r, w, model) => {
+  const openaiOnce = async (r, w, model, fail = failed) => {
     const j = await readJSON(r, w);
     const c = Array.isArray(j?.choices) ? j.choices[0] : null;
+    // an error in a 200: OpenRouter's, when the model it went to failed
+    if (!c && j?.error) {
+      throw fail(j.error);
+    }
     if (c?.message?.refusal || c?.finish_reason === 'content_filter') {
       throw new AIError('refusal');
     }
-    return {text: typeof c?.message?.content === 'string' ? c.message.content : '', model: j?.model || model, stop: c?.finish_reason || ''};
+    return {text: contentOf(c?.message?.content), model: j?.model || model, stop: c?.finish_reason || ''};
   };
-  const openai = async ({key, model, system, user, max, schema, signal, onText, quick}) => {
-    const body = {
-      model,
-      messages: [{role: reasons(model) ? 'developer' : 'system', content: system}, {role: 'user', content: user}],
-      max_completion_tokens: max + (reasons(model) ? THINKING : 0)
-    };
-    const effort = reasons(model) ? effortFor(model, quick) : '';
-    if (effort) {
-      body.reasoning_effort = effort;
-    }
-    if (schema) {
-      body.response_format = {type: 'json_schema', json_schema: {name: 'results', strict: true, schema}};
-    }
-    if (onText) {
+  /*
+   * One chat completion in OpenAI's form, for every provider that takes it. spec: where it goes
+   * (url) with which headers, its body for the request o, what the provider's refusals mean
+   * (refuse; fail inside a stream), what is left out once a model refused it (less), and the ways
+   * an answer stops that are no answer (done).
+   */
+  const chat = async (spec, o) => {
+    const body = spec.body(o);
+    if (o.onText) {
       body.stream = true;
     }
     for (let attempt = 0; ; attempt += 1) {
       try {
-        const {r, w} = await call(CLOUD.openai.base + 'chat/completions', {
+        const {r, w} = await call(spec.url, {
           method: 'POST',
-          headers: {'content-type': 'application/json', 'authorization': 'Bearer ' + key},
+          headers: {'content-type': 'application/json', ...spec.headers},
           body: JSON.stringify(body)
-        }, signal, onText ? STALL : WAIT);
-        return onText ? await openaiStream(r, w, model, onText) : await openaiOnce(r, w, model);
+        }, o.signal, o.onText ? STALL : WAIT, spec.refuse);
+        return spec.done(o.onText ? await openaiStream(r, w, o.model, o.onText, spec.fail) : await openaiOnce(r, w, o.model, spec.fail));
       }
       catch (e) {
         // an optional parameter this model does not take: once without it
-        if (!(e.status === 400 && e.code === 'model' && attempt < 3 && lessOpenAI(e, body))) {
+        if (!(attempt < 3 && spec.less(e, body))) {
           throw e;
         }
       }
     }
   };
+  const openai = o => chat({
+    url: CLOUD.openai.base + 'chat/completions',
+    headers: {authorization: 'Bearer ' + o.key},
+    body: ({model, system, user, max, schema, quick}) => {
+      const body = {
+        model,
+        messages: [{role: reasons(model) ? 'developer' : 'system', content: system}, {role: 'user', content: user}],
+        max_completion_tokens: max + (reasons(model) ? THINKING : 0)
+      };
+      const effort = reasons(model) ? effortFor(model, quick) : '';
+      if (effort) {
+        body.reasoning_effort = effort;
+      }
+      if (schema) {
+        body.response_format = {type: 'json_schema', json_schema: {name: 'results', strict: true, schema}};
+      }
+      return body;
+    },
+    refuse: refused,
+    fail: failed,
+    less: (e, body) => e.status === 400 && e.code === 'model' && lessOpenAI(e, body),
+    done: answer => answer
+  }, o);
 
   /* Z.ai: GLM models, with OpenAI's form of a chat completion */
 
@@ -1267,41 +1322,32 @@
     delete body[k];
     return true;
   };
-  const zai = async ({key, model, system, user, max, schema, signal, onText}) => {
-    const thinks = thinksAlways(model);
-    // no temperature: what the model does by default suits these tasks
-    const body = {
-      model,
-      messages: [{role: 'system', content: system}, {role: 'user', content: user}],
-      max_tokens: Math.min(ZAI_MAX, max + (thinks ? THINKING : 0)),
-      thinking: {type: thinks ? 'enabled' : 'disabled'}
-    };
-    if (thinks) {
-      body.reasoning_effort = 'low';
-    }
-    // JSON, but no schema: the prompt describes its shape
-    if (schema) {
-      body.response_format = {type: 'json_object'};
-    }
-    if (onText) {
-      body.stream = true;
-    }
-    for (let attempt = 0; ; attempt += 1) {
-      try {
-        const {r, w} = await call(CLOUD.zai.base + 'chat/completions', {
-          method: 'POST',
-          headers: {'content-type': 'application/json', 'authorization': 'Bearer ' + key},
-          body: JSON.stringify(body)
-        }, signal, onText ? STALL : WAIT, zaiRefused);
-        return zaiDone(onText ? await openaiStream(r, w, model, onText, zaiFailed) : await openaiOnce(r, w, model));
+  const zai = o => chat({
+    url: CLOUD.zai.base + 'chat/completions',
+    headers: {authorization: 'Bearer ' + o.key},
+    body: ({model, system, user, max, schema}) => {
+      const thinks = thinksAlways(model);
+      // no temperature: what the model does by default suits these tasks
+      const body = {
+        model,
+        messages: [{role: 'system', content: system}, {role: 'user', content: user}],
+        max_tokens: Math.min(ZAI_MAX, max + (thinks ? THINKING : 0)),
+        thinking: {type: thinks ? 'enabled' : 'disabled'}
+      };
+      if (thinks) {
+        body.reasoning_effort = 'low';
       }
-      catch (e) {
-        if (!(e.code === 'model' && attempt < 3 && lessZai(e, body))) {
-          throw e;
-        }
+      // JSON, but no schema: the prompt describes its shape
+      if (schema) {
+        body.response_format = {type: 'json_object'};
       }
-    }
-  };
+      return body;
+    },
+    refuse: zaiRefused,
+    fail: zaiFailed,
+    less: (e, body) => e.code === 'model' && lessZai(e, body),
+    done: zaiDone
+  }, o);
   // A key's check, with no model list to ask for: the smallest answer of a free model. Only a
   // key refused fails it, or no answer at all; a model gone, a balance spent or a busy minute
   // say nothing against the key.
@@ -1319,6 +1365,441 @@
         throw e;
       }
     }
+  };
+
+  /*
+   * The other providers in OpenAI's form of a chat completion, one table. Each says how its
+   * models are listed (keep: which of its list chat; id: a model's id as a request names it), its
+   * best, its fastest and the one to start with; the JSON it takes (json_schema, json_object, or
+   * none: the prompts describe their JSON, and the answer is read past any prose around it); how a
+   * model is told to think briefly, with the room its thinking takes of the answer's tokens
+   * (think); what its own refusals mean (refuse); and, where its limits are small, how much mail
+   * goes in one request (chars), how many requests at once (parallel), how many tokens an answer
+   * may take (cap).
+   */
+  // what a list's models are for when it is not chat: pictures, voices, embeddings, moderation
+  const NOT_CHAT = /embed|image|imagen|imagine|vision|video|veo|tts|speech|audio|voice|whisper|transcri|realtime|live|ocr|moderation|guard|rerank|orpheus/i;
+  const HOME = 'https://nord-express.github.io/mail-deck/';
+  const COMPAT = {
+    gemini: {
+      name: 'Gemini',
+      id: m => String(m?.id ?? '').replace(/^models\//, ''),
+      keep: id => /^gemini-/.test(id) && !NOT_CHAT.test(id) && !/computer-use|robotics|native|learnlm|aqa/.test(id),
+      start: 'gemini-3.8-flash', best: 'gemini-4-argon', fast: 'gemini-3.5-flash-lite',
+      json: 'json_schema',
+      // Gemini 3 and later think whatever they are told: briefly, with room for it
+      think: () => ({body: {reasoning_effort: 'low'}, room: THINKING}),
+      // a 429 is a limit per minute or per day of the free tier, not a balance (that is a 402)
+      refuse: status => status === 429 ? 'rate' : ''
+    },
+    xai: {
+      name: 'xAI',
+      keep: id => /^grok-/.test(id) && !NOT_CHAT.test(id),
+      start: 'grok-4.3', best: 'grok-4.7', fast: 'grok-4.3',
+      tokens: 'max_completion_tokens',
+      json: 'json_schema',
+      // Grok 4.3 and before may not think at all for a quick task; later ones always think
+      think: (model, quick) => /non-reasoning/.test(model) ? {} : quick && /^grok-([0-3]|4\.[0-3])(\D|$)/.test(model) ?
+        {body: {reasoning_effort: 'none'}} : {body: {reasoning_effort: 'low'}, room: THINKING}
+    },
+    deepseek: {
+      name: 'DeepSeek',
+      keep: id => /^deepseek-/.test(id),
+      start: 'deepseek-flash', best: 'deepseek-v4-pro', fast: 'deepseek-flash',
+      // JSON as an object only; the prompts say "JSON", as it wants
+      json: 'json_object',
+      // its models think unless told not to
+      think: () => ({body: {thinking: {type: 'disabled'}}})
+    },
+    mistral: {
+      name: 'Mistral',
+      keep: (id, m) => m?.capabilities?.completion_chat !== false && !NOT_CHAT.test(id) &&
+        !/codestral|devstral|voxtral|pixtral|magistral|saba/.test(id) && !(Date.parse(m?.deprecation) < Date.now()),
+      start: 'mistral-small-latest', best: 'mistral-large-4', fast: 'mistral-small-latest',
+      json: 'json_schema',
+      // Large 4 always thinks: briefly; Small 4 may not think at all
+      think: model => /^mistral-large-4/.test(model) ? {body: {reasoning_effort: 'low'}, room: THINKING} :
+        /^mistral-small/.test(model) ? {body: {reasoning_effort: 'none'}} : {},
+      // a model the plan does not include
+      refuse: status => status === 403 ? 'model' : ''
+    },
+    openrouter: {
+      name: 'OpenRouter',
+      // who asks, as OpenRouter's rankings show it
+      headers: () => ({'http-referer': HOME, 'x-title': 'Mail Deck', 'x-openrouter-title': 'Mail Deck'}),
+      // text in, text out; not the batch twins, nor the routers of a price not known beforehand
+      keep: (id, m) => !id.endsWith(':batch') && String(m?.architecture?.output_modalities ?? ['text']) === 'text' &&
+        (m?.architecture?.input_modalities ?? ['text']).includes('text') && !(Number(m?.pricing?.prompt) < 0),
+      start: 'google/gemini-3.8-flash', free: 'openrouter/free', fast: '',
+      json: 'json_schema',
+      // a schema only to a provider of the model that takes one
+      require: true,
+      think: () => ({body: {reasoning: {effort: 'low'}}, room: THINKING}),
+      // its model list is no one's: the key is checked on its own
+      check: 'key',
+      // its moderation's no; no provider of the model takes this request
+      refuse: (status, err, all) => status === 403 && (err.metadata?.reasons || /moderat|flagged/.test(all)) ? 'refusal' :
+        status === 404 ? 'model' : status === 408 ? 'server' : ''
+    },
+    groq: {
+      name: 'Groq',
+      keep: (id, m) => m?.active !== false && !NOT_CHAT.test(id) && !/compound|allam|distil/.test(id),
+      start: 'openai/gpt-oss-120b', fast: 'openai/gpt-oss-20b',
+      tokens: 'max_completion_tokens',
+      json: 'json_schema',
+      think: model => /gpt-oss/.test(model) ? {body: {reasoning_effort: 'low', include_reasoning: false}, room: 1000} :
+        /qwen/.test(model) ? {body: {reasoning_effort: 'none'}} : {},
+      // the free plan takes 8,000 tokens a minute, what is asked and what may come back together
+      chars: 10000, parallel: 1, cap: 3000,
+      refuse: status => status === 498 ? 'server' : ''
+    },
+    qwen: {
+      name: 'Qwen',
+      keep: id => /^(qwen|qwq)/.test(id) && !NOT_CHAT.test(id) && !/-vl|omni|coder|math|-mt|livetranslate|asr|deep-research|character/.test(id),
+      start: 'qwen3.8-flash', best: 'qwen3.8-max', fast: 'qwen3.8-flash',
+      json: 'json_object',
+      // its JSON comes whole only without a cap on the answer
+      jsonCap: false,
+      think: () => ({body: {enable_thinking: false}}),
+      refuse: (status, err, all) => /arrearage|freetieronly|allocationquota|insufficient_quota|overdue/.test(all) ? 'quota' :
+        /data_inspection_failed|inappropriate/.test(all) ? 'refusal' : /range of input length/.test(all) ? 'too-long' : ''
+    },
+    kimi: {
+      name: 'Kimi',
+      keep: id => /^(kimi-|moonshot-)/.test(id) && !NOT_CHAT.test(id),
+      start: 'kimi-k3.1-pro-highspeed', best: 'kimi-k3.1-pro', fast: 'kimi-k3.1-pro-highspeed',
+      tokens: 'max_completion_tokens',
+      json: 'json_schema',
+      // Kimi thinks as much as it can unless told otherwise
+      think: () => ({body: {reasoning_effort: 'low'}, room: THINKING}),
+      refuse: (status, err, all) => /exceeded_current_quota|insufficient balance|suspended/.test(all) ? 'quota' :
+        /content_filter|high risk/.test(all) ? 'refusal' : /token length too long|exceeded model token limit/.test(all) ? 'too-long' : ''
+    },
+    yandex: {
+      name: 'Yandex',
+      // the folder the models are in, as a header and in a model's address: gpt://<folder>/<model>
+      headers: auth => ({'openai-project': auth.folder}),
+      wire: (model, auth) => `gpt://${auth.folder}/${model}`,
+      id: m => /^gpt:\/\/[^/]+\/(.+)$/.exec(String(m?.id ?? ''))?.[1] || '',
+      keep: id => Boolean(id),
+      start: 'aliceai-llm-flash/latest', best: 'aliceai-llm/latest', fast: 'aliceai-llm-flash/latest',
+      json: 'json_object'
+    },
+    local: {
+      name: 'Local',
+      keep: id => !/embed|rerank|whisper|bge-|clip/i.test(id),
+      start: '', fast: '',
+      json: 'json_schema',
+      // a model that thinks is told not to; one that cannot be told so says so, and is not again
+      think: () => ({body: {reasoning_effort: 'none'}, room: THINKING}),
+      // Ollama's 4,096 tokens by default; one request at a time, as a server here takes them
+      chars: LOCAL_BUDGET, parallel: 1,
+      // a 403 with no words of its own: the server does not take this extension's origin
+      refuse: (status, err) => status === 403 && !err.message ? 'origin' : ''
+    }
+  };
+
+  /* a server on this computer */
+  // its address as the user wrote it (http://localhost:11434/v1, 127.0.0.1:1234, …): http, this
+  // computer's name or address, a port, and /v1 when no path was given; anything else is none
+  const localBase = text => {
+    let s = String(text ?? '').trim();
+    if (!s) {
+      return '';
+    }
+    if (!/^[a-z][\w+.-]*:\/\//i.test(s)) {
+      s = 'http://' + s;
+    }
+    let u;
+    try {
+      u = new URL(s);
+    }
+    catch (e) {
+      return '';
+    }
+    if (u.protocol !== 'http:' || !['localhost', '127.0.0.1'].includes(u.hostname) || u.username || u.password || u.search || u.hash ||
+      u.port === '0') {
+      return '';
+    }
+    return `http://${u.host}${u.pathname.replace(/\/+$/, '') || '/v1'}`;
+  };
+  // the site Chrome gives for it
+  const localOrigin = base => /^http:\/\/127\.0\.0\.1[:/]/.test(base + '/') ? 'http://127.0.0.1/*' : base ? 'http://localhost/*' : '';
+  // what it is, by its port: Ollama's and LM Studio's own, or its address
+  const localName = base => {
+    const port = /^http:\/\/[^/]+:(\d+)/.exec(base)?.[1];
+    return port === '11434' ? 'Ollama' : port === '1234' ? 'LM Studio' : base.replace(/^http:\/\//, '').replace(/\/.*$/, '');
+  };
+  // Ollama answers only the origins it knows, and an extension's is none of them unless the user
+  // adds it: a session rule gives this extension's own requests to the server the server's own
+  // origin, as one of its own pages would have. Ours only; core/services.js's rules start at 1000,
+  // the ChatGPT sign-in's is 900. Session rules go with the browser: made again when one is missing.
+  const LOCAL_RULE = 901;
+  let ruled = '';
+  const localRule = async base => {
+    const d = self.chrome?.declarativeNetRequest;
+    const origin = new URL(base).origin;
+    if (ruled === origin || !d?.updateSessionRules) {
+      return;
+    }
+    try {
+      const rule = {
+        id: LOCAL_RULE,
+        priority: 1,
+        action: {type: 'modifyHeaders', requestHeaders: [{header: 'origin', operation: 'set', value: origin}]},
+        condition: {urlFilter: '|' + origin + '/', initiatorDomains: [chrome.runtime.id], resourceTypes: ['xmlhttprequest']}
+      };
+      const had = (await d.getSessionRules()).find(r => r.id === LOCAL_RULE);
+      if (had?.condition?.urlFilter !== rule.condition.urlFilter || had?.action?.requestHeaders?.[0]?.value !== origin) {
+        await d.updateSessionRules({removeRuleIds: [LOCAL_RULE], addRules: [rule]});
+      }
+      ruled = origin;
+    }
+    // without it the server may still take the request; when it does not, it says so
+    catch (e) {}
+  };
+
+  /* their requests */
+  // where an engine's requests go: the server's own address for a server on this computer
+  const baseOf = (engine, auth) => engine === 'local' ? auth.base + '/' : CLOUD[engine].base;
+  const compatHeaders = (engine, auth) => ({
+    ...(auth.key ? {authorization: 'Bearer ' + auth.key} : {}),
+    ...COMPAT[engine].headers?.(auth)
+  });
+  // the words that say a key is wrong, whatever the status: Gemini's and xAI's come as a 400
+  const BAD_KEY = /api key not valid|api_key_invalid|invalid[ _-]api[ _-]key|incorrect api key|unknown api key|invalid_authentication|invalid authentication/;
+  // a refusal, read in the provider's own form: Gemini's error in a list, xAI's {code, error: "…"},
+  // Mistral's {detail: "…"} or {object: "error", …}, the rest as OpenAI's
+  const compatRefused = engine => (status, text, headers) => {
+    let j = parse(text);
+    if (Array.isArray(j)) {
+      j = j[0];
+    }
+    const err = j?.error && typeof j.error === 'object' ? j.error : j?.object === 'error' ? j :
+      {message: String((typeof j?.error === 'string' ? j.error : j?.detail && typeof j.detail === 'object' ? JSON.stringify(j.detail) : j?.detail ?? j?.message) ?? ''),
+        code: j?.code};
+    const e = refused(status, JSON.stringify({error: err}), headers);
+    const all = JSON.stringify(err).toLowerCase();
+    const c = COMPAT[engine].refuse?.(status, err, all) || ([400, 401, 403].includes(status) && BAD_KEY.test(all) ? 'auth' : '');
+    return c ? new AIError(c, e.detail, {status, type: e.type, param: e.param, retryAfter: e.retryAfter}) : e;
+  };
+  // an error inside a stream, which comes after the 200 (OpenRouter's with the status it stands for)
+  const compatFailed = engine => err => compatRefused(engine)(Number.isInteger(err?.code) && err.code >= 400 && err.code < 600 ? err.code :
+    STATUS[err?.type] || STATUS[err?.code] || 500, JSON.stringify({error: err || {}}), null);
+  // a model that writes its thinking into the answer, in <think> … </think> (some do on Groq, on a
+  // server on this computer): the answer is what comes after it; a thought not over yet is none
+  const unthink = text => {
+    if (!/^\s*<think>/.test(text)) {
+      return text;
+    }
+    const end = text.indexOf('</think>');
+    return end < 0 ? '' : text.slice(end + 8).replace(/^\s+/, '');
+  };
+  // What a model refused (400, 404 or 422), as one step to take back: a parameter it named, the
+  // schema (a JSON object instead, then no JSON mode at all), a provider that takes them all, the
+  // name of the cap, the system's role. A model not found has nothing to take back. Each step is
+  // kept for the page, so only the first request pays for a refusal.
+  const THINK_PARAMS = ['reasoning_effort', 'reasoning', 'thinking', 'enable_thinking', 'include_reasoning'];
+  const GONE = /\bmodel\b.*\b(not (found|exist|available|supported)|unknown|does not exist|decommissioned)|(unknown|invalid|unsupported|no such) model/;
+  const lessCompat = (e, body) => {
+    if (e.code !== 'model' || ![400, 404, 422].includes(e.status)) {
+      return '';
+    }
+    const m = `${e.param} ${e.type} ${e.detail}`.toLowerCase();
+    if (body.provider && (e.status === 404 || /provider|require_parameters|no endpoints/.test(m))) {
+      return 'provider';
+    }
+    const named = THINK_PARAMS.find(k => k in body && m.includes(k));
+    if (named) {
+      return 'drop:' + named;
+    }
+    if (body.response_format && /response_format|json_schema|json_object|structured|schema|json/.test(m)) {
+      return 'json';
+    }
+    if ('max_completion_tokens' in body && /max_completion_tokens/.test(m)) {
+      return 'tokens';
+    }
+    if ('max_tokens' in body && /max_tokens/.test(m)) {
+      return 'tokens';
+    }
+    if (body.messages[0].role === 'system' && /system|role/.test(m)) {
+      return 'system';
+    }
+    if (GONE.test(m) || e.status !== 400) {
+      return '';
+    }
+    // nothing named: the first optional one left
+    const first = THINK_PARAMS.find(k => k in body);
+    return first ? 'drop:' + first : body.response_format ? 'json' : '';
+  };
+  const takeBack = (step, body) => {
+    if (step === 'provider') {
+      delete body.provider;
+    }
+    else if (step.startsWith('drop:')) {
+      delete body[step.slice(5)];
+    }
+    else if (step === 'json') {
+      delete body.provider;
+      if (body.response_format?.type === 'json_schema') {
+        body.response_format = {type: 'json_object'};
+      }
+      else {
+        delete body.response_format;
+      }
+    }
+    else if (step === 'tokens') {
+      const [from, to] = 'max_completion_tokens' in body ? ['max_completion_tokens', 'max_tokens'] : ['max_tokens', 'max_completion_tokens'];
+      body[to] = body[from];
+      delete body[from];
+    }
+    else if (step === 'system') {
+      body.messages = [{role: 'user', content: body.messages[0].content + '\n\n' + body.messages[1].content}];
+    }
+  };
+  const taken = new Map();
+  const compat = async (engine, o) => {
+    const p = COMPAT[engine];
+    const auth = {key: o.key, folder: o.folder, base: o.base};
+    if (engine === 'local') {
+      await localRule(o.base);
+    }
+    const id = engine + '\n' + o.model;
+    const spec = {
+      url: baseOf(engine, auth) + 'chat/completions',
+      headers: compatHeaders(engine, auth),
+      body: ({model, system, user, max, schema, quick}) => {
+        const t = p.think?.(model, quick) || {};
+        // no temperature, no penalties, no stop: several of these models refuse them
+        const body = {
+          model: p.wire ? p.wire(model, auth) : model,
+          messages: [{role: 'system', content: system}, {role: 'user', content: user}],
+          ...t.body
+        };
+        if (!(schema && p.jsonCap === false)) {
+          body[p.tokens || 'max_tokens'] = Math.min(p.cap || Infinity, max + (t.room || 0));
+        }
+        if (schema && p.json) {
+          body.response_format = p.json === 'json_schema' ? {type: 'json_schema', json_schema: {name: 'results', strict: true, schema}} :
+            {type: 'json_object'};
+          if (p.json === 'json_schema' && p.require) {
+            body.provider = {require_parameters: true};
+          }
+        }
+        for (const step of taken.get(id) || []) {
+          takeBack(step, body);
+        }
+        return body;
+      },
+      refuse: compatRefused(engine),
+      fail: compatFailed(engine),
+      less: (e, body) => {
+        const step = lessCompat(e, body);
+        if (step) {
+          takeBack(step, body);
+          taken.set(id, [...taken.get(id) || [], step]);
+        }
+        return Boolean(step);
+      },
+      // the ways an answer stops that are no answer: the provider's error (OpenRouter), its
+      // servers full (DeepSeek), a safety filter; and a model's own name, as the request had it
+      done: answer => {
+        if (['error', 'insufficient_system_resource'].includes(answer.stop)) {
+          throw new AIError('server', answer.stop);
+        }
+        if (/^(safety|prohibited_content|blocklist|spii|recitation|sensitive)$/i.test(answer.stop)) {
+          throw new AIError('refusal', answer.stop);
+        }
+        const text = unthink(answer.text);
+        // DeepSeek's answer of spaces alone, now and then: no answer
+        if (answer.text && !text.trim() && !CUT.includes(answer.stop)) {
+          throw new AIError('bad-output', 'blank');
+        }
+        return {...answer, text, model: p.id && answer.model ? p.id({id: answer.model}) || o.model : answer.model};
+      }
+    };
+    const ask = {...o, onText: o.onText && (text => {
+      const shown = unthink(text);
+      if (shown) {
+        o.onText(shown);
+      }
+    })};
+    try {
+      return await chat(spec, ask);
+    }
+    catch (e) {
+      // an answer of spaces is asked again, once
+      if (e.code === 'bad-output' && e.detail === 'blank') {
+        return chat(spec, ask);
+      }
+      throw e;
+    }
+  };
+
+  /* their models */
+  // the models of a provider's list, best and fastest marked, the one to start with as default;
+  // OpenRouter's with their maker as a group and their price, in US dollars a million tokens
+  const compatModels = (engine, data) => {
+    const p = COMPAT[engine];
+    const seen = new Set();
+    let out = [];
+    for (const m of data) {
+      const id = p.id ? p.id(m) : typeof m?.id === 'string' ? m.id : '';
+      if (!id || seen.has(id) || !p.keep(id, m)) {
+        continue;
+      }
+      seen.add(id);
+      const model = {id, name: id, created: Number(m.created) || 0};
+      if (engine === 'openrouter') {
+        const [maker, name] = /^([^:]+):\s*(.+)$/.exec(String(m.name || ''))?.slice(1) || ['', String(m.name || id)];
+        const price = [Number(m.pricing?.prompt), Number(m.pricing?.completion)];
+        Object.assign(model, {name, group: maker.trim() || id.replace(/^~/, '').split('/')[0]});
+        if (price.every(Number.isFinite)) {
+          model.price = price.map(x => Math.round(x * 1e8) / 100);
+        }
+        if (price.every(x => x === 0)) {
+          model.tag = 'free';
+        }
+      }
+      out.push(model);
+    }
+    // a server's own order (the last used first); the others' newest first
+    if (engine !== 'local') {
+      out.sort((a, b) => b.created - a.created || b.id.localeCompare(a.id, 'en', {numeric: true}));
+    }
+    out = out.map(({created, ...m}) => m);
+    for (const [tag, want] of [['best', p.best], ['fast', p.fast], ['free', p.free]]) {
+      const m = want && out.find(x => x.id === want);
+      if (m) {
+        Object.assign(m, {recommended: true, tag});
+      }
+    }
+    const preset = out.find(m => m.id === p.start) || out.find(m => m.id === p.best) || out[0];
+    if (preset) {
+      Object.assign(preset, {default: true, recommended: true});
+    }
+    return out;
+  };
+  // the models a key may use, or a server here has; a key whose list is no one's (OpenRouter's)
+  // is checked on its own
+  const compatList = async (engine, auth, signal) => {
+    if (engine === 'local') {
+      await localRule(auth.base);
+    }
+    const {r, w} = await call(baseOf(engine, auth) + 'models', {headers: compatHeaders(engine, auth)}, signal, WAIT_LIST, compatRefused(engine));
+    const j = await readJSON(r, w);
+    if (!Array.isArray(j?.data)) {
+      throw new AIError('server', 'no model list');
+    }
+    return compatModels(engine, j.data);
+  };
+  const compatCheck = async (engine, auth, signal) => {
+    if (COMPAT[engine].check !== 'key') {
+      return compatList(engine, auth, signal);
+    }
+    const {r, w} = await call(baseOf(engine, auth) + 'key', {headers: compatHeaders(engine, auth)}, signal, WAIT_LIST, compatRefused(engine));
+    await readJSON(r, w);
+    return null;
   };
 
   /* the ChatGPT plan: Sign in with ChatGPT, OpenAI's protocol for open-source apps */
@@ -1436,12 +1917,19 @@
       await dnr().updateSessionRules({removeRuleIds: [RULE], ...(on ? {addRules: [callbackRule()]} : {})});
     }
   };
+  // the loopback address given back, unless a server on this computer is at it
+  const giveBack = async () => {
+    const {[BASE_KEY]: base} = await chrome.storage.local.get(BASE_KEY).catch(() => ({}));
+    if (localOrigin(localBase(base)) !== 'http://127.0.0.1/*') {
+      await chrome.permissions?.remove?.({origins: ['http://127.0.0.1/*']});
+    }
+  };
   // a sign-in over, however it went: no record of it, no rule, and the loopback address given back
   const over = async () => {
     await Promise.all([
       chrome.storage.session.remove(PENDING).catch(() => {}),
       rule(false).catch(() => {}),
-      chrome.permissions?.remove?.({origins: ['http://127.0.0.1/*']})?.catch?.(() => false)
+      giveBack().catch(() => false)
     ]);
   };
   // a sign-in left unfinished: its rule goes once it is too old to finish
@@ -2035,9 +2523,14 @@
     return out;
   };
 
-  const granted = async engine => {
+  // Chrome gives the provider's site: a server on this computer's, by the address it is at (base)
+  const granted = async (engine, base) => {
+    const origins = engine === 'local' ? [localOrigin(localBase(base))].filter(Boolean) : CLOUD[engine].origins;
+    if (!origins.length) {
+      return false;
+    }
     try {
-      return chrome.permissions?.contains ? await chrome.permissions.contains({origins: CLOUD[engine].origins}) : true;
+      return chrome.permissions?.contains ? await chrome.permissions.contains({origins}) : true;
     }
     catch (e) {
       return false;
@@ -2057,15 +2550,47 @@
     }
     return k;
   };
+  // What an engine's requests are made with (auth: a key alone, or {key, folder, base}): the key,
+  // none for the plan and perhaps none for a server on this computer; the Yandex Cloud folder; the
+  // server's address. What is missing or cannot be is said at once, before anything is asked.
+  const authOf = (engine, auth) => {
+    const a = auth && typeof auth === 'object' ? auth : {key: auth};
+    const folder = String(a.folder ?? '').trim();
+    const base = localBase(a.base);
+    if (engine === 'yandex' && !/^[\w-]{1,100}$/.test(folder)) {
+      throw new AIError('auth', 'no folder');
+    }
+    if (engine === 'local' && !base) {
+      throw new AIError('no-server', 'no address');
+    }
+    return {
+      key: engine === 'chatgpt' || (engine === 'local' && !String(a.key ?? '').trim()) ? '' : keyOf(a.key),
+      ...(engine === 'yandex' ? {folder} : {}),
+      ...(engine === 'local' ? {base} : {})
+    };
+  };
+  // A request that failed, not refused: once the permission is taken back in chrome://extensions,
+  // no access; a server on this computer that is not running, none to answer.
+  const lostAccess = async (engine, e, base) => {
+    if (e.code !== 'network') {
+      return e;
+    }
+    if (!await granted(engine, base)) {
+      return new AIError('no-access', e.detail);
+    }
+    return engine === 'local' ? new AIError('no-server', e.detail) : e;
+  };
+  // a list a key's check just brought: the page's next ask for the models takes it
+  const checked = new Map();
+  const FRESH = 10000;
   // the models a key, or the ChatGPT plan's sign-in (key unused), may use
-  const models = async (engine, key, signal) => {
+  const models = async (engine, auth, signal) => {
     if (!CLOUD[engine]) {
       return [];
     }
-    if (engine !== 'chatgpt') {
-      key = keyOf(key);
-    }
-    if (!await granted(engine)) {
+    const a = authOf(engine, auth);
+    const key = a.key;
+    if (!await granted(engine, a.base)) {
       throw new AIError('no-access');
     }
     if (engine === 'zai') {
@@ -2074,6 +2599,10 @@
     try {
       if (engine === 'chatgpt') {
         return named(engine, await planList(signal));
+      }
+      if (COMPAT[engine]) {
+        const had = checked.get(engine + '\n' + JSON.stringify(a));
+        return named(engine, had && Date.now() - had.at < FRESH ? had.list : await compatList(engine, a, signal));
       }
       const {r, w} = engine === 'openai' ?
         await call(CLOUD.openai.base + 'models', {headers: {authorization: 'Bearer ' + key}}, signal, WAIT_LIST) :
@@ -2085,17 +2614,14 @@
       return named(engine, engine === 'openai' ? openaiModels(j.data) : anthropicModels(j.data));
     }
     catch (e) {
-      // a fetch fails, not refuses, once the permission is taken back in chrome://extensions
-      if (e.code === 'network' && !await granted(engine)) {
-        throw new AIError('no-access', e.detail);
-      }
-      throw e;
+      throw await lostAccess(engine, e, a.base);
     }
   };
-  // the models a key or the plan's account (key) may use, asked once a page
+  // the models a key or the plan's account (key: its id; or all an engine's requests are made
+  // with) may use, asked once a page
   const defaults = new Map();
   const listOf = (engine, key, signal) => {
-    const id = engine + '\n' + key;
+    const id = engine + '\n' + JSON.stringify(key);
     if (!defaults.has(id)) {
       const p = models(engine, key);
       defaults.set(id, p);
@@ -2114,7 +2640,9 @@
   };
   // The quick tasks go to the provider's smaller model, unless the one in use is one already: a
   // free GLM model stays the one it is. What a key turns out not to have is not asked for again.
-  const FAST = {anthropic: 'claude-haiku-5-5', zai: 'glm-5.3-flash'};
+  // The table's providers name theirs; OpenRouter's and a server's here are the one picked.
+  const FAST = {anthropic: 'claude-haiku-5-5', zai: 'glm-5.3-flash',
+    ...Object.fromEntries(Object.entries(COMPAT).map(([id, p]) => [id, p.fast || '']))};
   const SMALL = /(^|[-.])(mini|nano|haiku|flash|flashx|lite|small)([-.]|$)/i;
   const lacking = new Set();
   const fastModel = async (engine, key, main, signal) => {
@@ -2122,7 +2650,7 @@
       return main;
     }
     let fast = FAST[engine];
-    if (!fast) {
+    if (!fast && !COMPAT[engine]) {
       // the list a page of this session asked for, else the key's own, asked once a page
       let list = [];
       try {
@@ -2351,16 +2879,14 @@
       }
     };
   };
-  // a fetch fails, not refuses, once the permission is taken back in chrome://extensions
-  const guarded = async (engine, run) => {
+  // a fetch fails, not refuses, once the permission is taken back in chrome://extensions (base:
+  // a server on this computer's address)
+  const guarded = async (engine, run, base) => {
     try {
       return await run();
     }
     catch (e) {
-      if (e.code === 'network' && !await granted(engine)) {
-        throw new AIError('no-access', e.detail);
-      }
-      throw e;
+      throw await lostAccess(engine, e, base);
     }
   };
   const openCloud = async (prefs, system, signal, task) => {
@@ -2370,22 +2896,26 @@
     if (engine === 'chatgpt' && !a) {
       throw new AIError('signed-out', 'not signed in');
     }
-    const key = a ? '' : keyOf(prefs.key);
-    const id = a ? a.sub : key;
+    const auth = a ? {key: ''} : authOf(engine, prefs);
+    const id = a ? a.sub : COMPAT[engine] ? auth : auth.key;
     const main = prefs.model || await defaultModel(engine, id, signal);
     const quick = FAST_TASKS.includes(task);
-    const ask = {chatgpt, openai, anthropic, zai}[engine];
+    const ask = {chatgpt, openai, anthropic, zai}[engine] || (o => compat(engine, o));
+    // how much mail goes in a request, how many requests at once: less where the limits are small
+    const chars = COMPAT[engine]?.chars || BUDGET;
     const c = {
       engine,
       model: quick && prefs.fast !== false ? await fastModel(engine, id, main, signal) : main,
-      chars: BUDGET,
+      chars,
+      batch: Math.max(1, Math.min(BATCH, Math.floor(chars / ITEM_CHARS))),
+      parallel: COMPAT[engine]?.parallel || AT_ONCE,
       room: async () => 0,
       close() {}
     };
     // a fast model this key cannot use (not found, not this account's): the one picked, from now on
     const run = async o => {
       try {
-        return await guarded(engine, () => ask({key, system, signal, quick, ...o, model: c.model}));
+        return await guarded(engine, () => ask({...auth, system, signal, quick, ...o, model: c.model}), auth.base);
       }
       catch (e) {
         const gone = e.status === 404 || e.type === '1211' || /model_not_found|not_found/.test(e.type) ||
@@ -2395,7 +2925,7 @@
         }
         lacking.add(engine + '\n' + c.model);
         c.model = main;
-        return guarded(engine, () => ask({key, system, signal, quick, ...o, model: main}));
+        return guarded(engine, () => ask({...auth, system, signal, quick, ...o, model: main}), auth.base);
       }
     };
     c.stream = (user, max, onText) => run({user, max, onText});
@@ -2411,7 +2941,7 @@
     let p = {};
     try {
       p = await chrome.storage.local.get(['ai.engine', ...KEYED.map(e => `ai.${e}.key`),
-        ...Object.keys(CLOUD).map(e => `ai.${e}.model`), 'ai.summary', 'ai.reply', 'ai.buttons', 'ai.fast']) || {};
+        ...Object.keys(CLOUD).map(e => `ai.${e}.model`), FOLDER_KEY, BASE_KEY, 'ai.summary', 'ai.reply', 'ai.buttons', 'ai.fast']) || {};
     }
     catch (e) {}
     const engine = ENGINES.includes(p['ai.engine']) ? p['ai.engine'] : 'off';
@@ -2423,7 +2953,9 @@
       buttons: p['ai.buttons'] !== false,
       // a plan and the sorting by the provider's smaller model
       fast: p['ai.fast'] !== false,
-      ...(KEYED.includes(engine) ? {key: String(p['ai.' + engine + '.key'] || '').trim()} : {})
+      ...(KEYED.includes(engine) ? {key: String(p['ai.' + engine + '.key'] || '').trim()} : {}),
+      ...(engine === 'yandex' ? {folder: String(p[FOLDER_KEY] || '').trim()} : {}),
+      ...(engine === 'local' ? {base: localBase(p[BASE_KEY])} : {})
     };
   };
   const englishNote = () => {
@@ -2439,10 +2971,11 @@
     try {
       p = p || await prefs();
       if (KEYED.includes(p.engine)) {
-        if (!p.key) {
+        // a server on this computer needs its address, and a key only when it asks for one
+        if (p.engine === 'local' ? !localBase(p.base) : !p.key || (p.engine === 'yandex' && !p.folder)) {
           return {ok: false, reason: 'no-key', lang};
         }
-        if (!await granted(p.engine)) {
+        if (!await granted(p.engine, p.base)) {
           return {ok: false, reason: 'no-access', lang};
         }
         return {ok: true, lang};
@@ -2818,7 +3351,7 @@
       const c = await open(p, st, 'reply', replySystem(language), signal);
       try {
         const local = c.engine === 'builtin';
-        let size = local ? Math.max(1, Math.min(BATCH_LOCAL, Math.floor(c.chars / ITEM_CHARS))) : BATCH;
+        let size = local ? Math.max(1, Math.min(BATCH_LOCAL, Math.floor(c.chars / ITEM_CHARS))) : c.batch || BATCH;
         let i = 0;
         // the next batch, taken at once; the built-in model's made smaller until its room takes it
         const take = async () => {
@@ -2847,7 +3380,7 @@
             }
           }
         };
-        await Promise.all(Array.from({length: local ? 1 : AT_ONCE}, work));
+        await Promise.all(Array.from({length: local ? 1 : c.parallel || AT_ONCE}, work));
         if (failure) {
           throw failure;
         }
@@ -3636,6 +4169,19 @@
       await guarded(engine, () => zaiCheck(key, signal));
       return true;
     }
+    // the table's providers: their model list, which their key opens (OpenRouter's: the key's
+    // own page); a server on this computer, its list. The list is kept for the page's next ask.
+    if (COMPAT[engine]) {
+      const a = authOf(engine, key);
+      if (!await granted(engine, a.base)) {
+        throw new AIError('no-access');
+      }
+      const list = await guarded(engine, () => compatCheck(engine, a, signal), a.base);
+      if (list) {
+        checked.set(engine + '\n' + JSON.stringify(a), {at: Date.now(), list});
+      }
+      return true;
+    }
     if (CLOUD[engine]) {
       await models(engine, key, signal);
     }
@@ -3643,7 +4189,8 @@
   };
 
   /* what a page says of the engine: "ChatGPT plan · GPT-5.5", "Built-in · on this computer" */
-  const PROVIDERS = {builtin: 'Chrome', chatgpt: 'ChatGPT', openai: 'OpenAI', anthropic: 'Anthropic', zai: 'Z.ai'};
+  const PROVIDERS = {builtin: 'Chrome', chatgpt: 'ChatGPT', openai: 'OpenAI', anthropic: 'Anthropic', zai: 'Z.ai',
+    ...Object.fromEntries(Object.entries(COMPAT).map(([id, p]) => [id, p.name]))};
   const describe = async p => {
     p = p || await prefs();
     const engine = ENGINES.includes(p?.engine) ? p.engine : 'off';
@@ -3658,7 +4205,9 @@
       const m = list.find(x => x?.id === model) || (model ? null : list.find(x => x?.default));
       model = String(m?.name || model);
     }
-    return {engine, provider: PROVIDERS[engine] || '', model, plan: engine === 'chatgpt', local: engine === 'builtin'};
+    // a server on this computer by its name (Ollama, LM Studio) or its address
+    const provider = engine === 'local' ? localName(localBase(p.base)) || PROVIDERS.local : PROVIDERS[engine] || '';
+    return {engine, provider, model, plan: engine === 'chatgpt', local: engine === 'builtin' || engine === 'local'};
   };
 
   /* Google Calendar */
@@ -3706,13 +4255,17 @@
   // A change in Settings → AI stops what runs for the old engine, key, model or account: a
   // sign-out, another account. A refresh that renews the plan's tokens is none, nor is one that
   // found them spent (its request says so), nor a mark on the same account.
-  const restarts = (k, c) => /^ai\.(engine|openai\.|anthropic\.|zai\.)/.test(k) || k === 'ai.chatgpt.model' ||
+  const RESTARTS = new RegExp(`^ai\\.(engine|(${KEYED.join('|')})\\.)`);
+  const restarts = (k, c) => RESTARTS.test(k) || k === 'ai.chatgpt.model' ||
     (k === AUTH_KEY && (!c?.newValue || c.oldValue?.sub !== c.newValue.sub));
   const restart = () => {
     epoch.abort();
     epoch = new AbortController();
     defaults.clear();
     lacking.clear();
+    taken.clear();
+    checked.clear();
+    ruled = '';
   };
   try {
     chrome.storage.onChanged.addListener((changes, area) => {
@@ -3748,12 +4301,15 @@
     models,
     check,
     builtin,
+    // a server on this computer: its address as the user wrote it, made one (or '' when it is none)
+    localBase,
     // the ChatGPT plan: signIn() from a click, complete() on the page the sign-in comes back to
     chatgpt: {signIn, signOut, account, complete, resume, usage: USAGE},
     calendarUrl,
     // for the tests
     _internal: {readSummary, fit, candidate, sortable, prune, jsonOf, sse, watch, summarySystem, replySystem, readPlan, fitMail,
       citesOf, readEmail, planSystem, answerSystem, draftSystem, composeSystem, authorizeUrl, challengeOf, verifyIdToken, begin,
-      access, thinksAlways, checkCites, passages, languagesOf, calendar, midnight, planUser, effortFor, readResults, replyUser}
+      access, thinksAlways, checkCites, passages, languagesOf, calendar, midnight, planUser, effortFor, readResults, replyUser,
+      COMPAT, CLOUD, unthink, localOrigin, localName}
   };
 }
