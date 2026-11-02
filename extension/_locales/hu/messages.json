@@ -1898,6 +1898,12 @@
   "panel_turnOnAI": {
     "message": "MI bekapcsolása"
   },
+  "panel_summaryFacts": {
+    "message": "Részletek"
+  },
+  "panel_aiCut": {
+    "message": "A válasz félbeszakadt."
+  },
   "panel_sameLanguage": {
     "message": "Ez a levél már ezen a nyelven van: $1."
   },

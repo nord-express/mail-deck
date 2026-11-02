@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "Activar IA"
     },
+    "panel_summaryFacts": {
+        "message": "Detalles"
+    },
+    "panel_aiCut": {
+        "message": "La respuesta quedó cortada."
+    },
     "panel_sameLanguage": {
         "message": "Este correo ya está en $1."
     },

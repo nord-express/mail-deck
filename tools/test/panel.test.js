@@ -213,11 +213,13 @@ const checks = {
     'a check with nothing new asks nothing; new mail is asked about, alone': r.quietCheck && r.newMail,
     'the reader has a Summary button; nothing is asked before a click': r.button,
     'I asks: the card waits, then the points stream in': r.waiting && r.streams,
-    'the summary: points, to do, dates, for that mail and its version, from the whole thread':
-      JSON.stringify(r.summary) === '{"points":3,"todo":1,"events":2,"key":true,"messages":3,"fresh":false}',
+    'the summary: points, to do, dates and details, for that mail and its version, from the whole thread, the reader\'s own messages known':
+      JSON.stringify(r.summary) === '{"points":3,"todo":1,"events":2,"facts":2,"key":true,"messages":3,"fresh":false,"reader":"evgeny@example.com",' +
+        '"emails":"evgeny@example.com,anna@figma.com,anna@figma.com"}',
+    'a detail of the summary copies its value alone': r.factCopied,
     'each date links to Google Calendar in the mail\'s own account': r.calendar,
     'with the card open the message keeps room (140px at least) and the header gives way': r.room?.body >= 140 && r.room.files === 'none' && r.room.inside,
-    'Copy copies the summary with its headings': r.copied,
+    'Copy copies the summary with its headings and details': r.copied,
     'Hide hides it; I shows it again from the session, Regenerate asks anew': r.hidden && r.again && r.regenerating,
     'back hides the card; the mail opened again shows its summary without a click': r.backHides && r.keptShown,
     'back, and J, stop a summary underway': r.backStops && r.jStops,

@@ -2964,3 +2964,48 @@ button.cite:hover {
     display: none;
   }
 }
+
+/* the assistant, 1.6 */
+/* what a summary found to copy: its label, the value as the mail writes it, a copy button */
+.ai-facts ul {
+  padding-inline-start: 0;
+  list-style: none;
+}
+.ai-facts li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  unicode-bidi: normal;
+}
+.ai-facts li + li {
+  margin-top: 2px;
+}
+.ai-label {
+  flex: none;
+  max-width: 45%;
+  overflow: hidden;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ai-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
+  user-select: all;
+}
+.ai-copy-fact {
+  width: 26px;
+  height: 26px;
+}
+.ai-copy-fact svg {
+  width: 14px;
+  height: 14px;
+}
+.ai-copy-fact.copied {
+  color: var(--ok);
+}

@@ -100,6 +100,7 @@
       todo: ['Review the mockups before Friday'],
       events: [{title: 'Design review', start: '2026-11-06T10:00:00Z', end: '2026-11-06T11:00:00Z', allDay: false, details: subject},
         {title: 'Offsite', start: '2026-11-10', end: '2026-11-11', allDay: true, details: subject}],
+      facts: [{label: 'File', value: 'Макеты-v3.pdf'}, {label: 'Order', value: '4815-1623'}],
       truncated: ai.truncated, engine: 'openai', model: 'gpt-test'
     });
     window.AI = {
@@ -111,8 +112,9 @@
         call('cached', {key});
         return kept.has(key) ? {...kept.get(key), cached: true} : null;
       },
-      summarize: ({key, fresh, signal, onUpdate, subject, messages}) => new Promise((resolve, reject) => {
-        call('summarize', {key, fresh: Boolean(fresh), subject, messages: messages.length, chars: messages.reduce((n, m) => n + m.text.length, 0)});
+      summarize: ({key, fresh, signal, onUpdate, subject, messages, reader}) => new Promise((resolve, reject) => {
+        call('summarize', {key, fresh: Boolean(fresh), subject, messages: messages.length, chars: messages.reduce((n, m) => n + m.text.length, 0),
+          reader, emails: messages.map(m => m.email)});
         if (!fresh && kept.has(key)) {
           resolve({...kept.get(key), cached: true});
           return;

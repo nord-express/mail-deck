@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "Yapay zekâyı aç"
     },
+    "panel_summaryFacts": {
+        "message": "Ayrıntılar"
+    },
+    "panel_aiCut": {
+        "message": "Yanıt yarıda kesildi."
+    },
     "panel_sameLanguage": {
         "message": "Bu ileti zaten şu dilde: $1."
     },

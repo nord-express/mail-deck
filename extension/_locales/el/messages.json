@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "Ενεργοποίηση τεχνητής νοημοσύνης"
     },
+    "panel_summaryFacts": {
+        "message": "Λεπτομέρειες"
+    },
+    "panel_aiCut": {
+        "message": "Η απάντηση κόπηκε."
+    },
     "panel_sameLanguage": {
         "message": "Αυτό το μήνυμα είναι ήδη στα $1."
     },

@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "Увімкнути ШІ"
     },
+    "panel_summaryFacts": {
+        "message": "Деталі"
+    },
+    "panel_aiCut": {
+        "message": "Відповідь обірвалася."
+    },
     "panel_sameLanguage": {
         "message": "Цей лист уже написано мовою: $1."
     },

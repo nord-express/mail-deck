@@ -788,16 +788,22 @@
         await done();
         const asked = calls('summarize')[0];
         out.summary = {points: items('ai-points').length, todo: items('ai-todo').length, events: items('ai-events').length,
-          key: asked?.key === keyOf('a1'), messages: asked?.messages, fresh: asked?.fresh};
+          facts: items('ai-facts').length, key: asked?.key === keyOf('a1'), messages: asked?.messages, fresh: asked?.fresh,
+          reader: asked?.reader, emails: asked?.emails.join()};
         // the card open, the message keeps room under it, and the header steps back
         out.room = {body: Math.round(document.querySelector('.reader-body').getBoundingClientRect().height),
           files: getComputedStyle($('reader-files')).display, inside: card().getBoundingClientRect().bottom <= document.querySelector('.reader-card').getBoundingClientRect().bottom};
+        // a fact copies its value alone
+        card().querySelectorAll('.ai-copy-fact')[1].click();
+        await wait(30);
+        out.factCopied = window.__copied === '4815-1623' && card().querySelectorAll('.ai-facts .ai-label')[1].textContent === 'Order';
         const links = [...card().querySelectorAll('.ai-cal')];
         out.calendar = links.length === 2 && links.every(a => a.href.includes('authuser=evgeny%40example.com') && a.target === '_blank' &&
           a.textContent === t('addToCalendar')) && links[0].getAttribute('aria-label') === t('addToCalendar') + ': Design review';
         card().querySelector('.ai-copy').click();
         await wait(30);
-        out.copied = String(window.__copied).includes('Anna sent the final mockups') && String(window.__copied).includes(t('summaryTodo'));
+        out.copied = String(window.__copied).includes('Anna sent the final mockups') && String(window.__copied).includes(t('summaryTodo')) &&
+          String(window.__copied).includes(t('summaryFacts') + '\n• File: Макеты-v3.pdf\n• Order: 4815-1623');
         // Hide; I again shows it from the session's summaries; Regenerate asks anew
         card().querySelector('.ai-hide').click();
         await wait(30);

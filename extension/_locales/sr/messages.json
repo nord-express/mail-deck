@@ -2082,6 +2082,12 @@
     "panel_turnOnAI": {
         "message": "Укључи асистента"
     },
+    "panel_summaryFacts": {
+        "message": "Детаљи"
+    },
+    "panel_aiCut": {
+        "message": "Одговор је прекинут."
+    },
     "panel_sameLanguage": {
         "message": "Ова порука је већ на језику: $1."
     },

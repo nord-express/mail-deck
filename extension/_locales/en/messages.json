@@ -1940,6 +1940,12 @@
   "panel_turnOnAI": {
     "message": "Turn on AI"
   },
+  "panel_summaryFacts": {
+    "message": "Details"
+  },
+  "panel_aiCut": {
+    "message": "The answer was cut short."
+  },
   "panel_sameLanguage": {
     "message": "This mail is already in $1."
   },

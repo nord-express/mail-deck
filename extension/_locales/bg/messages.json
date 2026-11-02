@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "Включване на ИИ"
     },
+    "panel_summaryFacts": {
+        "message": "Подробности"
+    },
+    "panel_aiCut": {
+        "message": "Отговорът е прекъснат."
+    },
     "panel_sameLanguage": {
         "message": "Това писмо вече е на $1."
     },

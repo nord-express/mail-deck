@@ -2082,6 +2082,12 @@
     "panel_turnOnAI": {
         "message": "Включить ИИ"
     },
+    "panel_summaryFacts": {
+        "message": "Детали"
+    },
+    "panel_aiCut": {
+        "message": "Ответ оборвался."
+    },
     "panel_sameLanguage": {
         "message": "Это письмо уже на языке: $1."
     },

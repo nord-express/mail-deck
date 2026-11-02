@@ -794,9 +794,8 @@ check('features off: nothing is sent', async () => {
 });
 
 /* the summary's cache */
-check('summary cache: the same mail twice at once is one request; again, or on a new page, at once', async () => {
-  const session = {};
-  const t = load({local: ANTHROPIC, session});
+check('summary cache: the same mail twice at once is one request; again, on a new page or after a restart, at once', async () => {
+  const t = load({local: ANTHROPIC});
   t.answers.push(stream(anthropicEvents(SUMMARY)));
   const updates = [[], []];
   const [a, b] = await Promise.all([
@@ -819,16 +818,38 @@ check('summary cache: the same mail twice at once is one request; again, or on a
   t.answers.push(stream(anthropicEvents(SUMMARY)));
   await t.AI.summarize({...THREAD, key: 'link#v2'});
   assert.strictEqual(t.requests.length, 3);
-  // a panel opened again
+  // a panel opened again, or the browser started again: the summaries are on this computer
   await new Promise(r => setTimeout(r, 5));
-  const u = load({local: ANTHROPIC, session});
+  assert.deepStrictEqual(Object.keys(t.store.local['ai.summaries']).sort(), ['link#v1', 'link#v2']);
+  assert.strictEqual(t.store.session['ai.summaries'], undefined);
+  const u = load({with: t});
   const e = await u.AI.cached('link#v1');
   assert.strictEqual(e.points[1], 'The offsite moved again');
   assert.strictEqual(e.cached, true);
   assert.ok(!('t' in e));
   assert.strictEqual(await u.AI.cached('link#v3'), null);
   assert.strictEqual((await u.AI.summarize({...THREAD, key: 'link#v2'})).cached, true);
-  assert.strictEqual(u.requests.length, 0);
+  assert.strictEqual(u.requests.length, 3);
+  // a week at most, 200 at most, the newest kept
+  const now = Date.now();
+  const old = {points: ['p'], todo: [], events: [], t: now - 8 * DAY};
+  const many = Object.fromEntries(Array.from({length: 210}, (_, i) => ['k' + i, {points: ['p' + i], todo: [], events: [], t: now - i * 1000}]));
+  const v = load({local: {...ANTHROPIC, 'ai.summaries': {old, ...many}}});
+  assert.strictEqual(await v.AI.cached('old'), null);
+  assert.strictEqual((await v.AI.cached('k0')).points[0], 'p0');
+  v.answers.push(stream(anthropicEvents(SUMMARY)));
+  await v.AI.summarize({...THREAD, key: 'new#1'});
+  await new Promise(r => setTimeout(r, 5));
+  const kept = v.store.local['ai.summaries'];
+  assert.strictEqual(Object.keys(kept).length, 200);
+  assert.ok('new#1' in kept && 'k0' in kept && !('k199' in kept) && !('old' in kept));
+  // one the answer's room cut short says so, and is not kept
+  const w = load({local: ANTHROPIC});
+  w.answers.push(stream(anthropicEvents('POINTS\n- One\n- Tw', {stop: 'max_tokens'})));
+  const cut = await w.AI.summarize({...THREAD, key: 'cut#1'});
+  assert.strictEqual(cut.cut, true);
+  await new Promise(r => setTimeout(r, 5));
+  assert.strictEqual(w.store.local['ai.summaries'], undefined);
 });
 
 check('summary cache: one caller stops, the other still gets it; when both stop, the request does', async () => {
@@ -991,7 +1012,7 @@ check('summary parser: missing headers, bullets, markdown, dates, duplicates, ca
     ['All day by flag', dayAt(8), '', true]
   ].slice(0, 5));
   // no headers at all: points
-  assert.deepStrictEqual(plain(readSummary('Anna wants the budget.\nShe needs it by Friday.')), {points: ['Anna wants the budget.', 'She needs it by Friday.'], todo: [], events: []});
+  assert.deepStrictEqual(plain(readSummary('Anna wants the budget.\nShe needs it by Friday.')), {points: ['Anna wants the budget.', 'She needs it by Friday.'], todo: [], events: [], facts: []});
   // caps: 5 each, 300 characters a line
   const many = readSummary('POINTS\n' + Array.from({length: 8}, (_, i) => '- p' + i + ' ' + 'x'.repeat(400)).join('\n') +
     '\nTODO\n' + Array.from({length: 8}, (_, i) => '- t' + i).join('\n') +
@@ -1001,20 +1022,52 @@ check('summary parser: missing headers, bullets, markdown, dates, duplicates, ca
   assert.strictEqual(many.todo.length, 5);
   assert.strictEqual(many.events.length, 5);
   // inline headers, and headers in another language
-  assert.deepStrictEqual(plain(readSummary('TODO: call Bob\nPOINTS: Budget is late')), {points: ['Budget is late'], todo: ['call Bob'], events: []});
+  assert.deepStrictEqual(plain(readSummary('TODO: call Bob\nPOINTS: Budget is late')), {points: ['Budget is late'], todo: ['call Bob'], events: [], facts: []});
   const ru = readSummary('ГЛАВНОЕ\n- Бюджет опаздывает\nЗАДАЧИ:\n- Позвонить Борису\nСОБЫТИЯ\n' + `${dayAt(2)} | | yes | Встреча`);
   assert.deepStrictEqual(plain(ru.points), ['Бюджет опаздывает']);
   assert.deepStrictEqual(plain(ru.todo), ['Позвонить Борису']);
   assert.deepStrictEqual(plain(ru.events.map(e => e.title)), ['Встреча']);
   // nothing usable
-  assert.deepStrictEqual(plain(readSummary('')), {points: [], todo: [], events: []});
-  assert.deepStrictEqual(plain(readSummary('POINTS\nTODO\nEVENTS\nstart | end | all-day | title')), {points: [], todo: [], events: []});
+  assert.deepStrictEqual(plain(readSummary('')), {points: [], todo: [], events: [], facts: []});
+  assert.deepStrictEqual(plain(readSummary('POINTS\nTODO\nEVENTS\nstart | end | all-day | title\nFACTS\n- label: value')), {points: [], todo: [], events: [], facts: []});
+});
+
+check('summary parser: facts are label and value, at most 5, and only what the thread has', async () => {
+  const {readSummary} = load().AI._internal;
+  const thread = 'Subject: Ваш заказ\n--- Message 1 of 1 · From: Shop\nЗаказ № 4815-1623 оплачен: 1 234,50 €. Трек-номер: RB 123 456 789 CN.\n' +
+    'Адрес: ул. Ленина, 5. Телефон +7 (495) 123-45-67.';
+  const s = readSummary([
+    'POINTS', '- Заказ оплачен', 'EVENTS', 'FACTS',
+    '- Номер заказа: 4815-1623',
+    '- Сумма: 1 234,50 €',
+    '- Трек-номер: RB123456789CN',
+    '- Адрес: ул. Ленина, 5',
+    // a number the thread does not have, made up
+    '- Номер счёта: 9999-0000',
+    '- Телефон: +7 495 123 45 67',
+    '- Facts: none',
+    '- Ещё: что-то'
+  ].join('\n'), true, Date.now(), thread);
+  assert.deepStrictEqual(plain(s.facts), [
+    {label: 'Номер заказа', value: '4815-1623'},
+    {label: 'Сумма', value: '1 234,50 €'},
+    {label: 'Трек-номер', value: 'RB123456789CN'},
+    {label: 'Адрес', value: 'ул. Ленина, 5'},
+    {label: 'Телефон', value: '+7 495 123 45 67'}
+  ]);
+  assert.deepStrictEqual(plain(s.points), ['Заказ оплачен']);
+  // a fact shows once it is whole; an answer with only facts is an answer
+  assert.deepStrictEqual(plain(readSummary('FACTS\n- Номер заказа: 4815', false, Date.now(), thread).facts), []);
+  assert.strictEqual(readSummary('FACTS\n- Номер заказа: 4815-1623', true, Date.now(), thread).facts.length, 1);
+  // with no thread to check against, as the page reads a summary kept
+  assert.strictEqual(readSummary('FACTS\n- PNR: ABC123').facts[0].value, 'ABC123');
 });
 
 check('summary parser: while streaming, the line being written shows only when it is text', async () => {
   const {readSummary} = load().AI._internal;
-  assert.deepStrictEqual(plain(readSummary('POINTS\n- One\nTO', false)), {points: ['One'], todo: [], events: []});
-  assert.deepStrictEqual(plain(readSummary('POINTS\n- One\nEven', false)), {points: ['One'], todo: [], events: []});
+  assert.deepStrictEqual(plain(readSummary('POINTS\n- One\nTO', false)), {points: ['One'], todo: [], events: [], facts: []});
+  assert.deepStrictEqual(plain(readSummary('POINTS\n- One\nEven', false)), {points: ['One'], todo: [], events: [], facts: []});
+  assert.deepStrictEqual(plain(readSummary('POINTS\n- One\nFAC', false)), {points: ['One'], todo: [], events: [], facts: []});
   assert.deepStrictEqual(plain(readSummary('POINTS\n- One\n- Tw', false).points), ['One']);
   assert.deepStrictEqual(plain(readSummary('POINTS\n- One\n- Two thi', false).points), ['One', 'Two thi']);
   assert.deepStrictEqual(plain(readSummary('POINTS\n- Один\n- Два три', false).points), ['Один', 'Два три']);
@@ -2259,6 +2312,33 @@ check('translate: the newest message by the engine into the UI language', async 
   assert.strictEqual(tr.text, 'Пожалуйста, пришлите бюджет до пятницы.');
   assert.match(t.requests[0].body.messages[0].content, /translate an email into Russian/);
   assert.ok(!t.requests[0].body.messages[1].content.includes('old'), 'the newest message alone');
+});
+
+check('summary: the reader\'s own messages are marked, and a relative date counts from the message that says it', async () => {
+  const t = load({local: ANTHROPIC});
+  t.answers.push(stream(anthropicEvents(SUMMARY)));
+  const friday = new Date(2026, 9, 30, 19, 51).getTime();
+  await t.AI.summarize({subject: 'Макеты', reader: 'evgeny@example.com', messages: [
+    {from: 'Evgeny', email: 'Evgeny@Example.com', date: new Date(2026, 9, 26, 19, 51).getTime(), text: 'Аня, пришли макеты к пятнице, я посмотрю в понедельник.'},
+    {from: 'Anna Petrova <anna@figma.com>', date: friday, text: 'Пришлю завтра в 10.'},
+    {from: 'Evgeny <evgeny+work@example.com>', date: 'Sat, Oct 31 at 9:00', text: 'Спасибо!'}
+  ]});
+  const {system, messages: [{content: user}]} = t.requests[0].body;
+  assert.match(system, /marked \(the reader\) are the reader's own/);
+  assert.match(system, /from the date of the message that says it, not from today: "tomorrow" in a message of Friday is Saturday/);
+  assert.match(system, /that no later message of the reader's has done/);
+  assert.match(system, /never guess a date, an amount, a number or a name/);
+  assert.match(system, /^FACTS$/m);
+  assert.match(user, /Each message has its own date: relative dates in it count from that one\./);
+  // the reader by address, a + tag or not; a date with its weekday, or the service's words as they are
+  assert.match(user, /--- Message 1 of 3 · From: Evgeny \(the reader\) · 2026-10-26T19:51:00[+-]\d\d:\d\d \(Monday\)/);
+  assert.match(user, /--- Message 2 of 3 · From: Anna Petrova <anna@figma\.com> · 2026-10-30T19:51:00[+-]\d\d:\d\d \(Friday\)/);
+  assert.match(user, /--- Message 3 of 3 · From: Evgeny <evgeny\+work@example\.com> \(the reader\) · Sat, Oct 31 at 9:00/);
+  // with no reader named, nobody is
+  const u = load({local: ANTHROPIC});
+  u.answers.push(stream(anthropicEvents(SUMMARY)));
+  await u.AI.summarize({subject: 'x', messages: [{from: 'Evgeny', email: 'evgeny@example.com', text: 'hi'}]});
+  assert.ok(!u.requests[0].body.messages[0].content.includes('(the reader)'));
 });
 
 check('the assistant asks nothing with the engine off or without a key', async () => {

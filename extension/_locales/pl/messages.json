@@ -2082,6 +2082,12 @@
     "panel_turnOnAI": {
         "message": "Włącz AI"
     },
+    "panel_summaryFacts": {
+        "message": "Szczegóły"
+    },
+    "panel_aiCut": {
+        "message": "Odpowiedź została ucięta."
+    },
     "panel_sameLanguage": {
         "message": "Ta wiadomość jest już w tym języku: $1."
     },

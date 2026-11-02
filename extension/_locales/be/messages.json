@@ -1937,6 +1937,12 @@
   "panel_turnOnAI": {
     "message": "Уключыць ШІ"
   },
+  "panel_summaryFacts": {
+    "message": "Дэталі"
+  },
+  "panel_aiCut": {
+    "message": "Адказ абарваўся."
+  },
   "panel_sameLanguage": {
     "message": "Гэты ліст ужо на мове: $1."
   },

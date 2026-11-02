@@ -2041,15 +2041,17 @@ const paintSummaryBtn = () => {
   el?.setAttribute('aria-expanded', String(!$('ai-card').hidden));
   el?.classList.toggle('on', !$('ai-card').hidden);
 };
-// the thread as the reader shows it, oldest first: who, when, what
+// the thread as the reader shows it, oldest first: who (and the address, which tells the
+// reader's own messages), when, what
 const messagesOf = (doc, e) => {
   const cards = [...doc.querySelectorAll('details.msg')];
   const whole = () => [...doc.body.children].filter(c => !c.matches('.pictures')).map(c => c.innerText).join('\n').trim();
   return cards.length ? cards.map(d => ({
     from: d.querySelector(':scope > summary .who')?.textContent.trim() || '',
+    email: d.querySelector(':scope > summary .who')?.dataset.email || '',
     date: d.querySelector(':scope > summary .date')?.textContent.trim() || '',
     text: [...d.children].filter(c => c.tagName !== 'SUMMARY').map(c => c.innerText).join('\n').trim()
-  })) : [{from: e.author_name || e.author_email || '', date: e.modified || '', text: whole()}];
+  })) : [{from: e.author_name || e.author_email || '', email: e.author_email || '', date: e.modified || '', text: whole()}];
 };
 // The card, made once for each open mail, its lists filled as the summary streams in: the
 // lines already there stay, the new ones come in
@@ -2072,7 +2074,9 @@ const resetSummary = r => {
     part('ai-points', t('summaryPoints')),
     part('ai-todo', t('summaryTodo')),
     part('ai-events', t('summaryEvents')),
+    part('ai-facts', t('summaryFacts')),
     h('p', {class: 'ai-note', hidden: true}, t('summaryTruncated')),
+    h('p', {class: 'ai-note ai-cut', hidden: true}, t('aiCut')),
     h('p', {class: 'ai-error', role: 'alert', hidden: true})
   );
   paintSummaryBtn();
@@ -2126,7 +2130,7 @@ const paintCard = (r, {summary: s, busy = false, error} = {}) => {
   if (state.reading !== r) {
     return;
   }
-  const empty = !s || !(s.points.length || s.todo.length || s.events.length);
+  const empty = !s || !(s.points.length || s.todo.length || s.events.length || s.facts?.length);
   card.setAttribute('aria-busy', String(busy));
   card.classList.toggle('busy', busy);
   card.querySelector('.ai-state').textContent = busy ? t('summarizing') : '';
@@ -2148,7 +2152,14 @@ const paintCard = (r, {summary: s, busy = false, error} = {}) => {
       'rel': 'noopener noreferrer',
       'aria-label': t('addToCalendar') + ': ' + ev.title
     }, icon('calendar'), t('addToCalendar'))));
+  // what the reader may need to copy: an order number, an amount, a tracking number
+  fill(card.querySelector('.ai-facts'), s?.facts || [], f => h('li', {},
+    h('span', {class: 'ai-label'}, f.label),
+    h('span', {class: 'ai-value'}, f.value),
+    h('button', {class: 'icon-btn ai-copy-fact', type: 'button', title: t('copyText') + ': ' + f.value, 'aria-label': t('copyText') + ': ' + f.label,
+      onclick: ev => copyFact(f.value, ev.currentTarget)}, icon('copy'))));
   card.querySelector('.ai-note').hidden = !s?.truncated;
+  card.querySelector('.ai-cut').hidden = !s?.cut || busy;
   const err = card.querySelector('.ai-error');
   err.hidden = !error;
   err.replaceChildren(...(error ? [error.message || t('bodyFailed'), ' ',
@@ -2173,10 +2184,10 @@ const runSummary = async (r, fresh = false) => {
     if (ctl.signal.aborted) {
       return;
     }
-    const s = await AI.summarize({key: summaryKey(r.e), fresh, signal: ctl.signal, subject: r.e.title || '', messages,
+    const s = await AI.summarize({key: summaryKey(r.e), fresh, signal: ctl.signal, subject: r.e.title || '', messages, reader: r.o.xml.title,
       onUpdate: p => !ctl.signal.aborted && paintCard(r, {summary: p, busy: true})});
     if (!ctl.signal.aborted) {
-      paintCard(r, {summary: s});
+      paintCard(r, {summary: await summaryInUI(s)});
     }
   }
   catch (err) {
@@ -2235,6 +2246,13 @@ const autoSummary = async (r, messages) => {
     $('ai-card').hidden = false;
     paintSummaryBtn();
     paintCard(r, {summary: hit});
+    // the built-in model's English, in the UI's language once Chrome's translator has it
+    if (hit.lang) {
+      const s = await summaryInUI(hit);
+      if (state.reading === r && !$('ai-card').hidden && !r.ai.ctl) {
+        paintCard(r, {summary: s});
+      }
+    }
   }
   else if (state.ai.summary === 'auto' && messages.reduce((n, m) => n + m.text.length, 0) > AUTO_CHARS) {
     runSummary(r);
@@ -2245,9 +2263,10 @@ const copySummary = (r, el) => {
   const part = cls => {
     const p = card.querySelector('.' + cls);
     return p.hidden ? [] : [p.querySelector('h4').textContent, ...[...p.querySelectorAll('li')].map(li => '• ' +
-      (cls === 'ai-events' ? li.querySelector('.ai-when').textContent + ' — ' + li.querySelector('.ai-what').textContent : li.textContent)), ''];
+      (cls === 'ai-events' ? li.querySelector('.ai-when').textContent + ' — ' + li.querySelector('.ai-what').textContent :
+        cls === 'ai-facts' ? li.querySelector('.ai-label').textContent + ': ' + li.querySelector('.ai-value').textContent : li.textContent)), ''];
   };
-  const text = [r.e.title || t('noSubject'), '', ...part('ai-points'), ...part('ai-todo'), ...part('ai-events')].join('\n').trim();
+  const text = [r.e.title || t('noSubject'), '', ...part('ai-points'), ...part('ai-todo'), ...part('ai-events'), ...part('ai-facts')].join('\n').trim();
   navigator.clipboard.writeText(text).then(() => {
     el.replaceChildren(icon('done'));
     el.classList.add('copied');
@@ -2256,6 +2275,53 @@ const copySummary = (r, el) => {
       el.classList.remove('copied');
     }, 1200);
   }, () => toast(t('copyFailed'), true));
+};
+// a fact of the summary, copied as the mail writes it
+const copyFact = (value, el) => navigator.clipboard.writeText(value).then(() => {
+  el.replaceChildren(icon('done'));
+  el.classList.add('copied');
+  setTimeout(() => {
+    el.replaceChildren(icon('copy'));
+    el.classList.remove('copied');
+  }, 1200);
+}, () => toast(t('copyFailed'), true));
+// What the built-in model wrote in English for a UI in another language, in that language by
+// Chrome's own translator, on this computer, when it has the language ready: a download wants a
+// click, which a summary that streamed in no longer has. Otherwise the English stays.
+const inUI = async (texts, from = 'en') => {
+  const T = self.Translator;
+  if (!from || from === uiLang() || typeof T?.create !== 'function' || !texts.some(Boolean)) {
+    return texts;
+  }
+  try {
+    if (await T.availability({sourceLanguage: from, targetLanguage: uiLang()}) !== 'available') {
+      return texts;
+    }
+    const tr = await T.create({sourceLanguage: from, targetLanguage: uiLang()});
+    try {
+      return await Promise.all(texts.map(s => s ? tr.translate(s) : s));
+    }
+    finally {
+      tr.destroy?.();
+    }
+  }
+  catch (e) {
+    return texts;
+  }
+};
+const summaryInUI = async s => {
+  if (!s?.lang) {
+    return s;
+  }
+  const texts = [...s.points, ...s.todo, ...s.events.map(e => e.title), ...(s.facts || []).map(f => f.label)];
+  const out = await inUI(texts, s.lang);
+  if (out === texts) {
+    return s;
+  }
+  let i = 0;
+  const next = () => out[i++];
+  return {...s, points: s.points.map(next), todo: s.todo.map(next), events: s.events.map(e => ({...e, title: next()})),
+    facts: (s.facts || []).map(f => ({...f, label: next()})), lang: uiLang()};
 };
 
 /* the reader's assistant: its buttons under the sender, and a card for a reply, a question or a translation */
@@ -3727,8 +3793,8 @@ chrome.storage.onChanged.addListener((ps, area) => {
     prefsChanged(changed);
     render();
   }
-  // the assistant's engine, key, model or features
-  if (area === 'local' && Object.keys(ps).some(k => /^ai\.(engine|summary|reply|buttons|openai\.|anthropic\.|zai\.|chatgpt\.)/.test(k))) {
+  // the assistant's engine, key, model or features; not what it keeps (ai.replies, ai.summaries)
+  if (area === 'local' && Object.keys(ps).some(k => /^ai\.((engine|summary|reply|buttons)$|(openai|anthropic|zai|chatgpt)\.)/.test(k))) {
     prefsChanged(Object.fromEntries(Object.keys(AI_PREFS).filter(k => k in ps).map(k => [k, ps[k].newValue])));
     aiChanged();
   }

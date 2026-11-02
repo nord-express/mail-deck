@@ -1910,6 +1910,12 @@
   "panel_turnOnAI": {
     "message": "AI をオンにする"
   },
+  "panel_summaryFacts": {
+    "message": "詳細"
+  },
+  "panel_aiCut": {
+    "message": "回答が途中で切れました。"
+  },
   "panel_sameLanguage": {
     "message": "このメールはすでに$1です。"
   },

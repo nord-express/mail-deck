@@ -2082,6 +2082,12 @@
     "panel_turnOnAI": {
         "message": "开启 AI"
     },
+    "panel_summaryFacts": {
+        "message": "详细信息"
+    },
+    "panel_aiCut": {
+        "message": "回答被截断了。"
+    },
     "panel_sameLanguage": {
         "message": "这封邮件已经是$1了。"
     },

@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "KI einschalten"
     },
+    "panel_summaryFacts": {
+        "message": "Details"
+    },
+    "panel_aiCut": {
+        "message": "Die Antwort wurde abgeschnitten."
+    },
     "panel_sameLanguage": {
         "message": "Diese E-Mail ist bereits auf $1."
     },

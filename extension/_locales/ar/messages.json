@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "تفعيل الذكاء الاصطناعي"
     },
+    "panel_summaryFacts": {
+        "message": "تفاصيل"
+    },
+    "panel_aiCut": {
+        "message": "انقطعت الإجابة قبل اكتمالها."
+    },
     "panel_sameLanguage": {
         "message": "هذه الرسالة مكتوبة أصلًا باللغة $1."
     },

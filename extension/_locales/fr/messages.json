@@ -1910,6 +1910,12 @@
   "panel_turnOnAI": {
     "message": "Activer l’IA"
   },
+  "panel_summaryFacts": {
+    "message": "Détails"
+  },
+  "panel_aiCut": {
+    "message": "La réponse a été tronquée."
+  },
   "panel_sameLanguage": {
     "message": "Ce message est déjà en $1."
   },

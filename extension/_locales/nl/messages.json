@@ -2082,6 +2082,12 @@
     "panel_turnOnAI": {
         "message": "AI aanzetten"
     },
+    "panel_summaryFacts": {
+        "message": "Details"
+    },
+    "panel_aiCut": {
+        "message": "Het antwoord is afgebroken."
+    },
     "panel_sameLanguage": {
         "message": "Deze mail is al in het $1."
     },

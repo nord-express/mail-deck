@@ -1910,6 +1910,12 @@
   "panel_turnOnAI": {
     "message": "Attiva l’IA"
   },
+  "panel_summaryFacts": {
+    "message": "Dettagli"
+  },
+  "panel_aiCut": {
+    "message": "La risposta è stata troncata."
+  },
   "panel_sameLanguage": {
     "message": "Questa email è già in $1."
   },

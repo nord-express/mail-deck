@@ -2078,6 +2078,12 @@
     "panel_turnOnAI": {
         "message": "הפעל בינה מלאכותית"
     },
+    "panel_summaryFacts": {
+        "message": "פרטים"
+    },
+    "panel_aiCut": {
+        "message": "התשובה נקטעה."
+    },
     "panel_sameLanguage": {
         "message": "ההודעה הזו כבר כתובה ב$1."
     },

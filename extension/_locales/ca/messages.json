@@ -2082,6 +2082,12 @@
     "panel_turnOnAI": {
         "message": "Activa la IA"
     },
+    "panel_summaryFacts": {
+        "message": "Detalls"
+    },
+    "panel_aiCut": {
+        "message": "La resposta ha quedat tallada."
+    },
     "panel_sameLanguage": {
         "message": "Aquest missatge ja és en $1."
     },

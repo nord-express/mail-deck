@@ -343,6 +343,8 @@ gmail.get = {
       const recipient = table.querySelector('.recipient');
       return {
         name: head.querySelector('b')?.textContent.trim() || head.cells[0]?.textContent.trim() || '',
+        // the sender's address, after the name: the assistant tells the reader's own messages by it
+        email: /<([^<>\s]+@[^<>\s]+)>/.exec(head.cells[0]?.textContent || '')?.[1] || '',
         date: head.cells.length > 1 ? head.cells[head.cells.length - 1].textContent.trim() : '',
         to: recipient ? [...recipient.querySelectorAll('div')].map(d => d.textContent.trim()).filter(Boolean)
           .join('\n') || recipient.textContent.trim() : '',
@@ -417,9 +419,11 @@ gmail.get = {
   const card = (m, open, el) => {
     const d = el('details', 'msg');
     d.open = open;
+    const who = el('b', 'who', m.name);
+    who.dataset.email = m.email || '';
     d.append(
       el('summary', '',
-        el('b', 'who', m.name),
+        who,
         el('span', 'date', m.date),
         el('span', 'snippet', m.body.textContent.trim().replace(/\s+/g, ' ').slice(0, 160))),
       m.to ? el('p', 'to', m.to) : '',
@@ -573,6 +577,7 @@ gmail.get = {
       const doc = document.implementation.createHTMLDocument('');
       return thread(list.map(m => ({
         name: m.name || m.email || '',
+        email: m.email || '',
         date: date(m.date),
         to: m.to ? chrome.i18n.getMessage('panel_to', [m.to]) || m.to : '',
         files: (m.files || []).filter(f => f?.url).map(f => ({name: f.name, view: f.url})),
