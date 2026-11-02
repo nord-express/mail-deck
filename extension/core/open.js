@@ -18,6 +18,10 @@
 
   // Gmail's compose window (view=cm): a new mail, a reply, an unsubscribe by mail
   const COMPOSE = /^https:\/\/mail\.google\.com\/mail\/(u\/\d+\/)?\?(.*&)?view=cm(&|$)/;
+  // a mail's file, its print view or its original (view=att, pt, om): a page of its own, which a
+  // Gmail tab that is open would only be brought to the front for, and which should not take the
+  // place of the page in front
+  const DOCUMENT = /^https:\/\/mail\.google\.com\/mail\/(u\/\d+\/)?\?(.*&)?view=(att|pt|om)(&|$)/;
   const POPUP = {width: 720, height: 640};
   // a window of its own, small and over the middle of the window in front, without the tabs and
   // the address bar of a whole one
@@ -49,9 +53,10 @@
         popup(url);
         return;
       }
-      const mode = prefs.currentTab ? 2 : (prefs.newWindow ? 1 : 0);
+      const file = DOCUMENT.test(url);
+      const mode = file ? 0 : prefs.currentTab ? 2 : (prefs.newWindow ? 1 : 0);
 
-      const tabs = prefs.ignoreOpens ? [] : await new Promise(resolve => {
+      const tabs = prefs.ignoreOpens || file ? [] : await new Promise(resolve => {
         const options = {};
         if (prefs.searchMode) {
           options.currentWindow = true;

@@ -244,6 +244,24 @@ tests.push(
     const read = opener();
     await read.open(mail);
     assert.deepStrictEqual([read.windows, read.created.map(c => c.url)], [[], [mail]]);
+  }],
+  ['a file of a mail opens in a tab of its own, even with Gmail open and "in the current tab" on', async () => {
+    const gmailTab = {id: 3, index: 2, active: true, url: 'https://mail.google.com/mail/u/0/#inbox'};
+    const file = 'https://mail.google.com/mail/u/0/?ui=2&ik=abc123&attid=0.1&permmsgid=msg-f:1849&th=19a4&view=att&disp=safe&realattid=f_x';
+    const download = file.replace('disp=safe', 'disp=attd');
+    for (const url of [file, download, 'https://mail.google.com/mail/u/0/?ik=abc123&view=pt&search=all&th=19a4',
+      'https://mail.google.com/mail/u/0/?ik=abc123&view=om&permmsgid=msg-f:1849']) {
+      for (const prefs of [{}, {currentTab: true}, {relatedToCurrent: true}]) {
+        const o = opener({tabs: [gmailTab], prefs});
+        await o.open(url);
+        // not the Gmail tab brought to the front instead, and not in place of the page in front
+        assert.deepStrictEqual([o.updated, o.created.map(c => c.url)], [[], [url]], url + ' ' + JSON.stringify(prefs));
+      }
+    }
+    // a mail still goes to the Gmail tab that is open
+    const o = opener({tabs: [gmailTab]});
+    await o.open(mail);
+    assert.deepStrictEqual([o.created, o.updated], [[], [[3, mail]]]);
   }]
 );
 
