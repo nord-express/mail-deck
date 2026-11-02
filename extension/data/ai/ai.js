@@ -1567,7 +1567,8 @@
     ...COMPAT[engine].headers?.(auth)
   });
   // the words that say a key is wrong, whatever the status: Gemini's and xAI's come as a 400
-  const BAD_KEY = /api key not valid|api_key_invalid|invalid[ _-]api[ _-]key|incorrect api key|unknown api key|invalid_authentication|invalid authentication/;
+  // (Gemini's OpenAI-compatible address says only "Please pass a valid API key", as a 400 not in a list)
+  const BAD_KEY = /api key not valid|api_key_invalid|pass a valid api key|api key expired|invalid[ _-]api[ _-]key|incorrect api key|unknown api key|invalid_authentication|invalid authentication/;
   // a refusal, read in the provider's own form: Gemini's error in a list, xAI's {code, error: "…"},
   // Mistral's {detail: "…"} or {object: "error", …}, the rest as OpenAI's
   const compatRefused = engine => (status, text, headers) => {

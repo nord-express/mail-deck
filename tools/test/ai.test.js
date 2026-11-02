@@ -1713,6 +1713,9 @@ check('the table\'s providers: each one\'s refusals as ours, whatever their shap
     // Gemini: a key refused as a 400, its error in a list; its 429 a limit, not a balance
     ['gemini', 400, [{error: {code: 400, message: 'API key not valid. Please pass a valid API key. AIzaSECRETSECRET', status: 'INVALID_ARGUMENT',
       details: [{reason: 'API_KEY_INVALID'}]}}], 'auth'],
+    // what its OpenAI-compatible address answers a made-up key, as asked live on 2026-11-02: not in a list
+    ['gemini', 400, {error: {code: 400, message: 'Please pass a valid API key', status: 'INVALID_ARGUMENT'}}, 'auth'],
+    ['gemini', 400, [{error: {code: 400, message: 'API key expired. Please renew the API key.', status: 'INVALID_ARGUMENT'}}], 'auth'],
     ['gemini', 429, [{error: {code: 429, message: 'You exceeded your current quota, please check your plan and billing details.', status: 'RESOURCE_EXHAUSTED'}}], 'rate'],
     ['gemini', 402, [{error: {code: 402, message: 'Your prepayment credits are depleted.'}}], 'quota'],
     ['gemini', 403, [{error: {code: 403, message: 'Your API key was reported as leaked.', status: 'PERMISSION_DENIED'}}], 'auth'],
