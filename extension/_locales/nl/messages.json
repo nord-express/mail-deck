@@ -2601,6 +2601,27 @@
     "opt_aiOpenRouterHint": {
         "message": "Eén sleutel opent honderden modellen van veel aanbieders, een paar ervan gratis."
     },
+    "opt_aiKeySignIn": {
+        "message": "Inloggen met $1"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "Wachten op $1…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "Log in en $1 maakt een sleutel voor Mail Deck: je hoeft niets te kopiëren. Of plak een sleutel die je al hebt."
+    },
+    "opt_aiKeySignInWait": {
+        "message": "Rond het inloggen af op de $1-pagina die is geopend. Daar staat Mail Deck mogelijk als 127.0.0.1:$2, het adres ervan op deze computer."
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "Zonder toegang tot $2 en 127.0.0.1 kan Mail Deck niet inloggen met $1. Probeer het opnieuw en geef toegang."
+    },
+    "opt_aiKeyManage": {
+        "message": "Ontkoppelen vergeet de sleutel alleen hier; $1 bewaart hem tot je hem verwijdert."
+    },
+    "opt_aiKeyManageLink": {
+        "message": "Sleutel beheren"
+    },
     "opt_aiGroqHint": {
         "message": "Het gratis abonnement van Groq neemt zo’n 8.000 tokens per minuut aan, dus Mail Deck stuurt kortere delen van lange mail, één verzoek tegelijk."
     },

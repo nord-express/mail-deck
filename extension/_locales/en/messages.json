@@ -2459,6 +2459,27 @@
   "opt_aiOpenRouterHint": {
     "message": "One key opens hundreds of models from many providers, a few of them free."
   },
+  "opt_aiKeySignIn": {
+    "message": "Sign in with $1"
+  },
+  "opt_aiKeySignInWaiting": {
+    "message": "Waiting for $1…"
+  },
+  "opt_aiKeySignInText": {
+    "message": "Sign in, and $1 makes a key for Mail Deck: nothing to copy. Or paste a key you have."
+  },
+  "opt_aiKeySignInWait": {
+    "message": "Finish signing in on the $1 page that opened. It may show Mail Deck as 127.0.0.1:$2, its address on this computer."
+  },
+  "opt_aiKeySignInAccess": {
+    "message": "Without access to $2 and 127.0.0.1, Mail Deck cannot sign in with $1. Try again and allow it."
+  },
+  "opt_aiKeyManage": {
+    "message": "Disconnect forgets the key here; $1 keeps it until you delete it."
+  },
+  "opt_aiKeyManageLink": {
+    "message": "Manage key"
+  },
   "opt_aiGroqHint": {
     "message": "Groq’s free plan takes about 8,000 tokens a minute, so Mail Deck sends shorter parts of long mail, one request at a time."
   },

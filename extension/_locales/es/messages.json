@@ -2597,6 +2597,27 @@
     "opt_aiOpenRouterHint": {
         "message": "Una sola clave abre cientos de modelos de muchos proveedores, algunos gratuitos."
     },
+    "opt_aiKeySignIn": {
+        "message": "Iniciar sesión con $1"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "Esperando a $1…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "Inicia sesión y $1 creará una clave para Mail Deck: no hay nada que copiar. O pega una clave que ya tengas."
+    },
+    "opt_aiKeySignInWait": {
+        "message": "Termina de iniciar sesión en la página de $1 que se ha abierto. Puede que allí Mail Deck aparezca como 127.0.0.1:$2, su dirección en este ordenador."
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "Sin acceso a $2 y 127.0.0.1, Mail Deck no puede iniciar sesión con $1. Vuelve a intentarlo y permite el acceso."
+    },
+    "opt_aiKeyManage": {
+        "message": "Desconectar olvida la clave aquí; $1 la conserva hasta que la elimines."
+    },
+    "opt_aiKeyManageLink": {
+        "message": "Gestionar la clave"
+    },
     "opt_aiGroqHint": {
         "message": "El plan gratuito de Groq admite unos 8000 tokens por minuto, así que Mail Deck envía partes más cortas del correo largo, una solicitud cada vez."
     },

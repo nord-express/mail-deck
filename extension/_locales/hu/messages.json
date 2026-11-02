@@ -2417,6 +2417,27 @@
   "opt_aiOpenRouterHint": {
     "message": "Egyetlen kulcs több száz modellt nyit meg sok szolgáltatótól, néhányat ingyen."
   },
+  "opt_aiKeySignIn": {
+    "message": "Bejelentkezés $1-fiókkal"
+  },
+  "opt_aiKeySignInWaiting": {
+    "message": "Várakozás: $1…"
+  },
+  "opt_aiKeySignInText": {
+    "message": "Jelentkezz be, és a(z) $1 kulcsot készít a Mail Deck számára: nincs mit másolni. Vagy illessz be egy meglévő kulcsot."
+  },
+  "opt_aiKeySignInWait": {
+    "message": "Fejezd be a bejelentkezést a megnyílt $1-oldalon. Ott a Mail Deck 127.0.0.1:$2 néven jelenhet meg: ez a címe ezen a számítógépen."
+  },
+  "opt_aiKeySignInAccess": {
+    "message": "A(z) $2 és a 127.0.0.1 elérése nélkül a Mail Deck nem tud bejelentkezni $1-fiókkal. Próbáld újra, és engedélyezd a hozzáférést."
+  },
+  "opt_aiKeyManage": {
+    "message": "A leválasztás csak itt törli a kulcsot; a(z) $1 megőrzi, amíg ott nem törlöd."
+  },
+  "opt_aiKeyManageLink": {
+    "message": "Kulcs kezelése"
+  },
   "opt_aiGroqHint": {
     "message": "A Groq ingyenes csomagja percenként kb. 8000 tokent fogad, ezért a Mail Deck a hosszú levelekből rövidebb részeket küld, egyszerre egy kérést."
   },

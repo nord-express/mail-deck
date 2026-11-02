@@ -428,12 +428,18 @@
                 <b id="ai-key-label">API key</b>
                 <small id="ai-key-text"><span id="ai-key-plan"></span> <a id="ai-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" data-i18n="aiGetKey">Get a key</a></small>
               </span>
+              <!-- a provider that makes a key for Mail Deck from a sign-in (OpenRouter): that first,
+                   the field under it for a key the user has -->
+              <span class="inline" id="ai-key-signin-line" hidden>
+                <button type="button" class="btn primary" id="ai-key-signin" aria-describedby="ai-key-wait">Sign in with OpenRouter</button>
+                <button type="button" class="btn" id="ai-key-signin-cancel" data-i18n="cancel" hidden>Cancel</button>
+              </span>
               <span class="segmented" id="ai-server" role="radiogroup" aria-labelledby="ai-key-label" hidden>
                 <label><input type="radio" name="ai-server" value="ollama"><span>Ollama</span></label>
                 <label><input type="radio" name="ai-server" value="lmstudio"><span>LM Studio</span></label>
                 <label><input type="radio" name="ai-server" value="other"><span data-i18n="aiServerOther">Other</span></label>
               </span>
-              <span class="key">
+              <span class="key" id="ai-key-fields">
                 <span class="field whole" id="ai-base-field" hidden>
                   <i data-icon="server"></i>
                   <input type="url" id="ai-base" autocomplete="off" spellcheck="false" autocapitalize="off" dir="ltr" placeholder="http://localhost:11434/v1" aria-label="Server address" data-i18n-label="aiServerAddress" aria-describedby="ai-key-hint ai-error">
@@ -458,6 +464,8 @@
               <span class="text">
                 <b class="state" id="ai-connected-title" data-state="ok">Connected</b>
                 <small id="ai-connected-text" data-i18n="aiConnectedText">The key stays on this computer: never in backups or Chrome sync.</small>
+                <!-- a key the provider keeps after Disconnect (OpenRouter's): where to delete it -->
+                <small id="ai-key-manage" hidden><span id="ai-key-manage-text"></span> <a id="ai-key-manage-link" href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener" data-i18n="aiKeyManageLink">Manage key</a></small>
                 <small class="note" id="ai-access" hidden></small>
               </span>
               <span class="inline">

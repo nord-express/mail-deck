@@ -1991,6 +1991,10 @@ html body {
   #ai-server {
     align-self: flex-start;
   }
+  /* Sign in with OpenRouter above the field, Cancel beside it while it waits */
+  #ai-key-signin-line {
+    flex-wrap: wrap;
+  }
   /* a status with its buttons: on a narrow page the buttons go under the words, not beside a sliver */
   #ai-connected,
   #ai-builtin,

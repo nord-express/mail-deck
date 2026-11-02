@@ -2429,6 +2429,27 @@
   "opt_aiOpenRouterHint": {
     "message": "1 つのキーで多くのプロバイダの数百のモデルが使えます。一部は無料です。"
   },
+  "opt_aiKeySignIn": {
+    "message": "$1 でログイン"
+  },
+  "opt_aiKeySignInWaiting": {
+    "message": "$1 を待っています…"
+  },
+  "opt_aiKeySignInText": {
+    "message": "ログインすると $1 が Mail Deck 用のキーを作成するので、コピーは不要です。お持ちのキーを貼り付けることもできます。"
+  },
+  "opt_aiKeySignInWait": {
+    "message": "開いた $1 のページでログインを完了してください。そのページでは Mail Deck が 127.0.0.1:$2（このパソコン上のアドレス）と表示されることがあります。"
+  },
+  "opt_aiKeySignInAccess": {
+    "message": "$2 と 127.0.0.1 へのアクセスがないと、Mail Deck は $1 でログインできません。もう一度試して、アクセスを許可してください。"
+  },
+  "opt_aiKeyManage": {
+    "message": "接続を解除してもキーが消えるのはここだけで、$1 では削除するまで残ります。"
+  },
+  "opt_aiKeyManageLink": {
+    "message": "キーを管理"
+  },
   "opt_aiGroqHint": {
     "message": "Groq の無料プランは 1 分あたり約 8,000 トークンまでのため、Mail Deck は長いメールを短く分けて、1 件ずつリクエストします。"
   },

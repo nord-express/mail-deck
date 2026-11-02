@@ -2601,6 +2601,27 @@
     "opt_aiOpenRouterHint": {
         "message": "Una sola clau obre centenars de models de molts proveïdors, alguns de gratuïts."
     },
+    "opt_aiKeySignIn": {
+        "message": "Inicia la sessió amb $1"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "S’està esperant $1…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "Inicia la sessió i $1 crearà una clau per a Mail Deck: no cal copiar res. O enganxa una clau que ja tinguis."
+    },
+    "opt_aiKeySignInWait": {
+        "message": "Acaba d’iniciar la sessió a la pàgina que s’ha obert. Pot ser que $1 hi mostri Mail Deck com a 127.0.0.1:$2, la seva adreça en aquest ordinador."
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "Sense accés a $2 i a 127.0.0.1, Mail Deck no pot iniciar la sessió amb $1. Torna-ho a provar i permet l’accés."
+    },
+    "opt_aiKeyManage": {
+        "message": "Desconnecta oblida la clau aquí; $1 la conserva fins que l’eliminis."
+    },
+    "opt_aiKeyManageLink": {
+        "message": "Gestiona la clau"
+    },
     "opt_aiGroqHint": {
         "message": "El pla gratuït de Groq accepta uns 8.000 tokens per minut, així que Mail Deck envia parts més curtes del correu llarg, una sol·licitud cada vegada."
     },

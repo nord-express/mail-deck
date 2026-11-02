@@ -2597,6 +2597,27 @@
     "opt_aiOpenRouterHint": {
         "message": "Tek bir anahtar, birçok sağlayıcının yüzlerce modelini açar; bazıları ücretsizdir."
     },
+    "opt_aiKeySignIn": {
+        "message": "$1 ile oturum aç"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "$1 bekleniyor…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "Oturum açın, $1 Mail Deck için bir anahtar oluştursun: kopyalanacak bir şey yok. Ya da elinizdeki bir anahtarı yapıştırın."
+    },
+    "opt_aiKeySignInWait": {
+        "message": "Açılan $1 sayfasında oturum açmayı tamamlayın. Mail Deck orada bu bilgisayardaki adresiyle, 127.0.0.1:$2 olarak görünebilir."
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "$2 ve 127.0.0.1 erişimi olmadan Mail Deck, $1 ile oturum açamaz. Yeniden deneyin ve erişime izin verin."
+    },
+    "opt_aiKeyManage": {
+        "message": "Bağlantıyı kesmek anahtarı yalnızca burada unutur; siz silene kadar $1 onu saklar."
+    },
+    "opt_aiKeyManageLink": {
+        "message": "Anahtarı yönet"
+    },
     "opt_aiGroqHint": {
         "message": "Groq’un ücretsiz planı dakikada yaklaşık 8.000 token kabul eder; bu yüzden Mail Deck uzun postaların daha kısa kısımlarını, her seferinde tek istekle gönderir."
     },

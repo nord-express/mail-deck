@@ -97,7 +97,8 @@ const DEFAULTS = {
 const AI_ENGINES = ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai', 'gemini', 'xai', 'deepseek', 'mistral', 'openrouter',
   'groq', 'qwen', 'kimi', 'yandex', 'local'];
 // the providers of a key: its page, the subscription that does not give one (plan), a word under
-// the field (hint); Yandex's folder; a server on this computer, whose site and name are its address's
+// the field (hint); a sign-in that makes a key (signIn: OpenRouter's, self.AI.openrouter);
+// Yandex's folder; a server on this computer, whose site and name are its address's
 const AI_PROVIDERS = {
   openai: {
     name: 'OpenAI', plan: 'ChatGPT Plus', hint: 'aiOpenAIHint', origin: 'https://api.openai.com/*', host: 'api.openai.com',
@@ -123,7 +124,7 @@ const AI_PROVIDERS = {
   mistral: {name: 'Mistral', origin: 'https://api.mistral.ai/*', host: 'api.mistral.ai', keys: 'https://console.mistral.ai/api-keys', placeholder: ''},
   openrouter: {
     name: 'OpenRouter', hint: 'aiOpenRouterHint', origin: 'https://openrouter.ai/*', host: 'openrouter.ai',
-    keys: 'https://openrouter.ai/settings/keys', placeholder: 'sk-or-…'
+    keys: 'https://openrouter.ai/settings/keys', placeholder: 'sk-or-…', signIn: true
   },
   groq: {name: 'Groq', hint: 'aiGroqHint', origin: 'https://api.groq.com/*', host: 'api.groq.com', keys: 'https://console.groq.com/keys', placeholder: 'gsk_…'},
   qwen: {
@@ -876,6 +877,8 @@ let aiAccount = null;
 // while a sign-in waits in its tab; what went wrong with the last one, or a sign-out OpenAI did not confirm
 let aiSigning = false;
 let aiPlanNote = '';
+// while a sign-in for a key (OpenRouter's) waits in its tab
+let aiKeySigning = false;
 // why Allow access did not give a key's site back: this Mail Deck not reloaded, or Chrome's words
 let aiAllowNote = '';
 // whether Chrome gives the provider's site: a key without it is of no use
@@ -920,12 +923,14 @@ const readAccount = () => Promise.resolve().then(() => aiModule()?.chatgpt?.acco
   aiAccount = a && typeof a === 'object' ? a : null;
 });
 // The sites another engine still needs: a key kept, a server on this computer set up, the plan
-// signed in, or a sign-in under way, which comes back to the loopback address that a server on
-// this computer may be at as well. Only a site none of them needs is given back to Chrome.
+// signed in, or a sign-in under way (ChatGPT's, or OpenRouter's for a key, which needs its site
+// too), which comes back to the loopback address that a server on this computer may be at as
+// well. Only a site none of them needs is given back to Chrome.
 const aiNeeded = except => new Set([
   ...Object.keys(AI_PROVIDERS).filter(id => id !== except && aiConnected(id)).flatMap(aiOrigins),
   ...(except !== 'chatgpt' && aiAccount ? AI_PLAN.origins : []),
-  ...(except !== 'chatgpt' && aiSigning ? [AI_PLAN.loopback] : [])
+  ...(except !== 'chatgpt' && aiSigning ? [AI_PLAN.loopback] : []),
+  ...(aiKeySigning ? [AI_PLAN.loopback, AI_PROVIDERS.openrouter.origin] : [])
 ]);
 const aiOrigins = engine => engine === 'local' ? [localOrigin(aiKeys[AI_BASE] || '')] :
   AI_PROVIDERS[engine] ? [AI_PROVIDERS[engine].origin] : AI_PLAN.origins;
@@ -1330,14 +1335,27 @@ const paintCloud = () => {
     $('ai-server').hidden = !p.local;
     $('ai-base-field').hidden = !p.local;
     $('ai-folder-field').hidden = !p.folder;
+    // OpenRouter: Sign in first, which makes a key; the field for one the user has, and its
+    // Connect, after it. While the sign-in waits, it alone, with Cancel.
+    const signs = Boolean(p.signIn && aiModule()?.openrouter);
+    const waiting = signs && aiKeySigning;
+    const busy = aiConnecting || waiting;
     $('ai-key-label').textContent = p.local ? t('aiServer') : t('aiKey', name);
-    $('ai-key-plan').textContent = p.local ? t('aiServerText') : p.plan ? t('aiKeyText', p.plan, name) : '';
+    $('ai-key-plan').textContent = p.local ? t('aiServerText') : p.plan ? t('aiKeyText', p.plan, name) : signs ? t('aiKeySignInText', name) : '';
     $('ai-key-link').hidden = !p.keys;
     $('ai-key-hint').textContent = p.hint ? t(p.hint) : '';
-    $('ai-key-hint').hidden = !p.hint || aiConnecting;
-    // while the provider checks the key, the word under the field says so
-    $('ai-key-wait').textContent = aiConnecting ? t('aiCheckingKey', name) : '';
-    $('ai-key-wait').hidden = !aiConnecting;
+    $('ai-key-hint').hidden = !p.hint || busy;
+    $('ai-key-signin-line').hidden = !signs;
+    $('ai-key-signin').textContent = t(waiting ? 'aiKeySignInWaiting' : 'aiKeySignIn', name);
+    $('ai-key-signin').setAttribute('aria-disabled', waiting ? 'true' : 'false');
+    $('ai-key-signin-cancel').hidden = !waiting;
+    $('ai-key-fields').hidden = waiting;
+    $('ai-connect').classList.toggle('primary', !signs);
+    // while the provider checks the key, or its sign-in waits, the word under the field says so
+    // (OpenRouter names an app on this computer by its address: the port it comes back to)
+    $('ai-key-wait').textContent = aiConnecting ? t('aiCheckingKey', name) :
+      waiting ? t('aiKeySignInWait', name, aiModule()?.openrouter?.port ?? '') : '';
+    $('ai-key-wait').hidden = !busy;
     $('ai-key-link').href = p.keys || '#';
     // a server's key is no "API key" of its name: the field says what it is itself
     $('ai-key').placeholder = p.local ? t('aiKeyOptional') : p.placeholder;
@@ -1370,6 +1388,18 @@ const paintCloud = () => {
   // a server on this computer: where it is; a key: that it stays here
   $('ai-connected-text').textContent = p.local ? aiKeys[AI_BASE] : t('aiConnectedText');
   $('ai-connected-text').dir = p.local ? 'ltr' : '';
+  // OpenRouter keeps a key after Disconnect, and Mail Deck cannot delete it there: its own page
+  // at OpenRouter says where it is (the list of keys until that page's address is known)
+  $('ai-key-manage').hidden = !p.signIn;
+  if (p.signIn) {
+    $('ai-key-manage-text').textContent = t('aiKeyManage', name);
+    const key = aiKeyOf(engine);
+    Promise.resolve(aiModule()?.openrouter?.keyPage?.(key)).catch(() => '').then(url => {
+      if (aiKeyOf(engine) === key) {
+        $('ai-key-manage-link').href = url || p.keys;
+      }
+    });
+  }
   $('ai-access').textContent = access ? '' : aiAllowNote || t('aiNoAccess', p.local ? aiOrigins(engine)[0].slice(7, -2) : p.host);
   $('ai-access').hidden = access;
   $('ai-allow').hidden = access;
@@ -1441,7 +1471,8 @@ const connect = () => {
   const field = $('ai-key');
   const key = field.value.trim();
   const folder = $('ai-folder').value.trim();
-  if (!p || aiConnecting) {
+  // a sign-in for this provider's key underway brings one of its own: Cancel first
+  if (!p || aiConnecting || (p.signIn && aiKeySigning)) {
     return Promise.resolve(false);
   }
   const base = p.local ? aiTypedBase() : '';
@@ -1615,6 +1646,83 @@ $('ai-allow').onclick = () => {
   });
 };
 
+/* OpenRouter: Sign in with OpenRouter, which makes a key, and the wait for it */
+// Sign in: the module asks Chrome for OpenRouter's site and the loopback address from the click
+// itself, before anything is awaited, then opens OpenRouter's page in a tab. The sign-in comes
+// back there (data/ai/callback.html), which checks the key and keeps it as Connect does; this
+// page follows it in the session, and lists the key's models when the key comes.
+$('ai-key-signin').onclick = () => {
+  const AI = aiModule();
+  const engine = prefs['ai.engine'];
+  const p = AI_PROVIDERS[engine];
+  if (!p?.signIn || !AI?.openrouter || aiKeySigning || aiConnecting) {
+    return;
+  }
+  let started;
+  try {
+    started = Promise.resolve(AI.openrouter.signIn());
+  }
+  catch (e) {
+    started = Promise.reject(e);
+  }
+  aiError('');
+  aiKeySigning = true;
+  paintCloud();
+  return started.then(() => {
+    // Chrome's access was asked for and given
+    aiAccess[engine] = true;
+  }, e => {
+    aiKeySigning = false;
+    // a no of the user's: what the sign-in needs; Chrome's own words, or a Mail Deck to reload
+    aiError(e?.code === 'no-access' && !e.reason ? t('aiKeySignInAccess', aiName(engine), p.host) : aiErrorText(e, engine), 'none');
+  }).then(() => {
+    paintCloud();
+    $('ai-key-signin').focus();
+  });
+};
+// Cancel: the sign-in over and its page closed; the field for a key the user has comes back
+$('ai-key-signin-cancel').onclick = () => {
+  aiKeySigning = false;
+  paintCloud();
+  $('ai-key-signin').focus();
+  return Promise.resolve().then(() => aiModule()?.openrouter?.cancel()).catch(() => {});
+};
+// A sign-in for a key underway, or over: the module writes how it went into the record's last
+// state (data/ai/ai.js). A key that came is the page's as Connect's is, with its word; why none
+// came, under the button. A page that finds one underway ends it when its tab closes.
+const followKeySignIn = change => {
+  const engine = 'openrouter';
+  const was = aiKeySigning;
+  aiKeySigning = Boolean(change?.newValue);
+  if (aiKeySigning) {
+    aiModule()?.openrouter?.watch?.();
+    if (!was) {
+      paintCloud();
+    }
+    return Promise.resolve();
+  }
+  const ended = change?.oldValue?.ended;
+  const here = prefs['ai.engine'] === engine;
+  if (here && ended && ended !== 'ok') {
+    aiError(aiErrorText({code: ended}, engine), 'none');
+  }
+  return readAIKeys().then(syncAIAccess).then(() => {
+    paintCloud();
+    if (ended === 'ok') {
+      toast(t('aiConnected', aiName(engine)));
+    }
+    if (here && ended && ended !== 'aborted') {
+      (ended !== 'ok' ? $('ai-key-signin') : $('ai-model-row').hidden ? $('ai-disconnect') : $('ai-model')).focus();
+    }
+  });
+};
+const readKeySignIn = () => chrome.storage.session.get({'ai.openrouter.pending': null}).then(r => {
+  aiKeySigning = Boolean(r?.['ai.openrouter.pending']);
+  if (aiKeySigning) {
+    aiModule()?.openrouter?.watch?.();
+  }
+}, () => {});
+
 /* the ChatGPT plan: Continue with ChatGPT, Sign out, and the word after the first sign-in */
 // Sign-in: the module asks Chrome for the sites from the click itself, before anything is
 // awaited, then opens ChatGPT in a tab. The sign-in comes back there (data/ai/callback.html);
@@ -1718,7 +1826,9 @@ const followHash = () => {
   const shown = (...ids) => ids.map($).find(el => !el.hidden);
   const next = engine === 'builtin' ? document.querySelector('input[name="ai.engine"][value="builtin"]') :
     engine === 'chatgpt' ? ($('ai-model-row').hidden ? shown('ai-signin', 'ai-plan-allow', 'ai-signout') : $('ai-model')) :
-    !aiConnected(engine) ? $(engine === 'local' ? 'ai-base' : 'ai-key') : $('ai-model-row').hidden ? shown('ai-allow', 'ai-disconnect') : $('ai-model');
+    // no key yet: OpenRouter's sign-in, which makes one, else the field
+    !aiConnected(engine) ? $(engine === 'local' ? 'ai-base' : $('ai-key-signin-line').hidden ? 'ai-key' : 'ai-key-signin') :
+    $('ai-model-row').hidden ? shown('ai-allow', 'ai-disconnect') : $('ai-model');
   $('ai').scrollIntoView({block: 'start'});
   next?.focus();
 };
@@ -1763,12 +1873,14 @@ const followAI = changes => {
   }
 };
 // What a reset leaves of the AI: no key, no ChatGPT sign-in (revoked first, while its site is
-// given), no provider's site, no reply marks kept. The plan's client and this browser's id stay
-// for a later sign-in.
-const forgetAI = () => Promise.resolve().then(() => aiModule()?.chatgpt?.signOut()).catch(() => null).then(() => Promise.all([
-  store.remove([...AI_KEYS, 'ai.chatgpt.auth', 'ai.replies']),
-  chrome.permissions.remove({origins: AI_ORIGINS}).catch(() => false)
-]));
+// given), no sign-in for a key underway, no provider's site, no reply marks kept. The plan's
+// client and this browser's id stay for a later sign-in.
+const forgetAI = () => Promise.resolve().then(() => Promise.all([aiModule()?.chatgpt?.signOut(), aiModule()?.openrouter?.cancel()]))
+  .catch(() => null)
+  .then(() => Promise.all([
+    store.remove([...AI_KEYS, 'ai.chatgpt.auth', 'ai.replies']),
+    chrome.permissions.remove({origins: AI_ORIGINS}).catch(() => false)
+  ]));
 
 /* the panel's shortcut: Chrome keeps it, and changes it on chrome://extensions/shortcuts */
 const paintShortcut = () => chrome.commands.getAll(commands => {
@@ -2200,12 +2312,16 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   // what changes while the page is open: inboxes the background finds, the toolbar menu's
   // switches, a service's sites given or taken on chrome://extensions
   chrome.storage.onChanged.addListener((ps, area) => {
-    // the session: a ChatGPT sign-in underway or over, the plan's pause at its usage limit
+    // the session: a ChatGPT sign-in underway or over, the plan's pause at its usage limit; an
+    // OpenRouter sign-in for a key underway or over
     if (area === 'session' && ('ai.chatgpt.pending' in ps || 'ai.chatgpt.limit' in ps)) {
       if ('ai.chatgpt.pending' in ps) {
         aiSigning = Boolean(ps['ai.chatgpt.pending'].newValue);
       }
       followPlan();
+    }
+    if (area === 'session' && 'ai.openrouter.pending' in ps) {
+      followKeySignIn(ps['ai.openrouter.pending']);
     }
     if (area !== 'local') {
       return;
@@ -2231,9 +2347,9 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   chrome.permissions.onAdded?.addListener(followAccess);
   chrome.permissions.onRemoved?.addListener(followAccess);
   // the AI card: the keys and the plan's account as stored and Chrome's access first (a server on
-  // this computer's by its address), so it shows as it is at once; then the engine a link names,
-  // and the word after a first sign-in
-  Promise.all([readAIKeys().then(syncAIAccess), readAccount()]).then(paintAI).then(followHash).then(welcome);
+  // this computer's by its address), and a sign-in for a key underway, so it shows as it is at
+  // once; then the engine a link names, and the word after a first sign-in
+  Promise.all([readAIKeys().then(syncAIAccess), readAccount(), readKeySignIn()]).then(paintAI).then(followHash).then(welcome);
   addEventListener('hashchange', followHash);
   addEventListener('hashchange', followSection);
   // a link to another part of the page, once the inboxes above it are drawn

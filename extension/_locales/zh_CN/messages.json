@@ -2601,6 +2601,27 @@
     "opt_aiOpenRouterHint": {
         "message": "一个密钥即可使用众多服务商的数百个模型，其中一些免费。"
     },
+    "opt_aiKeySignIn": {
+        "message": "使用 $1 登录"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "正在等待 $1…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "登录后，$1 会为 Mail Deck 创建一个密钥，无需复制。也可以粘贴你已有的密钥。"
+    },
+    "opt_aiKeySignInWait": {
+        "message": "请在打开的 $1 页面上完成登录。页面上可能会将 Mail Deck 显示为 127.0.0.1:$2，即它在这台电脑上的地址。"
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "没有 $2 和 127.0.0.1 的访问权限，Mail Deck 无法使用 $1 登录。请重试并允许访问。"
+    },
+    "opt_aiKeyManage": {
+        "message": "断开连接只会在这里删除密钥；$1 会一直保留它，直到你将其删除。"
+    },
+    "opt_aiKeyManageLink": {
+        "message": "管理密钥"
+    },
     "opt_aiGroqHint": {
         "message": "Groq 免费套餐每分钟约可处理 8,000 个 token，所以 Mail Deck 会把长邮件分成较短的部分发送，一次一个请求。"
     },

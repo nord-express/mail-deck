@@ -2429,6 +2429,27 @@
   "opt_aiOpenRouterHint": {
     "message": "Une seule clé ouvre des centaines de modèles de nombreux fournisseurs, dont quelques-uns gratuits."
   },
+  "opt_aiKeySignIn": {
+    "message": "Se connecter avec $1"
+  },
+  "opt_aiKeySignInWaiting": {
+    "message": "En attente de $1…"
+  },
+  "opt_aiKeySignInText": {
+    "message": "Connectez-vous et $1 crée une clé pour Mail Deck : rien à copier. Ou collez une clé que vous avez déjà."
+  },
+  "opt_aiKeySignInWait": {
+    "message": "Terminez la connexion sur la page $1 qui s’est ouverte. Mail Deck peut y apparaître sous le nom 127.0.0.1:$2, son adresse sur cet ordinateur."
+  },
+  "opt_aiKeySignInAccess": {
+    "message": "Sans accès à $2 et à 127.0.0.1, Mail Deck ne peut pas se connecter avec $1. Réessayez et autorisez l’accès."
+  },
+  "opt_aiKeyManage": {
+    "message": "Déconnecter oublie la clé ici ; $1 la conserve jusqu’à ce que vous la supprimiez."
+  },
+  "opt_aiKeyManageLink": {
+    "message": "Gérer la clé"
+  },
   "opt_aiGroqHint": {
     "message": "L’offre gratuite de Groq accepte environ 8 000 jetons par minute : Mail Deck envoie donc des parties plus courtes des longs messages, une requête à la fois."
   },

@@ -2597,6 +2597,27 @@
     "opt_aiOpenRouterHint": {
         "message": "מפתח אחד פותח מאות מודלים מספקים רבים, וכמה מהם חינמיים."
     },
+    "opt_aiKeySignIn": {
+        "message": "התחברות עם $1"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "ממתין ל-$1…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "התחבר, ו-$1 ייצור מפתח בשביל Mail Deck: אין מה להעתיק. או הדבק מפתח שיש לך."
+    },
+    "opt_aiKeySignInWait": {
+        "message": "סיים את ההתחברות בדף $1 שנפתח. ייתכן ש-Mail Deck יופיע שם בשם 127.0.0.1:$2, הכתובת שלו במחשב הזה."
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "בלי גישה אל $2 ואל 127.0.0.1, Mail Deck לא יכול להתחבר עם $1. נסה שוב ואפשר את הגישה."
+    },
+    "opt_aiKeyManage": {
+        "message": "ניתוק מוחק את המפתח רק כאן; $1 שומר אותו עד שתמחק אותו."
+    },
+    "opt_aiKeyManageLink": {
+        "message": "ניהול המפתח"
+    },
     "opt_aiGroqHint": {
         "message": "התוכנית החינמית של Groq מקבלת כ-8,000 טוקנים בדקה, ולכן Mail Deck שולח חלקים קצרים יותר מדואר ארוך, בקשה אחת בכל פעם."
     },

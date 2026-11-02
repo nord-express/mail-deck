@@ -2597,6 +2597,27 @@
     "opt_aiOpenRouterHint": {
         "message": "Ein Schlüssel öffnet Hunderte Modelle vieler Anbieter, einige davon kostenlos."
     },
+    "opt_aiKeySignIn": {
+        "message": "Mit $1 anmelden"
+    },
+    "opt_aiKeySignInWaiting": {
+        "message": "Warten auf $1…"
+    },
+    "opt_aiKeySignInText": {
+        "message": "Melde dich an, und $1 erstellt einen Schlüssel für Mail Deck: nichts zu kopieren. Oder füge einen Schlüssel ein, den du schon hast."
+    },
+    "opt_aiKeySignInWait": {
+        "message": "Schließe die Anmeldung auf der geöffneten $1-Seite ab. Dort heißt Mail Deck womöglich 127.0.0.1:$2, seine Adresse auf diesem Computer."
+    },
+    "opt_aiKeySignInAccess": {
+        "message": "Ohne Zugriff auf $2 und 127.0.0.1 kann sich Mail Deck nicht mit $1 anmelden. Versuch es noch einmal und erlaube den Zugriff."
+    },
+    "opt_aiKeyManage": {
+        "message": "Trennen entfernt den Schlüssel nur hier; bei $1 bleibt er, bis du ihn löschst."
+    },
+    "opt_aiKeyManageLink": {
+        "message": "Schlüssel verwalten"
+    },
     "opt_aiGroqHint": {
         "message": "Der kostenlose Plan von Groq nimmt etwa 8.000 Tokens pro Minute an, darum schickt Mail Deck kürzere Teile langer Mails, eine Anfrage nach der anderen."
     },

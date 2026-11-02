@@ -221,6 +221,33 @@ ctx.AI = {
       asked.push(['resume']);
     }
   },
+  // OpenRouter's key from a sign-in: a sign-in that asks Chrome for its sites from the click as
+  // the module does; Cancel, the waiting page's watch and a key's page at OpenRouter written down
+  openrouter: {
+    port: 1456,
+    signIn: () => {
+      const p = chrome.permissions.request({origins: ['https://openrouter.ai/*', 'http://127.0.0.1/*']});
+      asked.push(['keySignIn']);
+      return p.then(ok => {
+        if (!ok) {
+          throw {code: 'no-access'};
+        }
+        return true;
+      }, e => {
+        throw {code: 'no-access', reason: /only permissions specified/i.test(e.message) ? 'stale' : 'error', detail: e.message};
+      });
+    },
+    cancel: async () => {
+      asked.push(['keyCancel']);
+    },
+    watch: async () => {
+      asked.push(['keyWatch']);
+    },
+    keyPage: async key => {
+      asked.push(['keyPage', key]);
+      return 'https://openrouter.ai/keys/hash-' + key.length;
+    }
+  },
   builtin: {
     availability: async lang => {
       asked.push(['availability', lang]);
@@ -623,12 +650,13 @@ const freshAI = (values = {}) => {
   Object.assign(ai, {availability: 'available', state: null, checkError: null, modelsError: null, progress: [], downloaded: null,
     account: null, revoked: true});
   page(`prefs = {...DEFAULTS, ...${JSON.stringify(values)}}; aiKeys = {}; aiConnecting = false; aiDownload = null;
-    aiAccount = null; aiSigning = false; aiPlanNote = ''; aiAllowNote = ''; aiServer = 'ollama'; aiModelQuery = '';
+    aiAccount = null; aiSigning = false; aiKeySigning = false; aiPlanNote = ''; aiAllowNote = ''; aiServer = 'ollama'; aiModelQuery = '';
     for (const id of Object.keys(aiLists)) delete aiLists[id];
     for (const id of Object.keys(aiAccess)) delete aiAccess[id];
     clearTimeout(aiPoll);`);
   for (const id of ['ai-key', 'ai-error', 'ai-model', 'ai-model-note', 'ai-builtin-error', 'ai-builtin-lang', 'ai-plan-note', 'ai-plan-wait',
-    'ai-plan-text', 'ai-key-hint', 'ai-base', 'ai-folder', 'ai-model-search', 'ai-access', 'ai-connected-text', 'ai-model-prices', 'ai-model-find']) {
+    'ai-plan-text', 'ai-key-hint', 'ai-base', 'ai-folder', 'ai-model-search', 'ai-access', 'ai-connected-text', 'ai-model-prices', 'ai-model-find',
+    'ai-key-wait', 'ai-key-manage-text', 'ai-key-manage-link', 'toast']) {
     Object.assign(element(id), {value: '', textContent: '', hidden: false, kids: []});
   }
   element('ai-key').type = 'password';
@@ -1239,6 +1267,145 @@ check('the ChatGPT plan: Continue with ChatGPT asks for its sites from the click
   const code = fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8');
   assert.ok(/area === 'session' && \('ai\.chatgpt\.pending' in ps/.test(code));
 });
+check('OpenRouter: Sign in asks for its sites from the click, waits, and the key it brings connects as a pasted one does', async () => {
+  const KEY_SITES = ['https://openrouter.ai/*', 'http://127.0.0.1/*'];
+  const FROM_SIGN_IN = 'sk-or-v1-SECRET-from-sign-in-0123456789';
+  await freshAI({'ai.engine': 'openrouter'});
+  page('paintAI()');
+  // above the field, with what it does; the field and its Connect for a key the user has
+  assert.strictEqual(element('ai-key-row').hidden, false);
+  assert.strictEqual(element('ai-key-signin-line').hidden, false);
+  assert.strictEqual(element('ai-key-signin').textContent, msg('opt_aiKeySignIn', 'OpenRouter'));
+  assert.strictEqual(msg('opt_aiKeySignIn', 'OpenRouter'), 'Sign in with OpenRouter');
+  assert.strictEqual(element('ai-key-plan').textContent, msg('opt_aiKeySignInText', 'OpenRouter'));
+  assert.deepStrictEqual([element('ai-key-fields').hidden, element('ai-key-signin-cancel').hidden, element('ai-key-wait').hidden], [false, true, true]);
+  assert.ok(/id="ai-key-signin-line"[\s\S]*id="ai-key-fields"/.test(html), 'the sign-in above the field');
+  // the click: the sites first, before anything is awaited, then the module's sign-in
+  const done = element('ai-key-signin').onclick();
+  assert.deepStrictEqual(requested.map(o => [...o]), [KEY_SITES]);
+  await done;
+  assert.ok(asked.some(([what]) => what === 'keySignIn'));
+  // waiting: the button says so with Cancel beside it, the field away, and how OpenRouter names Mail Deck
+  assert.strictEqual(element('ai-key-signin').textContent, msg('opt_aiKeySignInWaiting', 'OpenRouter'));
+  assert.strictEqual(element('ai-key-signin').getAttribute('aria-disabled'), 'true');
+  assert.deepStrictEqual([element('ai-key-fields').hidden, element('ai-key-signin-cancel').hidden, element('ai-key-hint').hidden], [true, false, true]);
+  assert.strictEqual(element('ai-key-wait').textContent, msg('opt_aiKeySignInWait', 'OpenRouter', 1456));
+  assert.ok(element('ai-key-wait').textContent.includes('127.0.0.1:1456'));
+  assert.strictEqual(element('ai-key-wait').hidden, false);
+  assert.strictEqual(focused, 'ai-key-signin');
+  // another click, or Connect, while it waits: nothing asked
+  requested.length = 0;
+  asked.length = 0;
+  await element('ai-key-signin').onclick();
+  element('ai-key').value = 'sk-or-v1-pasted-0123456789';
+  assert.strictEqual(await element('ai-connect').onclick(), false);
+  assert.deepStrictEqual([requested.length, asked.length], [0, 0]);
+  // the loopback address and OpenRouter's site stay with Chrome while it waits, whatever else is given back
+  assert.ok(page('aiNeeded')('chatgpt').has('http://127.0.0.1/*') && page('aiNeeded')('local').has('https://openrouter.ai/*'));
+  // the page follows it in the session: underway (watched for its tab), then over with a key
+  await page('followKeySignIn')({newValue: {state: 's'}});
+  assert.ok(asked.some(([what]) => what === 'keyWatch'));
+  local['ai.openrouter.key'] = FROM_SIGN_IN;
+  await page('followKeySignIn')({oldValue: {state: 's', ended: 'ok'}});
+  for (let i = 0; i < 4; i += 1) {
+    await tick();
+  }
+  assert.strictEqual(page('aiKeySigning'), false);
+  assert.strictEqual(element('toast').textContent, msg('opt_aiConnected', 'OpenRouter'));
+  assert.strictEqual(element('ai-key-row').hidden, true);
+  assert.strictEqual(element('ai-connected').hidden, false);
+  assert.strictEqual(element('ai-connected-text').textContent, msg('opt_aiConnectedText'));
+  assert.strictEqual(element('ai-model-row').hidden, false);
+  assert.ok(asked.some(([what, engine, key]) => what === 'models' && engine === 'openrouter' && key === FROM_SIGN_IN));
+  assert.strictEqual(local['ai.openrouter.model'], page('aiDefaultModel')('openrouter', ai.models), 'the model the module marks, as for a key pasted');
+  assert.ok(local['ai.openrouter.model']);
+  assert.strictEqual(focused, 'ai-model');
+  // connected: Disconnect forgets it here only, and the key's own page at OpenRouter is where it goes
+  assert.strictEqual(element('ai-key-manage').hidden, false);
+  assert.strictEqual(element('ai-key-manage-text').textContent, msg('opt_aiKeyManage', 'OpenRouter'));
+  assert.strictEqual(element('ai-key-manage-link').href, 'https://openrouter.ai/keys/hash-' + FROM_SIGN_IN.length);
+  assert.ok(/id="ai-key-manage-link" href="https:\/\/openrouter\.ai\/settings\/keys" target="_blank" rel="noopener"/.test(html));
+  // the key is never on the page, in a backup or synced
+  assert.ok(!JSON.stringify([...elements.values()].map(el => [el.textContent, el.value, el.href])).includes(FROM_SIGN_IN));
+  assert.ok(page('AI_SECRETS').includes('ai.openrouter.key'));
+  // Disconnect: as for a key pasted, OpenRouter's site given back, no request to OpenRouter
+  await element('ai-disconnect').onclick();
+  assert.ok(!('ai.openrouter.key' in local) && removed.includes('https://openrouter.ai/*'));
+  assert.strictEqual(element('toast').textContent, msg('opt_aiDisconnected', 'OpenRouter'));
+  // another provider's card: no sign-in, no word about a key kept elsewhere
+  await freshAI({'ai.engine': 'anthropic', 'ai.anthropic.key': ANTHROPIC_KEY});
+  granted.add('https://api.anthropic.com/*');
+  await page('syncAIAccess()');
+  page('paintAI()');
+  assert.strictEqual(element('ai-key-manage').hidden, true);
+  await freshAI({'ai.engine': 'anthropic'});
+  page('paintAI()');
+  assert.deepStrictEqual([element('ai-key-signin-line').hidden, element('ai-key-fields').hidden], [true, false]);
+  // the page reads a sign-in underway as it opens, and listens for its end in the session
+  const code = fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8');
+  assert.ok(/area === 'session' && 'ai\.openrouter\.pending' in ps/.test(code) && /readKeySignIn\(\)\]\)\.then\(paintAI\)/.test(code));
+});
+check('OpenRouter: a sign-in that brought no key says why under the button; Cancel says nothing; Chrome\'s no, an older manifest', async () => {
+  const STALE = new Error('Only permissions specified in the manifest may be requested.');
+  const OTHER = new Error('This function must be called during a user gesture');
+  await freshAI({'ai.engine': 'openrouter'});
+  page('paintAI()');
+  // how it ended, in the module's words; the field back, the button again, no field marked wrong
+  for (const code of ['key-cancelled', 'key-timeout', 'key-denied', 'key-sign-in', 'network', 'server']) {
+    page('aiKeySigning = true; paintCloud()');
+    focused = null;
+    await page('followKeySignIn')({oldValue: {state: 's', ended: code}});
+    assert.strictEqual(element('ai-error').textContent, msg('ai_err_' + code.replace(/-/g, '_')), code);
+    assert.ok(element('ai-error').textContent, code);
+    assert.strictEqual(element('ai-error').hidden, false);
+    assert.deepStrictEqual([element('ai-key-fields').hidden, element('ai-key-signin-cancel').hidden, element('ai-key-wait').hidden], [false, true, true]);
+    assert.strictEqual(element('ai-key-signin').textContent, msg('opt_aiKeySignIn', 'OpenRouter'));
+    assert.strictEqual(element('ai-key-signin').getAttribute('aria-disabled'), 'false');
+    assert.notStrictEqual(element('ai-key').getAttribute('aria-invalid'), 'true');
+    assert.strictEqual(focused, 'ai-key-signin');
+  }
+  assert.ok(/closed before signing in finished/.test(msg('ai_err_key_cancelled')) && /took too long/.test(msg('ai_err_key_timeout')));
+  // Cancel: the module ends it; its end says nothing, and the focus stays on the sign-in
+  page('aiError(""); aiKeySigning = true; paintCloud()');
+  asked.length = 0;
+  await element('ai-key-signin-cancel').onclick();
+  assert.ok(asked.some(([what]) => what === 'keyCancel'));
+  assert.deepStrictEqual([element('ai-key-fields').hidden, focused], [false, 'ai-key-signin']);
+  await page('followKeySignIn')({oldValue: {state: 's', ended: 'aborted'}});
+  assert.deepStrictEqual([element('ai-error').textContent, element('ai-error').hidden], ['', true]);
+  // while it waits, another provider's card is as ever: its field, its Connect
+  await freshAI({'ai.engine': 'groq'});
+  page('aiKeySigning = true; paintAI()');
+  assert.deepStrictEqual([element('ai-key-fields').hidden, element('ai-key-wait').hidden, element('ai-key-signin-line').hidden], [false, true, true]);
+  element('ai-key').value = 'gsk_SECRET0123456789';
+  assert.strictEqual(await element('ai-connect').onclick(), true);
+  assert.deepStrictEqual(requested.map(o => [...o]), [['https://api.groq.com/*']]);
+  // one that ends while another provider is picked says nothing under that one's field
+  await freshAI({'ai.engine': 'groq'});
+  page('aiKeySigning = true; paintAI()');
+  await page('followKeySignIn')({oldValue: {state: 's', ended: 'key-timeout'}});
+  assert.strictEqual(element('ai-error').textContent, '');
+  // Chrome's no: what the sign-in needs; an older manifest: reload; another refusal: Chrome's words
+  await freshAI({'ai.engine': 'openrouter'});
+  page('paintAI()');
+  grant = false;
+  await element('ai-key-signin').onclick();
+  assert.strictEqual(element('ai-error').textContent, msg('opt_aiKeySignInAccess', 'OpenRouter', 'openrouter.ai'));
+  assert.ok(/openrouter\.ai and 127\.0\.0\.1/.test(element('ai-error').textContent));
+  assert.deepStrictEqual([page('aiKeySigning'), element('ai-key-fields').hidden, focused], [false, false, 'ai-key-signin']);
+  grant = true;
+  for (const [thrown, want] of [[STALE, msg('opt_reloadNeeded')], [OTHER, OTHER.message]]) {
+    refuse = thrown;
+    await element('ai-key-signin').onclick();
+    assert.strictEqual(element('ai-error').textContent, want);
+    assert.strictEqual(page('aiKeySigning'), false);
+  }
+  refuse = null;
+  // a reset ends a sign-in underway
+  asked.length = 0;
+  await page('forgetAI()');
+  assert.ok(asked.some(([what]) => what === 'keyCancel'));
+});
 check('the plan says why it does not work now: no access, the usage limit, not this account\'s', async () => {
   await freshAI({'ai.engine': 'chatgpt'});
   ai.account = {...ACCOUNT};
@@ -1360,6 +1527,7 @@ check('a link to an engine (#ai-chatgpt, #ai-openai, …) picks it and focuses i
     assert.strictEqual(local['ai.engine'], 'zai');
     assert.strictEqual(element('ai-key-label').textContent, msg('opt_aiKey', 'Z.ai'));
     assert.strictEqual(await go('#ai-openai'), 'ai-key');
+    assert.strictEqual(await go('#ai-openrouter'), 'ai-key-signin', 'OpenRouter: its sign-in, which makes a key');
     assert.strictEqual(await go('#ai-anthropic', {'ai.anthropic.key': ANTHROPIC_KEY}), 'ai-allow', 'a key without its site: give it');
     granted.add('https://api.anthropic.com/*');
     await page('syncAIAccess()');
@@ -1403,7 +1571,8 @@ check('the picker: the three cards, then the providers of a key, most used first
     assert.ok(MANIFEST.optional_host_permissions.includes(p.origin), id);
     assert.ok(!p.keys || /^https:\/\//.test(p.keys), id);
   }
-  // a link to each engine picks it and focuses its first step: the key, or a server's address
+  // a link to each engine picks it and focuses its first step: the key (OpenRouter's sign-in,
+  // which makes one), or a server's address
   const go = async (hash, values = {}) => {
     await freshAI(values);
     ctx.location.hash = hash;
@@ -1412,7 +1581,8 @@ check('the picker: the three cards, then the providers of a key, most used first
   };
   try {
     for (const engine of ['gemini', 'xai', 'deepseek', 'mistral', 'openrouter', 'groq', 'qwen', 'kimi', 'yandex']) {
-      assert.strictEqual(await go('#ai-' + engine), 'ai-key', engine);
+      assert.strictEqual(await go('#ai-' + engine), engine === 'openrouter' ? 'ai-key-signin' : 'ai-key', engine);
+      assert.strictEqual(element('ai-key-signin-line').hidden, engine !== 'openrouter', engine);
       assert.strictEqual(local['ai.engine'], engine);
       assert.strictEqual(element('ai-key-label').textContent, msg('opt_aiKey', page('AI_PROVIDERS')[engine].name));
       assert.strictEqual(element('ai-folder-field').hidden, engine !== 'yandex', engine);
