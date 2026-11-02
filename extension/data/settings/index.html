@@ -9,497 +9,594 @@
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
-  <main class="page">
-    <header class="top">
-      <img src="/data/icons/red/128.png" alt="" width="56" height="56">
-      <div class="title">
-        <h1 data-i18n="settingsTitle">Settings</h1>
-        <p data-i18n="savedHint">Changes save as you make them.</p>
+  <a class="skip" href="#main" data-i18n="skip">Skip to settings</a>
+  <div class="shell">
+    <!-- the deck, its version, and what needs a look: inboxes, a service, the AI, quiet hours, a pause -->
+    <header class="hero">
+      <img class="logo" src="/data/icons/red/128.png" alt="" width="72" height="72">
+      <div class="hero-text">
+        <h1>Mail Deck <span class="ver" id="version"></span></h1>
+        <div class="status" id="status"></div>
       </div>
-      <span class="segmented" role="radiogroup" aria-label="Settings to show" data-i18n-label="scopeLabel">
-        <label><input type="radio" name="scope" value="essentials"><span data-i18n="essentials">Essentials</span></label>
-        <label><input type="radio" name="scope" value="all"><span data-i18n="everything">Everything</span></label>
-      </span>
     </header>
 
-    <section class="card restore" id="restore" hidden>
-      <div class="row">
-        <span class="text"><b data-i18n="restoreTitle">Your settings are in Chrome sync</b><small id="restore-text"></small></span>
-        <span class="inline">
-          <button type="button" class="ghost" id="restore-no" data-i18n="dismiss">Not now</button>
-          <button type="button" class="ghost primary" id="restore-yes" data-i18n="restore">Restore</button>
-        </span>
+    <!-- a column beside the settings on a wide page, a bar over them on a narrow one -->
+    <nav class="rail" id="rail" aria-label="Sections" data-i18n-label="sections">
+      <div class="search" role="search">
+        <i data-icon="search"></i>
+        <input type="search" id="search" autocomplete="off" spellcheck="false" placeholder="Search settings" data-i18n-placeholder="search" aria-label="Search settings" data-i18n-label="search" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
       </div>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="checking">Checking</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="period">Check for new mail every</b></span>
-          <select data-key="period" data-type="number">
-            <option value="30" data-i18n="sec30">30 seconds</option>
-            <option value="60" data-i18n="min1">1 minute</option>
-            <option value="120" data-i18n="min2">2 minutes</option>
-            <option value="300" data-i18n="min5">5 minutes</option>
-            <option value="600" data-i18n="min10">10 minutes</option>
-            <option value="900" data-i18n="min15">15 minutes</option>
-          </select>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="initialPeriod">First check after the browser starts</b></span>
-          <select data-key="initialPeriod" data-type="number">
-            <option value="0" data-i18n="rightAway">Right away</option>
-            <option value="3" data-i18n="after3s">After 3 seconds</option>
-            <option value="10" data-i18n="after10s">After 10 seconds</option>
-            <option value="30" data-i18n="after30s">After 30 seconds</option>
-            <option value="60" data-i18n="after1m">After 1 minute</option>
-          </select>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="networkWatch">Check when Gmail tabs or the network change</b><small data-i18n="networkWatchText">Catches mail you read in Gmail and reconnects after a dropped connection.</small></span>
-          <input type="checkbox" role="switch" data-key="network.watch">
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="idleWatch">Check when you come back to the computer</b></span>
-          <input type="checkbox" role="switch" data-key="idle.watch">
-        </label>
+      <div class="nav" id="nav">
+        <a href="#accounts"><i data-icon="mail"></i><span data-i18n="mailboxes">Mailboxes</span></a>
+        <a href="#notifications"><i data-icon="bell"></i><span data-i18n="notifications">Notifications</span></a>
+        <a href="#ai"><i data-icon="sparkle"></i><span data-i18n="ai">AI</span></a>
+        <a href="#panel"><i data-icon="side"></i><span data-i18n="panel">Panel</span></a>
+        <a href="#toolbar"><i data-icon="badge"></i><span data-i18n="toolbar">Toolbar icon</span></a>
+        <a href="#opening"><i data-icon="open"></i><span data-i18n="opening">Opening Gmail</span></a>
+        <a href="#backup"><i data-icon="cloud"></i><span data-i18n="backup">Backup</span></a>
+        <a href="#help"><i data-icon="help"></i><span data-i18n="help">Help</span></a>
       </div>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="inboxes">Inboxes</h2>
-      <div class="card">
-        <div id="accounts"></div>
-        <label class="row adv">
-          <span class="text"><b data-i18n="alphabetic">Sort inboxes A to Z</b><small data-i18n="alphabeticText">Otherwise they follow the order you signed in to them.</small></span>
-          <input type="checkbox" role="switch" data-key="alphabetic">
-        </label>
-        <div class="row adv">
-          <span class="text"><b data-i18n="forgetList">Forget the inbox list</b><small data-i18n="forgetListText">Inboxes you signed out of disappear; the rest return on the next check.</small></span>
-          <button type="button" class="ghost" id="forget" data-i18n="forget">Forget</button>
-        </div>
+      <!-- what became of the last change; the words for a screen reader come once it settles -->
+      <div class="save-state" id="save-state" data-state="idle">
+        <i data-icon="done"></i><span id="save-text" data-i18n="savedHint">Changes save as you make them.</span>
+        <span class="sr" id="save-live" role="status"></span>
       </div>
-      <p class="hint" data-i18n="offHint">A switched-off inbox leaves the panel, the badge and notifications.</p>
-      <p class="hint" data-i18n="quietHint">An inbox without notifications still shows in the panel and the count, but makes no noise.</p>
-      <p class="hint adv" data-i18n="countHint">An inbox left out of the count still shows in the panel and still notifies, but adds nothing to the number on the toolbar icon.</p>
-      <p class="hint adv"><span data-i18n="labelsHint">Labels: watch these Gmail labels instead of the inbox, separated by commas, for example:</span> <i>inbox, important</i></p>
-      <p class="hint adv" data-i18n="primaryHint">Primary tab only reads a Gmail feed that Google does not document, so it can stop working.</p>
-    </section>
-
-    <section class="group" id="services">
-      <h2 data-i18n="services">Other mail</h2>
-      <div class="card">
-        <div id="service-list"></div>
-      </div>
-      <p class="hint" data-i18n="servicesHint">Sign in on the service's site as usual, then turn it on here. Mail Deck reads it with that session, the way it reads Gmail.</p>
-      <p class="hint" data-i18n="servicesNote">These services have no public interface for this, so a change on their side can stop one until Mail Deck is updated.</p>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="notifications">Notifications</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="notification">Show a notification for new mail</b><small data-i18n="notificationText">A desktop pop-up with the sender and subject.</small></span>
-          <input type="checkbox" role="switch" data-key="notification">
-        </label>
-        <label class="row" data-needs="notification">
-          <span class="text"><b data-i18n="notificationTime">Keep it on screen for</b></span>
-          <select data-key="notificationTime" data-type="number">
-            <option value="5" data-i18n="sec5">5 seconds</option>
-            <option value="10" data-i18n="sec10">10 seconds</option>
-            <option value="20" data-i18n="sec20">20 seconds</option>
-            <option value="30" data-i18n="sec30">30 seconds</option>
-            <option value="60" data-i18n="min1">1 minute</option>
-          </select>
-        </label>
-        <label class="row adv" data-needs="notification">
-          <span class="text"><b data-i18n="repeat">Repeat the notification every</b><small data-i18n="repeatText">It comes back, with its sound, until you read, archive or delete the mail. Quiet hours still apply.</small></span>
-          <select data-key="notify.repeat" data-type="number">
-            <option value="0" data-i18n="repeatOff">Don’t repeat</option>
-            <option value="5" data-i18n="min5">5 minutes</option>
-            <option value="15" data-i18n="min15">15 minutes</option>
-            <option value="30" data-i18n="min30">30 minutes</option>
-            <option value="60" data-i18n="hour1">1 hour</option>
-          </select>
-        </label>
-        <label class="row">
-          <span class="text"><b data-i18n="quietHours">Quiet hours</b><small data-i18n="quietHoursText">No notifications or sound. The count keeps updating.</small></span>
-          <input type="checkbox" role="switch" data-key="quiet.hours">
-        </label>
-        <div class="row" data-needs="quiet.hours">
-          <span class="text"><b data-i18n="quietBetween">Every day</b><small class="note" id="quiet-same" data-i18n="quietSame" hidden>Start and end are the same, so this sets no quiet hours.</small></span>
-          <span class="inline">
-            <input type="time" data-key="quiet.from" data-i18n-label="quietFrom" aria-label="Start" aria-describedby="quiet-same">
-            <span class="dash">–</span>
-            <input type="time" data-key="quiet.to" data-i18n-label="quietTo" aria-label="End" aria-describedby="quiet-same">
-          </span>
-        </div>
-        <label class="row" data-needs="quiet.hours">
-          <span class="text"><b data-i18n="quietWeekend">Quiet all weekend too</b><small data-i18n="quietWeekendText">The weekend days follow your region.</small></span>
-          <input type="checkbox" role="switch" data-key="quiet.weekend">
-        </label>
-        <div class="row adv" data-needs="notification">
-          <span class="text"><b data-i18n="notifyWhile">Notify while I am</b></span>
-          <span class="chips">
-            <label><input type="checkbox" data-key="notification.state.active"><span data-i18n="stateActive">At the computer</span></label>
-            <label><input type="checkbox" data-key="notification.state.idle"><span data-i18n="stateIdle">Away</span></label>
-            <label><input type="checkbox" data-key="notification.state.locked"><span data-i18n="stateLocked">Locked</span></label>
-          </span>
-        </div>
-        <div class="row adv" data-needs="notification">
-          <span class="text"><b data-i18n="buttons">Buttons on the notification</b><small data-i18n="buttonsText">The first two you pick fit.</small></span>
-          <span class="chips">
-            <label><input type="checkbox" data-key="notification.buttons.markasread"><span data-i18n="btnRead">Mark as read</span></label>
-            <label><input type="checkbox" data-key="notification.buttons.archive"><span data-i18n="btnArchive">Archive</span></label>
-            <label><input type="checkbox" data-key="notification.buttons.trash"><span data-i18n="btnDelete">Delete</span></label>
-          </span>
-        </div>
-        <label class="row adv" data-needs="notification">
-          <span class="text"><b data-i18n="combined">Put several new emails in one notification</b></span>
-          <input type="checkbox" role="switch" data-key="combined">
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="threatAsNew">Notify about mail that arrived within</b><small data-i18n="threatAsNewText">Older unread mail stays quiet. Applies to sound too.</small></span>
-          <select data-key="threatAsNew" data-type="number">
-            <option value="5" data-i18n="min5">5 minutes</option>
-            <option value="10" data-i18n="min10">10 minutes</option>
-            <option value="30" data-i18n="min30">30 minutes</option>
-            <option value="60" data-i18n="hour1">1 hour</option>
-            <option value="1440" data-i18n="day1">1 day</option>
-          </select>
-        </label>
-        <div class="row stack adv">
-          <span class="text"><b id="never-label" data-i18n="never">Never notify when the sender or subject contains</b><small id="never-text" data-i18n="neverText">One word or address per line. The mail still shows in the panel, without a notification or sound.</small></span>
-          <textarea data-key="notify.never" rows="3" spellcheck="false" placeholder="newsletter&#10;noreply@" aria-labelledby="never-label" aria-describedby="never-text"></textarea>
-        </div>
-        <div class="row stack adv">
-          <span class="text"><b id="only-label" data-i18n="only">Notify only when the sender or subject contains</b><small id="only-text" data-i18n="onlyText">Leave it empty to hear about all mail.</small></span>
-          <textarea data-key="notify.only" rows="3" spellcheck="false" aria-labelledby="only-label" aria-describedby="only-text"></textarea>
-        </div>
-        <div class="row stack adv" data-needs="notification">
-          <span class="text"><b id="format-label" data-i18n="format">Notification text</b><small id="format-text" data-i18n="formatText">Use [author_name], [author_email], [title], [summary] and [break] for a new line.</small></span>
-          <textarea data-key="notificationFormat" rows="2" spellcheck="false" aria-labelledby="format-label" aria-describedby="format-text"></textarea>
-        </div>
-        <label class="row adv" data-needs="notification">
-          <span class="text"><b data-i18n="truncate">Shorten the subject and text to</b></span>
-          <select data-key="notificationTruncate" data-type="number">
-            <option value="50" data-i18n="chars" data-i18n-arg="50">50 characters</option>
-            <option value="70" data-i18n="chars" data-i18n-arg="70">70 characters</option>
-            <option value="100" data-i18n="chars" data-i18n-arg="100">100 characters</option>
-            <option value="150" data-i18n="chars" data-i18n-arg="150">150 characters</option>
-            <option value="300" data-i18n="chars" data-i18n-arg="300">300 characters</option>
-          </select>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="silentTime">Custom pause length</b><small data-i18n="silentTimeText">Right-click the toolbar icon, then Disable all notifications, then Custom.</small></span>
-          <select data-key="silentTime" data-type="number">
-            <option value="10" data-i18n="min10">10 minutes</option>
-            <option value="30" data-i18n="min30">30 minutes</option>
-            <option value="60" data-i18n="hour1">1 hour</option>
-            <option value="120" data-i18n="hours2">2 hours</option>
-            <option value="240" data-i18n="hours4">4 hours</option>
-            <option value="480" data-i18n="hours8">8 hours</option>
-          </select>
-        </label>
-      </div>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="sound">Sound</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="alert">Play a sound for new mail</b></span>
-          <input type="checkbox" role="switch" data-key="alert">
-        </label>
-        <div class="row" data-needs="alert">
-          <span class="text"><b data-i18n="sound">Sound</b></span>
-          <span class="inline" id="default-sound"></span>
-        </div>
-        <label class="row" data-needs="alert">
-          <span class="text"><b data-i18n="volume">Volume</b></span>
-          <input type="range" min="0" max="100" step="5" data-key="soundVolume" data-type="number">
-        </label>
-        <div class="row adv" data-needs="alert">
-          <span class="text"><b data-i18n="playWhile">Play while I am</b></span>
-          <span class="chips">
-            <label><input type="checkbox" data-key="sound.state.active"><span data-i18n="stateActive">At the computer</span></label>
-            <label><input type="checkbox" data-key="sound.state.idle"><span data-i18n="stateIdle">Away</span></label>
-            <label><input type="checkbox" data-key="sound.state.locked"><span data-i18n="stateLocked">Locked</span></label>
-          </span>
-        </div>
-        <div class="row stack adv" data-needs="alert">
-          <span class="text"><b data-i18n="rules">Special sounds</b><small data-i18n="rulesText">A different sound when the sender, subject or text contains a word.</small></span>
-          <div class="rules" id="rules"></div>
-          <button type="button" class="ghost" id="add-rule" data-i18n="addRule">Add a sound rule</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="toolbar">Toolbar icon</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="badge">Show the unread count</b></span>
-          <input type="checkbox" role="switch" data-key="badge">
-        </label>
-        <div class="row" data-needs="badge">
-          <span class="text"><b data-i18n="badgeColour">Count colour</b></span>
-          <span class="swatches" id="swatches" role="radiogroup" aria-label="Count colour" data-i18n-label="badgeColour"></span>
-        </div>
-        <label class="row adv" data-needs="badge">
-          <span class="text"><b data-i18n="minimal">Shorten counts over 999</b><small data-i18n="minimalText">Shows &gt;1K instead of the exact number.</small></span>
-          <input type="checkbox" role="switch" data-key="minimal">
-        </label>
-        <label class="row adv" data-needs="badge">
-          <span class="text"><b data-i18n="badgeCount">The count shows</b><small data-i18n="badgeCountText">Opening the panel sets it back to zero. The panel itself still lists all unread mail.</small></span>
-          <select data-key="badge.count">
-            <option value="all" data-i18n="badgeAll">All unread mail</option>
-            <option value="new" data-i18n="badgeNew">Mail since the panel was last opened</option>
-          </select>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="clickIcon">Clicking the icon</b></span>
-          <select data-key="oldFashion" data-type="number">
-            <option value="0" data-i18n="clickPanel">Opens the panel</option>
-            <option value="1" data-i18n="clickOne">Opens Gmail when there is one inbox</option>
-            <option value="2" data-i18n="clickGmail">Opens Gmail</option>
-          </select>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="smartOpen">When the icon opens Gmail, go to the newest unread email</b></span>
-          <input type="checkbox" role="switch" data-key="smartOpen">
-        </label>
-      </div>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="panel">Panel</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="textSize">Text size</b></span>
-          <select data-key="panelScale" data-type="number">
-            <option value="0.9">90%</option>
-            <option value="1">100%</option>
-            <option value="1.1">110%</option>
-            <option value="1.25">125%</option>
-          </select>
-        </label>
-        <label class="row">
-          <span class="text"><b data-i18n="readOnOpen">Mark as read when opened in the panel</b><small data-i18n="readOnOpenText">Otherwise mail stays unread until you act on it.</small></span>
-          <input type="checkbox" role="switch" data-key="readOnOpen">
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="autoAdvance">Open the next message after an action</b><small data-i18n="autoAdvanceText">After you archive, delete or mark an open message as read, the next one opens instead of the list.</small></span>
-          <input type="checkbox" role="switch" data-key="autoAdvance">
-        </label>
-        <label class="row">
-          <span class="text"><b data-i18n="senderLogos">Show sender logos</b><small data-i18n="senderLogosText">Logos of Gmail senders come from Google's icon service, which is sent the sender's domain.</small></span>
-          <input type="checkbox" role="switch" data-key="senderLogos">
-        </label>
-        <div class="row">
-          <span class="text"><b data-i18n="shortcut">Open the panel with</b></span>
-          <span class="inline">
-            <span id="shortcut"></span>
-            <button type="button" class="ghost" id="shortcut-change" data-i18n="shortcutChange">Change</button>
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <section class="group" id="ai">
-      <h2 data-i18n="ai">AI</h2>
-      <div class="card">
-        <div class="engines" role="radiogroup" aria-label="Which AI to use" data-i18n-label="aiEngine">
-          <label class="row">
-            <span class="text"><b id="ai-off-name" data-i18n="aiOff">Off</b><small id="ai-off-text" data-i18n="aiOffText">No summaries or reply marks. Nothing is sent anywhere.</small></span>
-            <input type="radio" name="ai.engine" value="off" aria-labelledby="ai-off-name" aria-describedby="ai-off-text">
-          </label>
-          <label class="row">
-            <span class="text"><b id="ai-builtin-name" data-i18n="aiBuiltin">Chrome built-in</b><small id="ai-builtin-desc" data-i18n="aiBuiltinText">Runs on this computer: free and private, but not on every computer.</small></span>
-            <input type="radio" name="ai.engine" value="builtin" aria-labelledby="ai-builtin-name" aria-describedby="ai-builtin-desc">
-          </label>
-          <label class="row">
-            <span class="text"><b id="ai-chatgpt-name" data-i18n="aiPlan">ChatGPT plan</b><small id="ai-chatgpt-text" data-i18n="aiPlanText">The ChatGPT plan you already have, with no API key.</small></span>
-            <input type="radio" name="ai.engine" value="chatgpt" aria-labelledby="ai-chatgpt-name" aria-describedby="ai-chatgpt-text">
-          </label>
-          <label class="row">
-            <span class="text"><b id="ai-openai-name" data-i18n="aiKey" data-i18n-arg="OpenAI">OpenAI API key</b><small id="ai-openai-text" data-i18n="aiCloudText" data-i18n-arg="GPT">GPT models, paid per use.</small></span>
-            <input type="radio" name="ai.engine" value="openai" aria-labelledby="ai-openai-name" aria-describedby="ai-openai-text">
-          </label>
-          <label class="row">
-            <span class="text"><b id="ai-anthropic-name" data-i18n="aiKey" data-i18n-arg="Anthropic">Anthropic API key</b><small id="ai-anthropic-text" data-i18n="aiCloudText" data-i18n-arg="Claude">Claude models, paid per use.</small></span>
-            <input type="radio" name="ai.engine" value="anthropic" aria-labelledby="ai-anthropic-name" aria-describedby="ai-anthropic-text">
-          </label>
-          <label class="row">
-            <span class="text"><b id="ai-zai-name" data-i18n="aiKey" data-i18n-arg="Z.ai">Z.ai API key</b><small id="ai-zai-text" data-i18n="aiZaiText">GLM models, paid per use; some are free.</small></span>
-            <input type="radio" name="ai.engine" value="zai" aria-labelledby="ai-zai-name" aria-describedby="ai-zai-text">
-          </label>
-        </div>
-        <!-- the built-in model: ready, to download once, downloading, or not on this computer -->
-        <div class="row sub" id="ai-builtin" hidden>
-          <span class="text" id="ai-builtin-status">
-            <b class="state" id="ai-builtin-title" data-state="wait" aria-live="polite" data-i18n="aiChecking">Checking…</b>
-            <small id="ai-builtin-text" hidden></small>
-            <span class="meter" id="ai-meter" hidden><progress id="ai-progress" max="100" aria-labelledby="ai-builtin-title"></progress><small id="ai-percent"></small></span>
-            <small id="ai-builtin-lang" hidden></small>
-            <small class="note" id="ai-builtin-error" role="alert" hidden></small>
-          </span>
-          <button type="button" class="ghost primary" id="ai-download" data-i18n="aiDownload" hidden>Download</button>
-        </div>
-        <!-- the ChatGPT plan: a sign-in instead of a key; signed in, its account and its usage -->
-        <div class="row sub" id="ai-plan" hidden>
-          <span class="text">
-            <b class="state" id="ai-plan-title" data-state="none" data-i18n="aiPlanUse">Use your ChatGPT plan</b>
-            <small id="ai-plan-text" data-i18n="aiPlanUseText">Complete eligible AI requests in Mail Deck with usage included in your ChatGPT plan.</small>
-            <small id="ai-plan-plus" data-i18n="aiPlanPlus">ChatGPT Plus has a five-hour usage limit, shared across all the apps that use it.</small>
-            <small id="ai-plan-wait" aria-live="polite" hidden></small>
-            <small class="note" id="ai-plan-note" role="alert" hidden></small>
-          </span>
-          <span class="inline">
-            <button type="button" class="ghost primary" id="ai-plan-allow" data-i18n="aiAllow" hidden>Allow access</button>
-            <button type="button" class="ghost primary" id="ai-signin" data-i18n="aiSignIn">Continue with ChatGPT</button>
-            <button type="button" class="ghost" id="ai-signout" data-i18n="aiSignOut" hidden>Sign out</button>
-          </span>
-        </div>
-        <!-- a provider without a key: the key, its page, and what it costs -->
-        <div class="row stack sub" id="ai-key-row" hidden>
-          <span class="text">
-            <b id="ai-key-label">API key</b>
-            <small id="ai-key-text"><span id="ai-key-plan"></span> <a id="ai-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" data-i18n="aiGetKey">Get a key</a></small>
-          </span>
-          <span class="key">
-            <input type="password" id="ai-key" autocomplete="off" spellcheck="false" autocapitalize="off" dir="ltr" aria-labelledby="ai-key-label" aria-describedby="ai-key-text ai-key-hint ai-error">
-            <button type="button" class="ghost" id="ai-key-show" aria-controls="ai-key" data-i18n="aiShow">Show</button>
-            <button type="button" class="ghost primary" id="ai-connect" data-i18n="aiConnect">Connect</button>
-          </span>
-          <small class="tip" id="ai-key-hint" hidden></small>
-          <small class="note error" id="ai-error" role="alert" hidden></small>
-        </div>
-        <!-- a provider with a key: connected, or without the access Chrome gave it -->
-        <div class="row sub" id="ai-connected" hidden>
-          <span class="text">
-            <b class="state" id="ai-connected-title" data-state="ok">Connected</b>
-            <small id="ai-connected-text" data-i18n="aiConnectedText">The key stays on this computer: never in backups or Chrome sync.</small>
-            <small class="note" id="ai-access" hidden></small>
-          </span>
-          <span class="inline">
-            <button type="button" class="ghost primary" id="ai-allow" data-i18n="aiAllow" hidden>Allow access</button>
-            <button type="button" class="ghost" id="ai-disconnect" data-i18n="aiDisconnect">Disconnect</button>
-          </span>
-        </div>
-        <label class="row sub" id="ai-model-row" hidden>
-          <span class="text"><b data-i18n="aiModel">Model</b><small id="ai-model-text" data-i18n="aiModelText">Larger models summarize better; smaller ones answer faster and cost less.</small><small class="note" id="ai-model-note" hidden></small></span>
-          <select id="ai-model" aria-describedby="ai-model-text ai-model-note"></select>
-        </label>
-        <label class="row" data-ai>
-          <span class="text"><b data-i18n="aiSummary">Summary in the reader</b><small data-i18n="aiSummaryText">Key points, things to do and dates, above the message.</small></span>
-          <select data-key="ai.summary">
-            <option value="off" data-i18n="aiSummaryOff">Off</option>
-            <option value="click" data-i18n="aiSummaryClick">On click</option>
-            <option value="auto" data-i18n="aiSummaryAuto">Automatically for long mail</option>
-          </select>
-        </label>
-        <label class="row" data-ai>
-          <span class="text"><b data-i18n="aiReply">Sort unread mail</b><small data-i18n="aiReplyText">Finds mail waiting for your reply, important mail, and newsletters you can clear in one go.</small></span>
-          <input type="checkbox" role="switch" data-key="ai.reply">
-        </label>
-        <!-- what the panel offers while the AI is off: so it stays on while the rows above fade -->
-        <label class="row">
-          <span class="text"><b data-i18n="aiButtons">Show AI buttons while the assistant is off</b><small data-i18n="aiButtonsText">The summary, reply and assistant buttons stay in the panel and offer to turn it on.</small></span>
-          <input type="checkbox" role="switch" data-key="ai.buttons">
-        </label>
-      </div>
-      <p class="hint" id="ai-privacy" hidden></p>
-    </section>
-    <!-- once, after the first sign-in with the ChatGPT plan -->
-    <dialog class="welcome" id="ai-welcome" aria-labelledby="ai-welcome-title" aria-describedby="ai-welcome-text">
-      <h3 id="ai-welcome-title" data-i18n="aiWelcome">You’re using your ChatGPT plan</h3>
-      <p id="ai-welcome-text" data-i18n="aiWelcomeText">Eligible AI requests in Mail Deck use the usage included in your ChatGPT plan. Manage usage in your ChatGPT settings.</p>
-      <button type="button" class="ghost primary" id="ai-welcome-ok" data-i18n="aiGotIt">Got it</button>
-    </dialog>
-
-    <section class="group">
-      <h2 data-i18n="opening">Opening mail</h2>
-      <div class="card">
-        <div class="row">
-          <span class="text"><b data-i18n="openIn">Open Gmail in</b></span>
-          <span class="segmented" role="radiogroup" aria-label="Open Gmail in" data-i18n-label="openIn">
-            <label><input type="radio" name="open" value="tab"><span data-i18n="newTab">New tab</span></label>
-            <label><input type="radio" name="open" value="current"><span data-i18n="thisTab">This tab</span></label>
-            <label><input type="radio" name="open" value="window"><span data-i18n="newWindow">New window</span></label>
-          </span>
-        </div>
-        <label class="row adv">
-          <span class="text"><b data-i18n="reuse">Switch to Gmail when it is already open</b><small data-i18n="reuseText">Instead of opening another copy.</small></span>
-          <input type="checkbox" role="switch" data-key="ignoreOpens" data-invert>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="everyWindow">Look for it in every window</b><small data-i18n="everyWindowText">Otherwise only in the current window.</small></span>
-          <input type="checkbox" role="switch" data-key="searchMode" data-invert>
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="background">Open in the background</b></span>
-          <input type="checkbox" role="switch" data-key="background">
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="nextTo">Open next to the current tab</b></span>
-          <input type="checkbox" role="switch" data-key="relatedToCurrent">
-        </label>
-        <label class="row adv">
-          <span class="text"><b data-i18n="inFront">Tell me when Gmail is already in front</b></span>
-          <input type="checkbox" role="switch" data-key="onGmailNotification">
-        </label>
-      </div>
-    </section>
-
-    <section class="group adv">
-      <h2 data-i18n="actions">Actions</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="readOnArchive">Archiving also marks mail as read</b></span>
-          <input type="checkbox" role="switch" data-key="doReadOnArchive">
-        </label>
-      </div>
-    </section>
-
-    <section class="group">
-      <h2 data-i18n="backup">Your settings</h2>
-      <div class="card">
-        <label class="row">
-          <span class="text"><b data-i18n="sync">Keep a copy in Chrome sync</b><small data-i18n="syncText">A computer signed in to the same Chrome profile offers to restore it.</small></span>
-          <input type="checkbox" role="switch" data-key="sync.settings">
-        </label>
-        <div class="row">
-          <span class="text"><b data-i18n="file">Settings file</b><small data-i18n="fileText">Save your settings to a file or load them from one.</small></span>
-          <span class="inline">
-            <button type="button" class="ghost" id="export" data-i18n="export">Export</button>
-            <button type="button" class="ghost" id="import" data-i18n="import">Import</button>
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <section class="group adv">
-      <h2 data-i18n="diag">Diagnostics</h2>
-      <div class="card">
-        <div class="row">
-          <span class="text"><b data-i18n="diagRow">Check how Mail Deck works with your inboxes</b><small data-i18n="diagText">Asks Gmail now, for every signed-in inbox. Nothing in your mail changes.</small></span>
-          <button type="button" class="ghost" id="diag-run" data-i18n="diagRun">Run the check</button>
-        </div>
-        <div class="diag" id="diag" hidden></div>
-      </div>
-    </section>
-
-    <footer class="foot">
-      <button type="button" class="ghost" id="reset" data-i18n="reset">Reset to defaults</button>
-      <nav class="links">
+      <div class="links">
         <a href="https://nord-express.github.io/mail-deck/" target="_blank" data-i18n="linkSite">Website</a>
         <a href="https://nord-express.github.io/mail-deck/privacy.html" target="_blank" data-i18n="linkPrivacy">Privacy</a>
         <a href="https://github.com/nord-express/mail-deck/issues" target="_blank" data-i18n="linkReport">Report a problem</a>
-      </nav>
-    </footer>
-  </main>
+      </div>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <div class="notice info" id="restore" hidden>
+        <i data-icon="cloud"></i>
+        <span class="text"><b data-i18n="restoreTitle">Your settings are in Chrome sync</b><small id="restore-text"></small></span>
+        <span class="inline">
+          <button type="button" class="btn sm quiet" id="restore-no" data-i18n="dismiss">Not now</button>
+          <button type="button" class="btn sm primary" id="restore-yes" data-i18n="restore">Restore</button>
+        </span>
+      </div>
+      <div class="notice info" id="pin" hidden>
+        <i data-icon="pin"></i>
+        <span class="text"><small data-i18n="pinHint">Pin Mail Deck to the toolbar to see the count: click the puzzle piece by the address bar, then the pin next to Mail Deck.</small></span>
+        <button type="button" class="btn sm" id="pin-ok" data-i18n="aiGotIt">Got it</button>
+      </div>
+      <div class="no-match" id="no-match" hidden>
+        <i data-icon="search"></i>
+        <p id="no-match-text"></p>
+        <button type="button" class="btn" id="search-clear" data-i18n="clearSearch">Clear search</button>
+      </div>
+
+      <section id="accounts" aria-labelledby="accounts-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="accounts-title" data-i18n="mailboxes">Mailboxes</h2><p class="lede" data-i18n="mailboxesLede">The inboxes Mail Deck watches, and how often it looks.</p></div>
+          <button type="button" class="more" aria-expanded="false"><span data-i18n="more">More options</span><span class="n"></span><i data-icon="down"></i></button>
+        </div>
+        <div class="group" id="inboxes">
+          <div class="card">
+            <div id="account-list"></div>
+            <label class="row adv">
+              <span class="text"><b data-i18n="alphabetic">Sort inboxes A to Z</b><small data-i18n="alphabeticText">Otherwise they follow the order you signed in to them.</small></span>
+              <input type="checkbox" role="switch" data-key="alphabetic">
+            </label>
+            <div class="row adv">
+              <span class="text"><b data-i18n="forgetList">Forget the inbox list</b><small data-i18n="forgetListText">Inboxes you signed out of disappear; the rest return on the next check.</small></span>
+              <button type="button" class="btn" id="forget" data-i18n="forget">Forget</button>
+            </div>
+          </div>
+        </div>
+        <div class="group" id="services">
+          <h3 data-i18n="services">Other mail</h3>
+          <div class="card">
+            <div id="service-list"></div>
+          </div>
+          <p class="callout"><i data-icon="info"></i><span><span data-i18n="servicesHint">Sign in on the service’s site as usual, then turn it on here. Mail Deck reads it with that session, the way it reads Gmail.</span> <span data-i18n="servicesNote">These services have no public interface for this, so a change on their side can stop one until Mail Deck is updated.</span></span></p>
+        </div>
+        <div class="group" id="checking">
+          <h3 data-i18n="checking">Checking</h3>
+          <div class="card">
+            <label class="row">
+              <span class="text"><b data-i18n="period">Check for new mail every</b></span>
+              <select data-key="period" data-type="number">
+                <option value="30" data-i18n="sec30">30 seconds</option>
+                <option value="60" data-i18n="min1">1 minute</option>
+                <option value="120" data-i18n="min2">2 minutes</option>
+                <option value="300" data-i18n="min5">5 minutes</option>
+                <option value="600" data-i18n="min10">10 minutes</option>
+                <option value="900" data-i18n="min15">15 minutes</option>
+              </select>
+            </label>
+            <label class="row adv">
+              <span class="text"><b data-i18n="initialPeriod">First check after the browser starts</b></span>
+              <select data-key="initialPeriod" data-type="number">
+                <option value="0" data-i18n="rightAway">Right away</option>
+                <option value="3" data-i18n="after3s">After 3 seconds</option>
+                <option value="10" data-i18n="after10s">After 10 seconds</option>
+                <option value="30" data-i18n="after30s">After 30 seconds</option>
+                <option value="60" data-i18n="after1m">After 1 minute</option>
+              </select>
+            </label>
+            <label class="row adv">
+              <span class="text"><b data-i18n="networkWatch">Check when Gmail tabs or the network change</b><small data-i18n="networkWatchText">Catches mail you read in Gmail and reconnects after a dropped connection.</small></span>
+              <input type="checkbox" role="switch" data-key="network.watch">
+            </label>
+            <label class="row adv">
+              <span class="text"><b data-i18n="idleWatch">Check when you come back to the computer</b></span>
+              <input type="checkbox" role="switch" data-key="idle.watch">
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section id="notifications" aria-labelledby="notifications-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="notifications-title" data-i18n="notifications">Notifications</h2><p class="lede" data-i18n="notificationsLede">Pop-ups, sound, and when to stay quiet.</p></div>
+          <button type="button" class="more" aria-expanded="false"><span data-i18n="more">More options</span><span class="n"></span><i data-icon="down"></i></button>
+        </div>
+        <div class="group" id="popups">
+          <h3 data-i18n="popups">Pop-ups</h3>
+          <div class="card">
+            <label class="row">
+              <span class="text"><b data-i18n="notification">Show a notification for new mail</b><small data-i18n="notificationText">A desktop pop-up with the sender and subject.</small></span>
+              <input type="checkbox" role="switch" data-key="notification">
+            </label>
+            <label class="row" data-needs="notification">
+              <span class="text"><b data-i18n="notificationTime">Keep it on screen for</b></span>
+              <select data-key="notificationTime" data-type="number">
+                <option value="5" data-i18n="sec5">5 seconds</option>
+                <option value="10" data-i18n="sec10">10 seconds</option>
+                <option value="20" data-i18n="sec20">20 seconds</option>
+                <option value="30" data-i18n="sec30">30 seconds</option>
+                <option value="60" data-i18n="min1">1 minute</option>
+              </select>
+            </label>
+            <label class="row adv" data-needs="notification">
+              <span class="text"><b data-i18n="repeat">Repeat the notification every</b><small data-i18n="repeatText">It comes back, with its sound, until you read, archive or delete the mail. Quiet hours still apply.</small></span>
+              <select data-key="notify.repeat" data-type="number">
+                <option value="0" data-i18n="repeatOff">Don’t repeat</option>
+                <option value="5" data-i18n="min5">5 minutes</option>
+                <option value="15" data-i18n="min15">15 minutes</option>
+                <option value="30" data-i18n="min30">30 minutes</option>
+                <option value="60" data-i18n="hour1">1 hour</option>
+              </select>
+            </label>
+            <label class="row adv" data-needs="notification">
+              <span class="text"><b data-i18n="combined">Combine new emails into one notification</b></span>
+              <input type="checkbox" role="switch" data-key="combined">
+            </label>
+            <div class="row adv" data-needs="notification">
+              <span class="text"><b id="buttons-label" data-i18n="buttons">Buttons on the notification</b><small data-i18n="buttonsText">The first two you pick fit.</small></span>
+              <span class="chips" role="group" aria-labelledby="buttons-label">
+                <label class="chip"><input type="checkbox" data-key="notification.buttons.markasread"><span><i data-icon="done" class="ck"></i><span data-i18n="btnRead">Mark as read</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="notification.buttons.archive"><span><i data-icon="done" class="ck"></i><span data-i18n="btnArchive">Archive</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="notification.buttons.trash"><span><i data-icon="done" class="ck"></i><span data-i18n="btnDelete">Delete</span></span></label>
+              </span>
+            </div>
+            <div class="row adv" data-needs="notification">
+              <span class="text"><b id="notify-while-label" data-i18n="notifyWhile">Notify while I am</b></span>
+              <span class="chips" role="group" aria-labelledby="notify-while-label">
+                <label class="chip"><input type="checkbox" data-key="notification.state.active"><span><i data-icon="done" class="ck"></i><span data-i18n="stateActive">At the computer</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="notification.state.idle"><span><i data-icon="done" class="ck"></i><span data-i18n="stateIdle">Away</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="notification.state.locked"><span><i data-icon="done" class="ck"></i><span data-i18n="stateLocked">Locked</span></span></label>
+              </span>
+            </div>
+            <!-- the text of a notification: fields put in where the cursor is, and how it reads -->
+            <div class="row stack adv" data-needs="notification">
+              <span class="text"><b id="format-label" data-i18n="format">Notification text</b><small id="format-text" data-i18n="formatText">Use [author_name], [author_email], [title], [summary] and [break] for a new line.</small></span>
+              <textarea data-key="notificationFormat" rows="2" spellcheck="false" aria-labelledby="format-label" aria-describedby="format-text"></textarea>
+              <span class="inserts" id="format-tokens" role="group" aria-labelledby="format-label"></span>
+              <div class="preview" id="format-preview" hidden>
+                <img src="/data/icons/red/128.png" alt="" width="32" height="32">
+                <span class="preview-text"><b id="preview-title"></b><span id="preview-body"></span></span>
+                <span class="preview-tag" data-i18n="preview">Preview</span>
+              </div>
+            </div>
+            <label class="row adv" data-needs="notification">
+              <span class="text"><b data-i18n="truncate">Shorten the subject and text to</b></span>
+              <select data-key="notificationTruncate" data-type="number">
+                <option value="50" data-i18n="chars" data-i18n-arg="50">50 characters</option>
+                <option value="70" data-i18n="chars" data-i18n-arg="70">70 characters</option>
+                <option value="100" data-i18n="chars" data-i18n-arg="100">100 characters</option>
+                <option value="150" data-i18n="chars" data-i18n-arg="150">150 characters</option>
+                <option value="300" data-i18n="chars" data-i18n-arg="300">300 characters</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="group" id="sound">
+          <h3 data-i18n="sound">Sound</h3>
+          <div class="card">
+            <label class="row">
+              <span class="text"><b data-i18n="alert">Play a sound for new mail</b></span>
+              <input type="checkbox" role="switch" data-key="alert">
+            </label>
+            <div class="row" data-needs="alert">
+              <span class="text"><b data-i18n="sound">Sound</b></span>
+              <span class="inline" id="default-sound"></span>
+            </div>
+            <label class="row" data-needs="alert">
+              <span class="text"><b data-i18n="volume">Volume</b></span>
+              <input type="range" min="0" max="100" step="5" data-key="soundVolume" data-type="number">
+            </label>
+            <div class="row adv" data-needs="alert">
+              <span class="text"><b id="play-while-label" data-i18n="playWhile">Play while I am</b></span>
+              <span class="chips" role="group" aria-labelledby="play-while-label">
+                <label class="chip"><input type="checkbox" data-key="sound.state.active"><span><i data-icon="done" class="ck"></i><span data-i18n="stateActive">At the computer</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="sound.state.idle"><span><i data-icon="done" class="ck"></i><span data-i18n="stateIdle">Away</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="sound.state.locked"><span><i data-icon="done" class="ck"></i><span data-i18n="stateLocked">Locked</span></span></label>
+              </span>
+            </div>
+            <div class="row stack adv" data-needs="alert">
+              <span class="text"><b data-i18n="rules">Special sounds</b><small data-i18n="rulesText">A different sound when the sender, subject or text contains a word.</small></span>
+              <div class="sound-rules" id="sound-rules"></div>
+              <button type="button" class="btn" id="add-rule"><i data-icon="plus"></i><span data-i18n="addRule">Add a sound rule</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="group" id="quiet">
+          <h3 data-i18n="quietHours">Quiet hours</h3>
+          <div class="card">
+            <label class="row">
+              <span class="text"><b data-i18n="quietHours">Quiet hours</b><small class="live" id="quiet-now" hidden></small><small data-i18n="quietHoursText">No notifications or sound. The count keeps updating.</small></span>
+              <input type="checkbox" role="switch" data-key="quiet.hours">
+            </label>
+            <div class="row times-row" data-needs="quiet.hours">
+              <span class="text"><b data-i18n="quietBetween">Every day</b><small class="note" id="quiet-same" data-i18n="quietSame" hidden>Start and end are the same, so this sets no quiet hours.</small></span>
+              <span class="times">
+                <input type="time" data-key="quiet.from" data-i18n-label="quietFrom" aria-label="Start" aria-describedby="quiet-same">
+                <span class="dash" aria-hidden="true">–</span>
+                <input type="time" data-key="quiet.to" data-i18n-label="quietTo" aria-label="End" aria-describedby="quiet-same">
+              </span>
+              <!-- the day from 00 to 24, the quiet part filled and a tick at now: a picture of the times above -->
+              <div class="day" id="quiet-day" aria-hidden="true">
+                <div class="track" id="quiet-track"><span class="now" id="quiet-tick"></span></div>
+                <div class="hours" id="quiet-hours"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+              </div>
+            </div>
+            <label class="row" data-needs="quiet.hours">
+              <span class="text"><b data-i18n="quietWeekend">All weekend too</b><small id="quiet-weekend-text"></small></span>
+              <input type="checkbox" role="switch" data-key="quiet.weekend">
+            </label>
+          </div>
+        </div>
+        <div class="group" id="rules">
+          <h3 data-i18n="wordRules">Rules</h3>
+          <div class="card">
+            <div class="row stack">
+              <span class="text"><b id="never-label" data-i18n="never">Never notify when the sender or subject contains</b><small id="never-text" data-i18n="neverText">The mail still shows in the panel, without a notification or sound.</small></span>
+              <textarea data-key="notify.never" data-tokens="lines" rows="3" spellcheck="false" placeholder="newsletter&#10;noreply@" aria-labelledby="never-label" aria-describedby="never-text"></textarea>
+            </div>
+            <div class="row stack">
+              <span class="text"><b id="only-label" data-i18n="only">Notify only when the sender or subject contains</b><small id="only-text" data-i18n="onlyText">Leave it empty to hear about all mail.</small></span>
+              <textarea data-key="notify.only" data-tokens="lines" rows="3" spellcheck="false" aria-labelledby="only-label" aria-describedby="only-text"></textarea>
+            </div>
+            <label class="row adv">
+              <span class="text"><b data-i18n="threatAsNew">Only notify about mail newer than</b><small data-i18n="threatAsNewText">Older unread mail stays quiet. Applies to sound too.</small></span>
+              <select data-key="threatAsNew" data-type="number">
+                <option value="5" data-i18n="min5">5 minutes</option>
+                <option value="10" data-i18n="min10">10 minutes</option>
+                <option value="30" data-i18n="min30">30 minutes</option>
+                <option value="60" data-i18n="hour1">1 hour</option>
+                <option value="1440" data-i18n="day1">1 day</option>
+              </select>
+            </label>
+            <label class="row adv">
+              <span class="text"><b data-i18n="silentTime">Custom pause length</b><small data-i18n="silentTimeText">Right-click the toolbar icon, then Disable all notifications, then Custom.</small></span>
+              <select data-key="silentTime" data-type="number">
+                <option value="10" data-i18n="min10">10 minutes</option>
+                <option value="30" data-i18n="min30">30 minutes</option>
+                <option value="60" data-i18n="hour1">1 hour</option>
+                <option value="120" data-i18n="hours2">2 hours</option>
+                <option value="240" data-i18n="hours4">4 hours</option>
+                <option value="480" data-i18n="hours8">8 hours</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section id="ai" aria-labelledby="ai-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="ai-title" data-i18n="ai">AI</h2><p class="lede" data-i18n="aiLede">Summaries, sorting and the assistant, with the engine you choose.</p></div>
+          <button type="button" class="more" aria-expanded="false"><span data-i18n="more">More options</span><span class="n"></span><i data-icon="down"></i></button>
+        </div>
+        <div class="card">
+          <div class="engines" role="radiogroup" aria-label="Which AI to use" data-i18n-label="aiEngine">
+            <label class="engine">
+              <input type="radio" name="ai.engine" value="off" aria-labelledby="ai-off-name" aria-describedby="ai-off-text">
+              <span class="tile"><i data-icon="off"></i></span>
+              <b id="ai-off-name" data-i18n="aiOff">Off</b><small id="ai-off-text" data-i18n="aiOffText">Nothing is sent anywhere</small>
+            </label>
+            <label class="engine">
+              <input type="radio" name="ai.engine" value="builtin" aria-labelledby="ai-builtin-name" aria-describedby="ai-builtin-desc ai-badge-builtin">
+              <span class="tile"><i data-icon="chip"></i></span><span class="badge" id="ai-badge-builtin" hidden></span>
+              <b id="ai-builtin-name" data-i18n="aiBuiltin">Chrome built-in</b><small id="ai-builtin-desc" data-i18n="aiBuiltinText">Free, on this computer</small>
+            </label>
+            <label class="engine">
+              <input type="radio" name="ai.engine" value="chatgpt" aria-labelledby="ai-chatgpt-name" aria-describedby="ai-chatgpt-text ai-badge-chatgpt">
+              <span class="tile"><i data-icon="spark"></i></span><span class="badge" id="ai-badge-chatgpt" hidden></span>
+              <b id="ai-chatgpt-name" data-i18n="aiPlan">ChatGPT plan</b><small id="ai-chatgpt-text" data-i18n="aiPlanText">Your plan, no API key</small>
+            </label>
+            <label class="engine">
+              <input type="radio" name="ai.engine" value="openai" aria-labelledby="ai-openai-name" aria-describedby="ai-openai-text ai-badge-openai">
+              <span class="tile"><i data-icon="key"></i></span><span class="badge" id="ai-badge-openai" hidden></span>
+              <b id="ai-openai-name">OpenAI</b><small id="ai-openai-text" data-i18n="aiCloudText" data-i18n-arg="GPT">GPT · API key</small>
+            </label>
+            <label class="engine">
+              <input type="radio" name="ai.engine" value="anthropic" aria-labelledby="ai-anthropic-name" aria-describedby="ai-anthropic-text ai-badge-anthropic">
+              <span class="tile"><i data-icon="key"></i></span><span class="badge" id="ai-badge-anthropic" hidden></span>
+              <b id="ai-anthropic-name">Anthropic</b><small id="ai-anthropic-text" data-i18n="aiCloudText" data-i18n-arg="Claude">Claude · API key</small>
+            </label>
+            <label class="engine">
+              <input type="radio" name="ai.engine" value="zai" aria-labelledby="ai-zai-name" aria-describedby="ai-zai-text ai-badge-zai">
+              <span class="tile"><i data-icon="key"></i></span><span class="badge" id="ai-badge-zai" hidden></span>
+              <b id="ai-zai-name">Z.ai</b><small id="ai-zai-text" data-i18n="aiZaiText">GLM · API key, some free</small>
+            </label>
+          </div>
+          <!-- what the engine picked needs: its status, a key or a sign-in, its model -->
+          <div class="detail" id="ai-detail">
+            <!-- the built-in model: ready, to download once, downloading, or not on this computer -->
+            <div class="row" id="ai-builtin" hidden>
+              <span class="text" id="ai-builtin-status">
+                <b class="state" id="ai-builtin-title" data-state="wait" aria-live="polite" data-i18n="aiChecking">Checking…</b>
+                <small id="ai-builtin-text" hidden></small>
+                <span class="meter" id="ai-meter" hidden><progress id="ai-progress" max="100" aria-labelledby="ai-builtin-title"></progress><small id="ai-percent"></small></span>
+                <small id="ai-builtin-lang" hidden></small>
+                <small class="note" id="ai-builtin-error" role="alert" hidden></small>
+              </span>
+              <button type="button" class="btn primary" id="ai-download" hidden><i data-icon="download"></i><span data-i18n="aiDownload">Download</span></button>
+            </div>
+            <!-- the ChatGPT plan: a sign-in instead of a key; signed in, its account and its usage -->
+            <div class="row" id="ai-plan" hidden>
+              <span class="text">
+                <b class="state" id="ai-plan-title" data-state="none" data-i18n="aiPlanUse">Use your ChatGPT plan</b>
+                <small id="ai-plan-text" data-i18n="aiPlanUseText">Complete eligible AI requests in Mail Deck with usage included in your ChatGPT plan.</small>
+                <small id="ai-plan-plus" data-i18n="aiPlanPlus">ChatGPT Plus has a five-hour usage limit, shared across all the apps that use it.</small>
+                <small class="wait" id="ai-plan-wait" aria-live="polite" hidden></small>
+                <small class="note" id="ai-plan-note" role="alert" hidden></small>
+              </span>
+              <span class="inline">
+                <button type="button" class="btn primary" id="ai-plan-allow" data-i18n="aiAllow" hidden>Allow access</button>
+                <button type="button" class="btn primary" id="ai-signin" data-i18n="aiSignIn">Continue with ChatGPT</button>
+                <button type="button" class="btn" id="ai-signout" data-i18n="aiSignOut" hidden>Sign out</button>
+              </span>
+            </div>
+            <!-- a provider without a key: the key, its page, and what it costs -->
+            <div class="row stack" id="ai-key-row" hidden>
+              <span class="text">
+                <b id="ai-key-label">API key</b>
+                <small id="ai-key-text"><span id="ai-key-plan"></span> <a id="ai-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" data-i18n="aiGetKey">Get a key</a></small>
+              </span>
+              <span class="key">
+                <span class="field">
+                  <i data-icon="key"></i>
+                  <input type="password" id="ai-key" autocomplete="off" spellcheck="false" autocapitalize="off" dir="ltr" aria-labelledby="ai-key-label" aria-describedby="ai-key-text ai-key-hint ai-error">
+                  <button type="button" class="icon-btn" id="ai-key-show" aria-controls="ai-key" aria-pressed="false" aria-label="Show" data-i18n-label="aiShow" title="Show"><i data-icon="eye" class="eye"></i><i data-icon="eyeOff" class="eye-off"></i></button>
+                </span>
+                <button type="button" class="btn primary" id="ai-connect" data-i18n="aiConnect">Connect</button>
+              </span>
+              <small class="tip" id="ai-key-hint" hidden></small>
+              <small class="wait" id="ai-key-wait" aria-live="polite" hidden></small>
+              <small class="note error" id="ai-error" role="alert" hidden></small>
+            </div>
+            <!-- a provider with a key: connected, or without the access Chrome gave it -->
+            <div class="row" id="ai-connected" hidden>
+              <span class="text">
+                <b class="state" id="ai-connected-title" data-state="ok">Connected</b>
+                <small id="ai-connected-text" data-i18n="aiConnectedText">The key stays on this computer: never in backups or Chrome sync.</small>
+                <small class="note" id="ai-access" hidden></small>
+              </span>
+              <span class="inline">
+                <button type="button" class="btn primary" id="ai-allow" data-i18n="aiAllow" hidden>Allow access</button>
+                <button type="button" class="btn" id="ai-disconnect" data-i18n="aiDisconnect">Disconnect</button>
+              </span>
+            </div>
+            <label class="row" id="ai-model-row" hidden>
+              <span class="text"><b data-i18n="aiModel">Model</b><small id="ai-model-text" data-i18n="aiModelText">Larger models summarize better; smaller ones answer faster and cost less.</small><small class="note" id="ai-model-note" hidden></small></span>
+              <select id="ai-model" aria-describedby="ai-model-text ai-model-note"></select>
+            </label>
+          </div>
+          <label class="row" data-ai>
+            <span class="text"><b data-i18n="aiSummary">Summary in the reader</b><small data-i18n="aiSummaryText">Key points, things to do and dates, above the message.</small></span>
+            <select data-key="ai.summary">
+              <option value="off" data-i18n="aiSummaryOff">Off</option>
+              <option value="click" data-i18n="aiSummaryClick">On click</option>
+              <option value="auto" data-i18n="aiSummaryAuto">Automatically for long mail</option>
+            </select>
+          </label>
+          <label class="row" data-ai>
+            <span class="text"><b data-i18n="aiReply">Sort unread mail</b><small data-i18n="aiReplyText">Finds mail waiting for your reply, important mail, and newsletters you can clear in one go.</small></span>
+            <input type="checkbox" role="switch" data-key="ai.reply">
+          </label>
+          <!-- what the panel offers while the AI is off: shown then, in place of the rows above -->
+          <label class="row" id="ai-buttons-row">
+            <span class="text"><b data-i18n="aiButtons">Keep AI buttons in the panel</b><small data-i18n="aiButtonsText">The summary, reply and assistant buttons stay in the panel and offer to turn it on.</small></span>
+            <input type="checkbox" role="switch" data-key="ai.buttons">
+          </label>
+        </div>
+        <p class="callout" id="ai-privacy-note" hidden><i data-icon="shield"></i><span id="ai-privacy"></span></p>
+      </section>
+      <!-- once, after the first sign-in with the ChatGPT plan -->
+      <dialog class="dialog" id="ai-welcome" aria-labelledby="ai-welcome-title" aria-describedby="ai-welcome-text">
+        <h3 id="ai-welcome-title" data-i18n="aiWelcome">You’re using your ChatGPT plan</h3>
+        <p id="ai-welcome-text" data-i18n="aiWelcomeText">Eligible AI requests in Mail Deck use the usage included in your ChatGPT plan. Manage usage in your ChatGPT settings.</p>
+        <div class="actions"><button type="button" class="btn primary" id="ai-welcome-ok" data-i18n="aiGotIt">Got it</button></div>
+      </dialog>
+
+      <section id="panel" aria-labelledby="panel-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="panel-title" data-i18n="panel">Panel</h2><p class="lede" data-i18n="panelLede">How the panel looks and behaves as you read.</p></div>
+          <button type="button" class="more" aria-expanded="false"><span data-i18n="more">More options</span><span class="n"></span><i data-icon="down"></i></button>
+        </div>
+        <div class="card">
+          <div class="row">
+            <span class="text"><b id="text-size-label" data-i18n="textSize">Text size</b></span>
+            <span class="segmented" role="radiogroup" aria-labelledby="text-size-label">
+              <label><input type="radio" name="panelScale" value="0.9" data-key="panelScale" data-type="number"><span>90%</span></label>
+              <label><input type="radio" name="panelScale" value="1" data-key="panelScale" data-type="number"><span>100%</span></label>
+              <label><input type="radio" name="panelScale" value="1.1" data-key="panelScale" data-type="number"><span>110%</span></label>
+              <label><input type="radio" name="panelScale" value="1.25" data-key="panelScale" data-type="number"><span>125%</span></label>
+            </span>
+          </div>
+          <label class="row">
+            <span class="text"><b data-i18n="readOnOpen">Mark as read when opened in the panel</b><small data-i18n="readOnOpenText">Otherwise mail stays unread until you act on it.</small></span>
+            <input type="checkbox" role="switch" data-key="readOnOpen">
+          </label>
+          <label class="row">
+            <span class="text"><b data-i18n="senderLogos">Show sender logos</b><small data-i18n="senderLogosText">Logos of Gmail senders come from Google's icon service, which is sent the sender's domain.</small></span>
+            <input type="checkbox" role="switch" data-key="senderLogos">
+          </label>
+          <div class="row">
+            <span class="text"><b data-i18n="shortcut">Open the panel with</b></span>
+            <span class="inline">
+              <span id="shortcut"></span>
+              <button type="button" class="btn" id="shortcut-change" data-i18n="shortcutChange">Change</button>
+            </span>
+          </div>
+          <label class="row adv">
+            <span class="text"><b data-i18n="autoAdvance">Open the next message after an action</b><small data-i18n="autoAdvanceText">After you archive, delete or mark an open message as read, the next one opens instead of the list.</small></span>
+            <input type="checkbox" role="switch" data-key="autoAdvance">
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="readOnArchive">Archiving also marks mail as read</b></span>
+            <input type="checkbox" role="switch" data-key="doReadOnArchive">
+          </label>
+        </div>
+      </section>
+
+      <section id="toolbar" aria-labelledby="toolbar-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="toolbar-title" data-i18n="toolbar">Toolbar icon</h2><p class="lede" data-i18n="toolbarLede">The count on the icon, and what a click does.</p></div>
+          <button type="button" class="more" aria-expanded="false"><span data-i18n="more">More options</span><span class="n"></span><i data-icon="down"></i></button>
+        </div>
+        <div class="card">
+          <label class="row">
+            <span class="text"><b data-i18n="badge">Show the unread count</b></span>
+            <input type="checkbox" role="switch" data-key="badge">
+          </label>
+          <div class="row" data-needs="badge">
+            <span class="text"><b data-i18n="badgeColour">Count colour</b></span>
+            <span class="swatches" id="swatches" role="radiogroup" aria-label="Count colour" data-i18n-label="badgeColour"></span>
+          </div>
+          <label class="row adv" data-needs="badge">
+            <span class="text"><b data-i18n="badgeCount">The count shows</b><small data-i18n="badgeCountText">Opening the panel sets it back to zero. The panel itself still lists all unread mail.</small></span>
+            <select data-key="badge.count">
+              <option value="all" data-i18n="badgeAll">All unread mail</option>
+              <option value="new" data-i18n="badgeNew">Mail since the panel was last opened</option>
+            </select>
+          </label>
+          <label class="row adv" data-needs="badge">
+            <span class="text"><b data-i18n="minimal">Shorten counts over 999</b><small data-i18n="minimalText">Shows &gt;1K instead of the exact number.</small></span>
+            <input type="checkbox" role="switch" data-key="minimal">
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="clickIcon">Clicking the icon</b></span>
+            <select data-key="oldFashion" data-type="number">
+              <option value="0" data-i18n="clickPanel">Opens the panel</option>
+              <option value="1" data-i18n="clickOne">Opens Gmail when there is one inbox</option>
+              <option value="2" data-i18n="clickGmail">Opens Gmail</option>
+            </select>
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="smartOpen">When the icon opens Gmail, go to the newest unread email</b></span>
+            <input type="checkbox" role="switch" data-key="smartOpen">
+          </label>
+        </div>
+      </section>
+
+      <section id="opening" aria-labelledby="opening-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="opening-title" data-i18n="opening">Opening Gmail</h2><p class="lede" data-i18n="openingLede">Where Gmail opens from the panel and notifications.</p></div>
+          <button type="button" class="more" aria-expanded="false"><span data-i18n="more">More options</span><span class="n"></span><i data-icon="down"></i></button>
+        </div>
+        <div class="card">
+          <div class="row">
+            <span class="text"><b id="open-in-label" data-i18n="openIn">Open Gmail in</b></span>
+            <span class="segmented" role="radiogroup" aria-labelledby="open-in-label">
+              <label><input type="radio" name="open" value="tab"><span data-i18n="newTab">New tab</span></label>
+              <label><input type="radio" name="open" value="current"><span data-i18n="thisTab">This tab</span></label>
+              <label><input type="radio" name="open" value="window"><span data-i18n="newWindow">New window</span></label>
+            </span>
+          </div>
+          <label class="row adv">
+            <span class="text"><b data-i18n="reuse">Switch to Gmail when it is already open</b><small data-i18n="reuseText">Instead of opening another copy.</small></span>
+            <input type="checkbox" role="switch" data-key="ignoreOpens" data-invert>
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="everyWindow">Look for it in every window</b><small data-i18n="everyWindowText">Otherwise only in the current window.</small></span>
+            <input type="checkbox" role="switch" data-key="searchMode" data-invert>
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="background">Open in the background</b></span>
+            <input type="checkbox" role="switch" data-key="background">
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="nextTo">Open next to the current tab</b></span>
+            <input type="checkbox" role="switch" data-key="relatedToCurrent">
+          </label>
+          <label class="row adv">
+            <span class="text"><b data-i18n="inFront">Tell me when Gmail is already in front</b></span>
+            <input type="checkbox" role="switch" data-key="onGmailNotification">
+          </label>
+        </div>
+      </section>
+
+      <section id="backup" aria-labelledby="backup-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="backup-title" data-i18n="backup">Backup</h2><p class="lede" data-i18n="backupLede">Keep, move or reset your settings.</p></div>
+        </div>
+        <div class="card">
+          <label class="row">
+            <span class="text"><b data-i18n="sync">Keep a copy in Chrome sync</b><small data-i18n="syncText">A computer signed in to the same Chrome profile offers to restore it.</small></span>
+            <input type="checkbox" role="switch" data-key="sync.settings">
+          </label>
+          <div class="row">
+            <span class="text"><b data-i18n="file">Settings file</b><small data-i18n="fileText">Save your settings to a file or load them from one.</small></span>
+            <span class="inline">
+              <button type="button" class="btn" id="export"><i data-icon="download"></i><span data-i18n="export">Export</span></button>
+              <button type="button" class="btn" id="import"><i data-icon="upload"></i><span data-i18n="import">Import</span></button>
+            </span>
+          </div>
+          <div class="row">
+            <span class="text"><b data-i18n="reset">Reset all settings</b><small data-i18n="resetText">Every setting goes back to its default. Inbox switches and labels too, and AI keys are forgotten.</small></span>
+            <button type="button" class="btn danger" id="reset" data-i18n="resetDo">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="help" aria-labelledby="help-title">
+        <div class="sh">
+          <div class="sh-text"><h2 id="help-title" data-i18n="help">Help</h2><p class="lede" data-i18n="helpLede">Check that everything works, or tell us what doesn’t.</p></div>
+        </div>
+        <div class="card">
+          <div class="row" id="check">
+            <span class="text"><b data-i18n="diag">Check Mail Deck</b><small data-i18n="diagText">Asks Gmail now, for every signed-in inbox. Nothing in your mail changes.</small></span>
+            <button type="button" class="btn" id="diag-run" data-i18n="diagRun">Run the check</button>
+          </div>
+          <div class="diag" id="diag" hidden></div>
+          <div class="row about">
+            <span class="text"><b>Mail Deck <span class="ver" id="help-version"></span></b></span>
+            <span class="inline wrap">
+              <a class="btn sm" href="https://nord-express.github.io/mail-deck/" target="_blank"><span data-i18n="linkSite">Website</span><i data-icon="open"></i></a>
+              <a class="btn sm" href="https://nord-express.github.io/mail-deck/privacy.html" target="_blank"><span data-i18n="linkPrivacy">Privacy</span><i data-icon="open"></i></a>
+              <a class="btn sm" href="https://github.com/nord-express/mail-deck/issues" target="_blank"><span data-i18n="linkReport">Report a problem</span><i data-icon="open"></i></a>
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <!-- a question before a change that cannot be undone: a reset, an import -->
+  <dialog class="dialog" id="ask" aria-labelledby="ask-title" aria-describedby="ask-text">
+    <h3 id="ask-title"></h3>
+    <p id="ask-text"></p>
+    <div class="actions">
+      <button type="button" class="btn" id="ask-no" data-i18n="cancel">Cancel</button>
+      <button type="button" class="btn primary" id="ask-yes"></button>
+    </div>
+  </dialog>
   <input type="file" accept="audio/*" id="file" hidden>
   <input type="file" accept=".json,application/json" id="settings-file" hidden>
   <div class="toast" id="toast" role="status"></div>
@@ -508,7 +605,9 @@
   <script src="/core/services/proton.js"></script>
   <script src="/core/services/yandex.js"></script>
   <script src="/core/services/mailru.js"></script>
+  <script src="/core/utils/quiet.js"></script>
   <script src="../ai/ai.js"></script>
   <script src="index.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

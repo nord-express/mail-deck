@@ -12,7 +12,7 @@
         "message": "仅“主要”标签页"
     },
     "opt_quietHint": {
-        "message": "关闭通知的邮箱仍会显示在面板和计数中，但不会打扰你。"
+        "message": "静音：显示在面板和计数中，但没有通知和声音"
     },
     "opt_primaryHint": {
         "message": "“仅主要标签页”读取的是 Google 未公开说明的 Gmail 订阅源，可能随时失效。"
@@ -36,13 +36,13 @@
         "message": "整个周末也免打扰"
     },
     "opt_quietWeekendText": {
-        "message": "周末是哪几天取决于你所在的地区。"
+        "message": "$1，取决于你所在的地区。"
     },
     "opt_never": {
         "message": "发件人或主题包含以下内容时不通知"
     },
     "opt_neverText": {
-        "message": "每行一个词或地址。邮件仍会显示在面板中，只是没有通知和声音。"
+        "message": "邮件仍会显示在面板中，只是没有通知和声音。"
     },
     "opt_only": {
         "message": "仅当发件人或主题包含以下内容时通知"
@@ -72,7 +72,7 @@
         "message": "更改"
     },
     "opt_backup": {
-        "message": "你的设置"
+        "message": "备份"
     },
     "opt_sync": {
         "message": "在 Chrome 同步中保留一份副本"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "更改会立即保存。"
-    },
-    "opt_scopeLabel": {
-        "message": "显示的设置"
-    },
-    "opt_essentials": {
-        "message": "常用"
-    },
-    "opt_everything": {
-        "message": "全部"
     },
     "opt_checking": {
         "message": "检查"
@@ -204,10 +195,10 @@
         "message": "清除"
     },
     "opt_offHint": {
-        "message": "关闭的邮箱会从面板、计数和通知中移除。"
+        "message": "不显示在面板、计数和通知中"
     },
     "opt_labelsHint": {
-        "message": "标签：关注这些 Gmail 标签而不是收件箱，用逗号分隔，例如："
+        "message": "代替收件箱关注的 Gmail 标签。每输入一个按一次 Enter。"
     },
     "opt_services": {
         "message": "其他邮箱"
@@ -270,10 +261,10 @@
         "message": "删除"
     },
     "opt_combined": {
-        "message": "将多封新邮件合并为一条通知"
+        "message": "将新邮件合并为一条通知"
     },
     "opt_threatAsNew": {
-        "message": "只通知在此时间内收到的邮件"
+        "message": "只通知比此更新的邮件："
     },
     "opt_threatAsNewText": {
         "message": "更早的未读邮件保持安静。也适用于声音。"
@@ -372,7 +363,7 @@
         "message": "Gmail 发件人的徽标来自 Google 的图标服务，发件人的域名会发送给该服务。"
     },
     "opt_opening": {
-        "message": "打开邮件"
+        "message": "打开 Gmail"
     },
     "opt_openIn": {
         "message": "在何处打开 Gmail"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Gmail 已在前台时提示我"
     },
-    "opt_actions": {
-        "message": "操作"
-    },
     "opt_readOnArchive": {
         "message": "归档时同时标为已读"
     },
     "opt_diag": {
-        "message": "诊断"
-    },
-    "opt_diagRow": {
-        "message": "检查 Mail Deck 与你的邮箱是否正常配合"
+        "message": "检查 Mail Deck"
     },
     "opt_diagText": {
         "message": "立即为每个已登录邮箱询问 Gmail。你的邮件不会有任何改变。"
@@ -426,7 +411,7 @@
         "message": "开始检查"
     },
     "opt_reset": {
-        "message": "恢复默认设置"
+        "message": "重置所有设置"
     },
     "opt_saved": {
         "message": "已保存"
@@ -450,13 +435,13 @@
         "message": "删除此规则"
     },
     "opt_noInboxes": {
-        "message": "首次检查后，你的邮箱会显示在这里。"
+        "message": "请在此浏览器中登录 Gmail。下次检查时，Mail Deck 会找到你登录的每个账号。"
     },
     "opt_showInbox": {
         "message": "显示 $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "标签：inbox"
+        "message": "添加标签"
     },
     "opt_labelsFor": {
         "message": "$1 的标签"
@@ -1588,7 +1573,7 @@
         "message": "查找位置"
     },
     "opt_serviceAccess": {
-        "message": "请重新开启以授予其访问权限。"
+        "message": "Chrome 未授予 Mail Deck 访问 $1 的权限。"
     },
     "panel_copyCode": {
         "message": "复制验证码"
@@ -2161,25 +2146,25 @@
         "message": "关闭"
     },
     "opt_aiOffText": {
-        "message": "没有助手、摘要和整理功能。不会向任何地方发送任何内容。"
+        "message": "不发送任何内容"
     },
     "opt_aiBuiltin": {
         "message": "Chrome 内置"
     },
     "opt_aiBuiltinText": {
-        "message": "在这台电脑上运行：免费且私密，但并非每台电脑都有。"
+        "message": "免费，在这台电脑上运行"
     },
     "opt_aiPlan": {
         "message": "ChatGPT 套餐"
     },
     "opt_aiPlanText": {
-        "message": "使用你已有的 ChatGPT 套餐，无需 API 密钥。"
+        "message": "你的套餐，无需 API 密钥"
     },
     "opt_aiCloudText": {
-        "message": "$1 模型，按用量付费。"
+        "message": "$1 · API 密钥"
     },
     "opt_aiZaiText": {
-        "message": "GLM 模型，按用量付费；部分免费。"
+        "message": "GLM · API 密钥，部分免费"
     },
     "opt_aiChecking": {
         "message": "正在检查…"
@@ -2365,7 +2350,7 @@
         "message": "找出等待你回复的邮件、重要邮件，以及可一次清理掉的订阅邮件。"
     },
     "opt_aiButtons": {
-        "message": "AI 助手关闭时也显示 AI 按钮"
+        "message": "在面板中保留 AI 按钮"
     },
     "opt_aiButtonsText": {
         "message": "摘要、回复和助手按钮会保留在面板中，并提示你开启 AI 助手。"
@@ -2378,6 +2363,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "请求从你的浏览器直接发送到 OpenAI，并使用你登录的 ChatGPT 账号。Mail Deck 没有服务器。摘要、回复或提问会发送该邮件的正文；助手会发送你的请求和它找到的邮件；“整理未读邮件”会发送未读邮件的发件人、主题和预览。"
+    },
+    "opt_skip": {
+        "message": "跳到设置"
+    },
+    "opt_sections": {
+        "message": "分区"
+    },
+    "opt_search": {
+        "message": "搜索设置"
+    },
+    "opt_noMatch": {
+        "message": "没有与“$1”匹配的设置"
+    },
+    "opt_clearSearch": {
+        "message": "清除搜索"
+    },
+    "opt_mailboxes": {
+        "message": "邮箱"
+    },
+    "opt_mailboxesLede": {
+        "message": "Mail Deck 关注的邮箱，以及检查的频率。"
+    },
+    "opt_notificationsLede": {
+        "message": "弹出通知、提示音，以及何时保持安静。"
+    },
+    "opt_aiLede": {
+        "message": "摘要、整理和助手，由你选择的引擎完成。"
+    },
+    "opt_panelLede": {
+        "message": "阅读时面板的外观和行为。"
+    },
+    "opt_toolbarLede": {
+        "message": "图标上的计数，以及点击它会做什么。"
+    },
+    "opt_openingLede": {
+        "message": "从面板和通知打开 Gmail 的位置。"
+    },
+    "opt_backupLede": {
+        "message": "保留、迁移或重置你的设置。"
+    },
+    "opt_help": {
+        "message": "帮助"
+    },
+    "opt_helpLede": {
+        "message": "检查一切是否正常，或告诉我们哪里有问题。"
+    },
+    "opt_more": {
+        "message": "更多选项"
+    },
+    "opt_popups": {
+        "message": "弹出通知"
+    },
+    "opt_wordRules": {
+        "message": "规则"
+    },
+    "opt_saving": {
+        "message": "正在保存…"
+    },
+    "opt_savedSync": {
+        "message": "已保存 · 已同步到 Chrome"
+    },
+    "opt_saveFailed": {
+        "message": "未保存：$1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "还没有邮箱"
+    },
+    "opt_signInGmail": {
+        "message": "登录 Gmail"
+    },
+    "opt_checkNow": {
+        "message": "立即检查"
+    },
+    "opt_reading": {
+        "message": "正在读取 $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 需要访问权限"
+    },
+    "opt_addWord": {
+        "message": "添加词语或地址"
+    },
+    "opt_removeToken": {
+        "message": "移除 $1"
+    },
+    "opt_aiOffChip": {
+        "message": "AI 已关闭"
+    },
+    "opt_aiSetup": {
+        "message": "AI 需要设置"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "已登录"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "已连接"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "需要访问权限"
+    },
+    "opt_aiCheckingKey": {
+        "message": "正在向 $1 验证密钥…"
+    },
+    "opt_quietChip": {
+        "message": "免打扰 $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "正在免打扰"
+    },
+    "opt_quietUntil": {
+        "message": "正在免打扰 · 到 $1"
+    },
+    "opt_quietNext": {
+        "message": "$1 开始"
+    },
+    "opt_quietWeekendNow": {
+        "message": "正在免打扰 · 整个周末"
+    },
+    "opt_pausedUntil": {
+        "message": "已暂停到 $1"
+    },
+    "opt_paused": {
+        "message": "通知已暂停"
+    },
+    "opt_resume": {
+        "message": "恢复通知"
+    },
+    "opt_pinHint": {
+        "message": "将 Mail Deck 固定到工具栏，一眼就能看到计数：点击地址栏旁的拼图图标，再点击 Mail Deck 旁的图钉。"
+    },
+    "opt_tokenName": {
+        "message": "发件人姓名"
+    },
+    "opt_tokenEmail": {
+        "message": "发件人地址"
+    },
+    "opt_tokenTitle": {
+        "message": "主题"
+    },
+    "opt_tokenSummary": {
+        "message": "邮件正文"
+    },
+    "opt_tokenAccount": {
+        "message": "邮箱"
+    },
+    "opt_tokenBreak": {
+        "message": "换行"
+    },
+    "opt_preview": {
+        "message": "预览"
+    },
+    "opt_sampleName": {
+        "message": "王小丽"
+    },
+    "opt_sampleSubject": {
+        "message": "周五一起吃午饭？"
+    },
+    "opt_sampleSummary": {
+        "message": "中午有空吗？办公室附近新开了一家店，我想去试试。"
+    },
+    "opt_resetText": {
+        "message": "所有设置都会恢复为默认值，包括邮箱开关和标签，AI 密钥也会被删除。"
+    },
+    "opt_resetDo": {
+        "message": "重置"
+    },
+    "opt_cancel": {
+        "message": "取消"
+    },
+    "opt_replace": {
+        "message": "替换"
+    },
+    "opt_diagPassed": {
+        "message": "全部检查通过：$1"
+    },
+    "opt_diagFailed": {
+        "message": "发现的问题：$1"
+    },
+    "opt_diagCopy": {
+        "message": "复制报告"
+    },
+    "opt_diagCopied": {
+        "message": "报告已复制"
     },
     "opt_aiWelcome": {
         "message": "你正在使用 ChatGPT 套餐"

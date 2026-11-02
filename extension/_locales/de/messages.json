@@ -12,7 +12,7 @@
         "message": "Nur „Allgemein“"
     },
     "opt_quietHint": {
-        "message": "Ein Postfach ohne Benachrichtigungen bleibt im Panel und im Zähler, stört aber nicht."
+        "message": "Still: im Panel und im Zähler, ohne Pop-ups und Ton"
     },
     "opt_primaryHint": {
         "message": "„Allgemein“ liest einen Gmail-Feed, den Google nicht dokumentiert, und kann deshalb aufhören zu funktionieren."
@@ -33,16 +33,16 @@
         "message": "Ende"
     },
     "opt_quietWeekend": {
-        "message": "Auch das ganze Wochenende ruhig"
+        "message": "Auch das ganze Wochenende"
     },
     "opt_quietWeekendText": {
-        "message": "Welche Tage Wochenende sind, richtet sich nach deiner Region."
+        "message": "$1, wie in deiner Region üblich."
     },
     "opt_never": {
         "message": "Nie benachrichtigen, wenn Absender oder Betreff enthält"
     },
     "opt_neverText": {
-        "message": "Ein Wort oder eine Adresse pro Zeile. Die E-Mail erscheint trotzdem im Panel, nur ohne Benachrichtigung und Ton."
+        "message": "Die Mail erscheint trotzdem im Panel, nur ohne Benachrichtigung und Ton."
     },
     "opt_only": {
         "message": "Nur benachrichtigen, wenn Absender oder Betreff enthält"
@@ -72,7 +72,7 @@
         "message": "Ändern"
     },
     "opt_backup": {
-        "message": "Deine Einstellungen"
+        "message": "Sicherung"
     },
     "opt_sync": {
         "message": "Eine Kopie in der Chrome-Synchronisierung behalten"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Änderungen werden sofort gespeichert."
-    },
-    "opt_scopeLabel": {
-        "message": "Angezeigte Einstellungen"
-    },
-    "opt_essentials": {
-        "message": "Wichtigste"
-    },
-    "opt_everything": {
-        "message": "Alle"
     },
     "opt_checking": {
         "message": "Abruf"
@@ -204,10 +195,10 @@
         "message": "Vergessen"
     },
     "opt_offHint": {
-        "message": "Ein ausgeschaltetes Postfach verschwindet aus dem Panel, dem Zähler und den Benachrichtigungen."
+        "message": "Nicht im Panel, im Zähler und in den Benachrichtigungen"
     },
     "opt_labelsHint": {
-        "message": "Labels: diese Gmail-Labels statt des Posteingangs beobachten, durch Kommas getrennt, zum Beispiel:"
+        "message": "Gmail-Labels, die statt des Posteingangs beobachtet werden. Drücke nach jedem Enter."
     },
     "opt_services": {
         "message": "Weitere E-Mail-Dienste"
@@ -270,10 +261,10 @@
         "message": "Löschen"
     },
     "opt_combined": {
-        "message": "Mehrere neue Mails in einer Benachrichtigung zusammenfassen"
+        "message": "Neue Mails in einer Benachrichtigung zusammenfassen"
     },
     "opt_threatAsNew": {
-        "message": "Nur über Mails benachrichtigen, die eingegangen sind innerhalb von"
+        "message": "Nur über Mails benachrichtigen, die neuer sind als"
     },
     "opt_threatAsNewText": {
         "message": "Ältere ungelesene Mails bleiben still. Gilt auch für den Ton."
@@ -372,7 +363,7 @@
         "message": "Die Logos von Gmail-Absendern kommen von Googles Symboldienst, an den die Domain des Absenders geht."
     },
     "opt_opening": {
-        "message": "Mail öffnen"
+        "message": "Gmail öffnen"
     },
     "opt_openIn": {
         "message": "Gmail öffnen in"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Hinweis, wenn Gmail schon im Vordergrund ist"
     },
-    "opt_actions": {
-        "message": "Aktionen"
-    },
     "opt_readOnArchive": {
         "message": "Archivieren markiert die Mail auch als gelesen"
     },
     "opt_diag": {
-        "message": "Diagnose"
-    },
-    "opt_diagRow": {
-        "message": "Prüfen, wie Mail Deck mit deinen Postfächern arbeitet"
+        "message": "Mail Deck prüfen"
     },
     "opt_diagText": {
         "message": "Fragt Gmail jetzt, für jedes angemeldete Postfach. An deinen Mails ändert sich nichts."
@@ -426,7 +411,7 @@
         "message": "Prüfung starten"
     },
     "opt_reset": {
-        "message": "Auf Standard zurücksetzen"
+        "message": "Alle Einstellungen zurücksetzen"
     },
     "opt_saved": {
         "message": "Gespeichert"
@@ -450,13 +435,13 @@
         "message": "Diese Regel entfernen"
     },
     "opt_noInboxes": {
-        "message": "Deine Postfächer erscheinen hier nach dem ersten Abruf."
+        "message": "Melde dich in diesem Browser bei Gmail an. Beim nächsten Abruf findet Mail Deck jedes angemeldete Konto."
     },
     "opt_showInbox": {
         "message": "$1 anzeigen"
     },
     "opt_labelsPlaceholder": {
-        "message": "Labels: inbox"
+        "message": "Label hinzufügen"
     },
     "opt_labelsFor": {
         "message": "Labels für $1"
@@ -1584,7 +1569,7 @@
         "message": "Suchen in"
     },
     "opt_serviceAccess": {
-        "message": "Schalte ihn erneut ein, um ihm Zugriff zu geben."
+        "message": "Chrome hat Mail Deck keinen Zugriff auf $1 gegeben."
     },
     "panel_copyCode": {
         "message": "Code kopieren"
@@ -2157,25 +2142,25 @@
         "message": "Aus"
     },
     "opt_aiOffText": {
-        "message": "Kein Assistent, keine Zusammenfassungen, keine Sortierung. Nichts wird irgendwohin gesendet."
+        "message": "Nichts wird irgendwohin gesendet"
     },
     "opt_aiBuiltin": {
         "message": "In Chrome integriert"
     },
     "opt_aiBuiltinText": {
-        "message": "Läuft auf diesem Computer: kostenlos und privat, aber nicht auf jedem Computer."
+        "message": "Kostenlos, auf diesem Computer"
     },
     "opt_aiPlan": {
         "message": "ChatGPT-Abo"
     },
     "opt_aiPlanText": {
-        "message": "Dein vorhandenes ChatGPT-Abo, ohne API-Schlüssel."
+        "message": "Dein Abo, ohne API-Schlüssel"
     },
     "opt_aiCloudText": {
-        "message": "$1-Modelle, Abrechnung nach Nutzung."
+        "message": "$1 · API-Schlüssel"
     },
     "opt_aiZaiText": {
-        "message": "GLM-Modelle, Abrechnung nach Nutzung; einige sind kostenlos."
+        "message": "GLM · API-Schlüssel, einige kostenlos"
     },
     "opt_aiChecking": {
         "message": "Wird geprüft…"
@@ -2361,7 +2346,7 @@
         "message": "Findet Mails, die auf deine Antwort warten, wichtige Mails und Newsletter, die du auf einmal aufräumen kannst."
     },
     "opt_aiButtons": {
-        "message": "KI-Schaltflächen zeigen, wenn der Assistent aus ist"
+        "message": "KI-Schaltflächen im Panel behalten"
     },
     "opt_aiButtonsText": {
         "message": "Die Schaltflächen für Zusammenfassung, Antwort und Assistent bleiben im Panel und bieten an, ihn einzuschalten."
@@ -2374,6 +2359,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "Anfragen gehen direkt von deinem Browser an OpenAI, angemeldet mit deinem ChatGPT-Konto. Mail Deck hat keine Server. Eine Zusammenfassung, eine Antwort oder eine Frage sendet den Text dieser Nachricht; der Assistent sendet deine Anfrage und die gefundenen Mails; „Ungelesene Mails sortieren“ sendet Absender, Betreff und Vorschau ungelesener Mails."
+    },
+    "opt_skip": {
+        "message": "Zu den Einstellungen springen"
+    },
+    "opt_sections": {
+        "message": "Bereiche"
+    },
+    "opt_search": {
+        "message": "Einstellungen durchsuchen"
+    },
+    "opt_noMatch": {
+        "message": "Keine Einstellung passt zu „$1“"
+    },
+    "opt_clearSearch": {
+        "message": "Suche löschen"
+    },
+    "opt_mailboxes": {
+        "message": "Postfächer"
+    },
+    "opt_mailboxesLede": {
+        "message": "Die Postfächer, die Mail Deck beobachtet, und wie oft es nachsieht."
+    },
+    "opt_notificationsLede": {
+        "message": "Pop-ups, Töne und wann Ruhe sein soll."
+    },
+    "opt_aiLede": {
+        "message": "Zusammenfassungen, Sortierung und der Assistent, mit der KI deiner Wahl."
+    },
+    "opt_panelLede": {
+        "message": "Wie das Panel aussieht und sich beim Lesen verhält."
+    },
+    "opt_toolbarLede": {
+        "message": "Die Zahl auf dem Symbol und was ein Klick darauf tut."
+    },
+    "opt_openingLede": {
+        "message": "Wo sich Gmail aus dem Panel und den Benachrichtigungen öffnet."
+    },
+    "opt_backupLede": {
+        "message": "Deine Einstellungen sichern, mitnehmen oder zurücksetzen."
+    },
+    "opt_help": {
+        "message": "Hilfe"
+    },
+    "opt_helpLede": {
+        "message": "Prüfe, ob alles funktioniert, oder sag uns, was nicht geht."
+    },
+    "opt_more": {
+        "message": "Weitere Optionen"
+    },
+    "opt_popups": {
+        "message": "Pop-ups"
+    },
+    "opt_wordRules": {
+        "message": "Regeln"
+    },
+    "opt_saving": {
+        "message": "Wird gespeichert…"
+    },
+    "opt_savedSync": {
+        "message": "Gespeichert · in der Chrome-Synchronisierung"
+    },
+    "opt_saveFailed": {
+        "message": "Nicht gespeichert: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Noch keine Postfächer"
+    },
+    "opt_signInGmail": {
+        "message": "Bei Gmail anmelden"
+    },
+    "opt_checkNow": {
+        "message": "Jetzt abrufen"
+    },
+    "opt_reading": {
+        "message": "Liest $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 braucht Zugriff"
+    },
+    "opt_addWord": {
+        "message": "Wort oder Adresse hinzufügen"
+    },
+    "opt_removeToken": {
+        "message": "$1 entfernen"
+    },
+    "opt_aiOffChip": {
+        "message": "KI aus"
+    },
+    "opt_aiSetup": {
+        "message": "KI muss eingerichtet werden"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Angemeldet"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Verbunden"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Braucht Zugriff"
+    },
+    "opt_aiCheckingKey": {
+        "message": "Schlüssel wird bei $1 geprüft…"
+    },
+    "opt_quietChip": {
+        "message": "Ruhe $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Gerade Ruhezeit"
+    },
+    "opt_quietUntil": {
+        "message": "Gerade Ruhezeit · bis $1"
+    },
+    "opt_quietNext": {
+        "message": "Beginnt um $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Gerade Ruhezeit · das ganze Wochenende"
+    },
+    "opt_pausedUntil": {
+        "message": "Pausiert bis $1"
+    },
+    "opt_paused": {
+        "message": "Benachrichtigungen pausiert"
+    },
+    "opt_resume": {
+        "message": "Benachrichtigungen fortsetzen"
+    },
+    "opt_pinHint": {
+        "message": "Pinne Mail Deck an die Symbolleiste an, um die Zahl immer im Blick zu haben: Klicke auf das Puzzleteil neben der Adressleiste und dann auf die Pinnadel neben Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "Name des Absenders"
+    },
+    "opt_tokenEmail": {
+        "message": "Adresse des Absenders"
+    },
+    "opt_tokenTitle": {
+        "message": "Betreff"
+    },
+    "opt_tokenSummary": {
+        "message": "Text der Mail"
+    },
+    "opt_tokenAccount": {
+        "message": "Postfach"
+    },
+    "opt_tokenBreak": {
+        "message": "Neue Zeile"
+    },
+    "opt_preview": {
+        "message": "Vorschau"
+    },
+    "opt_sampleName": {
+        "message": "Lena Becker"
+    },
+    "opt_sampleSubject": {
+        "message": "Mittagessen am Freitag?"
+    },
+    "opt_sampleSummary": {
+        "message": "Hast du mittags Zeit? Beim Büro hat ein neues Lokal aufgemacht, das ich ausprobieren möchte."
+    },
+    "opt_resetText": {
+        "message": "Alle Einstellungen gehen auf den Standard zurück, auch Postfach-Schalter und Labels, und die KI-Schlüssel werden gelöscht."
+    },
+    "opt_resetDo": {
+        "message": "Zurücksetzen"
+    },
+    "opt_cancel": {
+        "message": "Abbrechen"
+    },
+    "opt_replace": {
+        "message": "Ersetzen"
+    },
+    "opt_diagPassed": {
+        "message": "Alle Prüfungen bestanden: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Gefundene Probleme: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Bericht kopieren"
+    },
+    "opt_diagCopied": {
+        "message": "Bericht kopiert"
     },
     "opt_aiWelcome": {
         "message": "Du nutzt dein ChatGPT-Abo"

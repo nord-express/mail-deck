@@ -12,7 +12,7 @@
         "message": "Alleen ‘Primair’"
     },
     "opt_quietHint": {
-        "message": "Een postvak zonder meldingen blijft in het paneel en de teller staan, maar stoort niet."
+        "message": "Stil: in het paneel en de teller, zonder meldingen of geluid"
     },
     "opt_primaryHint": {
         "message": "‘Primair’ leest een Gmail-feed die Google niet documenteert, dus het kan ophouden te werken."
@@ -33,16 +33,16 @@
         "message": "Einde"
     },
     "opt_quietWeekend": {
-        "message": "Ook het hele weekend stil"
+        "message": "Ook het hele weekend"
     },
     "opt_quietWeekendText": {
-        "message": "Welke dagen weekend zijn, volgt je regio."
+        "message": "$1, zoals je regio die telt."
     },
     "opt_never": {
         "message": "Nooit melden als afzender of onderwerp bevat"
     },
     "opt_neverText": {
-        "message": "Eén woord of adres per regel. De mail verschijnt nog steeds in het paneel, zonder melding of geluid."
+        "message": "De mail verschijnt nog steeds in het paneel, zonder melding of geluid."
     },
     "opt_only": {
         "message": "Alleen melden als afzender of onderwerp bevat"
@@ -72,7 +72,7 @@
         "message": "Wijzigen"
     },
     "opt_backup": {
-        "message": "Je instellingen"
+        "message": "Back-up"
     },
     "opt_sync": {
         "message": "Een kopie bewaren in Chrome-synchronisatie"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Wijzigingen worden meteen bewaard."
-    },
-    "opt_scopeLabel": {
-        "message": "Welke instellingen tonen"
-    },
-    "opt_essentials": {
-        "message": "Belangrijkste"
-    },
-    "opt_everything": {
-        "message": "Alles"
     },
     "opt_checking": {
         "message": "Controleren"
@@ -204,10 +195,10 @@
         "message": "Vergeten"
     },
     "opt_offHint": {
-        "message": "Een uitgeschakeld postvak verdwijnt uit het paneel, de teller en de meldingen."
+        "message": "Verborgen in het paneel, de teller en meldingen"
     },
     "opt_labelsHint": {
-        "message": "Labels: deze Gmail-labels volgen in plaats van de inbox, gescheiden door komma’s, bijvoorbeeld:"
+        "message": "Gmail-labels die worden gevolgd in plaats van de inbox. Druk na elk label op Enter."
     },
     "opt_services": {
         "message": "Andere mail"
@@ -270,10 +261,10 @@
         "message": "Verwijderen"
     },
     "opt_combined": {
-        "message": "Meerdere nieuwe mails in één melding bundelen"
+        "message": "Nieuwe mails in één melding bundelen"
     },
     "opt_threatAsNew": {
-        "message": "Melden over mail die binnenkwam in de laatste"
+        "message": "Alleen melden over mail nieuwer dan"
     },
     "opt_threatAsNewText": {
         "message": "Oudere ongelezen mail blijft stil. Geldt ook voor geluid."
@@ -372,7 +363,7 @@
         "message": "De logo’s van Gmail-afzenders komen van de pictogramdienst van Google, die het domein van de afzender ontvangt."
     },
     "opt_opening": {
-        "message": "Mail openen"
+        "message": "Gmail openen"
     },
     "opt_openIn": {
         "message": "Gmail openen in"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Laat het weten als Gmail al vooraan staat"
     },
-    "opt_actions": {
-        "message": "Acties"
-    },
     "opt_readOnArchive": {
         "message": "Archiveren markeert de mail ook als gelezen"
     },
     "opt_diag": {
-        "message": "Diagnose"
-    },
-    "opt_diagRow": {
-        "message": "Controleren hoe Mail Deck met je postvakken werkt"
+        "message": "Mail Deck controleren"
     },
     "opt_diagText": {
         "message": "Vraagt het Gmail nu, voor elk ingelogd postvak. Er verandert niets aan je mail."
@@ -426,7 +411,7 @@
         "message": "Controle starten"
     },
     "opt_reset": {
-        "message": "Standaardwaarden herstellen"
+        "message": "Alle instellingen terugzetten"
     },
     "opt_saved": {
         "message": "Bewaard"
@@ -450,13 +435,13 @@
         "message": "Deze regel verwijderen"
     },
     "opt_noInboxes": {
-        "message": "Je postvakken verschijnen hier na de eerste controle."
+        "message": "Log in bij Gmail in deze browser. Bij de volgende controle vindt Mail Deck elk ingelogd account."
     },
     "opt_showInbox": {
         "message": "$1 tonen"
     },
     "opt_labelsPlaceholder": {
-        "message": "Labels: inbox"
+        "message": "Label toevoegen"
     },
     "opt_labelsFor": {
         "message": "Labels voor $1"
@@ -1588,7 +1573,7 @@
         "message": "Zoeken in"
     },
     "opt_serviceAccess": {
-        "message": "Zet hem opnieuw aan om hem toegang te geven."
+        "message": "Chrome heeft Mail Deck geen toegang tot $1 gegeven."
     },
     "panel_copyCode": {
         "message": "Code kopiëren"
@@ -2161,25 +2146,25 @@
         "message": "Uit"
     },
     "opt_aiOffText": {
-        "message": "Geen assistent, samenvattingen of sortering. Er wordt niets verstuurd."
+        "message": "Er wordt niets verstuurd"
     },
     "opt_aiBuiltin": {
         "message": "Ingebouwd in Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "Draait op deze computer: gratis en privé, maar niet op elke computer."
+        "message": "Gratis, op deze computer"
     },
     "opt_aiPlan": {
         "message": "ChatGPT-abonnement"
     },
     "opt_aiPlanText": {
-        "message": "Het ChatGPT-abonnement dat je al hebt, zonder API-sleutel."
+        "message": "Je abonnement, geen API-sleutel"
     },
     "opt_aiCloudText": {
-        "message": "$1-modellen, betalen per gebruik."
+        "message": "$1 · API-sleutel"
     },
     "opt_aiZaiText": {
-        "message": "GLM-modellen, betalen per gebruik; sommige zijn gratis."
+        "message": "GLM · API-sleutel, sommige gratis"
     },
     "opt_aiChecking": {
         "message": "Controleren…"
@@ -2365,7 +2350,7 @@
         "message": "Vindt mail die op je antwoord wacht, belangrijke mail en nieuwsbrieven die je in één keer kunt opruimen."
     },
     "opt_aiButtons": {
-        "message": "AI-knoppen tonen als de assistent uit staat"
+        "message": "AI-knoppen in het paneel houden"
     },
     "opt_aiButtonsText": {
         "message": "De knoppen voor samenvatting, antwoord en assistent blijven in het paneel en stellen voor de assistent aan te zetten."
@@ -2378,6 +2363,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "Verzoeken gaan vanuit je browser rechtstreeks naar OpenAI, ingelogd met je ChatGPT-account. Mail Deck heeft geen servers. Een samenvatting, een antwoord of een vraag stuurt de tekst van dat bericht; de assistent stuurt je verzoek en de gevonden mail; ‘Ongelezen mail sorteren’ stuurt de afzender, het onderwerp en het voorbeeld van ongelezen mail."
+    },
+    "opt_skip": {
+        "message": "Naar de instellingen"
+    },
+    "opt_sections": {
+        "message": "Onderdelen"
+    },
+    "opt_search": {
+        "message": "Instellingen doorzoeken"
+    },
+    "opt_noMatch": {
+        "message": "Geen instelling past bij ‘$1’"
+    },
+    "opt_clearSearch": {
+        "message": "Zoekopdracht wissen"
+    },
+    "opt_mailboxes": {
+        "message": "Postvakken"
+    },
+    "opt_mailboxesLede": {
+        "message": "De postvakken die Mail Deck in de gaten houdt, en hoe vaak het kijkt."
+    },
+    "opt_notificationsLede": {
+        "message": "Meldingen, geluid en wanneer het stil moet zijn."
+    },
+    "opt_aiLede": {
+        "message": "Samenvattingen, sorteren en de assistent, met de AI van je keuze."
+    },
+    "opt_panelLede": {
+        "message": "Hoe het paneel eruitziet en zich gedraagt terwijl je leest."
+    },
+    "opt_toolbarLede": {
+        "message": "Het getal op het pictogram en wat een klik doet."
+    },
+    "opt_openingLede": {
+        "message": "Waar Gmail opent vanuit het paneel en meldingen."
+    },
+    "opt_backupLede": {
+        "message": "Je instellingen bewaren, meenemen of terugzetten."
+    },
+    "opt_help": {
+        "message": "Hulp"
+    },
+    "opt_helpLede": {
+        "message": "Controleer of alles werkt, of vertel ons wat niet werkt."
+    },
+    "opt_more": {
+        "message": "Meer opties"
+    },
+    "opt_popups": {
+        "message": "Pop-ups"
+    },
+    "opt_wordRules": {
+        "message": "Regels"
+    },
+    "opt_saving": {
+        "message": "Bezig met opslaan…"
+    },
+    "opt_savedSync": {
+        "message": "Opgeslagen · in Chrome-synchronisatie"
+    },
+    "opt_saveFailed": {
+        "message": "Niet opgeslagen: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Nog geen postvakken"
+    },
+    "opt_signInGmail": {
+        "message": "Inloggen bij Gmail"
+    },
+    "opt_checkNow": {
+        "message": "Nu controleren"
+    },
+    "opt_reading": {
+        "message": "Leest $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 heeft toegang nodig"
+    },
+    "opt_addWord": {
+        "message": "Woord of adres toevoegen"
+    },
+    "opt_removeToken": {
+        "message": "$1 verwijderen"
+    },
+    "opt_aiOffChip": {
+        "message": "AI uit"
+    },
+    "opt_aiSetup": {
+        "message": "AI moet worden ingesteld"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Ingelogd"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Verbonden"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Toegang nodig"
+    },
+    "opt_aiCheckingKey": {
+        "message": "Sleutel wordt gecontroleerd bij $1…"
+    },
+    "opt_quietChip": {
+        "message": "Stil $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Nu stil"
+    },
+    "opt_quietUntil": {
+        "message": "Nu stil · tot $1"
+    },
+    "opt_quietNext": {
+        "message": "Begint om $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Nu stil · het hele weekend"
+    },
+    "opt_pausedUntil": {
+        "message": "Gepauzeerd tot $1"
+    },
+    "opt_paused": {
+        "message": "Meldingen gepauzeerd"
+    },
+    "opt_resume": {
+        "message": "Meldingen hervatten"
+    },
+    "opt_pinHint": {
+        "message": "Zet Mail Deck vast in de werkbalk om het aantal in één oogopslag te zien: klik op het puzzelstukje naast de adresbalk en dan op de punaise naast Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "Naam afzender"
+    },
+    "opt_tokenEmail": {
+        "message": "Adres afzender"
+    },
+    "opt_tokenTitle": {
+        "message": "Onderwerp"
+    },
+    "opt_tokenSummary": {
+        "message": "Tekst van de mail"
+    },
+    "opt_tokenAccount": {
+        "message": "Postvak"
+    },
+    "opt_tokenBreak": {
+        "message": "Nieuwe regel"
+    },
+    "opt_preview": {
+        "message": "Voorbeeld"
+    },
+    "opt_sampleName": {
+        "message": "Sanne de Vries"
+    },
+    "opt_sampleSubject": {
+        "message": "Lunch op vrijdag?"
+    },
+    "opt_sampleSummary": {
+        "message": "Heb je om twaalf uur tijd? Er is een nieuwe zaak bij kantoor open die ik wil proberen."
+    },
+    "opt_resetText": {
+        "message": "Alle instellingen gaan terug naar de standaard, ook schakelaars en labels van postvakken, en AI-sleutels worden vergeten."
+    },
+    "opt_resetDo": {
+        "message": "Terugzetten"
+    },
+    "opt_cancel": {
+        "message": "Annuleren"
+    },
+    "opt_replace": {
+        "message": "Vervangen"
+    },
+    "opt_diagPassed": {
+        "message": "Alle controles geslaagd: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Problemen gevonden: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Rapport kopiëren"
+    },
+    "opt_diagCopied": {
+        "message": "Rapport gekopieerd"
     },
     "opt_aiWelcome": {
         "message": "Je gebruikt je ChatGPT-abonnement"

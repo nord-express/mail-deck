@@ -12,7 +12,7 @@
         "message": "Només «Principal»"
     },
     "opt_quietHint": {
-        "message": "Una bústia sense notificacions continua al tauler i al comptador, però no molesta."
+        "message": "Silenciosa: al tauler i al comptador, sense avisos ni so"
     },
     "opt_primaryHint": {
         "message": "«Principal» llegeix un canal de Gmail que Google no documenta, així que pot deixar de funcionar."
@@ -33,16 +33,16 @@
         "message": "Fi"
     },
     "opt_quietWeekend": {
-        "message": "Silenci també tot el cap de setmana"
+        "message": "També tot el cap de setmana"
     },
     "opt_quietWeekendText": {
-        "message": "Els dies del cap de setmana segueixen la teva regió."
+        "message": "$1, segons la teva regió."
     },
     "opt_never": {
         "message": "No notificar mai si el remitent o l’assumpte conté"
     },
     "opt_neverText": {
-        "message": "Una paraula o adreça per línia. El correu continua apareixent al tauler, sense notificació ni so."
+        "message": "El correu continua apareixent al tauler, sense notificació ni so."
     },
     "opt_only": {
         "message": "Notificar només si el remitent o l’assumpte conté"
@@ -72,7 +72,7 @@
         "message": "Canvia"
     },
     "opt_backup": {
-        "message": "Les teves opcions"
+        "message": "Còpia de seguretat"
     },
     "opt_sync": {
         "message": "Desa una còpia a la sincronització de Chrome"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Els canvis es desen a l’instant."
-    },
-    "opt_scopeLabel": {
-        "message": "Opcions que es mostren"
-    },
-    "opt_essentials": {
-        "message": "Les bàsiques"
-    },
-    "opt_everything": {
-        "message": "Totes"
     },
     "opt_checking": {
         "message": "Comprovació"
@@ -204,10 +195,10 @@
         "message": "Oblida"
     },
     "opt_offHint": {
-        "message": "Una safata desactivada surt del tauler, del comptador i de les notificacions."
+        "message": "Amagada del tauler, del comptador i de les notificacions"
     },
     "opt_labelsHint": {
-        "message": "Etiquetes: vigila aquestes etiquetes de Gmail en lloc de la safata d’entrada, separades per comes, per exemple:"
+        "message": "Etiquetes de Gmail que es vigilen en lloc de la safata d’entrada. Prem Retorn després de cadascuna."
     },
     "opt_services": {
         "message": "Altre correu"
@@ -270,10 +261,10 @@
         "message": "Suprimeix"
     },
     "opt_combined": {
-        "message": "Agrupa diversos correus nous en una notificació"
+        "message": "Agrupa els correus nous en una notificació"
     },
     "opt_threatAsNew": {
-        "message": "Avisa del correu arribat en els darrers"
+        "message": "Avisa només del correu de menys de"
     },
     "opt_threatAsNewText": {
         "message": "El correu no llegit més antic no avisa. També val per al so."
@@ -372,7 +363,7 @@
         "message": "Els logotips dels remitents de Gmail vénen del servei d’icones de Google, que rep el domini del remitent."
     },
     "opt_opening": {
-        "message": "Obrir el correu"
+        "message": "Obrir Gmail"
     },
     "opt_openIn": {
         "message": "Obre Gmail en"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Avisa’m quan Gmail ja és al davant"
     },
-    "opt_actions": {
-        "message": "Accions"
-    },
     "opt_readOnArchive": {
         "message": "Arxivar també marca el correu com a llegit"
     },
     "opt_diag": {
-        "message": "Diagnòstic"
-    },
-    "opt_diagRow": {
-        "message": "Comprova com funciona Mail Deck amb les teves safates"
+        "message": "Comprova Mail Deck"
     },
     "opt_diagText": {
         "message": "Pregunta a Gmail ara, per a cada safata amb sessió iniciada. Res no canvia al correu."
@@ -426,7 +411,7 @@
         "message": "Comprova"
     },
     "opt_reset": {
-        "message": "Restableix els valors per defecte"
+        "message": "Restableix totes les opcions"
     },
     "opt_saved": {
         "message": "Desat"
@@ -450,13 +435,13 @@
         "message": "Elimina aquesta regla"
     },
     "opt_noInboxes": {
-        "message": "Les safates apareixeran aquí després de la primera comprovació."
+        "message": "Inicia la sessió a Gmail en aquest navegador. A la propera comprovació, Mail Deck trobarà tots els comptes amb la sessió iniciada."
     },
     "opt_showInbox": {
         "message": "Mostra $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "Etiquetes: inbox"
+        "message": "Afegeix una etiqueta"
     },
     "opt_labelsFor": {
         "message": "Etiquetes de $1"
@@ -1588,7 +1573,7 @@
         "message": "On buscar"
     },
     "opt_serviceAccess": {
-        "message": "Torna’l a activar per donar-li accés."
+        "message": "Chrome no ha donat a Mail Deck accés a $1."
     },
     "panel_copyCode": {
         "message": "Copia el codi"
@@ -2161,25 +2146,25 @@
         "message": "Desactivada"
     },
     "opt_aiOffText": {
-        "message": "Sense assistent, resums ni ordenació. No s’envia res enlloc."
+        "message": "No s’envia res enlloc"
     },
     "opt_aiBuiltin": {
         "message": "Integrat a Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "Funciona en aquest ordinador: gratuït i privat, però no a tots els ordinadors."
+        "message": "Gratuït, en aquest ordinador"
     },
     "opt_aiPlan": {
         "message": "Pla de ChatGPT"
     },
     "opt_aiPlanText": {
-        "message": "El pla de ChatGPT que ja tens, sense clau d’API."
+        "message": "El teu pla, sense clau d’API"
     },
     "opt_aiCloudText": {
-        "message": "Models de $1, de pagament per ús."
+        "message": "$1 · clau d’API"
     },
     "opt_aiZaiText": {
-        "message": "Models GLM, de pagament per ús; alguns són gratuïts."
+        "message": "GLM · clau d’API, alguns gratuïts"
     },
     "opt_aiChecking": {
         "message": "S’està comprovant…"
@@ -2365,7 +2350,7 @@
         "message": "Troba el correu que espera la teva resposta, el correu important i els butlletins que pots netejar de cop."
     },
     "opt_aiButtons": {
-        "message": "Mostra els botons d’IA amb l’assistent desactivat"
+        "message": "Mantén els botons d’IA al tauler"
     },
     "opt_aiButtonsText": {
         "message": "Els botons de resum, resposta i assistent es queden al tauler i ofereixen activar-lo."
@@ -2378,6 +2363,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "Les sol·licituds van del teu navegador directament a OpenAI, amb la sessió del teu compte de ChatGPT. Mail Deck no té servidors. Un resum, una resposta o una pregunta envia el text d’aquell missatge; l’assistent envia la teva sol·licitud i el correu que ha trobat; «Ordena el correu no llegit» envia el remitent, l’assumpte i la previsualització del correu no llegit."
+    },
+    "opt_skip": {
+        "message": "Vés a les opcions"
+    },
+    "opt_sections": {
+        "message": "Seccions"
+    },
+    "opt_search": {
+        "message": "Cerca a les opcions"
+    },
+    "opt_noMatch": {
+        "message": "Cap opció coincideix amb «$1»"
+    },
+    "opt_clearSearch": {
+        "message": "Esborra la cerca"
+    },
+    "opt_mailboxes": {
+        "message": "Bústies"
+    },
+    "opt_mailboxesLede": {
+        "message": "Les safates que vigila Mail Deck i cada quant hi mira."
+    },
+    "opt_notificationsLede": {
+        "message": "Avisos emergents, so i quan cal fer silenci."
+    },
+    "opt_aiLede": {
+        "message": "Resums, ordenació i l’assistent, amb el motor que triïs."
+    },
+    "opt_panelLede": {
+        "message": "Com es veu i es comporta el tauler mentre llegeixes."
+    },
+    "opt_toolbarLede": {
+        "message": "El comptador de la icona i què fa un clic."
+    },
+    "opt_openingLede": {
+        "message": "On s’obre Gmail des del tauler i les notificacions."
+    },
+    "opt_backupLede": {
+        "message": "Desa, trasllada o restableix les opcions."
+    },
+    "opt_help": {
+        "message": "Ajuda"
+    },
+    "opt_helpLede": {
+        "message": "Comprova que tot funciona o explica’ns què falla."
+    },
+    "opt_more": {
+        "message": "Més opcions"
+    },
+    "opt_popups": {
+        "message": "Avisos emergents"
+    },
+    "opt_wordRules": {
+        "message": "Regles"
+    },
+    "opt_saving": {
+        "message": "S’està desant…"
+    },
+    "opt_savedSync": {
+        "message": "Desat · a la sincronització de Chrome"
+    },
+    "opt_saveFailed": {
+        "message": "No s’ha desat: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Encara no hi ha safates"
+    },
+    "opt_signInGmail": {
+        "message": "Inicia la sessió a Gmail"
+    },
+    "opt_checkNow": {
+        "message": "Comprova ara"
+    },
+    "opt_reading": {
+        "message": "Llegeix $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 necessita accés"
+    },
+    "opt_addWord": {
+        "message": "Afegeix una paraula o adreça"
+    },
+    "opt_removeToken": {
+        "message": "Treu $1"
+    },
+    "opt_aiOffChip": {
+        "message": "IA desactivada"
+    },
+    "opt_aiSetup": {
+        "message": "Cal configurar la IA"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Sessió iniciada"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Connectat"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Necessita accés"
+    },
+    "opt_aiCheckingKey": {
+        "message": "S’està comprovant la clau amb $1…"
+    },
+    "opt_quietChip": {
+        "message": "Silenci $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Silenci ara"
+    },
+    "opt_quietUntil": {
+        "message": "Silenci ara · fins a les $1"
+    },
+    "opt_quietNext": {
+        "message": "Comença a les $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Silenci ara · tot el cap de setmana"
+    },
+    "opt_pausedUntil": {
+        "message": "En pausa fins a les $1"
+    },
+    "opt_paused": {
+        "message": "Notificacions en pausa"
+    },
+    "opt_resume": {
+        "message": "Reprèn les notificacions"
+    },
+    "opt_pinHint": {
+        "message": "Fixa Mail Deck a la barra d’eines per veure el comptador d’una ullada: fes clic a la peça de trencaclosques al costat de la barra d’adreces i després a la xinxeta al costat de Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "Nom del remitent"
+    },
+    "opt_tokenEmail": {
+        "message": "Adreça del remitent"
+    },
+    "opt_tokenTitle": {
+        "message": "Assumpte"
+    },
+    "opt_tokenSummary": {
+        "message": "Text del correu"
+    },
+    "opt_tokenAccount": {
+        "message": "Safata"
+    },
+    "opt_tokenBreak": {
+        "message": "Línia nova"
+    },
+    "opt_preview": {
+        "message": "Previsualització"
+    },
+    "opt_sampleName": {
+        "message": "Marta Puig"
+    },
+    "opt_sampleSubject": {
+        "message": "Dinem divendres?"
+    },
+    "opt_sampleSummary": {
+        "message": "Estàs lliure a migdia? Han obert un lloc nou a prop de l’oficina i m’agradaria provar-lo."
+    },
+    "opt_resetText": {
+        "message": "Totes les opcions tornen al valor per defecte, també els interruptors i les etiquetes de les safates, i s’obliden les claus d’IA."
+    },
+    "opt_resetDo": {
+        "message": "Restableix"
+    },
+    "opt_cancel": {
+        "message": "Cancel·la"
+    },
+    "opt_replace": {
+        "message": "Substitueix"
+    },
+    "opt_diagPassed": {
+        "message": "Totes les comprovacions han anat bé: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Problemes trobats: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Copia l’informe"
+    },
+    "opt_diagCopied": {
+        "message": "S’ha copiat l’informe"
     },
     "opt_aiWelcome": {
         "message": "Estàs fent servir el teu pla de ChatGPT"

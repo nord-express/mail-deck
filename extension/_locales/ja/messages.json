@@ -12,7 +12,7 @@
     "message": "「メイン」タブのみ"
   },
   "opt_quietHint": {
-    "message": "通知をオフにした受信トレイもパネルとカウントには表示されますが、通知や音は出ません。"
+    "message": "サイレント: パネルと件数には表示、通知と音はなし"
   },
   "opt_primaryHint": {
     "message": "「メイン」タブのみは Google が公開していない Gmail フィードを使うため、動かなくなる可能性があります。"
@@ -33,16 +33,16 @@
     "message": "終了"
   },
   "opt_quietWeekend": {
-    "message": "週末も終日おやすみ"
+    "message": "週末も終日"
   },
   "opt_quietWeekendText": {
-    "message": "週末の曜日はお住まいの地域に従います。"
+    "message": "$1（お住まいの地域の週末）。"
   },
   "opt_never": {
     "message": "差出人か件名に次の語を含むときは通知しない"
   },
   "opt_neverText": {
-    "message": "1 行に 1 つの語またはアドレス。メールはパネルに表示されますが、通知と音はありません。"
+    "message": "メールはパネルに表示されますが、通知と音はありません。"
   },
   "opt_only": {
     "message": "差出人か件名に次の語を含むときだけ通知する"
@@ -72,7 +72,7 @@
     "message": "変更"
   },
   "opt_backup": {
-    "message": "設定のバックアップ"
+    "message": "バックアップ"
   },
   "opt_sync": {
     "message": "Chrome 同期にコピーを保存"
@@ -124,15 +124,6 @@
   },
   "opt_savedHint": {
     "message": "変更はすぐに保存されます。"
-  },
-  "opt_scopeLabel": {
-    "message": "表示する設定"
-  },
-  "opt_essentials": {
-    "message": "基本"
-  },
-  "opt_everything": {
-    "message": "すべて"
   },
   "opt_checking": {
     "message": "チェック"
@@ -204,10 +195,10 @@
     "message": "消去"
   },
   "opt_offHint": {
-    "message": "オフにした受信トレイはパネル、件数、通知から外れます。"
+    "message": "パネル、件数、通知に表示されません"
   },
   "opt_labelsHint": {
-    "message": "ラベル: 受信トレイの代わりにこれらの Gmail ラベルを監視します（カンマ区切り）。例:"
+    "message": "受信トレイの代わりに監視する Gmail ラベル。1 つ入力するごとに Enter を押します。"
   },
   "opt_services": {
     "message": "その他のメール"
@@ -270,10 +261,10 @@
     "message": "削除"
   },
   "opt_combined": {
-    "message": "複数の新着メールを 1 つの通知にまとめる"
+    "message": "新着メールを 1 つの通知にまとめる"
   },
   "opt_threatAsNew": {
-    "message": "この時間内に届いたメールを通知"
+    "message": "この時間より新しいメールだけを通知"
   },
   "opt_threatAsNewText": {
     "message": "それより古い未読メールは通知しません。音にも適用されます。"
@@ -372,7 +363,7 @@
     "message": "Gmail の送信者のロゴは Google のアイコン サービスから取得します。サービスには送信者のドメインが送られます。"
   },
   "opt_opening": {
-    "message": "メールを開く"
+    "message": "Gmail の開き方"
   },
   "opt_openIn": {
     "message": "Gmail を開く場所"
@@ -407,17 +398,11 @@
   "opt_inFront": {
     "message": "Gmail がすでに前面にあるときに知らせる"
   },
-  "opt_actions": {
-    "message": "操作"
-  },
   "opt_readOnArchive": {
     "message": "アーカイブすると既読にもする"
   },
   "opt_diag": {
-    "message": "診断"
-  },
-  "opt_diagRow": {
-    "message": "Mail Deck と受信トレイの動作を確認"
+    "message": "Mail Deck をチェック"
   },
   "opt_diagText": {
     "message": "ログイン中の各受信トレイについて今すぐ Gmail に問い合わせます。メールは何も変わりません。"
@@ -426,7 +411,7 @@
     "message": "確認を開始"
   },
   "opt_reset": {
-    "message": "初期設定に戻す"
+    "message": "すべての設定をリセット"
   },
   "opt_saved": {
     "message": "保存しました"
@@ -450,13 +435,13 @@
     "message": "このルールを削除"
   },
   "opt_noInboxes": {
-    "message": "最初の確認のあと、ここに受信トレイが表示されます。"
+    "message": "このブラウザで Gmail にログインしてください。次の確認で、ログイン中のすべてのアカウントを Mail Deck が見つけます。"
   },
   "opt_showInbox": {
     "message": "$1 を表示"
   },
   "opt_labelsPlaceholder": {
-    "message": "ラベル: inbox"
+    "message": "ラベルを追加"
   },
   "opt_labelsFor": {
     "message": "$1 のラベル"
@@ -1416,7 +1401,7 @@
     "message": "検索する場所"
   },
   "opt_serviceAccess": {
-    "message": "アクセスを許可するには、もう一度オンにしてください。"
+    "message": "Chrome が Mail Deck に $1 へのアクセスを許可していません。"
   },
   "panel_copyCode": {
     "message": "コードをコピー"
@@ -1989,25 +1974,25 @@
     "message": "オフ"
   },
   "opt_aiOffText": {
-    "message": "アシスタントも要約も仕分けもありません。どこにも何も送信されません。"
+    "message": "どこにも何も送信しません"
   },
   "opt_aiBuiltin": {
     "message": "Chrome 内蔵"
   },
   "opt_aiBuiltinText": {
-    "message": "このパソコンで動作します。無料でプライベートですが、すべてのパソコンで使えるわけではありません。"
+    "message": "無料、このパソコン上で動作"
   },
   "opt_aiPlan": {
     "message": "ChatGPT プラン"
   },
   "opt_aiPlanText": {
-    "message": "お持ちの ChatGPT プランをそのまま使います。API キーは不要です。"
+    "message": "お持ちのプラン、API キー不要"
   },
   "opt_aiCloudText": {
-    "message": "$1 モデル（従量課金）。"
+    "message": "$1 · API キー"
   },
   "opt_aiZaiText": {
-    "message": "GLM モデル（従量課金）。一部は無料です。"
+    "message": "GLM · API キー、一部無料"
   },
   "opt_aiChecking": {
     "message": "確認しています…"
@@ -2193,7 +2178,7 @@
     "message": "返信待ちのメール、重要なメール、まとめて片付けられるニュースレターを見つけます。"
   },
   "opt_aiButtons": {
-    "message": "アシスタントがオフでも AI ボタンを表示"
+    "message": "パネルに AI ボタンを残す"
   },
   "opt_aiButtonsText": {
     "message": "要約、返信、アシスタントのボタンがパネルに残り、オンにするよう案内します。"
@@ -2206,6 +2191,189 @@
   },
   "opt_aiPrivacyPlan": {
     "message": "リクエストは ChatGPT アカウントでログインした状態で、ブラウザから OpenAI に直接送られます。Mail Deck にはサーバーがありません。要約、返信、質問ではそのメールの本文を、アシスタントではリクエストの内容と見つかったメールを、未読メールの仕分けでは未読メールの送信者、件名、冒頭部分を送信します。"
+  },
+  "opt_skip": {
+    "message": "設定へ移動"
+  },
+  "opt_sections": {
+    "message": "セクション"
+  },
+  "opt_search": {
+    "message": "設定を検索"
+  },
+  "opt_noMatch": {
+    "message": "「$1」に一致する設定はありません"
+  },
+  "opt_clearSearch": {
+    "message": "検索をクリア"
+  },
+  "opt_mailboxes": {
+    "message": "メールボックス"
+  },
+  "opt_mailboxesLede": {
+    "message": "Mail Deck が見守る受信トレイと、確認する間隔。"
+  },
+  "opt_notificationsLede": {
+    "message": "ポップアップ、音、そして静かにする時間。"
+  },
+  "opt_aiLede": {
+    "message": "要約、仕分け、アシスタントを、選んだエンジンで。"
+  },
+  "opt_panelLede": {
+    "message": "読んでいるときのパネルの見た目と動き。"
+  },
+  "opt_toolbarLede": {
+    "message": "アイコンの件数と、クリックしたときの動作。"
+  },
+  "opt_openingLede": {
+    "message": "パネルや通知から Gmail を開く場所。"
+  },
+  "opt_backupLede": {
+    "message": "設定の保存、移行、リセット。"
+  },
+  "opt_help": {
+    "message": "ヘルプ"
+  },
+  "opt_helpLede": {
+    "message": "すべてが動いているか確認するか、うまくいかない点をお知らせください。"
+  },
+  "opt_more": {
+    "message": "その他の設定"
+  },
+  "opt_popups": {
+    "message": "ポップアップ"
+  },
+  "opt_wordRules": {
+    "message": "ルール"
+  },
+  "opt_saving": {
+    "message": "保存しています…"
+  },
+  "opt_savedSync": {
+    "message": "保存しました · Chrome 同期にも"
+  },
+  "opt_saveFailed": {
+    "message": "保存できませんでした: $1"
+  },
+  "opt_noInboxesTitle": {
+    "message": "受信トレイはまだありません"
+  },
+  "opt_signInGmail": {
+    "message": "Gmail にログイン"
+  },
+  "opt_checkNow": {
+    "message": "今すぐ確認"
+  },
+  "opt_reading": {
+    "message": "読み込み中: $1"
+  },
+  "opt_needsAccess": {
+    "message": "$1 にはアクセス許可が必要です"
+  },
+  "opt_addWord": {
+    "message": "語句またはアドレスを追加"
+  },
+  "opt_removeToken": {
+    "message": "$1 を削除"
+  },
+  "opt_aiOffChip": {
+    "message": "AI オフ"
+  },
+  "opt_aiSetup": {
+    "message": "AI の設定が必要です"
+  },
+  "opt_aiSignedInBadge": {
+    "message": "ログイン済み"
+  },
+  "opt_aiConnectedBadge": {
+    "message": "接続済み"
+  },
+  "opt_aiNeedsAccess": {
+    "message": "アクセス許可が必要"
+  },
+  "opt_aiCheckingKey": {
+    "message": "$1 でキーを確認しています…"
+  },
+  "opt_quietChip": {
+    "message": "おやすみ $1〜$2"
+  },
+  "opt_quietNow": {
+    "message": "おやすみ中"
+  },
+  "opt_quietUntil": {
+    "message": "おやすみ中 · $1 まで"
+  },
+  "opt_quietNext": {
+    "message": "$1 に開始"
+  },
+  "opt_quietWeekendNow": {
+    "message": "おやすみ中 · 週末ずっと"
+  },
+  "opt_pausedUntil": {
+    "message": "$1 まで一時停止中"
+  },
+  "opt_paused": {
+    "message": "通知を一時停止中"
+  },
+  "opt_resume": {
+    "message": "通知を再開"
+  },
+  "opt_pinHint": {
+    "message": "Mail Deck をツールバーに固定すると件数をすぐに確認できます。アドレスバーの横にあるパズルのアイコンをクリックし、Mail Deck の横のピンをクリックしてください。"
+  },
+  "opt_tokenName": {
+    "message": "送信者名"
+  },
+  "opt_tokenEmail": {
+    "message": "送信者のアドレス"
+  },
+  "opt_tokenTitle": {
+    "message": "件名"
+  },
+  "opt_tokenSummary": {
+    "message": "本文"
+  },
+  "opt_tokenAccount": {
+    "message": "受信トレイ"
+  },
+  "opt_tokenBreak": {
+    "message": "改行"
+  },
+  "opt_preview": {
+    "message": "プレビュー"
+  },
+  "opt_sampleName": {
+    "message": "佐藤 花子"
+  },
+  "opt_sampleSubject": {
+    "message": "金曜日にランチはどう？"
+  },
+  "opt_sampleSummary": {
+    "message": "お昼は空いていますか？ オフィスの近くに新しいお店ができたので行ってみたいです。"
+  },
+  "opt_resetText": {
+    "message": "すべての設定が初期値に戻ります。受信トレイのスイッチとラベルも戻り、AI のキーは削除されます。"
+  },
+  "opt_resetDo": {
+    "message": "リセット"
+  },
+  "opt_cancel": {
+    "message": "キャンセル"
+  },
+  "opt_replace": {
+    "message": "置き換える"
+  },
+  "opt_diagPassed": {
+    "message": "すべてのチェックに合格: $1"
+  },
+  "opt_diagFailed": {
+    "message": "見つかった問題: $1"
+  },
+  "opt_diagCopy": {
+    "message": "レポートをコピー"
+  },
+  "opt_diagCopied": {
+    "message": "レポートをコピーしました"
   },
   "opt_aiWelcome": {
     "message": "ChatGPT プランを使用しています"

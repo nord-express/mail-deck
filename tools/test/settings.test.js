@@ -1,6 +1,8 @@
 // The settings page's own logic (extension/data/settings/index.js) in node: what a backup may
 // bring, where an account's labels go, which services keep their sites, the quiet hours'
-// times, and the AI card: its engine, a provider's key, Chrome's access and the models. The page
+// times, and the AI card: its engine, a provider's key, Chrome's access and the models; then the
+// page's look (ui.js) where it decides something: the search, More options, the save state, word
+// lists as chips, links to a setting, the quiet hours' day. The page
 // runs in a vm with a small document and chrome.*; nothing is drawn. The AI module
 // (data/ai/ai.js, tested on its own) is replaced by a stub that writes down what it is asked.
 const fs = require('fs');
@@ -124,7 +126,7 @@ const later = (fn, ms, ...args) => {
   return id;
 };
 const ctx = {document, chrome, location: {hash: '', reload() {}}, addEventListener() {}, confirm: () => true,
-  setTimeout: later, clearTimeout, URL, Blob, console};
+  setTimeout: later, clearTimeout, setInterval, URL, Blob, Event, console};
 ctx.self = ctx;
 vm.createContext(ctx);
 // the page's scripts in its order: the mail services first, then the page; the AI module's place
@@ -385,7 +387,8 @@ check('the new settings default as the background does, and their rows and strin
   assert.deepStrictEqual([defaults['badge.count'], defaults['notify.repeat'], defaults.autoAdvance], ['all', 0, false]);
   const background = fs.readFileSync(path.join(EXT, 'core/check.js'), 'utf8');
   assert.ok(background.includes(`'badge.count': 'all'`) && background.includes(`'notify.repeat': 0`));
-  assert.ok(/data-key="autoAdvance"/.test(html) && /data-i18n="countHint"/.test(html));
+  // the word on the count is the chip's own title now, not a paragraph under the inboxes
+  assert.ok(/data-key="autoAdvance"/.test(html) && /count\.title = t\('countHint'\)/.test(fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8')));
   for (const key of ['opt_countChip', 'opt_countHint', 'opt_badgeCount', 'opt_badgeAll', 'opt_badgeNew', 'opt_badgeCountText',
     'opt_repeat', 'opt_repeatOff', 'opt_repeatText', 'opt_autoAdvance', 'opt_autoAdvanceText']) {
     assert.ok(en[key]?.message, key);
@@ -1079,16 +1082,360 @@ check('a link to an engine (#ai-chatgpt, #ai-openai, …) picks it and focuses i
   const code = fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8');
   assert.ok(/\.then\(paintAI\)\.then\(followHash\)/.test(code) && /addEventListener\('hashchange', followHash\)/.test(code));
 });
-check('the AI buttons switch: on by default, saved, in a backup, and usable while the AI is off', () => {
+check('the AI buttons switch: on by default, saved, in a backup, and offered in place of the AI\'s rows while it is off', async () => {
   assert.strictEqual(page('DEFAULTS')['ai.buttons'], true);
-  const row = /<label class="row"( data-ai)?>\s*<span class="text"><b data-i18n="aiButtons">[^<]*<\/b><small data-i18n="aiButtonsText">[^<]*<\/small><\/span>\s*<input type="checkbox" role="switch" data-key="ai\.buttons">/.exec(html);
+  const row = /<label class="row"( data-ai)? id="ai-buttons-row">\s*<span class="text"><b data-i18n="aiButtons">[^<]*<\/b><small data-i18n="aiButtonsText">[^<]*<\/small><\/span>\s*<input type="checkbox" role="switch" data-key="ai\.buttons">/.exec(html);
   assert.ok(row, 'its row');
-  assert.ok(!row[1], 'it does not fade with the AI off: that is when it matters');
-  assert.strictEqual(msg('opt_aiButtons'), 'Show AI buttons while the assistant is off');
+  assert.ok(!row[1], 'not one of the AI\'s own rows: it matters while the AI is off');
+  // the AI off: its rows go and this one is offered; on: the reverse
+  await freshAI({'ai.engine': 'off'});
+  page('paintAI()');
+  assert.strictEqual(element('ai-buttons-row').hidden, false);
+  assert.strictEqual(element('ai-privacy-note').hidden, true);
+  await freshAI({'ai.engine': 'anthropic'});
+  page('paintAI()');
+  assert.strictEqual(element('ai-buttons-row').hidden, true);
+  assert.strictEqual(element('ai-privacy-note').hidden, false);
+  for (const key of ['ai.summary', 'ai.reply']) {
+    assert.ok(new RegExp(`<label class="row[^"]*" data-ai>\\s*<span class="text">[\\s\\S]*?data-key="${key.replace('.', '\\.')}"`).test(html), key + ' is one of the AI\'s rows');
+  }
+  assert.strictEqual(msg('opt_aiButtons'), 'Keep AI buttons in the panel');
   assert.strictEqual(msg('opt_aiButtonsText'), 'The summary, reply and assistant buttons stay in the panel and offer to turn it on.');
   assert.strictEqual(msg('opt_aiReply'), 'Sort unread mail');
   assert.strictEqual(msg('opt_aiReplyText'), 'Finds mail waiting for your reply, important mail, and newsletters you can clear in one go.');
   assert.ok(/data-key="ai\.reply"/.test(html));
+});
+check('each engine\'s card says how it is: ready, signed in, connected, or the access to give again', async () => {
+  await freshAI({'ai.engine': 'anthropic', 'ai.anthropic.key': ANTHROPIC_KEY, 'ai.openai.key': OPENAI_KEY});
+  granted.add('https://api.anthropic.com/*');
+  await page('syncAIAccess()');
+  page('paintCloud()');
+  assert.deepStrictEqual([element('ai-badge-anthropic').textContent, element('ai-badge-anthropic').dataset.tone, element('ai-badge-anthropic').hidden],
+    [msg('opt_aiConnectedBadge'), 'ok', false]);
+  assert.deepStrictEqual([element('ai-badge-openai').textContent, element('ai-badge-openai').dataset.tone], [msg('opt_aiNeedsAccess'), 'warn']);
+  assert.strictEqual(element('ai-badge-zai').hidden, true, 'no key, no word');
+  assert.strictEqual(element('ai-badge-chatgpt').hidden, true, 'signed out');
+  // the key checked with its provider: a word under the field while it is
+  await freshAI({'ai.engine': 'openai'});
+  page('aiConnecting = true; paintCloud()');
+  assert.strictEqual(element('ai-key-wait').hidden, false);
+  assert.strictEqual(element('ai-key-wait').textContent, msg('opt_aiCheckingKey', 'OpenAI'));
+  assert.strictEqual(element('ai-key-hint').hidden, true);
+  page('aiConnecting = false; paintCloud()');
+  assert.strictEqual(element('ai-key-wait').hidden, true);
+  // the eye shows the key and says so
+  element('ai-key-show').onclick();
+  assert.deepStrictEqual([element('ai-key').type, element('ai-key-show').getAttribute('aria-pressed'), element('ai-key-show').getAttribute('aria-label')],
+    ['text', 'true', msg('opt_aiHide')]);
+  page('resetKeyField()');
+  assert.deepStrictEqual([element('ai-key').type, element('ai-key-show').getAttribute('aria-pressed')], ['password', 'false']);
+});
+
+/* the page's look (ui.js): the parts that decide something, on a small stand-in of the page */
+// localStorage as a page has it, or one that throws (a private window, blocked site data)
+const storage = (values = {}) => ({
+  getItem: k => k in values ? values[k] : null,
+  setItem: (k, v) => values[k] = String(v),
+  removeItem: k => delete values[k],
+  values
+});
+const blocked = {getItem() {
+  throw Error('blocked');
+}, setItem() {
+  throw Error('blocked');
+}, removeItem() {
+  throw Error('blocked');
+}};
+// a section of the page with the rows a search looks at: each row its words, a card, a group
+const section = (id, title, rows = []) => ({id, dataset: {}, title,
+  querySelector: sel => sel === 'h2' ? {textContent: title} : null,
+  querySelectorAll: sel => sel === '.row, .engines' ? rows : []});
+const unit = (words, {card = null, group = null, hidden = false} = {}) => {
+  const parts = words.map(textContent => ({textContent, hidden: false}));
+  const row = {dataset: {}, words,
+    querySelectorAll: () => parts,
+    closest: sel => sel === '.card' ? card : sel === '.group' ? group : sel === '[hidden]' && hidden ? row : null};
+  return row;
+};
+const withPage = (sections, fn) => {
+  const qsa = document.querySelectorAll;
+  const links = sections.map(s => ({hash: '#' + s.id, dataset: {}}));
+  document.querySelectorAll = sel => sel === 'main > section' ? sections : sel === '#nav a' ? links : [];
+  try {
+    return fn(links);
+  }
+  finally {
+    document.querySelectorAll = qsa;
+  }
+};
+
+check('More options: what is open is remembered in this browser, and Everything of before opens them all', () => {
+  const UI = page('UI');
+  const list = [section('accounts', 'Mailboxes'), section('notifications', 'Notifications'), section('toolbar', 'Toolbar icon')];
+  try {
+    withPage(list, () => {
+      // the old Essentials / Everything switch: Everything opens every section, once, and is gone
+      ctx.localStorage = storage({scope: 'all'});
+      assert.deepStrictEqual([...UI.openList()], ['accounts', 'notifications', 'toolbar']);
+      assert.strictEqual(ctx.localStorage.getItem('scope'), null);
+      ctx.localStorage = storage({scope: 'essentials'});
+      assert.deepStrictEqual([...UI.openList()], []);
+      // a click opens one and it stays open on the next visit; closed, it is forgotten
+      UI.setMore(list[1], true);
+      assert.strictEqual(list[1].dataset.more, 'open');
+      assert.deepStrictEqual(JSON.parse(ctx.localStorage.getItem('more')), ['notifications']);
+      UI.setMore(list[2], true);
+      UI.setMore(list[1], false);
+      assert.strictEqual(list[1].dataset.more, 'closed');
+      assert.deepStrictEqual(JSON.parse(ctx.localStorage.getItem('more')), ['toolbar']);
+      // opened by a link or a search: for this visit only
+      UI.setMore(list[0], true, false);
+      assert.strictEqual(list[0].dataset.more, 'open');
+      assert.deepStrictEqual(JSON.parse(ctx.localStorage.getItem('more')), ['toolbar']);
+      // a browser that keeps nothing: all closed, nothing breaks
+      ctx.localStorage = blocked;
+      assert.deepStrictEqual([...UI.openList()], []);
+      UI.setMore(list[2], false);
+      assert.strictEqual(list[2].dataset.more, 'closed');
+    });
+  }
+  finally {
+    delete ctx.localStorage;
+  }
+});
+check('a link to a setting under More options opens them for this visit, then brings it into view', () => {
+  const store = storage({more: '[]'});
+  ctx.localStorage = store;
+  const toolbar = section('toolbar', 'Toolbar icon');
+  toolbar.dataset.more = 'closed';
+  const known = new Set(['smart-open', 'badge-row', 'ai']);
+  const scrolled = [];
+  for (const id of known) {
+    Object.assign(element(id), {scrollIntoView: () => scrolled.push(id), closest: () => null});
+  }
+  // #smart-open is under the section's More options, #badge-row is not
+  element('smart-open').closest = sel => sel === 'main > section' ? toolbar : sel === '.adv' ? element('smart-open') : null;
+  element('badge-row').closest = sel => sel === 'main > section' ? toolbar : null;
+  const byId = document.getElementById;
+  document.getElementById = id => known.has(id) ? element(id) : null;
+  const go = hash => {
+    ctx.location.hash = hash;
+    return page('followSection()')?.id || null;
+  };
+  try {
+    assert.strictEqual(go('#badge-row'), 'badge-row');
+    assert.strictEqual(toolbar.dataset.more, 'closed', 'in sight already: nothing opened');
+    assert.strictEqual(go('#smart-open'), 'smart-open');
+    assert.strictEqual(toolbar.dataset.more, 'open');
+    assert.deepStrictEqual(scrolled, ['badge-row', 'smart-open']);
+    assert.strictEqual(store.getItem('more'), '[]', 'not remembered: the visitor did not open them');
+    // an engine's link is followHash's; no engine there is, or the AI off, goes to the AI section
+    assert.strictEqual(go('#ai-chatgpt'), null);
+    assert.strictEqual(go('#ai-builtin'), null);
+    assert.strictEqual(go('#ai-off'), 'ai');
+    assert.strictEqual(go('#ai-gemini'), 'ai');
+    assert.strictEqual(go('#nothing-here'), null);
+    assert.strictEqual(go(''), null);
+  }
+  finally {
+    document.getElementById = byId;
+    ctx.location.hash = '';
+    delete ctx.localStorage;
+  }
+  // the page follows a link once its inboxes are drawn, and every later one
+  const code = fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8');
+  assert.ok(/paintAccounts\(\)\.then\(followSection\)/.test(code) && /addEventListener\('hashchange', followSection\)/.test(code));
+});
+check('search: rows by their words, without case or accents; the rest out of sight, and a word when nothing matches', () => {
+  const UI = page('UI');
+  assert.strictEqual(UI.fold('Notificación Ünïcode'), 'notificacion unicode');
+  // where the words found are, in the text itself, for the highlight
+  assert.deepStrictEqual([...UI.marks('Café crème, CRÈME', 'creme')].map(m => [...m]), [[5, 10], [12, 17]]);
+  assert.deepStrictEqual([...UI.marks('anything', '')], []);
+  const card = {dataset: {}};
+  const quiet = {dataset: {}, querySelector: () => ({textContent: 'Quiet hours'})};
+  const sound = {dataset: {}, querySelector: () => ({textContent: 'Sound'})};
+  const rows = {
+    show: unit(['Show a notification for new mail', 'A desktop pop-up with the sender and subject.'], {card}),
+    play: unit(['Play a sound for new mail'], {card, group: sound}),
+    weekend: unit(['All weekend too'], {card, group: quiet}),
+    from: unit(['Every day'], {card, group: quiet}),
+    key: unit(['API key', 'Notification of a key'], {card, hidden: true})
+  };
+  const list = [section('notifications', 'Notifications', [rows.show, rows.play, rows.weekend, rows.from, rows.key]),
+    section('backup', 'Backup', [unit(['Keep a copy in Chrome sync'], {card: {dataset: {}}})])];
+  withPage(list, links => {
+    // a group's title brings all of it; a row's words bring that row; accents and case do not matter
+    let r = UI.search('  QUIET ');
+    assert.strictEqual(document.body.dataset.search, 'on');
+    assert.deepStrictEqual(Object.entries(rows).filter(([, u]) => u.dataset.miss === undefined).map(([k]) => k), ['weekend', 'from', 'key']);
+    assert.strictEqual(rows.key.dataset.miss, undefined, 'a row the page hides for now is left as it is');
+    assert.deepStrictEqual([...r.missed], ['backup']);
+    assert.strictEqual(links[1].dataset.missSection, '', 'its rail item dims');
+    assert.strictEqual(links[0].dataset.missSection, undefined);
+    assert.strictEqual(element('no-match').hidden, true);
+    r = UI.search('désktop');
+    assert.deepStrictEqual(Object.entries(rows).filter(([, u]) => u.dataset.miss === undefined).map(([k]) => k), ['show', 'key']);
+    assert.strictEqual(quiet.dataset.miss, '', 'a group with nothing found goes');
+    // a section's title brings all of it
+    UI.search('backup');
+    assert.strictEqual(list[1].dataset.miss, undefined);
+    assert.strictEqual(list[0].dataset.miss, '');
+    // nothing: a word that says so, with what was looked for
+    r = UI.search('zzz');
+    assert.strictEqual(r.any, false);
+    assert.strictEqual(element('no-match').hidden, false);
+    assert.strictEqual(element('no-match-text').textContent, msg('opt_noMatch', 'zzz'));
+    // cleared: everything back
+    UI.search('');
+    assert.strictEqual(document.body.dataset.search, undefined);
+    assert.ok([...Object.values(rows), ...list, quiet, card].every(el => el.dataset.miss === undefined));
+    assert.strictEqual(element('no-match').hidden, true);
+  });
+  // the search finds rows under More options too, and marks with the Custom Highlight API only
+  const css = fs.readFileSync(path.join(EXT, 'data/settings/index.css'), 'utf8');
+  assert.ok(/body:not\(\[data-search\]\) section:not\(\[data-more="open"\]\) \.adv/.test(css) && /::highlight\(settings\)/.test(css));
+});
+check('the save state: saved, in Chrome sync too, what went wrong, then back to its word', async () => {
+  await freshAI({});
+  // the rail's words come at once; time runs a hundred times faster here
+  ctx.setTimeout = (fn, ms, ...args) => later(fn, ms / 100, ...args);
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const change = (key, checked) => listeners.change({target: {dataset: {key}, type: 'checkbox', checked, hasAttribute: () => false}});
+  try {
+    change('alert', false);
+    await tick();
+    assert.strictEqual(element('save-state').dataset.state, 'saved');
+    assert.strictEqual(element('save-text').textContent, msg('opt_saved'));
+    await wait(10);
+    assert.strictEqual(element('save-live').textContent, msg('opt_saved'), 'a screen reader hears it once it settles');
+    await wait(25);
+    assert.strictEqual(element('save-state').dataset.state, 'idle');
+    assert.strictEqual(element('save-text').textContent, msg('opt_savedHint'));
+    page(`prefs['sync.settings'] = true`);
+    change('alert', true);
+    await tick();
+    assert.strictEqual(element('save-text').textContent, msg('opt_savedSync'));
+    // the storage refuses: the rail says why, no toast
+    const set = store.set;
+    store.set = () => Promise.reject(Error('QUOTA_BYTES quota exceeded'));
+    element('toast').textContent = '';
+    try {
+      change('alert', false);
+      await tick();
+      await tick();
+    }
+    finally {
+      store.set = set;
+    }
+    assert.strictEqual(element('save-state').dataset.state, 'error');
+    assert.strictEqual(element('save-text').textContent, msg('opt_saveFailed', 'QUOTA_BYTES quota exceeded'));
+    assert.strictEqual(element('toast').textContent, '');
+    // the toast no longer says Saved
+    assert.ok(!/toast\(t\('saved'\)\)/.test(fs.readFileSync(path.join(EXT, 'data/settings/index.js'), 'utf8')));
+  }
+  finally {
+    ctx.setTimeout = later;
+    page(`prefs['sync.settings'] = false`);
+  }
+});
+check('a word list as chips writes the field it stands for and fires its change, so the page saves it as before', () => {
+  const UI = page('UI');
+  const changes = [];
+  // the labels: commas, Primary kept but not shown; their own change cleans them, as the page's does
+  const labels = {value: 'inbox, ^smartlabel_personal', dispatchEvent(ev) {
+    changes.push([ev.type, ev.bubbles]);
+    this.onchange?.(ev);
+  }};
+  labels.onchange = () => labels.value = page('cleanLabels')(labels.value);
+  const words = UI.tokenField(labels, {commas: true, keep: [page('PRIMARY')], placeholder: list => list.length ? 'Add a label' : 'inbox'});
+  const shown = () => words.box.kids.slice(0, -1).map(token => token.kids[0].textContent);
+  assert.deepStrictEqual(shown(), ['inbox']);
+  assert.strictEqual(words.box.kids.at(-1), words.input, 'the field for the next one comes last');
+  words.input.value = 'Work Stuff';
+  let prevented = false;
+  words.input.onkeydown({key: 'Enter', preventDefault: () => prevented = true});
+  assert.ok(prevented);
+  assert.strictEqual(labels.value, '^smartlabel_personal, inbox, work-stuff');
+  assert.deepStrictEqual(changes, [['change', true]]);
+  assert.deepStrictEqual(shown(), ['inbox', 'work-stuff']);
+  assert.strictEqual(words.input.value, '');
+  // a paste of several, by commas and lines; one word pastes as typed
+  words.input.onpaste({clipboardData: {getData: () => 'Receipts, travel\nkids'}, preventDefault() {}});
+  assert.deepStrictEqual(shown(), ['inbox', 'work-stuff', 'receipts', 'travel', 'kids']);
+  let pasted = false;
+  words.input.onpaste({clipboardData: {getData: () => 'one'}, preventDefault: () => pasted = true});
+  assert.strictEqual(pasted, false);
+  // Backspace in the empty field takes the last one off; a word's own button takes it off
+  words.input.value = '';
+  words.input.onkeydown({key: 'Backspace', preventDefault() {}});
+  assert.deepStrictEqual(shown(), ['inbox', 'work-stuff', 'receipts', 'travel']);
+  words.box.kids[0].kids[1].onclick({stopPropagation() {}});
+  assert.deepStrictEqual(shown(), ['work-stuff', 'receipts', 'travel']);
+  assert.strictEqual(words.box.kids[0].kids[1].getAttribute('aria-label'), msg('opt_removeToken', 'work-stuff'));
+  assert.ok(labels.value.startsWith('^smartlabel_personal'), 'Primary stays');
+  // a comma ends a label as Enter does; what is typed is kept when the field is left
+  words.input.value = 'bills';
+  words.input.onkeydown({key: ',', preventDefault() {}});
+  words.input.value = 'later';
+  words.input.onblur();
+  assert.deepStrictEqual(shown(), ['work-stuff', 'receipts', 'travel', 'bills', 'later']);
+  assert.strictEqual(words.input.placeholder, 'Add a label');
+  // a word list: one per line, a comma is part of the word
+  const never = {value: 'newsletter\nnoreply@', dispatchEvent() {}};
+  const lines = UI.tokenField(never, {placeholder: 'Add a word or address'});
+  lines.input.value = 'Smith, John';
+  lines.input.onkeydown({key: 'Enter', preventDefault() {}});
+  assert.strictEqual(never.value, 'newsletter\nnoreply@\nSmith, John');
+  lines.input.onkeydown({key: ',', preventDefault() {}});
+  assert.strictEqual(never.value, 'newsletter\nnoreply@\nSmith, John');
+  // the page's word lists and the labels write their old fields: the saving stays as it was
+  assert.ok(/<textarea data-key="notify\.never" data-tokens="lines"/.test(html) && /<textarea data-key="notify\.only" data-tokens="lines"/.test(html));
+});
+check('the quiet hours\' day: one span, or two across midnight, placed from the inline start so it mirrors right to left', () => {
+  const UI = page('UI');
+  const spans = (from, to) => [...UI.quietSpans(from, to)].map(s => [s.start, s.size]);
+  assert.deepStrictEqual(spans('22:00', '08:00'), [[0, 33.33], [91.67, 8.33]]);
+  assert.deepStrictEqual(spans('13:00', '14:30'), [[54.17, 6.25]]);
+  assert.deepStrictEqual(spans('18:00', '00:00'), [[75, 25]], 'up to midnight: one span, no empty one');
+  assert.deepStrictEqual(spans('00:00', '06:00'), [[0, 25]]);
+  assert.deepStrictEqual(spans('08:00', '08:00'), [], 'equal ends quiet nothing');
+  assert.deepStrictEqual(spans('8', '09:00'), []);
+  const clock = hhmm => new Intl.DateTimeFormat('en', {hour: 'numeric', minute: '2-digit'}).format(new Date(2000, 0, 1, ...hhmm.split(':').map(Number)));
+  page(`prefs = {...DEFAULTS, 'quiet.hours': true, 'quiet.from': '22:00', 'quiet.to': '08:00', 'quiet.weekend': false}`);
+  // Monday 23:30: quiet, until 08:00
+  const drawn = UI.paintDay(new Date(2026, 10, 2, 23, 30));
+  assert.deepStrictEqual([...drawn].map(el => [el.style.insetInlineStart, el.style.width, el.style.left]), [['0%', '33.33%', undefined], ['91.67%', '8.33%', undefined]]);
+  assert.strictEqual(element('quiet-tick').style.insetInlineStart, '97.92%');
+  assert.deepStrictEqual(element('quiet-track').kids, [...drawn, element('quiet-tick')], 'the tick over the spans');
+  assert.strictEqual(element('quiet-now').textContent, msg('opt_quietUntil', clock('08:00')));
+  // noon: when it starts
+  UI.paintDay(new Date(2026, 10, 2, 12, 0));
+  assert.strictEqual(element('quiet-now').textContent, msg('opt_quietNext', clock('22:00')));
+  // a Saturday with the weekend quiet too
+  page(`prefs['quiet.weekend'] = true`);
+  UI.paintDay(new Date(2026, 9, 31, 12, 0));
+  assert.strictEqual(element('quiet-now').textContent, msg('opt_quietWeekendNow'));
+  // off: no line
+  page(`prefs['quiet.hours'] = false`);
+  UI.paintDay(new Date(2026, 10, 2, 23, 30));
+  assert.strictEqual(element('quiet-now').hidden, true);
+  // the bar's parts are placed with logical properties only, so a right-to-left page mirrors it
+  const css = fs.readFileSync(path.join(EXT, 'data/settings/index.css'), 'utf8');
+  const rules = [...css.matchAll(/\.track (?:\.span|\.now) \{([^}]*)\}/g)].map(m => m[1]);
+  assert.ok(rules.length === 2 && rules.every(r => !/\b(left|right):/.test(r)));
+});
+check('the page loads its look after itself, and the scripts in node: no IntersectionObserver, matchMedia or CSS needed', () => {
+  assert.ok(html.indexOf('<script src="index.js">') < html.indexOf('<script src="ui.js">'));
+  assert.ok(html.indexOf('<script src="/core/utils/quiet.js">') < html.indexOf('<script src="index.js">'));
+  assert.strictEqual(typeof page('UI.start'), 'function');
+  assert.strictEqual(page('self.UI'), page('UI'));
+  // its hooks do nothing until the page has started it
+  page('UI.status(); UI.quiet()');
+  const ui = fs.readFileSync(path.join(EXT, 'data/settings/ui.js'), 'utf8');
+  for (const name of ['IntersectionObserver', 'matchMedia', 'CSS']) {
+    assert.ok(new RegExp(`typeof ${name} [!=]==`).test(ui), name + ' is looked for first');
+  }
 });
 check('the AI card has its strings and loads the module before the page', () => {
   assert.ok(html.indexOf('<script src="../ai/ai.js">') > 0 && html.indexOf('<script src="../ai/ai.js">') < html.indexOf('<script src="index.js">'));

@@ -109,6 +109,9 @@ for (let i = 0; i < 10; i += 1) {
 }
 const SOUNDS = ['soundChime', 'soundBell', 'soundDing', 'soundClassic'];
 const SWATCHES = ['#e5484d', '#4352e3', '#169b62', '#d9822b', '#8b55d9', '#4f5b6b'];
+// an inbox's colour, as the panel gives it (data/panel/index.js)
+const PALETTE = ['#3567e6', '#169b62', '#d9822b', '#d23f3a', '#8b55d9', '#138fa8', '#c9447f', '#5e7a1f', '#a8612a', '#4f5b6b'];
+const ADD_ACCOUNT = 'https://accounts.google.com/AddSession?continue=https://mail.google.com/mail/';
 // What a setting may hold beyond its type: what this page offers, and what an older or
 // hand-edited backup can sensibly bring. Anything else in a backup is left out.
 const int = (min, max) => v => Number.isInteger(v) && v >= min && v <= max;
@@ -175,24 +178,33 @@ const h = (tag, props, ...kids) => {
 };
 let prefs = {};
 
-/* saving */
+/* saving: the rail says how it went (ui.js); a toast is for what a button did */
 let toastTimer;
-const toast = text => {
+const toast = (text, bad = false) => {
   const el = $('toast');
   el.textContent = text;
+  el.classList.toggle('bad', bad);
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 1400);
+  toastTimer = setTimeout(() => el.classList.remove('show'), bad ? 5000 : 2400);
 };
 const save = values => {
   Object.assign(prefs, values);
-  return store.set(values).then(() => {
-    toast(t('saved'));
+  const saving = store.set(values);
+  self.UI?.saved(saving);
+  return saving.then(() => {
     if (prefs['sync.settings']) {
       pushSync();
     }
-  }, e => toast(e.message));
+  }, e => {
+    // the rail says it; a page without ui.js, a toast
+    if (!self.UI) {
+      toast(e.message, true);
+    }
+  });
 };
+// a question before what cannot be undone: the page's own dialog (ui.js), or the browser's
+const askFirst = (text, options) => (self.UI?.confirm || (m => Promise.resolve(confirm(m))))(text, options);
 // a page that reloads itself says why once it is back
 const reloadWith = text => {
   try {
@@ -221,6 +233,10 @@ const paintFields = (only = () => true) => {
     if (el.type === 'checkbox') {
       el.checked = el.hasAttribute('data-invert') ? !value : value;
     }
+    // one of a segmented control's choices
+    else if (el.type === 'radio') {
+      el.checked = el.value === String(value);
+    }
     else {
       if (el.tagName === 'SELECT' && ![...el.options].some(o => o.value === String(value))) {
         el.add(new Option(t('custom', value), value));
@@ -230,10 +246,22 @@ const paintFields = (only = () => true) => {
   }
   const mode = prefs.currentTab ? 'current' : prefs.newWindow ? 'window' : 'tab';
   document.querySelector(`input[name="open"][value="${mode}"]`).checked = true;
+  // a text size the control does not offer (a backup, a hand-edited one) gets a choice of its own
+  for (const group of document.querySelectorAll('.segmented')) {
+    const radios = [...group.querySelectorAll('input[data-key]')];
+    if (radios.length && only(radios[0].dataset.key) && !radios.some(r => r.checked)) {
+      const value = prefs[radios[0].dataset.key];
+      const input = h('input', {type: 'radio', name: radios[0].name, value: String(value), checked: true});
+      Object.assign(input.dataset, radios[0].dataset);
+      group.append(h('label', {}, input, h('span', {textContent: new Intl.NumberFormat(uiLang(), {style: 'percent'}).format(value)})));
+    }
+  }
 };
 // quiet hours that start when they end quiet nothing (core/utils/quiet.js): the row says so
 const paintQuiet = () => {
   $('quiet-same').hidden = prefs['quiet.from'] !== prefs['quiet.to'];
+  // the day's bar, the line on when it is quiet, the hero's chip
+  self.UI?.quiet();
 };
 document.addEventListener('change', ({target}) => {
   const key = target.dataset.key;
@@ -265,13 +293,6 @@ document.addEventListener('change', ({target}) => {
   }
   else if (target.name === 'ai.engine') {
     pickEngine(target.value);
-  }
-  else if (target.name === 'scope') {
-    document.body.dataset.scope = target.value;
-    try {
-      localStorage.setItem('scope', target.value);
-    }
-    catch (e) {}
   }
 });
 
@@ -328,7 +349,7 @@ const soundPicker = media => {
 const shownRules = new Set();
 const paintRules = () => {
   MEDIA.slice(1).forEach((m, i) => prefs[m + '.filter'] && shownRules.add(i));
-  $('rules').replaceChildren(...[...shownRules].sort().map(i => {
+  $('sound-rules').replaceChildren(...[...shownRules].sort().map(i => {
     const m = MEDIA[i + 1];
     const field = h('select', {}, ...['ruleSender', 'ruleSubject', 'ruleText'].map((name, v) => h('option', {value: v, textContent: t(name)})));
     field.setAttribute('aria-label', t('ruleField'));
@@ -337,7 +358,7 @@ const paintRules = () => {
     const word = h('input', {type: 'text', value: prefs[m + '.filter'], placeholder: t('rulePlaceholder'), spellcheck: false});
     word.setAttribute('aria-label', t('rulePlaceholder'));
     word.onchange = () => save({[m + '.filter']: word.value.trim()});
-    const remove = h('button', {type: 'button', className: 'ghost round', textContent: '×', title: t('ruleRemove')});
+    const remove = h('button', {type: 'button', className: 'icon-btn', title: t('ruleRemove')}, self.UI?.icon('close') || '×');
     remove.setAttribute('aria-label', t('ruleRemove'));
     remove.onclick = () => {
       shownRules.delete(i);
@@ -359,7 +380,7 @@ $('add-rule').onclick = () => {
   shownRules.add(free);
   paintRules();
   // the rows go in their order, so the new one is not always the last
-  $('rules').querySelector(`[data-rule="${free}"] input`).focus();
+  $('sound-rules').querySelector(`[data-rule="${free}"] input`).focus();
 };
 
 /* inboxes */
@@ -383,48 +404,84 @@ const withPrimary = (value, on) => {
 const accountRows = new Map();
 const accountsShape = accounts => JSON.stringify(Object.entries(accounts || {}).map(([name, o]) => [name, o?.service || '']));
 let shownShape = null;
+// the inboxes as last read: the services' rows say which of them they read
+let shownAccounts = {};
 const followAccounts = accounts => {
   if (accountsShape(accounts) !== shownShape) {
     return paintAccounts();
   }
+  shownAccounts = accounts;
   for (const [name, row] of accountRows) {
     row.toggle.checked = accounts[name]?.ignored !== true;
     row.notify.checked = accounts[name]?.quiet !== true;
     row.count.checked = accounts[name]?.uncounted !== true;
     row.paintShown();
   }
+  paintServiceLines();
+  self.UI?.status();
+};
+// no inbox yet: how to get one
+const noInboxes = () => {
+  const check = h('button', {type: 'button', className: 'btn'}, self.UI?.icon('refresh') || '', h('span', {textContent: t('checkNow')}));
+  // the button keeps the focus while the check runs: aria-disabled, not disabled
+  check.onclick = () => {
+    if (check.getAttribute('aria-disabled') === 'true') {
+      return;
+    }
+    check.setAttribute('aria-disabled', 'true');
+    chrome.runtime.sendMessage({method: 'update', forced: true}).catch(() => {});
+    setTimeout(() => check.setAttribute('aria-disabled', 'false'), 4000);
+  };
+  return h('div', {className: 'empty'},
+    h('span', {className: 'tile48'}, self.UI?.icon('mail') || ''),
+    h('b', {textContent: t('noInboxesTitle')}),
+    h('p', {textContent: t('noInboxes')}),
+    h('span', {className: 'inline'},
+      h('a', {className: 'btn primary', href: ADD_ACCOUNT, target: '_blank', rel: 'noopener', textContent: t('signInGmail')}),
+      check,
+      h('a', {className: 'btn quiet', href: '#services', textContent: t('services')})));
 };
 // A Gmail account's labels go by its address ('labels'), since its slot moves when an account
 // before it signs out; one set by the slot before 1.6 shows until the background moves it there.
 const labelsOf = (byAddress, name, n) => typeof byAddress[name] === 'string' ? byAddress[name] : prefs['feeds_' + n] || '';
 const saveLabels = (name, value) => store.get({labels: {}}).then(p => save({labels: {...p.labels, [name]: value}}));
 const paintAccounts = async () => {
-  const {accounts, labels: byAddress} = await store.get({accounts: {}, labels: {}});
+  const {accounts, avatars, labels: byAddress} = await store.get({accounts: {}, avatars: {}, labels: {}});
   // labels belong to a Gmail account, found by its slot in the browser
-  const slot = gmailSlots(await sessionObjects());
+  const objs = await sessionObjects();
+  const slot = gmailSlots(objs);
   accountRows.clear();
   shownShape = accountsShape(accounts);
+  shownAccounts = accounts;
+  paintServiceLines();
   const names = Object.keys(accounts);
   if (names.length === 0) {
-    $('accounts').replaceChildren(h('p', {className: 'empty', textContent: t('noInboxes')}));
+    $('account-list').replaceChildren(noInboxes());
+    self.UI?.status();
     return;
   }
-  $('accounts').replaceChildren(...names.map(name => {
+  $('account-list').replaceChildren(...names.map(name => {
     // one account's change keeps what is stored for the others
     const update = values => store.get({accounts: {}}).then(p => {
       p.accounts[name] = {...p.accounts[name], ...values};
       return save({accounts: p.accounts});
     });
-    const chip = (text, checked, onchange, className = '') => h('label', {className},
-      h('input', {type: 'checkbox', checked, onchange}), h('span', {textContent: text}));
+    // a chip says its state with a check as well as its colour
+    const chip = (text, checked, onchange, className = '') => h('label', {className: ('chip ' + className).trim()},
+      h('input', {type: 'checkbox', checked, onchange}), h('span', {}, self.UI?.icon('done', 'ck') || '', h('span', {textContent: text})));
 
     const toggle = h('input', {type: 'checkbox', checked: accounts[name].ignored !== true});
     toggle.setAttribute('role', 'switch');
     toggle.setAttribute('aria-label', t('showInbox', name));
     // a quiet inbox stays in the panel and the badge, without notifications or sound
-    const notify = chip(t('notifyChip'), accounts[name].quiet !== true, ev => update({quiet: !ev.target.checked}));
+    const notify = chip(t('notifyChip'), accounts[name].quiet !== true, ev => {
+      update({quiet: !ev.target.checked});
+      paintShown();
+    });
     // an inbox out of the count stays in the panel and notifies; the number on the toolbar icon leaves it out
     const count = chip(t('countChip'), accounts[name].uncounted !== true, ev => update({uncounted: !ev.target.checked}), 'adv');
+    count.title = t('countHint');
+    count.dataset.adv = 'count';
     const n = slot[name];
     let primary = null;
     let labels = null;
@@ -442,10 +499,39 @@ const paintAccounts = async () => {
       }, 'adv');
       labels.classList.add('adv');
     }
-    const options = h('span', {className: 'options'}, h('span', {className: 'chips'}, notify, count, primary), labels);
+    // the labels as chips (ui.js), written into the field above, which saves them; Primary is a chip of its own
+    let words = null;
+    let field = labels;
+    let note = null;
+    if (labels) {
+      primary.dataset.adv = 'primary';
+      labels.hidden = true;
+      words = self.UI?.tokenField(labels, {commas: true, keep: [PRIMARY], label: t('labelsFor', name),
+        // nothing typed watches the inbox, or the Primary tab when that is on
+        placeholder: list => list.length || hasPrimary(labels.value) ? t('labelsPlaceholder') : 'inbox'});
+      field = h('div', {className: 'labels-field adv'}, labels, words?.box || '', h('small', {textContent: t('labelsHint')}));
+      field.dataset.adv = 'labels';
+      // only while Primary is on: it reads a feed Google does not document
+      note = h('small', {className: 'adv', textContent: t('primaryHint')});
+    }
+    const options = h('span', {className: 'options'}, h('span', {className: 'chips'}, notify, count, primary), field, note);
+    // a chip changed: the labels' chips and the word on Primary follow
+    options.onchange = () => {
+      words?.paint();
+      if (note) {
+        note.hidden = !primary.firstChild.checked;
+      }
+    };
+    options.onchange();
+    // the line under the address: an inbox switched off, or one without a sound
+    const state = h('small');
+    const row = h('div', {className: 'row acc'});
     const paintShown = () => {
       options.classList.toggle('off', !toggle.checked);
-      options.querySelectorAll('input').forEach(el => el.disabled = !toggle.checked);
+      options.querySelectorAll('input, button').forEach(el => el.disabled = !toggle.checked);
+      row.classList.toggle('muted', !toggle.checked);
+      state.textContent = !toggle.checked ? t('offHint') : notify.firstChild.checked ? '' : t('quietHint');
+      state.hidden = !state.textContent;
     };
     toggle.onchange = () => {
       paintShown();
@@ -454,17 +540,24 @@ const paintAccounts = async () => {
     paintShown();
     accountRows.set(name, {toggle, notify: notify.firstChild, count: count.firstChild, paintShown});
     const service = self.MailServices?.[accounts[name].service];
-    return h('div', {className: 'row'},
-      h('span', {className: 'face', textContent: name[0].toUpperCase()}),
-      h('span', {className: 'text'}, h('b', {textContent: name}, service && h('span', {className: 'tag', textContent: service.name})), options),
+    // the panel's colour for the inbox: that of its first mailbox in the background's list
+    const at = objs.findIndex(o => o?.xml?.title === name);
+    const color = PALETTE[(at === -1 ? names.indexOf(name) : at) % PALETTE.length];
+    row.append(
+      self.UI?.avatar(name, color, avatars?.[name]?.url, service) || h('span', {className: 'avatar', textContent: name[0].toUpperCase()}),
+      h('span', {className: 'text'},
+        h('b', {className: 'addr'}, h('bdi', {textContent: name}), service && h('span', {className: 'tag', textContent: service.name})),
+        state, options),
       toggle);
+    return row;
   }));
+  self.UI?.status();
 };
 
 /* the other mail services: each asks Chrome for its sites when it is turned on */
 // A switch shows on only while the settings want the service and Chrome gives it its sites (the
 // background checks both). One the settings want without the sites, as after a restore on
-// another computer, says to turn it on again. The rows stay; their state follows in place.
+// another computer, says so, with a button that asks for them. The rows stay; their state follows in place.
 const serviceRows = new Map();
 const asking = new Set();
 const syncServices = async () => {
@@ -477,6 +570,17 @@ const syncServices = async () => {
       row.note.hidden = !wanted || granted[i];
     }
   });
+  paintServiceLines();
+  self.UI?.status();
+};
+// under a service's name: the mailboxes it reads, or its site and where to sign in
+const paintServiceLines = () => {
+  for (const [id, row] of serviceRows) {
+    const boxes = Object.keys(shownAccounts || {}).filter(name => shownAccounts[name]?.service === id);
+    const signIn = h('a', {href: row.service.signIn, target: '_blank', rel: 'noopener', textContent: t('serviceSignIn')});
+    row.line.replaceChildren(...(row.toggle.checked && boxes.length ? [t('reading', boxes.join(', '))] :
+      [new URL(row.service.hosts[0]).host, ' · ', signIn]));
+  }
 };
 const paintServices = () => {
   serviceRows.clear();
@@ -484,7 +588,11 @@ const paintServices = () => {
     const toggle = h('input', {type: 'checkbox'});
     toggle.setAttribute('role', 'switch');
     toggle.setAttribute('aria-label', s.name);
-    const note = h('small', {className: 'note', id: 'service-note-' + s.id, textContent: t('serviceAccess'), hidden: true});
+    // wanted without its sites: a word, and a button that asks Chrome for them from its click
+    const allow = h('button', {type: 'button', className: 'btn sm', textContent: t('aiAllow')});
+    allow.onclick = () => chrome.permissions.request({origins: s.origins}).catch(() => false).then(() => syncServices());
+    const note = h('div', {className: 'notice', id: 'service-note-' + s.id, hidden: true},
+      self.UI?.icon('alert') || '', h('span', {textContent: t('serviceAccess', s.name)}), allow);
     toggle.setAttribute('aria-describedby', note.id);
     toggle.onchange = () => {
       const on = toggle.checked;
@@ -503,13 +611,14 @@ const paintServices = () => {
         syncServices();
       });
     };
-    serviceRows.set(s.id, {toggle, note});
-    const signIn = h('a', {href: s.signIn, target: '_blank', textContent: t('serviceSignIn')});
-    return h('div', {className: 'row'},
-      h('span', {className: 'face', textContent: s.name[0]}),
-      h('span', {className: 'text'}, h('b', {textContent: s.name}), h('small', {}, new URL(s.hosts[0]).host, ' · ', signIn), note),
-      toggle);
+    const line = h('small', {className: 'svc-line'});
+    serviceRows.set(s.id, {toggle, note, line, service: s});
+    return h('div', {className: 'row svc-row'},
+      h('span', {className: 'tile', textContent: s.name[0]}),
+      h('span', {className: 'text'}, h('b', {textContent: s.name}), line),
+      toggle, note);
   }));
+  paintServiceLines();
   return syncServices();
 };
 // a backup or a reset that leaves services off gives Chrome back their sites
@@ -517,11 +626,27 @@ const revokeOff = ids => {
   const origins = SERVICES.filter(s => !ids.includes(s.id)).flatMap(s => s.origins);
   return origins.length ? chrome.permissions.remove({origins}).catch(() => false) : Promise.resolve(true);
 };
-// the panel's links to a section: #services, #ai, and #ai-chatgpt or another engine (followHash)
-const section = /^#(services|ai)\b/.exec(location.hash)?.[1];
-if (section) {
-  addEventListener('load', () => $(section).scrollIntoView({block: 'start'}));
-}
+// A link to a part of the page: #services, #ai, #quiet, or any other id, the panel's among them.
+// What waits under its section's More options is shown first, then it comes into view. A link to
+// an engine (#ai-chatgpt) is followHash's; one to no engine there is (#ai-off) goes to the AI.
+const followSection = () => {
+  let id = '';
+  try {
+    id = decodeURIComponent(location.hash.slice(1));
+  }
+  catch (e) {}
+  const engine = /^ai-([a-z]+)$/.exec(id)?.[1];
+  if (!id || (engine && engine !== 'off' && AI_ENGINES.includes(engine))) {
+    return null;
+  }
+  const el = document.getElementById(id) || (engine ? $('ai') : null);
+  if (!el) {
+    return null;
+  }
+  self.UI?.reveal(el);
+  el.scrollIntoView({block: 'start'});
+  return el;
+};
 $('forget').onclick = () => store.remove('accounts').then(() => {
   toast(t('forgotten'));
   paintAccounts();
@@ -550,6 +675,8 @@ let aiDownload = null;
 let aiPoll;
 let builtinRun = 0;
 let builtinLang = '';
+// what the built-in model's card last showed (AI_BUILTIN's states): its badge and the hero say it
+let builtinShown = '';
 const aiKeyOf = engine => aiKeys[`ai.${engine}.key`] || '';
 const aiModelKey = engine => `ai.${engine}.model`;
 // an engine with what it needs to list its models: a key, or the plan signed in
@@ -690,6 +817,9 @@ const showBuiltin = (status, lang) => {
   const english = Boolean(lang) && !sameLanguage(lang, uiLang()) && ['available', 'downloadable', 'downloading'].includes(status);
   $('ai-builtin-lang').textContent = english ? t('aiEnglish', languageName(uiLang())) : '';
   $('ai-builtin-lang').hidden = !english;
+  builtinShown = AI_BUILTIN[status] ? status : 'checking';
+  paintBadges();
+  self.UI?.status();
 };
 const builtinError = text => {
   $('ai-builtin-error').textContent = text || '';
@@ -849,10 +979,26 @@ const paintPlan = () => {
   $('ai-signout').hidden = !a;
   $('ai-plan-allow').hidden = !a || access;
 };
+// each engine's word on its card: ready, signed in, connected, or the access Chrome took back
+const paintBadges = () => {
+  const badge = (engine, text, warn = false) => {
+    const el = $('ai-badge-' + engine);
+    el.textContent = text;
+    el.dataset.tone = warn ? 'warn' : 'ok';
+    el.hidden = !text;
+  };
+  badge('builtin', builtinShown === 'available' ? t('aiReady') : '');
+  badge('chatgpt', !aiAccount ? '' : aiAccess.chatgpt ? t('aiSignedInBadge') : t('aiNeedsAccess'), Boolean(aiAccount) && !aiAccess.chatgpt);
+  for (const id of Object.keys(AI_PROVIDERS)) {
+    badge(id, !aiKeyOf(id) ? '' : aiAccess[id] ? t('aiConnectedBadge') : t('aiNeedsAccess'), Boolean(aiKeyOf(id)) && !aiAccess[id]);
+  }
+};
 const paintCloud = () => {
   const engine = prefs['ai.engine'];
   const p = AI_PROVIDERS[engine];
   const key = p ? aiKeyOf(engine) : '';
+  paintBadges();
+  self.UI?.status();
   $('ai-key-row').hidden = !p || Boolean(key);
   $('ai-connected').hidden = !p || !key;
   // the models of a key Chrome lets Mail Deck use, or of the plan signed in
@@ -870,7 +1016,10 @@ const paintCloud = () => {
     $('ai-key-label').textContent = t('aiKey', p.name);
     $('ai-key-plan').textContent = p.plan ? t('aiKeyText', p.plan, p.name) : '';
     $('ai-key-hint').textContent = p.hint ? t(p.hint) : '';
-    $('ai-key-hint').hidden = !p.hint;
+    $('ai-key-hint').hidden = !p.hint || aiConnecting;
+    // while the provider checks the key, the word under the field says so
+    $('ai-key-wait').textContent = aiConnecting ? t('aiCheckingKey', p.name) : '';
+    $('ai-key-wait').hidden = !aiConnecting;
     $('ai-key-link').href = p.keys;
     $('ai-key').placeholder = p.placeholder;
     $('ai-key').readOnly = aiConnecting;
@@ -894,24 +1043,33 @@ const paintAI = () => {
   for (const radio of document.querySelectorAll('input[name="ai.engine"]')) {
     radio.checked = radio.value === engine;
   }
-  // with the AI off its features fade out, as a row does under a switch that is off
+  // with the AI off its features go, and the panel's AI buttons are offered in their place;
+  // with it on, the reverse
   const off = !AI_ENGINES.includes(engine) || engine === 'off';
   for (const row of document.querySelectorAll('[data-ai]')) {
-    row.classList.toggle('off', off);
+    row.hidden = off;
     row.querySelectorAll('input, select').forEach(el => el.disabled = off);
   }
+  $('ai-buttons-row').hidden = !off;
   const p = AI_PROVIDERS[engine];
   $('ai-privacy').textContent = p ? t('aiPrivacy', p.name) : engine === 'builtin' ? t('aiPrivacyLocal') :
     engine === 'chatgpt' ? t('aiPrivacyPlan') : '';
-  $('ai-privacy').hidden = !$('ai-privacy').textContent;
+  $('ai-privacy-note').hidden = !$('ai-privacy').textContent;
   $('ai-builtin').hidden = engine !== 'builtin';
   paintBuiltin();
   paintCloud();
 };
+// the key in the field shown as text, or hidden again; the eye button says which
+const showKey = show => {
+  $('ai-key').type = show ? 'text' : 'password';
+  const button = $('ai-key-show');
+  button.setAttribute('aria-pressed', String(show));
+  button.setAttribute('aria-label', t(show ? 'aiHide' : 'aiShow'));
+  button.title = t(show ? 'aiHide' : 'aiShow');
+};
 const resetKeyField = () => {
   $('ai-key').value = '';
-  $('ai-key').type = 'password';
-  $('ai-key-show').textContent = t('aiShow');
+  showKey(false);
   aiError('');
 };
 const pickEngine = engine => {
@@ -974,8 +1132,7 @@ const connect = () => {
       throw e;
     }
     field.value = '';
-    field.type = 'password';
-    $('ai-key-show').textContent = t('aiShow');
+    showKey(false);
     toast(t('aiConnected', p.name));
     if (prefs['sync.settings']) {
       pushSync();
@@ -1033,12 +1190,7 @@ $('ai-key').onkeydown = ev => {
   }
 };
 $('ai-key').oninput = () => aiError('');
-$('ai-key-show').onclick = () => {
-  const field = $('ai-key');
-  const show = field.type === 'password';
-  field.type = show ? 'text' : 'password';
-  $('ai-key-show').textContent = t(show ? 'aiHide' : 'aiShow');
-};
+$('ai-key-show').onclick = () => showKey($('ai-key').type === 'password');
 $('ai-disconnect').onclick = () => disconnect();
 // a key kept while Chrome's access was taken (on chrome://extensions, say): asked for again
 $('ai-allow').onclick = () => {
@@ -1331,10 +1483,12 @@ $('import').onclick = () => {
     if (data?.app !== 'mail-deck' || !data.settings || typeof data.settings !== 'object') {
       throw Error('not a Mail Deck file');
     }
-    if (confirm(t('importConfirm'))) {
-      return restorable(data.settings).then(apply).then(() => reloadWith(t('imported')));
-    }
-  }).catch(() => toast(t('importBad')));
+    return askFirst(t('importConfirm'), {title: t('import'), yes: t('replace')}).then(ok => {
+      if (ok) {
+        return restorable(data.settings).then(apply).then(() => reloadWith(t('imported')));
+      }
+    });
+  }).catch(() => toast(t('importBad'), true));
   input.click();
 };
 
@@ -1510,16 +1664,27 @@ const aiDiag = () => check('ai', async () => {
     () => [true, [p.name, prefs[aiModelKey(engine)]].filter(Boolean).join(' · ')],
     e => [false, `${p.name}: ${aiErrorText(e, engine)}`]);
 });
+const diagMark = ok => ok ? 'done' : ok === null ? 'dash' : 'close';
 const diagBlock = (title, lines) => h('div', {className: 'diag-block'},
   h('b', {textContent: title}),
   h('ul', {}, ...lines.map(([name, ok, why]) => h('li', {className: ok ? 'ok' : ok === null ? 'skip' : 'bad'},
-    h('span', {className: 'mark', textContent: ok ? '✓' : ok === null ? '–' : '✗'}),
+    h('span', {className: 'mark'}, self.UI?.icon(diagMark(ok)) || (ok ? '✓' : ok === null ? '–' : '✗')),
     h('span', {className: 'name', textContent: t(name)}),
     h('span', {className: 'why', textContent: why})))));
+// The check as plain text, for a bug report: the version, the browser and every line, with the
+// addresses shortened (a•••@gmail.com), since a report may be posted where anyone reads it
+const diagReport = blocks => [
+  `Mail Deck ${chrome.runtime.getManifest().version} · ${self.navigator?.userAgent || ''}`,
+  ...blocks.map(([title, lines]) => [title, ...lines.map(([name, ok, why]) => `  ${ok ? '✓' : ok === null ? '–' : '✗'} ${t(name)}: ${why}`)].join('\n'))
+].join('\n\n').replace(/([\p{L}\p{N}])[\p{L}\p{N}._%+-]*@/gu, '$1•••@');
 $('diag-run').onclick = async () => {
   const button = $('diag-run');
   const out = $('diag');
-  button.disabled = true;
+  // the button keeps the focus while the check runs: aria-disabled, not disabled
+  if (button.getAttribute('aria-disabled') === 'true') {
+    return;
+  }
+  button.setAttribute('aria-disabled', 'true');
   button.textContent = t('diagRunning');
   out.hidden = false;
   out.replaceChildren();
@@ -1532,35 +1697,34 @@ $('diag-run').onclick = async () => {
     .map(async s => await chrome.permissions.contains({origins: s.origins}) ? s : null))).filter(Boolean);
   const [rounds, browser, away] = await Promise.all([Promise.all(inboxes.map(inboxChecks)), browserChecks(), Promise.all(quiet.map(s => serviceChecks(s.id)))]);
   const title = o => o.xml.service ? self.MailServices?.[o.xml.service]?.name || o.xml.title : o.xml.title;
+  const blocks = [...inboxes.map((o, i) => [title(o), rounds[i]]), ...quiet.map((s, i) => [s.name, away[i]]), [t('diagBrowser'), browser]];
+  // the whole first: every check passed, or how many did not; and the report to copy
+  const lines = blocks.flatMap(([, list]) => list);
+  const failed = lines.filter(([, ok]) => ok === false).length;
+  const copy = h('button', {type: 'button', className: 'btn sm'}, self.UI?.icon('copy') || '', h('span', {textContent: t('diagCopy')}));
+  copy.onclick = () => navigator.clipboard.writeText(diagReport(blocks)).then(() => toast(t('diagCopied')), () => toast(t('aiErrOther'), true));
   out.replaceChildren(
-    ...(inboxes.length ? inboxes.map((o, i) => diagBlock(title(o), rounds[i])) : [h('p', {className: 'empty', textContent: t('diagNone')})]),
-    ...quiet.map((s, i) => diagBlock(s.name, away[i])),
-    diagBlock(t('diagBrowser'), browser));
-  button.disabled = false;
+    h('div', {className: 'diag-sum' + (failed ? ' bad' : '')}, self.UI?.icon(failed ? 'alert' : 'done') || '',
+      h('span', {textContent: failed ? t('diagFailed', failed) : t('diagPassed', lines.filter(([, ok]) => ok).length)}), copy),
+    ...(inboxes.length ? [] : [h('p', {className: 'empty-line', textContent: t('diagNone')})]),
+    ...blocks.map(([name, list]) => diagBlock(name, list)));
+  button.setAttribute('aria-disabled', 'false');
   button.textContent = t('diagRun');
 };
 
 /* the rest */
-$('reset').onclick = () => {
-  if (confirm(t('resetConfirm'))) {
+$('reset').onclick = () => askFirst(t('resetConfirm'), {title: t('reset'), yes: t('resetDo'), danger: true}).then(ok => {
+  if (ok) {
     // the copy in Chrome sync stays on and follows the defaults; the services go off, their sites too;
     // the AI goes off, its keys and its providers' sites with it
     return apply({...DEFAULTS, 'sync.settings': prefs['sync.settings'], accounts: {}}).then(forgetAI).then(() => location.reload());
   }
-};
+});
 document.addEventListener('click', ({target}) => {
-  if (target.id === 'play') {
+  if (target.closest?.('#play')) {
     chrome.runtime.sendMessage({method: 'test-play'});
   }
 });
-
-let scope = 'essentials';
-try {
-  scope = localStorage.getItem('scope') || scope;
-}
-catch (e) {}
-document.body.dataset.scope = scope;
-document.querySelector(`input[name="scope"][value="${scope}"]`).checked = true;
 
 document.title = t('settingsTitle');
 document.documentElement.lang = chrome.i18n.getUILanguage();
@@ -1572,6 +1736,9 @@ for (const el of document.querySelectorAll('[data-i18n]')) {
 for (const el of document.querySelectorAll('[data-i18n-label]')) {
   el.setAttribute('aria-label', t(el.dataset.i18nLabel));
 }
+for (const el of document.querySelectorAll('[data-i18n-placeholder]')) {
+  el.placeholder = t(el.dataset.i18nPlaceholder);
+}
 try {
   const said = sessionStorage.getItem('toast');
   if (said) {
@@ -1581,12 +1748,17 @@ try {
 }
 catch (e) {}
 
-store.get(DEFAULTS).then(stored => {
+// the page's scripts all run first (ui.js comes after this one), then the settings are drawn
+const parsed = new Promise(resolve => document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', resolve) : resolve());
+Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   prefs = stored;
   paintFields();
   paintQuiet();
   paintSwatches();
-  $('default-sound').replaceChildren(soundPicker(MEDIA[0]), h('button', {type: 'button', className: 'ghost', id: 'play', textContent: t('play')}));
+  $('default-sound').replaceChildren(soundPicker(MEDIA[0]),
+    h('button', {type: 'button', className: 'btn', id: 'play'}, self.UI?.icon('play') || '', h('span', {textContent: t('play')})));
+  // the page's look on the settings as they are: More options, the search, the hero, word lists as chips
+  self.UI?.start();
   paintRules();
   syncNeeds();
   paintShortcut();
@@ -1628,5 +1800,7 @@ store.get(DEFAULTS).then(stored => {
   // shows as it is at once; then the engine a link names, and the word after a first sign-in
   Promise.all([readAIKeys(), syncAIAccess(), readAccount()]).then(paintAI).then(followHash).then(welcome);
   addEventListener('hashchange', followHash);
-  return paintAccounts();
+  addEventListener('hashchange', followSection);
+  // a link to another part of the page, once the inboxes above it are drawn
+  return paintAccounts().then(followSection);
 });

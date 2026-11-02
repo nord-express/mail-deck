@@ -9,7 +9,7 @@
     "message": "Primary tab only"
   },
   "opt_quietHint": {
-    "message": "An inbox without notifications still shows in the panel and the count, but makes no noise."
+    "message": "Silent: in the panel and the count, no pop-ups or sound"
   },
   "opt_primaryHint": {
     "message": "Primary tab only reads a Gmail feed that Google does not document, so it can stop working."
@@ -30,16 +30,16 @@
     "message": "End"
   },
   "opt_quietWeekend": {
-    "message": "Quiet all weekend too"
+    "message": "All weekend too"
   },
   "opt_quietWeekendText": {
-    "message": "The weekend days follow your region."
+    "message": "$1, as your region counts them."
   },
   "opt_never": {
     "message": "Never notify when the sender or subject contains"
   },
   "opt_neverText": {
-    "message": "One word or address per line. The mail still shows in the panel, without a notification or sound."
+    "message": "The mail still shows in the panel, without a notification or sound."
   },
   "opt_only": {
     "message": "Notify only when the sender or subject contains"
@@ -69,7 +69,7 @@
     "message": "Change"
   },
   "opt_backup": {
-    "message": "Your settings"
+    "message": "Backup"
   },
   "opt_sync": {
     "message": "Keep a copy in Chrome sync"
@@ -121,15 +121,6 @@
   },
   "opt_savedHint": {
     "message": "Changes save as you make them."
-  },
-  "opt_scopeLabel": {
-    "message": "Settings to show"
-  },
-  "opt_essentials": {
-    "message": "Essentials"
-  },
-  "opt_everything": {
-    "message": "Everything"
   },
   "opt_checking": {
     "message": "Checking"
@@ -201,10 +192,10 @@
     "message": "Forget"
   },
   "opt_offHint": {
-    "message": "A switched-off inbox leaves the panel, the badge and notifications."
+    "message": "Hidden from the panel, the count and notifications"
   },
   "opt_labelsHint": {
-    "message": "Labels: watch these Gmail labels instead of the inbox, separated by commas, for example:"
+    "message": "Gmail labels watched instead of the inbox. Press Enter after each one."
   },
   "opt_services": {
     "message": "Other mail"
@@ -267,10 +258,10 @@
     "message": "Delete"
   },
   "opt_combined": {
-    "message": "Put several new emails in one notification"
+    "message": "Combine new emails into one notification"
   },
   "opt_threatAsNew": {
-    "message": "Notify about mail that arrived within"
+    "message": "Only notify about mail newer than"
   },
   "opt_threatAsNewText": {
     "message": "Older unread mail stays quiet. Applies to sound too."
@@ -369,7 +360,7 @@
     "message": "Logos of Gmail senders come from Google’s icon service, which is sent the sender’s domain."
   },
   "opt_opening": {
-    "message": "Opening mail"
+    "message": "Opening Gmail"
   },
   "opt_openIn": {
     "message": "Open Gmail in"
@@ -404,17 +395,11 @@
   "opt_inFront": {
     "message": "Tell me when Gmail is already in front"
   },
-  "opt_actions": {
-    "message": "Actions"
-  },
   "opt_readOnArchive": {
     "message": "Archiving also marks mail as read"
   },
   "opt_diag": {
-    "message": "Diagnostics"
-  },
-  "opt_diagRow": {
-    "message": "Check how Mail Deck works with your inboxes"
+    "message": "Check Mail Deck"
   },
   "opt_diagText": {
     "message": "Asks Gmail now, for every signed-in inbox. Nothing in your mail changes."
@@ -423,7 +408,7 @@
     "message": "Run the check"
   },
   "opt_reset": {
-    "message": "Reset to defaults"
+    "message": "Reset all settings"
   },
   "opt_saved": {
     "message": "Saved"
@@ -447,13 +432,13 @@
     "message": "Remove this rule"
   },
   "opt_noInboxes": {
-    "message": "Your inboxes show up here after the first check."
+    "message": "Sign in to Gmail in this browser. Mail Deck finds every signed-in account on its next check."
   },
   "opt_showInbox": {
     "message": "Show $1"
   },
   "opt_labelsPlaceholder": {
-    "message": "Labels: inbox"
+    "message": "Add a label"
   },
   "opt_labelsFor": {
     "message": "Labels for $1"
@@ -1446,7 +1431,7 @@
     "message": "Look in"
   },
   "opt_serviceAccess": {
-    "message": "Turn it on again to give it access."
+    "message": "Chrome hasn’t given Mail Deck access to $1."
   },
   "panel_copyCode": {
     "message": "Copy code"
@@ -2019,25 +2004,25 @@
     "message": "Off"
   },
   "opt_aiOffText": {
-    "message": "No assistant, summaries or sorting. Nothing is sent anywhere."
+    "message": "Nothing is sent anywhere"
   },
   "opt_aiBuiltin": {
     "message": "Chrome built-in"
   },
   "opt_aiBuiltinText": {
-    "message": "Runs on this computer: free and private, but not on every computer."
+    "message": "Free, on this computer"
   },
   "opt_aiPlan": {
     "message": "ChatGPT plan"
   },
   "opt_aiPlanText": {
-    "message": "The ChatGPT plan you already have, with no API key."
+    "message": "Your plan, no API key"
   },
   "opt_aiCloudText": {
-    "message": "$1 models, paid per use."
+    "message": "$1 · API key"
   },
   "opt_aiZaiText": {
-    "message": "GLM models, paid per use; some are free."
+    "message": "GLM · API key, some free"
   },
   "opt_aiChecking": {
     "message": "Checking…"
@@ -2223,7 +2208,7 @@
     "message": "Finds mail waiting for your reply, important mail, and newsletters you can clear in one go."
   },
   "opt_aiButtons": {
-    "message": "Show AI buttons while the assistant is off"
+    "message": "Keep AI buttons in the panel"
   },
   "opt_aiButtonsText": {
     "message": "The summary, reply and assistant buttons stay in the panel and offer to turn it on."
@@ -2236,6 +2221,189 @@
   },
   "opt_aiPrivacyPlan": {
     "message": "Requests go from your browser straight to OpenAI, signed in with your ChatGPT account. Mail Deck has no servers. A summary, a reply or a question sends that message’s text; the assistant sends your request and the mail it found; Sort unread mail sends the sender, subject and preview of unread mail."
+  },
+  "opt_skip": {
+    "message": "Skip to settings"
+  },
+  "opt_sections": {
+    "message": "Sections"
+  },
+  "opt_search": {
+    "message": "Search settings"
+  },
+  "opt_noMatch": {
+    "message": "No settings match “$1”"
+  },
+  "opt_clearSearch": {
+    "message": "Clear search"
+  },
+  "opt_mailboxes": {
+    "message": "Mailboxes"
+  },
+  "opt_mailboxesLede": {
+    "message": "The inboxes Mail Deck watches, and how often it looks."
+  },
+  "opt_notificationsLede": {
+    "message": "Pop-ups, sound, and when to stay quiet."
+  },
+  "opt_aiLede": {
+    "message": "Summaries, sorting and the assistant, with the engine you choose."
+  },
+  "opt_panelLede": {
+    "message": "How the panel looks and behaves as you read."
+  },
+  "opt_toolbarLede": {
+    "message": "The count on the icon, and what a click does."
+  },
+  "opt_openingLede": {
+    "message": "Where Gmail opens from the panel and notifications."
+  },
+  "opt_backupLede": {
+    "message": "Keep, move or reset your settings."
+  },
+  "opt_help": {
+    "message": "Help"
+  },
+  "opt_helpLede": {
+    "message": "Check that everything works, or tell us what doesn’t."
+  },
+  "opt_more": {
+    "message": "More options"
+  },
+  "opt_popups": {
+    "message": "Pop-ups"
+  },
+  "opt_wordRules": {
+    "message": "Rules"
+  },
+  "opt_saving": {
+    "message": "Saving…"
+  },
+  "opt_savedSync": {
+    "message": "Saved · in Chrome sync"
+  },
+  "opt_saveFailed": {
+    "message": "Not saved: $1"
+  },
+  "opt_noInboxesTitle": {
+    "message": "No inboxes yet"
+  },
+  "opt_signInGmail": {
+    "message": "Sign in to Gmail"
+  },
+  "opt_checkNow": {
+    "message": "Check now"
+  },
+  "opt_reading": {
+    "message": "Reading $1"
+  },
+  "opt_needsAccess": {
+    "message": "$1 needs access"
+  },
+  "opt_addWord": {
+    "message": "Add a word or address"
+  },
+  "opt_removeToken": {
+    "message": "Remove $1"
+  },
+  "opt_aiOffChip": {
+    "message": "AI off"
+  },
+  "opt_aiSetup": {
+    "message": "AI needs setup"
+  },
+  "opt_aiSignedInBadge": {
+    "message": "Signed in"
+  },
+  "opt_aiConnectedBadge": {
+    "message": "Connected"
+  },
+  "opt_aiNeedsAccess": {
+    "message": "Needs access"
+  },
+  "opt_aiCheckingKey": {
+    "message": "Checking the key with $1…"
+  },
+  "opt_quietChip": {
+    "message": "Quiet $1–$2"
+  },
+  "opt_quietNow": {
+    "message": "Quiet now"
+  },
+  "opt_quietUntil": {
+    "message": "Quiet now · until $1"
+  },
+  "opt_quietNext": {
+    "message": "Starts at $1"
+  },
+  "opt_quietWeekendNow": {
+    "message": "Quiet now · all weekend"
+  },
+  "opt_pausedUntil": {
+    "message": "Paused until $1"
+  },
+  "opt_paused": {
+    "message": "Notifications paused"
+  },
+  "opt_resume": {
+    "message": "Resume notifications"
+  },
+  "opt_pinHint": {
+    "message": "Pin Mail Deck to the toolbar to see the count at a glance: click the puzzle piece next to the address bar, then the pin beside Mail Deck."
+  },
+  "opt_tokenName": {
+    "message": "Sender name"
+  },
+  "opt_tokenEmail": {
+    "message": "Sender address"
+  },
+  "opt_tokenTitle": {
+    "message": "Subject"
+  },
+  "opt_tokenSummary": {
+    "message": "Mail text"
+  },
+  "opt_tokenAccount": {
+    "message": "Inbox"
+  },
+  "opt_tokenBreak": {
+    "message": "New line"
+  },
+  "opt_preview": {
+    "message": "Preview"
+  },
+  "opt_sampleName": {
+    "message": "Maria Lopez"
+  },
+  "opt_sampleSubject": {
+    "message": "Lunch on Friday?"
+  },
+  "opt_sampleSummary": {
+    "message": "Are you free at noon? There’s a new place near the office I’d like to try."
+  },
+  "opt_resetText": {
+    "message": "Every setting goes back to its default, inbox switches and labels too, and AI keys are forgotten."
+  },
+  "opt_resetDo": {
+    "message": "Reset"
+  },
+  "opt_cancel": {
+    "message": "Cancel"
+  },
+  "opt_replace": {
+    "message": "Replace"
+  },
+  "opt_diagPassed": {
+    "message": "All checks passed: $1"
+  },
+  "opt_diagFailed": {
+    "message": "Problems found: $1"
+  },
+  "opt_diagCopy": {
+    "message": "Copy report"
+  },
+  "opt_diagCopied": {
+    "message": "Report copied"
   },
   "opt_aiWelcome": {
     "message": "You’re using your ChatGPT plan"

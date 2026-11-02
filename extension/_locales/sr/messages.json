@@ -12,7 +12,7 @@
         "message": "Само „Примарно“"
     },
     "opt_quietHint": {
-        "message": "Сандуче без обавештења и даље се види у панелу и бројачу, али не узнемирава."
+        "message": "Тихо: у панелу и бројачу, без обавештења и звука"
     },
     "opt_primaryHint": {
         "message": "„Примарно“ чита Gmail фид који Google не документује, па може престати да ради."
@@ -33,16 +33,16 @@
         "message": "Крај"
     },
     "opt_quietWeekend": {
-        "message": "Тишина и цео викенд"
+        "message": "И цео викенд"
     },
     "opt_quietWeekendText": {
-        "message": "Дани викенда прате ваш регион."
+        "message": "$1, како се рачуна у вашем региону."
     },
     "opt_never": {
         "message": "Никад не обавештавај када пошиљалац или тема садржи"
     },
     "opt_neverText": {
-        "message": "Једна реч или адреса по реду. Порука се и даље види у панелу, само без обавештења и звука."
+        "message": "Порука се и даље види у панелу, само без обавештења и звука."
     },
     "opt_only": {
         "message": "Обавештавај само када пошиљалац или тема садржи"
@@ -72,7 +72,7 @@
         "message": "Промени"
     },
     "opt_backup": {
-        "message": "Ваша подешавања"
+        "message": "Резервна копија"
     },
     "opt_sync": {
         "message": "Чувај копију у Chrome синхронизацији"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Измене се чувају одмах."
-    },
-    "opt_scopeLabel": {
-        "message": "Која подешавања да се прикажу"
-    },
-    "opt_essentials": {
-        "message": "Основна"
-    },
-    "opt_everything": {
-        "message": "Сва"
     },
     "opt_checking": {
         "message": "Провера"
@@ -204,10 +195,10 @@
         "message": "Заборави"
     },
     "opt_offHint": {
-        "message": "Искључен сандучић нестаје из панела, бројача и обавештења."
+        "message": "Скривено из панела, бројача и обавештења"
     },
     "opt_labelsHint": {
-        "message": "Ознаке: прати ове Gmail ознаке уместо пријемног сандучета, раздвојене зарезом, на пример:"
+        "message": "Gmail ознаке које се прате уместо пријемног сандучета. Притисните Enter после сваке."
     },
     "opt_services": {
         "message": "Друга пошта"
@@ -270,10 +261,10 @@
         "message": "Избриши"
     },
     "opt_combined": {
-        "message": "Спој више нових порука у једно обавештење"
+        "message": "Спој нове поруке у једно обавештење"
     },
     "opt_threatAsNew": {
-        "message": "Колико дуго је порука нова"
+        "message": "Обавештавај само о порукама новијим од"
     },
     "opt_threatAsNewText": {
         "message": "Старија непрочитана пошта остаје тиха. Важи и за звук."
@@ -372,7 +363,7 @@
         "message": "Логотипи пошиљалаца у Gmail-у долазе из Google услуге за иконе, којој се шаље домен пошиљаоца."
     },
     "opt_opening": {
-        "message": "Отварање поште"
+        "message": "Отварање Gmail-а"
     },
     "opt_openIn": {
         "message": "Отварај Gmail у"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Јави ми када је Gmail већ испред"
     },
-    "opt_actions": {
-        "message": "Радње"
-    },
     "opt_readOnArchive": {
         "message": "Архивирање поруку означава и као прочитану"
     },
     "opt_diag": {
-        "message": "Дијагностика"
-    },
-    "opt_diagRow": {
-        "message": "Провери како Mail Deck ради са вашим сандучићима"
+        "message": "Провера Mail Deck-а"
     },
     "opt_diagText": {
         "message": "Пита Gmail одмах, за сваки сандучић. Ништа у пошти се не мења."
@@ -426,7 +411,7 @@
         "message": "Провери"
     },
     "opt_reset": {
-        "message": "Врати подразумевано"
+        "message": "Врати сва подешавања"
     },
     "opt_saved": {
         "message": "Сачувано"
@@ -450,13 +435,13 @@
         "message": "Уклони ово правило"
     },
     "opt_noInboxes": {
-        "message": "Сандучићи ће се појавити овде после прве провере."
+        "message": "Пријавите се на Gmail у овом прегледачу. При следећој провери Mail Deck ће пронаћи сваки налог на који сте пријављени."
     },
     "opt_showInbox": {
         "message": "Прикажи $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "Ознаке: inbox"
+        "message": "Додај ознаку"
     },
     "opt_labelsFor": {
         "message": "Ознаке за $1"
@@ -1588,7 +1573,7 @@
         "message": "Где тражити"
     },
     "opt_serviceAccess": {
-        "message": "Укључите је поново да бисте јој дали приступ."
+        "message": "Chrome није дао Mail Deck-у приступ услузи $1."
     },
     "panel_copyCode": {
         "message": "Копирај код"
@@ -2161,25 +2146,25 @@
         "message": "Искључена"
     },
     "opt_aiOffText": {
-        "message": "Без асистента, сажетака и разврставања. Ништа се никуда не шаље."
+        "message": "Ништа се никуда не шаље"
     },
     "opt_aiBuiltin": {
         "message": "Уграђен у Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "Ради на овом рачунару: бесплатан и приватан, али није на сваком рачунару."
+        "message": "Бесплатно, на овом рачунару"
     },
     "opt_aiPlan": {
         "message": "ChatGPT претплата"
     },
     "opt_aiPlanText": {
-        "message": "ChatGPT претплата коју већ имате, без API кључа."
+        "message": "Ваша претплата, без API кључа"
     },
     "opt_aiCloudText": {
-        "message": "$1 модели, плаћање по коришћењу."
+        "message": "$1 · API кључ"
     },
     "opt_aiZaiText": {
-        "message": "GLM модели, плаћање по коришћењу; неки су бесплатни."
+        "message": "GLM · API кључ, неки бесплатни"
     },
     "opt_aiChecking": {
         "message": "Провера…"
@@ -2365,7 +2350,7 @@
         "message": "Проналази поруке које чекају ваш одговор, важне поруке и билтене које можете да очистите одједном."
     },
     "opt_aiButtons": {
-        "message": "Прикажи дугмад асистента и када је искључен"
+        "message": "Задржи дугмад асистента у панелу"
     },
     "opt_aiButtonsText": {
         "message": "Дугмад за сажетак, одговор и асистента остају у панелу и нуде да га укључите."
@@ -2378,6 +2363,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "Захтеви иду из вашег прегледача право до OpenAI, уз пријаву вашим ChatGPT налогом. Mail Deck нема сервере. Сажетак, одговор или питање шаље текст те поруке; асистент шаље ваш захтев и пронађене поруке; „Разврстај непрочитану пошту“ шаље пошиљаоца, наслов и почетак непрочитаних порука."
+    },
+    "opt_skip": {
+        "message": "Пређи на подешавања"
+    },
+    "opt_sections": {
+        "message": "Одељци"
+    },
+    "opt_search": {
+        "message": "Претражи подешавања"
+    },
+    "opt_noMatch": {
+        "message": "Нема подешавања за „$1“"
+    },
+    "opt_clearSearch": {
+        "message": "Обриши претрагу"
+    },
+    "opt_mailboxes": {
+        "message": "Поштански сандучићи"
+    },
+    "opt_mailboxesLede": {
+        "message": "Сандучићи које Mail Deck прати и колико их често проверава."
+    },
+    "opt_notificationsLede": {
+        "message": "Искачућа обавештења, звук и када треба да буде тихо."
+    },
+    "opt_aiLede": {
+        "message": "Сажеци, разврставање и асистент, уз вештачку интелигенцију коју изаберете."
+    },
+    "opt_panelLede": {
+        "message": "Како панел изгледа и како се понаша док читате."
+    },
+    "opt_toolbarLede": {
+        "message": "Број на икони и шта ради клик на њу."
+    },
+    "opt_openingLede": {
+        "message": "Где се Gmail отвара из панела и обавештења."
+    },
+    "opt_backupLede": {
+        "message": "Сачувајте, пренесите или вратите подешавања."
+    },
+    "opt_help": {
+        "message": "Помоћ"
+    },
+    "opt_helpLede": {
+        "message": "Проверите да ли све ради или нам реците шта не ради."
+    },
+    "opt_more": {
+        "message": "Још подешавања"
+    },
+    "opt_popups": {
+        "message": "Искачућа обавештења"
+    },
+    "opt_wordRules": {
+        "message": "Правила"
+    },
+    "opt_saving": {
+        "message": "Чува се…"
+    },
+    "opt_savedSync": {
+        "message": "Сачувано · у Chrome синхронизацији"
+    },
+    "opt_saveFailed": {
+        "message": "Није сачувано: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Још нема сандучића"
+    },
+    "opt_signInGmail": {
+        "message": "Пријави се на Gmail"
+    },
+    "opt_checkNow": {
+        "message": "Провери сада"
+    },
+    "opt_reading": {
+        "message": "Чита $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 тражи приступ"
+    },
+    "opt_addWord": {
+        "message": "Додај реч или адресу"
+    },
+    "opt_removeToken": {
+        "message": "Уклони „$1“"
+    },
+    "opt_aiOffChip": {
+        "message": "Асистент искључен"
+    },
+    "opt_aiSetup": {
+        "message": "Асистента треба подесити"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Пријављени сте"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Повезано"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Треба приступ"
+    },
+    "opt_aiCheckingKey": {
+        "message": "Провера кључа код $1…"
+    },
+    "opt_quietChip": {
+        "message": "Тишина $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Сада је тихо"
+    },
+    "opt_quietUntil": {
+        "message": "Сада је тихо · до $1"
+    },
+    "opt_quietNext": {
+        "message": "Почиње у $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Сада је тихо · цео викенд"
+    },
+    "opt_pausedUntil": {
+        "message": "Пауза до $1"
+    },
+    "opt_paused": {
+        "message": "Обавештења су паузирана"
+    },
+    "opt_resume": {
+        "message": "Укључи обавештења"
+    },
+    "opt_pinHint": {
+        "message": "Закачите Mail Deck на траку са алаткама да бисте видели број: кликните на иконицу слагалице поред траке за адресу, па на чиоду поред Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "Име пошиљаоца"
+    },
+    "opt_tokenEmail": {
+        "message": "Адреса пошиљаоца"
+    },
+    "opt_tokenTitle": {
+        "message": "Тема"
+    },
+    "opt_tokenSummary": {
+        "message": "Текст поруке"
+    },
+    "opt_tokenAccount": {
+        "message": "Сандуче"
+    },
+    "opt_tokenBreak": {
+        "message": "Нови ред"
+    },
+    "opt_preview": {
+        "message": "Преглед"
+    },
+    "opt_sampleName": {
+        "message": "Марија Петровић"
+    },
+    "opt_sampleSubject": {
+        "message": "Ручак у петак?"
+    },
+    "opt_sampleSummary": {
+        "message": "Да се видимо у подне? Код канцеларије се отворило ново место, волео бих да га пробам."
+    },
+    "opt_resetText": {
+        "message": "Сва подешавања се враћају на подразумевана, заједно са прекидачима и ознакама сандучића, а кључеви за вештачку интелигенцију се бришу."
+    },
+    "opt_resetDo": {
+        "message": "Врати"
+    },
+    "opt_cancel": {
+        "message": "Откажи"
+    },
+    "opt_replace": {
+        "message": "Замени"
+    },
+    "opt_diagPassed": {
+        "message": "Све провере су прошле: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Пронађено проблема: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Копирај извештај"
+    },
+    "opt_diagCopied": {
+        "message": "Извештај је копиран"
     },
     "opt_aiWelcome": {
         "message": "Користите своју ChatGPT претплату"

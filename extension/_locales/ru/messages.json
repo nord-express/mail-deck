@@ -12,7 +12,7 @@
         "message": "Только «Несортированные»"
     },
     "opt_quietHint": {
-        "message": "Ящик без уведомлений остаётся в панели и в счётчике, но не беспокоит."
+        "message": "Тихий: в панели и счётчике, без уведомлений и звука"
     },
     "opt_primaryHint": {
         "message": "«Несортированные» берутся из ленты Gmail, которую Google не документирует, поэтому это может перестать работать."
@@ -33,16 +33,16 @@
         "message": "Конец"
     },
     "opt_quietWeekend": {
-        "message": "Тишина и все выходные"
+        "message": "И все выходные"
     },
     "opt_quietWeekendText": {
-        "message": "Выходные дни — как принято в вашем регионе."
+        "message": "$1 — как принято в вашем регионе."
     },
     "opt_never": {
         "message": "Не уведомлять, если отправитель или тема содержит"
     },
     "opt_neverText": {
-        "message": "По одному слову или адресу в строке. Письмо всё равно появится в панели, только без уведомления и звука."
+        "message": "Письмо всё равно появится в панели, только без уведомления и звука."
     },
     "opt_only": {
         "message": "Уведомлять, только если отправитель или тема содержит"
@@ -72,7 +72,7 @@
         "message": "Изменить"
     },
     "opt_backup": {
-        "message": "Ваши настройки"
+        "message": "Резервная копия"
     },
     "opt_sync": {
         "message": "Хранить копию в синхронизации Chrome"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Изменения сохраняются сразу."
-    },
-    "opt_scopeLabel": {
-        "message": "Какие настройки показать"
-    },
-    "opt_essentials": {
-        "message": "Основные"
-    },
-    "opt_everything": {
-        "message": "Все"
     },
     "opt_checking": {
         "message": "Проверка"
@@ -204,10 +195,10 @@
         "message": "Забыть"
     },
     "opt_offHint": {
-        "message": "Выключенный ящик пропадает из панели, счётчика и уведомлений."
+        "message": "Скрыт из панели, счётчика и уведомлений"
     },
     "opt_labelsHint": {
-        "message": "Ярлыки: следить за этими ярлыками Gmail вместо входящих, через запятую, например:"
+        "message": "Ярлыки Gmail, за которыми следить вместо входящих. Нажимайте Enter после каждого."
     },
     "opt_services": {
         "message": "Другая почта"
@@ -270,10 +261,10 @@
         "message": "Удалить"
     },
     "opt_combined": {
-        "message": "Объединять несколько новых писем в одно уведомление"
+        "message": "Объединять новые письма в одно уведомление"
     },
     "opt_threatAsNew": {
-        "message": "Сколько письмо считается новым"
+        "message": "Уведомлять только о письмах новее"
     },
     "opt_threatAsNewText": {
         "message": "Старые непрочитанные письма не беспокоят. Касается и звука."
@@ -372,7 +363,7 @@
         "message": "Логотипы отправителей Gmail берутся из сервиса значков Google, которому передаётся домен отправителя."
     },
     "opt_opening": {
-        "message": "Открытие почты"
+        "message": "Открытие Gmail"
     },
     "opt_openIn": {
         "message": "Открывать Gmail"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Сообщать, когда Gmail уже на экране"
     },
-    "opt_actions": {
-        "message": "Действия"
-    },
     "opt_readOnArchive": {
         "message": "Архивирование также отмечает письмо прочитанным"
     },
     "opt_diag": {
-        "message": "Диагностика"
-    },
-    "opt_diagRow": {
-        "message": "Проверить, как Mail Deck работает с вашими ящиками"
+        "message": "Проверка Mail Deck"
     },
     "opt_diagText": {
         "message": "Спрашивает Gmail прямо сейчас, по каждому ящику. Ничего в почте не меняется."
@@ -426,7 +411,7 @@
         "message": "Проверить"
     },
     "opt_reset": {
-        "message": "Сбросить настройки"
+        "message": "Сбросить все настройки"
     },
     "opt_saved": {
         "message": "Сохранено"
@@ -450,13 +435,13 @@
         "message": "Удалить правило"
     },
     "opt_noInboxes": {
-        "message": "Ящики появятся здесь после первой проверки."
+        "message": "Войдите в Gmail в этом браузере. При следующей проверке Mail Deck найдёт все аккаунты, в которые вы вошли."
     },
     "opt_showInbox": {
         "message": "Показывать $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "Ярлыки: inbox"
+        "message": "Добавить ярлык"
     },
     "opt_labelsFor": {
         "message": "Ярлыки для $1"
@@ -1588,7 +1573,7 @@
         "message": "Где искать"
     },
     "opt_serviceAccess": {
-        "message": "Включите его ещё раз, чтобы дать ему доступ."
+        "message": "Chrome не дал Mail Deck доступ к $1."
     },
     "panel_copyCode": {
         "message": "Скопировать код"
@@ -2161,25 +2146,25 @@
         "message": "Выключен"
     },
     "opt_aiOffText": {
-        "message": "Без ассистента, сводок и сортировки. Ничего никуда не отправляется."
+        "message": "Ничего никуда не отправляется"
     },
     "opt_aiBuiltin": {
         "message": "Встроенный в Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "Работает на этом компьютере: бесплатно и приватно, но есть не на каждом компьютере."
+        "message": "Бесплатно, на этом компьютере"
     },
     "opt_aiPlan": {
         "message": "Подписка ChatGPT"
     },
     "opt_aiPlanText": {
-        "message": "Подписка ChatGPT, которая у вас уже есть, без ключа API."
+        "message": "Ваша подписка, без ключа API"
     },
     "opt_aiCloudText": {
-        "message": "Модели $1, оплата за использование."
+        "message": "$1 · ключ API"
     },
     "opt_aiZaiText": {
-        "message": "Модели GLM, оплата за использование; некоторые бесплатны."
+        "message": "GLM · ключ API, есть бесплатные"
     },
     "opt_aiChecking": {
         "message": "Проверяю…"
@@ -2365,7 +2350,7 @@
         "message": "Находит письма, которые ждут вашего ответа, важные письма и рассылки, которые можно убрать разом."
     },
     "opt_aiButtons": {
-        "message": "Показывать кнопки ИИ, когда ассистент выключен"
+        "message": "Оставить кнопки ИИ в панели"
     },
     "opt_aiButtonsText": {
         "message": "Кнопки сводки, ответа и ассистента остаются в панели и предлагают его включить."
@@ -2378,6 +2363,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "Запросы идут из вашего браузера прямо в OpenAI, от имени вашего аккаунта ChatGPT. У Mail Deck нет серверов. Для сводки, ответа или вопроса отправляется текст этого письма; для ассистента — ваш запрос и найденные письма; для «Сортировки непрочитанных» — отправитель, тема и начало непрочитанных писем."
+    },
+    "opt_skip": {
+        "message": "Перейти к настройкам"
+    },
+    "opt_sections": {
+        "message": "Разделы"
+    },
+    "opt_search": {
+        "message": "Поиск по настройкам"
+    },
+    "opt_noMatch": {
+        "message": "Ничего не нашлось по запросу «$1»"
+    },
+    "opt_clearSearch": {
+        "message": "Очистить поиск"
+    },
+    "opt_mailboxes": {
+        "message": "Почтовые ящики"
+    },
+    "opt_mailboxesLede": {
+        "message": "Ящики, за которыми следит Mail Deck, и как часто он их проверяет."
+    },
+    "opt_notificationsLede": {
+        "message": "Всплывающие уведомления, звук и когда не беспокоить."
+    },
+    "opt_aiLede": {
+        "message": "Сводки, сортировка и ассистент — с тем ИИ, который вы выберете."
+    },
+    "opt_panelLede": {
+        "message": "Как панель выглядит и ведёт себя, пока вы читаете."
+    },
+    "opt_toolbarLede": {
+        "message": "Счётчик на значке и что делает щелчок по нему."
+    },
+    "opt_openingLede": {
+        "message": "Где открывается Gmail из панели и уведомлений."
+    },
+    "opt_backupLede": {
+        "message": "Сохранить, перенести или сбросить настройки."
+    },
+    "opt_help": {
+        "message": "Помощь"
+    },
+    "opt_helpLede": {
+        "message": "Проверьте, что всё работает, или расскажите нам, что не так."
+    },
+    "opt_more": {
+        "message": "Больше настроек"
+    },
+    "opt_popups": {
+        "message": "Всплывающие уведомления"
+    },
+    "opt_wordRules": {
+        "message": "Правила"
+    },
+    "opt_saving": {
+        "message": "Сохраняю…"
+    },
+    "opt_savedSync": {
+        "message": "Сохранено · в синхронизации Chrome"
+    },
+    "opt_saveFailed": {
+        "message": "Не сохранено: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Ящиков пока нет"
+    },
+    "opt_signInGmail": {
+        "message": "Войти в Gmail"
+    },
+    "opt_checkNow": {
+        "message": "Проверить сейчас"
+    },
+    "opt_reading": {
+        "message": "Читает $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1: нужен доступ"
+    },
+    "opt_addWord": {
+        "message": "Добавить слово или адрес"
+    },
+    "opt_removeToken": {
+        "message": "Удалить «$1»"
+    },
+    "opt_aiOffChip": {
+        "message": "ИИ выключен"
+    },
+    "opt_aiSetup": {
+        "message": "ИИ нужно настроить"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Вход выполнен"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Подключено"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Нужен доступ"
+    },
+    "opt_aiCheckingKey": {
+        "message": "Проверяю ключ в $1…"
+    },
+    "opt_quietChip": {
+        "message": "Тишина $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Сейчас тихо"
+    },
+    "opt_quietUntil": {
+        "message": "Сейчас тихо · до $1"
+    },
+    "opt_quietNext": {
+        "message": "Начнётся в $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Сейчас тихо · все выходные"
+    },
+    "opt_pausedUntil": {
+        "message": "Пауза до $1"
+    },
+    "opt_paused": {
+        "message": "Уведомления на паузе"
+    },
+    "opt_resume": {
+        "message": "Включить уведомления"
+    },
+    "opt_pinHint": {
+        "message": "Закрепите Mail Deck на панели браузера, чтобы видеть счётчик: нажмите на значок пазла рядом с адресной строкой, затем на булавку возле Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "Имя отправителя"
+    },
+    "opt_tokenEmail": {
+        "message": "Адрес отправителя"
+    },
+    "opt_tokenTitle": {
+        "message": "Тема"
+    },
+    "opt_tokenSummary": {
+        "message": "Текст письма"
+    },
+    "opt_tokenAccount": {
+        "message": "Ящик"
+    },
+    "opt_tokenBreak": {
+        "message": "Новая строка"
+    },
+    "opt_preview": {
+        "message": "Предпросмотр"
+    },
+    "opt_sampleName": {
+        "message": "Анна Смирнова"
+    },
+    "opt_sampleSubject": {
+        "message": "Обед в пятницу?"
+    },
+    "opt_sampleSummary": {
+        "message": "Встретимся в полдень? Рядом с офисом открылось новое место, хочу его попробовать."
+    },
+    "opt_resetText": {
+        "message": "Все настройки вернутся к исходным, вместе с переключателями ящиков и ярлыками, а ключи ИИ будут забыты."
+    },
+    "opt_resetDo": {
+        "message": "Сбросить"
+    },
+    "opt_cancel": {
+        "message": "Отмена"
+    },
+    "opt_replace": {
+        "message": "Заменить"
+    },
+    "opt_diagPassed": {
+        "message": "Все проверки пройдены: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Найдено проблем: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Скопировать отчёт"
+    },
+    "opt_diagCopied": {
+        "message": "Отчёт скопирован"
     },
     "opt_aiWelcome": {
         "message": "Вы используете свою подписку ChatGPT"

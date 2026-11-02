@@ -12,7 +12,7 @@
         "message": "Yalnızca “Birincil”"
     },
     "opt_quietHint": {
-        "message": "Bildirimleri kapalı bir gelen kutusu panelde ve sayaçta görünmeye devam eder ama rahatsız etmez."
+        "message": "Sessiz: panelde ve sayaçta, bildirim ve ses yok"
     },
     "opt_primaryHint": {
         "message": "“Birincil”, Google’ın belgelemediği bir Gmail akışını okur; bu yüzden çalışmayı bırakabilir."
@@ -33,16 +33,16 @@
         "message": "Bitiş"
     },
     "opt_quietWeekend": {
-        "message": "Tüm hafta sonu da sessiz"
+        "message": "Tüm hafta sonu da"
     },
     "opt_quietWeekendText": {
-        "message": "Hafta sonu günleri bölgenize göre belirlenir."
+        "message": "$1, bölgenize göre."
     },
     "opt_never": {
         "message": "Gönderen veya konu şunu içeriyorsa asla bildirme"
     },
     "opt_neverText": {
-        "message": "Her satıra bir kelime veya adres. E-posta yine panelde görünür, yalnızca bildirim ve ses olmaz."
+        "message": "E-posta yine panelde görünür, yalnızca bildirim ve ses olmaz."
     },
     "opt_only": {
         "message": "Yalnızca gönderen veya konu şunu içeriyorsa bildir"
@@ -72,7 +72,7 @@
         "message": "Değiştir"
     },
     "opt_backup": {
-        "message": "Ayarlarınız"
+        "message": "Yedekleme"
     },
     "opt_sync": {
         "message": "Chrome senkronizasyonunda bir kopya tut"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Değişiklikler hemen kaydedilir."
-    },
-    "opt_scopeLabel": {
-        "message": "Gösterilecek ayarlar"
-    },
-    "opt_essentials": {
-        "message": "Temel"
-    },
-    "opt_everything": {
-        "message": "Tümü"
     },
     "opt_checking": {
         "message": "Denetim"
@@ -204,10 +195,10 @@
         "message": "Unut"
     },
     "opt_offHint": {
-        "message": "Kapatılan kutu panelden, sayaçtan ve bildirimlerden çıkar."
+        "message": "Panelde, sayaçta ve bildirimlerde gizli"
     },
     "opt_labelsHint": {
-        "message": "Etiketler: gelen kutusu yerine bu Gmail etiketlerini izle, virgülle ayrılmış, örneğin:"
+        "message": "Gelen kutusu yerine izlenen Gmail etiketleri. Her birinden sonra Enter’a basın."
     },
     "opt_services": {
         "message": "Diğer e-posta hizmetleri"
@@ -270,10 +261,10 @@
         "message": "Sil"
     },
     "opt_combined": {
-        "message": "Birden çok yeni postayı tek bildirimde topla"
+        "message": "Yeni postaları tek bildirimde topla"
     },
     "opt_threatAsNew": {
-        "message": "Şu süre içinde gelen postalar için bildir"
+        "message": "Yalnızca şundan yeni postalar için bildir:"
     },
     "opt_threatAsNewText": {
         "message": "Daha eski okunmamış postalar sessiz kalır. Ses için de geçerli."
@@ -372,7 +363,7 @@
         "message": "Gmail gönderenlerinin logoları, gönderenin alan adının iletildiği Google simge hizmetinden gelir."
     },
     "opt_opening": {
-        "message": "Postayı açma"
+        "message": "Gmail’i açma"
     },
     "opt_openIn": {
         "message": "Gmail’i şurada aç"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Gmail zaten öndeyse haber ver"
     },
-    "opt_actions": {
-        "message": "İşlemler"
-    },
     "opt_readOnArchive": {
         "message": "Arşivlemek postayı okundu olarak da işaretler"
     },
     "opt_diag": {
-        "message": "Tanılama"
-    },
-    "opt_diagRow": {
-        "message": "Mail Deck’in kutularınızla nasıl çalıştığını denetle"
+        "message": "Mail Deck’i denetle"
     },
     "opt_diagText": {
         "message": "Şimdi Gmail’e her açık kutu için sorar. Postanızda hiçbir şey değişmez."
@@ -426,7 +411,7 @@
         "message": "Denetimi başlat"
     },
     "opt_reset": {
-        "message": "Varsayılanlara dön"
+        "message": "Tüm ayarları sıfırla"
     },
     "opt_saved": {
         "message": "Kaydedildi"
@@ -450,13 +435,13 @@
         "message": "Bu kuralı kaldır"
     },
     "opt_noInboxes": {
-        "message": "Kutularınız ilk denetimden sonra burada görünür."
+        "message": "Bu tarayıcıda Gmail’de oturum açın. Mail Deck bir sonraki denetimde oturum açılmış her hesabı bulur."
     },
     "opt_showInbox": {
         "message": "$1 göster"
     },
     "opt_labelsPlaceholder": {
-        "message": "Etiketler: inbox"
+        "message": "Etiket ekle"
     },
     "opt_labelsFor": {
         "message": "$1 etiketleri"
@@ -1584,7 +1569,7 @@
         "message": "Aranacak yer"
     },
     "opt_serviceAccess": {
-        "message": "Erişim vermek için yeniden etkinleştirin."
+        "message": "Chrome, Mail Deck’e $1 erişimi vermedi."
     },
     "panel_copyCode": {
         "message": "Kodu kopyala"
@@ -2157,25 +2142,25 @@
         "message": "Kapalı"
     },
     "opt_aiOffText": {
-        "message": "Asistan, özet ya da sınıflandırma yok. Hiçbir şey hiçbir yere gönderilmez."
+        "message": "Hiçbir şey hiçbir yere gönderilmez"
     },
     "opt_aiBuiltin": {
         "message": "Chrome’un yerleşik modeli"
     },
     "opt_aiBuiltinText": {
-        "message": "Bu bilgisayarda çalışır: ücretsiz ve gizli, ama her bilgisayarda yok."
+        "message": "Ücretsiz, bu bilgisayarda"
     },
     "opt_aiPlan": {
         "message": "ChatGPT planı"
     },
     "opt_aiPlanText": {
-        "message": "Zaten sahip olduğunuz ChatGPT planı, API anahtarı olmadan."
+        "message": "Planınız, API anahtarı gerekmez"
     },
     "opt_aiCloudText": {
-        "message": "$1 modelleri, kullandıkça ödeme."
+        "message": "$1 · API anahtarı"
     },
     "opt_aiZaiText": {
-        "message": "GLM modelleri, kullandıkça ödeme; bazıları ücretsiz."
+        "message": "GLM · API anahtarı, bazıları ücretsiz"
     },
     "opt_aiChecking": {
         "message": "Denetleniyor…"
@@ -2361,7 +2346,7 @@
         "message": "Yanıtınızı bekleyen postaları, önemli postaları ve tek seferde temizleyebileceğiniz bültenleri bulur."
     },
     "opt_aiButtons": {
-        "message": "Asistan kapalıyken yapay zekâ düğmelerini göster"
+        "message": "Yapay zekâ düğmeleri panelde kalsın"
     },
     "opt_aiButtonsText": {
         "message": "Özet, yanıt ve asistan düğmeleri panelde kalır ve asistanı açmayı önerir."
@@ -2374,6 +2359,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "İstekler tarayıcınızdan doğrudan OpenAI sunucularına, ChatGPT hesabınızla oturum açılarak gider. Mail Deck’in sunucusu yoktur. Özet, yanıt ya da soru o iletinin metnini gönderir; asistan isteğinizi ve bulduğu postaları gönderir; “Okunmamış postaları sınıflandır” okunmamış postaların göndereni, konusu ve önizlemesini gönderir."
+    },
+    "opt_skip": {
+        "message": "Ayarlara geç"
+    },
+    "opt_sections": {
+        "message": "Bölümler"
+    },
+    "opt_search": {
+        "message": "Ayarlarda ara"
+    },
+    "opt_noMatch": {
+        "message": "“$1” ile eşleşen ayar yok"
+    },
+    "opt_clearSearch": {
+        "message": "Aramayı temizle"
+    },
+    "opt_mailboxes": {
+        "message": "Posta kutuları"
+    },
+    "opt_mailboxesLede": {
+        "message": "Mail Deck’in izlediği gelen kutuları ve ne sıklıkla baktığı."
+    },
+    "opt_notificationsLede": {
+        "message": "Açılır bildirimler, ses ve ne zaman sessiz kalınacağı."
+    },
+    "opt_aiLede": {
+        "message": "Özetler, sınıflandırma ve asistan; seçtiğiniz yapay zekâ ile."
+    },
+    "opt_panelLede": {
+        "message": "Panelin görünümü ve okurken nasıl davrandığı."
+    },
+    "opt_toolbarLede": {
+        "message": "Simgedeki sayı ve tıklamanın ne yaptığı."
+    },
+    "opt_openingLede": {
+        "message": "Gmail’in panelden ve bildirimlerden nerede açılacağı."
+    },
+    "opt_backupLede": {
+        "message": "Ayarlarınızı saklayın, taşıyın ya da sıfırlayın."
+    },
+    "opt_help": {
+        "message": "Yardım"
+    },
+    "opt_helpLede": {
+        "message": "Her şeyin çalıştığını denetleyin ya da neyin çalışmadığını bize bildirin."
+    },
+    "opt_more": {
+        "message": "Diğer seçenekler"
+    },
+    "opt_popups": {
+        "message": "Açılır bildirimler"
+    },
+    "opt_wordRules": {
+        "message": "Kurallar"
+    },
+    "opt_saving": {
+        "message": "Kaydediliyor…"
+    },
+    "opt_savedSync": {
+        "message": "Kaydedildi · Chrome senkronizasyonunda"
+    },
+    "opt_saveFailed": {
+        "message": "Kaydedilmedi: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Henüz gelen kutusu yok"
+    },
+    "opt_signInGmail": {
+        "message": "Gmail’de oturum aç"
+    },
+    "opt_checkNow": {
+        "message": "Şimdi denetle"
+    },
+    "opt_reading": {
+        "message": "Okunan: $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 erişim istiyor"
+    },
+    "opt_addWord": {
+        "message": "Kelime veya adres ekle"
+    },
+    "opt_removeToken": {
+        "message": "$1 öğesini kaldır"
+    },
+    "opt_aiOffChip": {
+        "message": "Yapay zekâ kapalı"
+    },
+    "opt_aiSetup": {
+        "message": "Yapay zekâ ayar bekliyor"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Oturum açık"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Bağlı"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Erişim gerekli"
+    },
+    "opt_aiCheckingKey": {
+        "message": "Anahtar $1 ile denetleniyor…"
+    },
+    "opt_quietChip": {
+        "message": "Sessiz $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Şu an sessiz"
+    },
+    "opt_quietUntil": {
+        "message": "Şu an sessiz · $1 saatine kadar"
+    },
+    "opt_quietNext": {
+        "message": "Başlangıç: $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Şu an sessiz · tüm hafta sonu"
+    },
+    "opt_pausedUntil": {
+        "message": "$1 saatine kadar duraklatıldı"
+    },
+    "opt_paused": {
+        "message": "Bildirimler duraklatıldı"
+    },
+    "opt_resume": {
+        "message": "Bildirimleri sürdür"
+    },
+    "opt_pinHint": {
+        "message": "Sayıyı bir bakışta görmek için Mail Deck’i araç çubuğuna sabitleyin: adres çubuğunun yanındaki yapboz parçasını, ardından Mail Deck’in yanındaki raptiyeyi tıklayın."
+    },
+    "opt_tokenName": {
+        "message": "Gönderen adı"
+    },
+    "opt_tokenEmail": {
+        "message": "Gönderen adresi"
+    },
+    "opt_tokenTitle": {
+        "message": "Konu"
+    },
+    "opt_tokenSummary": {
+        "message": "E-posta metni"
+    },
+    "opt_tokenAccount": {
+        "message": "Gelen kutusu"
+    },
+    "opt_tokenBreak": {
+        "message": "Yeni satır"
+    },
+    "opt_preview": {
+        "message": "Önizleme"
+    },
+    "opt_sampleName": {
+        "message": "Ayşe Yılmaz"
+    },
+    "opt_sampleSubject": {
+        "message": "Cuma günü öğle yemeği?"
+    },
+    "opt_sampleSummary": {
+        "message": "Öğlen müsait misin? Ofisin yakınında yeni bir yer açıldı, denemek istiyorum."
+    },
+    "opt_resetText": {
+        "message": "Tüm ayarlar varsayılana döner, kutu anahtarları ve etiketler de; yapay zekâ anahtarları silinir."
+    },
+    "opt_resetDo": {
+        "message": "Sıfırla"
+    },
+    "opt_cancel": {
+        "message": "İptal"
+    },
+    "opt_replace": {
+        "message": "Değiştir"
+    },
+    "opt_diagPassed": {
+        "message": "Tüm denetimler başarılı: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Bulunan sorun: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Raporu kopyala"
+    },
+    "opt_diagCopied": {
+        "message": "Rapor kopyalandı"
     },
     "opt_aiWelcome": {
         "message": "ChatGPT planınızı kullanıyorsunuz"

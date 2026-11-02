@@ -12,7 +12,7 @@
         "message": "علامة التبويب «الأساسية» فقط"
     },
     "opt_quietHint": {
-        "message": "يبقى صندوق البريد بلا إشعارات ظاهرًا في اللوحة وفي العدّاد، لكنه لا يُصدر أي تنبيه."
+        "message": "صامت: في اللوحة والعدّاد، بلا إشعارات أو صوت"
     },
     "opt_primaryHint": {
         "message": "يقرأ خيار «الأساسية» موجزًا من Gmail لا توثّقه Google، لذا قد يتوقف عن العمل."
@@ -33,16 +33,16 @@
         "message": "النهاية"
     },
     "opt_quietWeekend": {
-        "message": "الهدوء طوال عطلة نهاية الأسبوع أيضًا"
+        "message": "طوال عطلة نهاية الأسبوع أيضًا"
     },
     "opt_quietWeekendText": {
-        "message": "تتبع أيام عطلة نهاية الأسبوع منطقتك."
+        "message": "$1، بحسب منطقتك."
     },
     "opt_never": {
         "message": "لا تُرسل إشعارًا أبدًا إذا احتوى المرسل أو الموضوع على"
     },
     "opt_neverText": {
-        "message": "كلمة أو عنوان واحد في كل سطر. تظهر الرسالة في اللوحة مع ذلك، لكن بلا إشعار أو صوت."
+        "message": "تظهر الرسالة في اللوحة مع ذلك، لكن بلا إشعار أو صوت."
     },
     "opt_only": {
         "message": "أرسل إشعارًا فقط إذا احتوى المرسل أو الموضوع على"
@@ -72,7 +72,7 @@
         "message": "تغيير"
     },
     "opt_backup": {
-        "message": "إعداداتك"
+        "message": "النسخ الاحتياطي"
     },
     "opt_sync": {
         "message": "الاحتفاظ بنسخة في مزامنة Chrome"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "تُحفظ التغييرات فور إجرائها."
-    },
-    "opt_scopeLabel": {
-        "message": "الإعدادات المعروضة"
-    },
-    "opt_essentials": {
-        "message": "الأساسية"
-    },
-    "opt_everything": {
-        "message": "الكل"
     },
     "opt_checking": {
         "message": "الفحص"
@@ -204,10 +195,10 @@
         "message": "نسيان"
     },
     "opt_offHint": {
-        "message": "الصندوق المعطّل يخرج من اللوحة والعدّاد والإشعارات."
+        "message": "مخفي من اللوحة والعدّاد والإشعارات"
     },
     "opt_labelsHint": {
-        "message": "التصنيفات: متابعة تصنيفات Gmail هذه بدلًا من البريد الوارد، مفصولة بفواصل، مثلًا:"
+        "message": "تصنيفات Gmail التي تُتابَع بدلًا من البريد الوارد. اضغط Enter بعد كل تصنيف."
     },
     "opt_services": {
         "message": "بريد آخر"
@@ -270,10 +261,10 @@
         "message": "حذف"
     },
     "opt_combined": {
-        "message": "جمع عدة رسائل جديدة في إشعار واحد"
+        "message": "جمع الرسائل الجديدة في إشعار واحد"
     },
     "opt_threatAsNew": {
-        "message": "الإشعار بالبريد الذي وصل خلال"
+        "message": "الإشعار فقط بالبريد الذي وصل خلال"
     },
     "opt_threatAsNewText": {
         "message": "يبقى البريد غير المقروء الأقدم صامتًا. ينطبق على الصوت أيضًا."
@@ -372,7 +363,7 @@
         "message": "تأتي شعارات مرسلي Gmail من خدمة الرموز لدى Google، التي يُرسل إليها نطاق المرسل."
     },
     "opt_opening": {
-        "message": "فتح البريد"
+        "message": "فتح Gmail"
     },
     "opt_openIn": {
         "message": "فتح Gmail في"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "أخبرني عندما يكون Gmail في المقدمة"
     },
-    "opt_actions": {
-        "message": "الإجراءات"
-    },
     "opt_readOnArchive": {
         "message": "الأرشفة تميّز الرسالة كمقروءة أيضًا"
     },
     "opt_diag": {
-        "message": "التشخيص"
-    },
-    "opt_diagRow": {
-        "message": "التحقق من عمل Mail Deck مع صناديقك"
+        "message": "فحص Mail Deck"
     },
     "opt_diagText": {
         "message": "يسأل Gmail الآن عن كل صندوق مسجّل الدخول. لا يتغيّر شيء في بريدك."
@@ -426,7 +411,7 @@
         "message": "بدء الفحص"
     },
     "opt_reset": {
-        "message": "استعادة الإعدادات الافتراضية"
+        "message": "إعادة ضبط كل الإعدادات"
     },
     "opt_saved": {
         "message": "تم الحفظ"
@@ -450,13 +435,13 @@
         "message": "إزالة هذه القاعدة"
     },
     "opt_noInboxes": {
-        "message": "ستظهر صناديقك هنا بعد أول فحص."
+        "message": "سجّل الدخول إلى Gmail في هذا المتصفح. في الفحص التالي سيجد Mail Deck كل حساب سجّلت الدخول إليه."
     },
     "opt_showInbox": {
         "message": "إظهار $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "التصنيفات: inbox"
+        "message": "إضافة تصنيف"
     },
     "opt_labelsFor": {
         "message": "تصنيفات $1"
@@ -1584,7 +1569,7 @@
         "message": "البحث في"
     },
     "opt_serviceAccess": {
-        "message": "فعّلها مرة أخرى لمنحها حق الوصول."
+        "message": "لم يمنح Chrome ‏Mail Deck حق الوصول إلى $1."
     },
     "panel_copyCode": {
         "message": "نسخ رمز التحقق"
@@ -2157,25 +2142,25 @@
         "message": "متوقف"
     },
     "opt_aiOffText": {
-        "message": "لا مساعد ولا ملخّصات ولا فرز. لا يُرسل أي شيء إلى أي مكان."
+        "message": "لا يُرسل أي شيء إلى أي مكان"
     },
     "opt_aiBuiltin": {
         "message": "المدمج في Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "يعمل على هذا الكمبيوتر: مجاني وخاص، لكنه غير متوفر على كل كمبيوتر."
+        "message": "مجاني، على هذا الكمبيوتر"
     },
     "opt_aiPlan": {
         "message": "خطة ChatGPT"
     },
     "opt_aiPlanText": {
-        "message": "خطة ChatGPT التي لديك بالفعل، دون مفتاح API."
+        "message": "خطتك، دون مفتاح API"
     },
     "opt_aiCloudText": {
-        "message": "نماذج $1، والدفع حسب الاستخدام."
+        "message": "$1 · مفتاح API"
     },
     "opt_aiZaiText": {
-        "message": "نماذج GLM، والدفع حسب الاستخدام؛ وبعضها مجاني."
+        "message": "GLM · مفتاح API، وبعضها مجاني"
     },
     "opt_aiChecking": {
         "message": "جارٍ التحقق…"
@@ -2361,7 +2346,7 @@
         "message": "يجد البريد الذي ينتظر ردّك، والبريد المهم، والنشرات الإخبارية التي يمكنك مسحها دفعة واحدة."
     },
     "opt_aiButtons": {
-        "message": "إظهار أزرار الذكاء الاصطناعي عندما يكون المساعد متوقفًا"
+        "message": "إبقاء أزرار الذكاء الاصطناعي في اللوحة"
     },
     "opt_aiButtonsText": {
         "message": "تبقى أزرار الملخّص والرد والمساعد في اللوحة، وتعرض عليك تشغيله."
@@ -2374,6 +2359,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "تذهب الطلبات من متصفحك مباشرة إلى OpenAI، بتسجيل دخولك إلى حساب ChatGPT. ليس لدى Mail Deck خوادم. يُرسل الملخّص أو الرد أو السؤال نص تلك الرسالة، ويُرسل المساعد طلبك والرسائل التي وجدها، ويُرسل «فرز البريد غير المقروء» المرسل والموضوع ومقتطف البريد غير المقروء."
+    },
+    "opt_skip": {
+        "message": "الانتقال إلى الإعدادات"
+    },
+    "opt_sections": {
+        "message": "الأقسام"
+    },
+    "opt_search": {
+        "message": "البحث في الإعدادات"
+    },
+    "opt_noMatch": {
+        "message": "لا توجد إعدادات تطابق «$1»"
+    },
+    "opt_clearSearch": {
+        "message": "مسح البحث"
+    },
+    "opt_mailboxes": {
+        "message": "صناديق البريد"
+    },
+    "opt_mailboxesLede": {
+        "message": "الصناديق التي يتابعها Mail Deck، وكم مرة يتحقق منها."
+    },
+    "opt_notificationsLede": {
+        "message": "الإشعارات المنبثقة والصوت، ومتى يلزم الهدوء."
+    },
+    "opt_aiLede": {
+        "message": "الملخّصات والفرز والمساعد، بالمحرّك الذي تختاره."
+    },
+    "opt_panelLede": {
+        "message": "كيف تبدو اللوحة وكيف تتصرّف أثناء القراءة."
+    },
+    "opt_toolbarLede": {
+        "message": "العدّاد على الرمز، وما تفعله النقرة عليه."
+    },
+    "opt_openingLede": {
+        "message": "أين يُفتح Gmail من اللوحة والإشعارات."
+    },
+    "opt_backupLede": {
+        "message": "احتفظ بإعداداتك أو انقلها أو أعِد ضبطها."
+    },
+    "opt_help": {
+        "message": "المساعدة"
+    },
+    "opt_helpLede": {
+        "message": "تأكّد من أن كل شيء يعمل، أو أخبرنا بما لا يعمل."
+    },
+    "opt_more": {
+        "message": "خيارات أخرى"
+    },
+    "opt_popups": {
+        "message": "الإشعارات المنبثقة"
+    },
+    "opt_wordRules": {
+        "message": "القواعد"
+    },
+    "opt_saving": {
+        "message": "جارٍ الحفظ…"
+    },
+    "opt_savedSync": {
+        "message": "تم الحفظ · في مزامنة Chrome"
+    },
+    "opt_saveFailed": {
+        "message": "لم يتم الحفظ: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "لا توجد صناديق بعد"
+    },
+    "opt_signInGmail": {
+        "message": "تسجيل الدخول إلى Gmail"
+    },
+    "opt_checkNow": {
+        "message": "التحقق الآن"
+    },
+    "opt_reading": {
+        "message": "يقرأ $1"
+    },
+    "opt_needsAccess": {
+        "message": "يحتاج $1 إلى الوصول"
+    },
+    "opt_addWord": {
+        "message": "إضافة كلمة أو عنوان"
+    },
+    "opt_removeToken": {
+        "message": "إزالة $1"
+    },
+    "opt_aiOffChip": {
+        "message": "الذكاء الاصطناعي متوقف"
+    },
+    "opt_aiSetup": {
+        "message": "الذكاء الاصطناعي يحتاج إلى إعداد"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "مسجّل الدخول"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "مرتبط"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "يحتاج إلى الوصول"
+    },
+    "opt_aiCheckingKey": {
+        "message": "جارٍ التحقق من المفتاح لدى $1…"
+    },
+    "opt_quietChip": {
+        "message": "الهدوء $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "هدوء الآن"
+    },
+    "opt_quietUntil": {
+        "message": "هدوء الآن · حتى $1"
+    },
+    "opt_quietNext": {
+        "message": "يبدأ في $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "هدوء الآن · طوال عطلة نهاية الأسبوع"
+    },
+    "opt_pausedUntil": {
+        "message": "متوقف مؤقتًا حتى $1"
+    },
+    "opt_paused": {
+        "message": "الإشعارات متوقفة مؤقتًا"
+    },
+    "opt_resume": {
+        "message": "استئناف الإشعارات"
+    },
+    "opt_pinHint": {
+        "message": "ثبّت Mail Deck في شريط الأدوات لترى العدّاد بنظرة: انقر قطعة الأحجية بجوار شريط العنوان، ثم الدبوس بجوار Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "اسم المرسل"
+    },
+    "opt_tokenEmail": {
+        "message": "عنوان المرسل"
+    },
+    "opt_tokenTitle": {
+        "message": "الموضوع"
+    },
+    "opt_tokenSummary": {
+        "message": "نص الرسالة"
+    },
+    "opt_tokenAccount": {
+        "message": "صندوق البريد"
+    },
+    "opt_tokenBreak": {
+        "message": "سطر جديد"
+    },
+    "opt_preview": {
+        "message": "معاينة"
+    },
+    "opt_sampleName": {
+        "message": "سارة أحمد"
+    },
+    "opt_sampleSubject": {
+        "message": "غداء يوم الجمعة؟"
+    },
+    "opt_sampleSummary": {
+        "message": "هل أنت متفرغ عند الظهر؟ افتُتح مكان جديد قرب المكتب وأودّ تجربته."
+    },
+    "opt_resetText": {
+        "message": "تعود كل الإعدادات إلى قيمها الافتراضية، ومنها مفاتيح الصناديق وتصنيفاتها، وتُحذف مفاتيح الذكاء الاصطناعي."
+    },
+    "opt_resetDo": {
+        "message": "إعادة الضبط"
+    },
+    "opt_cancel": {
+        "message": "إلغاء"
+    },
+    "opt_replace": {
+        "message": "استبدال"
+    },
+    "opt_diagPassed": {
+        "message": "نجحت كل الفحوص: $1"
+    },
+    "opt_diagFailed": {
+        "message": "المشكلات المكتشفة: $1"
+    },
+    "opt_diagCopy": {
+        "message": "نسخ التقرير"
+    },
+    "opt_diagCopied": {
+        "message": "تم نسخ التقرير"
     },
     "opt_aiWelcome": {
         "message": "أنت تستخدم خطة ChatGPT الخاصة بك"

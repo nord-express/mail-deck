@@ -12,7 +12,7 @@
         "message": "Solo «Principal»"
     },
     "opt_quietHint": {
-        "message": "Un buzón sin notificaciones sigue en el panel y en el contador, pero no molesta."
+        "message": "Silenciosa: en el panel y el contador, sin avisos ni sonido"
     },
     "opt_primaryHint": {
         "message": "«Principal» lee un feed de Gmail que Google no documenta, así que puede dejar de funcionar."
@@ -33,16 +33,16 @@
         "message": "Fin"
     },
     "opt_quietWeekend": {
-        "message": "Silencio también todo el fin de semana"
+        "message": "También todo el fin de semana"
     },
     "opt_quietWeekendText": {
-        "message": "Los días del fin de semana siguen los de tu región."
+        "message": "$1, según tu región."
     },
     "opt_never": {
         "message": "No notificar nunca si el remitente o el asunto contiene"
     },
     "opt_neverText": {
-        "message": "Una palabra o dirección por línea. El correo sigue apareciendo en el panel, sin notificación ni sonido."
+        "message": "El correo sigue apareciendo en el panel, sin notificación ni sonido."
     },
     "opt_only": {
         "message": "Notificar solo si el remitente o el asunto contiene"
@@ -72,7 +72,7 @@
         "message": "Cambiar"
     },
     "opt_backup": {
-        "message": "Tu configuración"
+        "message": "Copia de seguridad"
     },
     "opt_sync": {
         "message": "Guardar una copia en la sincronización de Chrome"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "Los cambios se guardan al instante."
-    },
-    "opt_scopeLabel": {
-        "message": "Ajustes que mostrar"
-    },
-    "opt_essentials": {
-        "message": "Lo esencial"
-    },
-    "opt_everything": {
-        "message": "Todo"
     },
     "opt_checking": {
         "message": "Comprobación"
@@ -204,10 +195,10 @@
         "message": "Olvidar"
     },
     "opt_offHint": {
-        "message": "Una bandeja desactivada sale del panel, del contador y de las notificaciones."
+        "message": "Oculta del panel, del contador y de las notificaciones"
     },
     "opt_labelsHint": {
-        "message": "Etiquetas: vigilar estas etiquetas de Gmail en lugar de la bandeja de entrada, separadas por comas, por ejemplo:"
+        "message": "Etiquetas de Gmail que se vigilan en lugar de la bandeja de entrada. Pulsa Intro después de cada una."
     },
     "opt_services": {
         "message": "Otro correo"
@@ -270,10 +261,10 @@
         "message": "Eliminar"
     },
     "opt_combined": {
-        "message": "Juntar varios correos nuevos en una notificación"
+        "message": "Juntar los correos nuevos en una notificación"
     },
     "opt_threatAsNew": {
-        "message": "Avisar del correo llegado en los últimos"
+        "message": "Avisar solo del correo de menos de"
     },
     "opt_threatAsNewText": {
         "message": "El correo no leído más antiguo no avisa. También vale para el sonido."
@@ -372,7 +363,7 @@
         "message": "Los logotipos de los remitentes de Gmail vienen del servicio de iconos de Google, que recibe el dominio del remitente."
     },
     "opt_opening": {
-        "message": "Abrir el correo"
+        "message": "Abrir Gmail"
     },
     "opt_openIn": {
         "message": "Abrir Gmail en"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "Avisarme cuando Gmail ya está delante"
     },
-    "opt_actions": {
-        "message": "Acciones"
-    },
     "opt_readOnArchive": {
         "message": "Archivar también marca el correo como leído"
     },
     "opt_diag": {
-        "message": "Diagnóstico"
-    },
-    "opt_diagRow": {
-        "message": "Comprobar cómo funciona Mail Deck con tus bandejas"
+        "message": "Comprobar Mail Deck"
     },
     "opt_diagText": {
         "message": "Pregunta a Gmail ahora, por cada bandeja con sesión iniciada. Nada cambia en tu correo."
@@ -426,7 +411,7 @@
         "message": "Comprobar"
     },
     "opt_reset": {
-        "message": "Restablecer valores predeterminados"
+        "message": "Restablecer toda la configuración"
     },
     "opt_saved": {
         "message": "Guardado"
@@ -450,13 +435,13 @@
         "message": "Quitar esta regla"
     },
     "opt_noInboxes": {
-        "message": "Tus bandejas aparecerán aquí tras la primera comprobación."
+        "message": "Inicia sesión en Gmail en este navegador. En la próxima comprobación, Mail Deck encontrará todas las cuentas con sesión iniciada."
     },
     "opt_showInbox": {
         "message": "Mostrar $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "Etiquetas: inbox"
+        "message": "Añadir etiqueta"
     },
     "opt_labelsFor": {
         "message": "Etiquetas de $1"
@@ -1584,7 +1569,7 @@
         "message": "Buscar en"
     },
     "opt_serviceAccess": {
-        "message": "Actívalo de nuevo para darle acceso."
+        "message": "Chrome no ha dado a Mail Deck acceso a $1."
     },
     "panel_copyCode": {
         "message": "Copiar código"
@@ -2157,25 +2142,25 @@
         "message": "Desactivada"
     },
     "opt_aiOffText": {
-        "message": "Sin asistente, resúmenes ni ordenación. No se envía nada a ningún sitio."
+        "message": "No se envía nada a ningún sitio"
     },
     "opt_aiBuiltin": {
         "message": "Integrado en Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "Funciona en este ordenador: gratis y privado, pero no en todos los ordenadores."
+        "message": "Gratis, en este ordenador"
     },
     "opt_aiPlan": {
         "message": "Plan de ChatGPT"
     },
     "opt_aiPlanText": {
-        "message": "El plan de ChatGPT que ya tienes, sin clave de API."
+        "message": "Tu plan, sin clave de API"
     },
     "opt_aiCloudText": {
-        "message": "Modelos de $1, de pago por uso."
+        "message": "$1 · clave de API"
     },
     "opt_aiZaiText": {
-        "message": "Modelos GLM, de pago por uso; algunos son gratis."
+        "message": "GLM · clave de API, algunos gratis"
     },
     "opt_aiChecking": {
         "message": "Comprobando…"
@@ -2361,7 +2346,7 @@
         "message": "Encuentra el correo que espera tu respuesta, el correo importante y los boletines que puedes limpiar de una vez."
     },
     "opt_aiButtons": {
-        "message": "Mostrar los botones de IA con el asistente desactivado"
+        "message": "Mantener los botones de IA en el panel"
     },
     "opt_aiButtonsText": {
         "message": "Los botones de resumen, respuesta y asistente siguen en el panel y ofrecen activarlo."
@@ -2374,6 +2359,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "Las solicitudes van de tu navegador directamente a OpenAI, con la sesión de tu cuenta de ChatGPT. Mail Deck no tiene servidores. Un resumen, una respuesta o una pregunta envía el texto de ese mensaje; el asistente envía tu solicitud y el correo que ha encontrado; «Ordenar el correo no leído» envía el remitente, el asunto y la vista previa del correo no leído."
+    },
+    "opt_skip": {
+        "message": "Saltar a la configuración"
+    },
+    "opt_sections": {
+        "message": "Secciones"
+    },
+    "opt_search": {
+        "message": "Buscar en la configuración"
+    },
+    "opt_noMatch": {
+        "message": "Ninguna opción coincide con «$1»"
+    },
+    "opt_clearSearch": {
+        "message": "Borrar búsqueda"
+    },
+    "opt_mailboxes": {
+        "message": "Buzones"
+    },
+    "opt_mailboxesLede": {
+        "message": "Las bandejas que vigila Mail Deck y cada cuánto mira."
+    },
+    "opt_notificationsLede": {
+        "message": "Avisos emergentes, sonido y cuándo guardar silencio."
+    },
+    "opt_aiLede": {
+        "message": "Resúmenes, ordenación y el asistente, con el motor que elijas."
+    },
+    "opt_panelLede": {
+        "message": "Cómo se ve y se comporta el panel mientras lees."
+    },
+    "opt_toolbarLede": {
+        "message": "El contador del icono y lo que hace un clic."
+    },
+    "opt_openingLede": {
+        "message": "Dónde se abre Gmail desde el panel y las notificaciones."
+    },
+    "opt_backupLede": {
+        "message": "Guarda, traslada o restablece tu configuración."
+    },
+    "opt_help": {
+        "message": "Ayuda"
+    },
+    "opt_helpLede": {
+        "message": "Comprueba que todo funciona o cuéntanos qué falla."
+    },
+    "opt_more": {
+        "message": "Más opciones"
+    },
+    "opt_popups": {
+        "message": "Avisos emergentes"
+    },
+    "opt_wordRules": {
+        "message": "Reglas"
+    },
+    "opt_saving": {
+        "message": "Guardando…"
+    },
+    "opt_savedSync": {
+        "message": "Guardado · en la sincronización de Chrome"
+    },
+    "opt_saveFailed": {
+        "message": "No se ha guardado: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "Aún no hay bandejas"
+    },
+    "opt_signInGmail": {
+        "message": "Iniciar sesión en Gmail"
+    },
+    "opt_checkNow": {
+        "message": "Comprobar ahora"
+    },
+    "opt_reading": {
+        "message": "Lee $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 necesita acceso"
+    },
+    "opt_addWord": {
+        "message": "Añadir una palabra o dirección"
+    },
+    "opt_removeToken": {
+        "message": "Quitar $1"
+    },
+    "opt_aiOffChip": {
+        "message": "IA desactivada"
+    },
+    "opt_aiSetup": {
+        "message": "La IA necesita configurarse"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "Sesión iniciada"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "Conectado"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "Necesita acceso"
+    },
+    "opt_aiCheckingKey": {
+        "message": "Comprobando la clave con $1…"
+    },
+    "opt_quietChip": {
+        "message": "Silencio $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "Silencio ahora"
+    },
+    "opt_quietUntil": {
+        "message": "Silencio ahora · hasta las $1"
+    },
+    "opt_quietNext": {
+        "message": "Empieza a las $1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "Silencio ahora · todo el fin de semana"
+    },
+    "opt_pausedUntil": {
+        "message": "En pausa hasta las $1"
+    },
+    "opt_paused": {
+        "message": "Notificaciones en pausa"
+    },
+    "opt_resume": {
+        "message": "Reanudar notificaciones"
+    },
+    "opt_pinHint": {
+        "message": "Fija Mail Deck en la barra de herramientas para ver el contador de un vistazo: haz clic en la pieza de puzle junto a la barra de direcciones y luego en la chincheta junto a Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "Nombre del remitente"
+    },
+    "opt_tokenEmail": {
+        "message": "Dirección del remitente"
+    },
+    "opt_tokenTitle": {
+        "message": "Asunto"
+    },
+    "opt_tokenSummary": {
+        "message": "Texto del correo"
+    },
+    "opt_tokenAccount": {
+        "message": "Bandeja"
+    },
+    "opt_tokenBreak": {
+        "message": "Nueva línea"
+    },
+    "opt_preview": {
+        "message": "Vista previa"
+    },
+    "opt_sampleName": {
+        "message": "María López"
+    },
+    "opt_sampleSubject": {
+        "message": "¿Comemos el viernes?"
+    },
+    "opt_sampleSummary": {
+        "message": "¿Estás libre a mediodía? Han abierto un sitio nuevo cerca de la oficina y me gustaría probarlo."
+    },
+    "opt_resetText": {
+        "message": "Todas las opciones vuelven a su valor predeterminado, también los interruptores y las etiquetas de las bandejas, y se olvidan las claves de IA."
+    },
+    "opt_resetDo": {
+        "message": "Restablecer"
+    },
+    "opt_cancel": {
+        "message": "Cancelar"
+    },
+    "opt_replace": {
+        "message": "Reemplazar"
+    },
+    "opt_diagPassed": {
+        "message": "Todas las comprobaciones han ido bien: $1"
+    },
+    "opt_diagFailed": {
+        "message": "Problemas encontrados: $1"
+    },
+    "opt_diagCopy": {
+        "message": "Copiar informe"
+    },
+    "opt_diagCopied": {
+        "message": "Informe copiado"
     },
     "opt_aiWelcome": {
         "message": "Estás usando tu plan de ChatGPT"

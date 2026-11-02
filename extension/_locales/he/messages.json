@@ -12,7 +12,7 @@
         "message": "רק הכרטיסייה ״ראשי״"
     },
     "opt_quietHint": {
-        "message": "תיבת דואר בלי התראות ממשיכה להופיע בחלונית ובמונה, אבל לא מפריעה."
+        "message": "שקטה: בחלונית ובמונה, בלי התראות ובלי צליל"
     },
     "opt_primaryHint": {
         "message": "האפשרות ״ראשי״ קוראת פיד של Gmail ש-Google לא מתעדת, ולכן היא עלולה להפסיק לעבוד."
@@ -33,16 +33,16 @@
         "message": "סיום"
     },
     "opt_quietWeekend": {
-        "message": "שקט גם בכל סוף השבוע"
+        "message": "גם כל סוף השבוע"
     },
     "opt_quietWeekendText": {
-        "message": "ימי סוף השבוע נקבעים לפי האזור שלך."
+        "message": "$1, לפי האזור שלך."
     },
     "opt_never": {
         "message": "לא להתריע אף פעם כשהשולח או הנושא מכילים"
     },
     "opt_neverText": {
-        "message": "מילה או כתובת אחת בכל שורה. ההודעה עדיין מופיעה בחלונית, בלי התראה ובלי צליל."
+        "message": "ההודעה עדיין מופיעה בחלונית, בלי התראה ובלי צליל."
     },
     "opt_only": {
         "message": "להתריע רק כשהשולח או הנושא מכילים"
@@ -72,7 +72,7 @@
         "message": "שינוי"
     },
     "opt_backup": {
-        "message": "ההגדרות שלך"
+        "message": "גיבוי"
     },
     "opt_sync": {
         "message": "שמירת עותק בסנכרון של Chrome"
@@ -124,15 +124,6 @@
     },
     "opt_savedHint": {
         "message": "השינויים נשמרים מיד."
-    },
-    "opt_scopeLabel": {
-        "message": "ההגדרות שיוצגו"
-    },
-    "opt_essentials": {
-        "message": "עיקריות"
-    },
-    "opt_everything": {
-        "message": "הכול"
     },
     "opt_checking": {
         "message": "בדיקה"
@@ -204,10 +195,10 @@
         "message": "לשכוח"
     },
     "opt_offHint": {
-        "message": "תיבה מכובה יוצאת מהחלונית, מהמונה ומההתראות."
+        "message": "מוסתרת מהחלונית, מהמונה ומההתראות"
     },
     "opt_labelsHint": {
-        "message": "תוויות: מעקב אחרי תוויות Gmail אלה במקום תיבת הדואר הנכנס, מופרדות בפסיקים, לדוגמה:"
+        "message": "תוויות Gmail שעוקבים אחריהן במקום תיבת הדואר הנכנס. הקש Enter אחרי כל אחת."
     },
     "opt_services": {
         "message": "דואר אחר"
@@ -270,10 +261,10 @@
         "message": "מחיקה"
     },
     "opt_combined": {
-        "message": "לאחד כמה הודעות חדשות בהתראה אחת"
+        "message": "לאחד הודעות חדשות בהתראה אחת"
     },
     "opt_threatAsNew": {
-        "message": "להתריע על דואר שהגיע בתוך"
+        "message": "להתריע רק על דואר שהגיע בתוך"
     },
     "opt_threatAsNewText": {
         "message": "דואר ישן שלא נקרא נשאר שקט. חל גם על הצליל."
@@ -372,7 +363,7 @@
         "message": "הסמלים של שולחי Gmail מגיעים משירות הסמלים של Google, שאליו נשלח הדומיין של השולח."
     },
     "opt_opening": {
-        "message": "פתיחת דואר"
+        "message": "פתיחת Gmail"
     },
     "opt_openIn": {
         "message": "לפתוח את Gmail ב"
@@ -407,17 +398,11 @@
     "opt_inFront": {
         "message": "להודיע כש-Gmail כבר בחזית"
     },
-    "opt_actions": {
-        "message": "פעולות"
-    },
     "opt_readOnArchive": {
         "message": "העברה לארכיון מסמנת גם כנקרא"
     },
     "opt_diag": {
-        "message": "אבחון"
-    },
-    "opt_diagRow": {
-        "message": "לבדוק איך Mail Deck עובד עם התיבות שלך"
+        "message": "בדיקת Mail Deck"
     },
     "opt_diagText": {
         "message": "שואל את Gmail עכשיו, על כל תיבה מחוברת. שום דבר בדואר לא משתנה."
@@ -426,7 +411,7 @@
         "message": "להתחיל בדיקה"
     },
     "opt_reset": {
-        "message": "איפוס לברירת המחדל"
+        "message": "איפוס כל ההגדרות"
     },
     "opt_saved": {
         "message": "נשמר"
@@ -450,13 +435,13 @@
         "message": "הסרת הכלל"
     },
     "opt_noInboxes": {
-        "message": "התיבות יופיעו כאן אחרי הבדיקה הראשונה."
+        "message": "היכנס ל-Gmail בדפדפן הזה. בבדיקה הבאה Mail Deck ימצא כל חשבון שאתה מחובר אליו."
     },
     "opt_showInbox": {
         "message": "להציג את $1"
     },
     "opt_labelsPlaceholder": {
-        "message": "תוויות: inbox"
+        "message": "הוספת תווית"
     },
     "opt_labelsFor": {
         "message": "תוויות עבור $1"
@@ -1584,7 +1569,7 @@
         "message": "היכן לחפש"
     },
     "opt_serviceAccess": {
-        "message": "הפעל אותו שוב כדי לתת לו גישה."
+        "message": "Chrome לא נתן ל-Mail Deck גישה אל $1."
     },
     "panel_copyCode": {
         "message": "העתק קוד"
@@ -2157,25 +2142,25 @@
         "message": "כבויה"
     },
     "opt_aiOffText": {
-        "message": "בלי עוזר, בלי סיכומים ובלי מיון. שום דבר לא נשלח לשום מקום."
+        "message": "שום דבר לא נשלח לשום מקום"
     },
     "opt_aiBuiltin": {
         "message": "מובנה ב-Chrome"
     },
     "opt_aiBuiltinText": {
-        "message": "רץ במחשב הזה: חינמי ופרטי, אבל לא קיים בכל מחשב."
+        "message": "חינם, במחשב הזה"
     },
     "opt_aiPlan": {
         "message": "תוכנית ChatGPT"
     },
     "opt_aiPlanText": {
-        "message": "תוכנית ה-ChatGPT שכבר יש לך, בלי מפתח API."
+        "message": "התוכנית שלך, בלי מפתח API"
     },
     "opt_aiCloudText": {
-        "message": "מודלים של $1, בתשלום לפי שימוש."
+        "message": "$1 · מפתח API"
     },
     "opt_aiZaiText": {
-        "message": "מודלים של GLM, בתשלום לפי שימוש; חלקם בחינם."
+        "message": "GLM · מפתח API, חלקם בחינם"
     },
     "opt_aiChecking": {
         "message": "בודק…"
@@ -2361,7 +2346,7 @@
         "message": "מוצא דואר שמחכה לתשובה שלך, דואר חשוב וניוזלטרים שאפשר לנקות בבת אחת."
     },
     "opt_aiButtons": {
-        "message": "הצג כפתורי בינה מלאכותית כשהעוזר כבוי"
+        "message": "להשאיר את כפתורי הבינה המלאכותית בחלונית"
     },
     "opt_aiButtonsText": {
         "message": "כפתורי הסיכום, התשובה והעוזר נשארים בחלונית ומציעים להפעיל אותו."
@@ -2374,6 +2359,189 @@
     },
     "opt_aiPrivacyPlan": {
         "message": "הבקשות עוברות מהדפדפן שלך ישירות אל OpenAI, כשאתה מחובר עם חשבון ה-ChatGPT שלך. ל-Mail Deck אין שרתים. סיכום, תשובה או שאלה שולחים את הטקסט של אותה הודעה; העוזר שולח את הבקשה שלך ואת הדואר שמצא; ״מיון דואר שלא נקרא״ שולח את השולח, הנושא והתצוגה המקדימה של דואר שלא נקרא."
+    },
+    "opt_skip": {
+        "message": "דילוג להגדרות"
+    },
+    "opt_sections": {
+        "message": "קטעים"
+    },
+    "opt_search": {
+        "message": "חיפוש בהגדרות"
+    },
+    "opt_noMatch": {
+        "message": "אין הגדרות שמתאימות ל״$1״"
+    },
+    "opt_clearSearch": {
+        "message": "ניקוי החיפוש"
+    },
+    "opt_mailboxes": {
+        "message": "תיבות דואר"
+    },
+    "opt_mailboxesLede": {
+        "message": "התיבות ש-Mail Deck עוקב אחריהן, וכל כמה זמן הוא בודק."
+    },
+    "opt_notificationsLede": {
+        "message": "חלונות קופצים, צליל, ומתי לשמור על שקט."
+    },
+    "opt_aiLede": {
+        "message": "סיכומים, מיון והעוזר, עם המנוע שתבחר."
+    },
+    "opt_panelLede": {
+        "message": "איך החלונית נראית ומתנהגת בזמן הקריאה."
+    },
+    "opt_toolbarLede": {
+        "message": "המונה על הסמל, ומה עושה לחיצה עליו."
+    },
+    "opt_openingLede": {
+        "message": "איפה Gmail נפתח מהחלונית ומההתראות."
+    },
+    "opt_backupLede": {
+        "message": "שמירה, העברה או איפוס של ההגדרות."
+    },
+    "opt_help": {
+        "message": "עזרה"
+    },
+    "opt_helpLede": {
+        "message": "בדוק שהכול עובד, או ספר לנו מה לא."
+    },
+    "opt_more": {
+        "message": "אפשרויות נוספות"
+    },
+    "opt_popups": {
+        "message": "חלונות קופצים"
+    },
+    "opt_wordRules": {
+        "message": "כללים"
+    },
+    "opt_saving": {
+        "message": "שומר…"
+    },
+    "opt_savedSync": {
+        "message": "נשמר · בסנכרון של Chrome"
+    },
+    "opt_saveFailed": {
+        "message": "לא נשמר: $1"
+    },
+    "opt_noInboxesTitle": {
+        "message": "עדיין אין תיבות"
+    },
+    "opt_signInGmail": {
+        "message": "כניסה ל-Gmail"
+    },
+    "opt_checkNow": {
+        "message": "לבדוק עכשיו"
+    },
+    "opt_reading": {
+        "message": "קורא את $1"
+    },
+    "opt_needsAccess": {
+        "message": "$1 צריך גישה"
+    },
+    "opt_addWord": {
+        "message": "הוספת מילה או כתובת"
+    },
+    "opt_removeToken": {
+        "message": "הסרת $1"
+    },
+    "opt_aiOffChip": {
+        "message": "בינה מלאכותית כבויה"
+    },
+    "opt_aiSetup": {
+        "message": "צריך להגדיר בינה מלאכותית"
+    },
+    "opt_aiSignedInBadge": {
+        "message": "מחובר"
+    },
+    "opt_aiConnectedBadge": {
+        "message": "מחובר"
+    },
+    "opt_aiNeedsAccess": {
+        "message": "צריך גישה"
+    },
+    "opt_aiCheckingKey": {
+        "message": "בודק את המפתח מול $1…"
+    },
+    "opt_quietChip": {
+        "message": "שקט $1–$2"
+    },
+    "opt_quietNow": {
+        "message": "שקט עכשיו"
+    },
+    "opt_quietUntil": {
+        "message": "שקט עכשיו · עד $1"
+    },
+    "opt_quietNext": {
+        "message": "מתחיל ב-$1"
+    },
+    "opt_quietWeekendNow": {
+        "message": "שקט עכשיו · כל סוף השבוע"
+    },
+    "opt_pausedUntil": {
+        "message": "מושהה עד $1"
+    },
+    "opt_paused": {
+        "message": "ההתראות מושהות"
+    },
+    "opt_resume": {
+        "message": "חידוש ההתראות"
+    },
+    "opt_pinHint": {
+        "message": "הצמד את Mail Deck לסרגל הכלים כדי לראות את המונה במבט: לחץ על חלק הפאזל ליד שורת הכתובת, ואז על הנעץ ליד Mail Deck."
+    },
+    "opt_tokenName": {
+        "message": "שם השולח"
+    },
+    "opt_tokenEmail": {
+        "message": "כתובת השולח"
+    },
+    "opt_tokenTitle": {
+        "message": "נושא"
+    },
+    "opt_tokenSummary": {
+        "message": "טקסט ההודעה"
+    },
+    "opt_tokenAccount": {
+        "message": "תיבה"
+    },
+    "opt_tokenBreak": {
+        "message": "שורה חדשה"
+    },
+    "opt_preview": {
+        "message": "תצוגה מקדימה"
+    },
+    "opt_sampleName": {
+        "message": "נועה כהן"
+    },
+    "opt_sampleSubject": {
+        "message": "ארוחת צהריים ביום שישי?"
+    },
+    "opt_sampleSummary": {
+        "message": "אתה פנוי בצהריים? נפתח מקום חדש ליד המשרד ואני רוצה לנסות אותו."
+    },
+    "opt_resetText": {
+        "message": "כל ההגדרות חוזרות לברירת המחדל, כולל המתגים והתוויות של התיבות, ומפתחות הבינה המלאכותית נמחקים."
+    },
+    "opt_resetDo": {
+        "message": "איפוס"
+    },
+    "opt_cancel": {
+        "message": "ביטול"
+    },
+    "opt_replace": {
+        "message": "החלפה"
+    },
+    "opt_diagPassed": {
+        "message": "כל הבדיקות עברו: $1"
+    },
+    "opt_diagFailed": {
+        "message": "נמצאו בעיות: $1"
+    },
+    "opt_diagCopy": {
+        "message": "העתקת הדוח"
+    },
+    "opt_diagCopied": {
+        "message": "הדוח הועתק"
     },
     "opt_aiWelcome": {
         "message": "אתה משתמש בתוכנית ה-ChatGPT שלך"

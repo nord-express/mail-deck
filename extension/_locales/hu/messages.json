@@ -12,7 +12,7 @@
     "message": "Csak „Elsődleges”"
   },
   "opt_quietHint": {
-    "message": "Az értesítések nélküli postafiók látszik a panelen és a számlálóban, de nem zavar."
+    "message": "Csendes: a panelen és a számlálóban, értesítés és hang nélkül"
   },
   "opt_primaryHint": {
     "message": "Az „Elsődleges” olyan Gmail-hírcsatornát olvas, amelyet a Google nem dokumentál, ezért leállhat."
@@ -33,16 +33,16 @@
     "message": "Befejezés"
   },
   "opt_quietWeekend": {
-    "message": "Csend a teljes hétvégén is"
+    "message": "Az egész hétvégén is"
   },
   "opt_quietWeekendText": {
-    "message": "A hétvégi napok a régiódat követik."
+    "message": "$1, a régiód szerint."
   },
   "opt_never": {
     "message": "Soha ne értesítsen, ha a feladó vagy a tárgy tartalmazza"
   },
   "opt_neverText": {
-    "message": "Soronként egy szó vagy cím. A levél így is megjelenik a panelen, csak értesítés és hang nélkül."
+    "message": "A levél így is megjelenik a panelen, csak értesítés és hang nélkül."
   },
   "opt_only": {
     "message": "Csak akkor értesítsen, ha a feladó vagy a tárgy tartalmazza"
@@ -72,7 +72,7 @@
     "message": "Módosítás"
   },
   "opt_backup": {
-    "message": "Beállításaid"
+    "message": "Biztonsági mentés"
   },
   "opt_sync": {
     "message": "Másolat megőrzése a Chrome-szinkronizálásban"
@@ -124,15 +124,6 @@
   },
   "opt_savedHint": {
     "message": "A módosítások azonnal mentődnek."
-  },
-  "opt_scopeLabel": {
-    "message": "Megjelenített beállítások"
-  },
-  "opt_essentials": {
-    "message": "Alapok"
-  },
-  "opt_everything": {
-    "message": "Mind"
   },
   "opt_checking": {
     "message": "Ellenőrzés"
@@ -204,10 +195,10 @@
     "message": "Elfelejtés"
   },
   "opt_offHint": {
-    "message": "A kikapcsolt postafiók eltűnik a panelről, a számlálóból és az értesítésekből."
+    "message": "Nem látszik a panelen, a számlálóban és az értesítésekben"
   },
   "opt_labelsHint": {
-    "message": "Címkék: ezeket a Gmail-címkéket figyeli a beérkezett üzenetek helyett, vesszővel elválasztva, például:"
+    "message": "A beérkezett üzenetek helyett figyelt Gmail-címkék. Mindegyik után nyomj Entert."
   },
   "opt_services": {
     "message": "Más levelezőszolgáltatók"
@@ -270,10 +261,10 @@
     "message": "Törlés"
   },
   "opt_combined": {
-    "message": "Több új levél egy értesítésben"
+    "message": "Az új levelek egy értesítésben"
   },
   "opt_threatAsNew": {
-    "message": "Értesítés az ennyi időn belül érkezett levelekről"
+    "message": "Csak az ennél frissebb levelekről értesítsen:"
   },
   "opt_threatAsNewText": {
     "message": "A régebbi olvasatlan levelek csendben maradnak. A hangra is vonatkozik."
@@ -372,7 +363,7 @@
     "message": "A Gmail-feladók logói a Google ikonszolgáltatásától jönnek, amely megkapja a feladó domainjét."
   },
   "opt_opening": {
-    "message": "Levelek megnyitása"
+    "message": "A Gmail megnyitása"
   },
   "opt_openIn": {
     "message": "Gmail megnyitása itt"
@@ -407,17 +398,11 @@
   "opt_inFront": {
     "message": "Szólj, ha a Gmail már elöl van"
   },
-  "opt_actions": {
-    "message": "Műveletek"
-  },
   "opt_readOnArchive": {
     "message": "Az archiválás olvasottnak is jelöli a levelet"
   },
   "opt_diag": {
-    "message": "Diagnosztika"
-  },
-  "opt_diagRow": {
-    "message": "Hogyan működik a Mail Deck a postafiókjaiddal"
+    "message": "A Mail Deck ellenőrzése"
   },
   "opt_diagText": {
     "message": "Most megkérdezi a Gmailt minden bejelentkezett postafiókról. A leveleidben semmi sem változik."
@@ -426,7 +411,7 @@
     "message": "Ellenőrzés indítása"
   },
   "opt_reset": {
-    "message": "Alapértékek visszaállítása"
+    "message": "Minden beállítás visszaállítása"
   },
   "opt_saved": {
     "message": "Mentve"
@@ -450,13 +435,13 @@
     "message": "Szabály törlése"
   },
   "opt_noInboxes": {
-    "message": "A postafiókok az első ellenőrzés után jelennek meg itt."
+    "message": "Jelentkezz be a Gmailbe ebben a böngészőben. A következő ellenőrzéskor a Mail Deck megtalál minden bejelentkezett fiókot."
   },
   "opt_showInbox": {
     "message": "$1 mutatása"
   },
   "opt_labelsPlaceholder": {
-    "message": "Címkék: inbox"
+    "message": "Címke hozzáadása"
   },
   "opt_labelsFor": {
     "message": "$1 címkéi"
@@ -1404,7 +1389,7 @@
     "message": "Hol keressen"
   },
   "opt_serviceAccess": {
-    "message": "Kapcsold be újra, hogy hozzáférést kapjon."
+    "message": "A Chrome nem adott hozzáférést a Mail Decknek ehhez: $1."
   },
   "panel_copyCode": {
     "message": "Kód másolása"
@@ -1977,25 +1962,25 @@
     "message": "Kikapcsolva"
   },
   "opt_aiOffText": {
-    "message": "Nincs asszisztens, összefoglaló és szétválogatás. Semmi nem megy sehova."
+    "message": "Semmi nem megy sehova"
   },
   "opt_aiBuiltin": {
     "message": "Beépített Chrome-modell"
   },
   "opt_aiBuiltinText": {
-    "message": "Ezen a számítógépen fut: ingyenes és privát, de nem minden számítógépen érhető el."
+    "message": "Ingyenes, ezen a számítógépen"
   },
   "opt_aiPlan": {
     "message": "ChatGPT-előfizetés"
   },
   "opt_aiPlanText": {
-    "message": "A meglévő ChatGPT-előfizetésed, API-kulcs nélkül."
+    "message": "A te előfizetésed, API-kulcs nélkül"
   },
   "opt_aiCloudText": {
-    "message": "$1-modellek, használat szerinti díjjal."
+    "message": "$1 · API-kulcs"
   },
   "opt_aiZaiText": {
-    "message": "GLM-modellek, használat szerinti díjjal; némelyik ingyenes."
+    "message": "GLM · API-kulcs, némelyik ingyenes"
   },
   "opt_aiChecking": {
     "message": "Ellenőrzés…"
@@ -2181,7 +2166,7 @@
     "message": "Megtalálja a válaszodra váró és a fontos leveleket, valamint a hírleveleket, amelyeket egy mozdulattal eltakaríthatsz."
   },
   "opt_aiButtons": {
-    "message": "MI-gombok mutatása, amikor az asszisztens ki van kapcsolva"
+    "message": "Az MI-gombok maradjanak a panelen"
   },
   "opt_aiButtonsText": {
     "message": "Az összefoglaló, a válasz és az asszisztens gombja a panelen marad, és felajánlja az asszisztens bekapcsolását."
@@ -2194,6 +2179,189 @@
   },
   "opt_aiPrivacyPlan": {
     "message": "A kérések a böngésződből egyenesen az OpenAI-hoz mennek, a ChatGPT-fiókoddal bejelentkezve. A Mail Deck-nek nincsenek szerverei. Az összefoglaló, a válasz vagy a kérdés az adott levél szövegét küldi el; az asszisztens a kérésedet és a talált leveleket; az „Olvasatlan levelek szétválogatása” az olvasatlan levelek feladóját, tárgyát és előnézetét."
+  },
+  "opt_skip": {
+    "message": "Ugrás a beállításokhoz"
+  },
+  "opt_sections": {
+    "message": "Szakaszok"
+  },
+  "opt_search": {
+    "message": "Keresés a beállításokban"
+  },
+  "opt_noMatch": {
+    "message": "Egy beállítás sem felel meg ennek: „$1”"
+  },
+  "opt_clearSearch": {
+    "message": "Keresés törlése"
+  },
+  "opt_mailboxes": {
+    "message": "Postafiókok"
+  },
+  "opt_mailboxesLede": {
+    "message": "A postafiókok, amelyeket a Mail Deck figyel, és hogy milyen gyakran néz rájuk."
+  },
+  "opt_notificationsLede": {
+    "message": "Felugró értesítések, hang, és hogy mikor legyen csend."
+  },
+  "opt_aiLede": {
+    "message": "Összefoglalók, szétválogatás és az asszisztens, a választott motorral."
+  },
+  "opt_panelLede": {
+    "message": "Hogyan néz ki és hogyan viselkedik a panel olvasás közben."
+  },
+  "opt_toolbarLede": {
+    "message": "A szám az ikonon, és hogy mit tesz egy kattintás."
+  },
+  "opt_openingLede": {
+    "message": "Hol nyílik meg a Gmail a panelről és az értesítésekből."
+  },
+  "opt_backupLede": {
+    "message": "A beállítások megőrzése, átvitele vagy visszaállítása."
+  },
+  "opt_help": {
+    "message": "Súgó"
+  },
+  "opt_helpLede": {
+    "message": "Ellenőrizd, hogy minden működik-e, vagy írd meg, mi nem."
+  },
+  "opt_more": {
+    "message": "További beállítások"
+  },
+  "opt_popups": {
+    "message": "Felugró értesítések"
+  },
+  "opt_wordRules": {
+    "message": "Szabályok"
+  },
+  "opt_saving": {
+    "message": "Mentés…"
+  },
+  "opt_savedSync": {
+    "message": "Mentve · a Chrome-szinkronizálásba is"
+  },
+  "opt_saveFailed": {
+    "message": "Nincs mentve: $1"
+  },
+  "opt_noInboxesTitle": {
+    "message": "Még nincs postafiók"
+  },
+  "opt_signInGmail": {
+    "message": "Bejelentkezés a Gmailbe"
+  },
+  "opt_checkNow": {
+    "message": "Ellenőrzés most"
+  },
+  "opt_reading": {
+    "message": "Olvassa: $1"
+  },
+  "opt_needsAccess": {
+    "message": "$1: hozzáférés kell"
+  },
+  "opt_addWord": {
+    "message": "Szó vagy cím hozzáadása"
+  },
+  "opt_removeToken": {
+    "message": "$1 eltávolítása"
+  },
+  "opt_aiOffChip": {
+    "message": "MI kikapcsolva"
+  },
+  "opt_aiSetup": {
+    "message": "Az MI beállításra vár"
+  },
+  "opt_aiSignedInBadge": {
+    "message": "Bejelentkezve"
+  },
+  "opt_aiConnectedBadge": {
+    "message": "Csatlakoztatva"
+  },
+  "opt_aiNeedsAccess": {
+    "message": "Hozzáférés kell"
+  },
+  "opt_aiCheckingKey": {
+    "message": "A kulcs ellenőrzése: $1…"
+  },
+  "opt_quietChip": {
+    "message": "Csend $1–$2"
+  },
+  "opt_quietNow": {
+    "message": "Most csend van"
+  },
+  "opt_quietUntil": {
+    "message": "Most csend van · eddig: $1"
+  },
+  "opt_quietNext": {
+    "message": "Kezdete: $1"
+  },
+  "opt_quietWeekendNow": {
+    "message": "Most csend van · egész hétvégén"
+  },
+  "opt_pausedUntil": {
+    "message": "Szünetel eddig: $1"
+  },
+  "opt_paused": {
+    "message": "Az értesítések szünetelnek"
+  },
+  "opt_resume": {
+    "message": "Értesítések folytatása"
+  },
+  "opt_pinHint": {
+    "message": "Rögzítsd a Mail Decket az eszköztárra, hogy egy pillantással lásd a számot: kattints a címsor melletti puzzle ikonra, majd a Mail Deck melletti gombostűre."
+  },
+  "opt_tokenName": {
+    "message": "Feladó neve"
+  },
+  "opt_tokenEmail": {
+    "message": "Feladó címe"
+  },
+  "opt_tokenTitle": {
+    "message": "Tárgy"
+  },
+  "opt_tokenSummary": {
+    "message": "A levél szövege"
+  },
+  "opt_tokenAccount": {
+    "message": "Postafiók"
+  },
+  "opt_tokenBreak": {
+    "message": "Új sor"
+  },
+  "opt_preview": {
+    "message": "Előnézet"
+  },
+  "opt_sampleName": {
+    "message": "Kovács Anna"
+  },
+  "opt_sampleSubject": {
+    "message": "Ebéd pénteken?"
+  },
+  "opt_sampleSummary": {
+    "message": "Ráérsz délben? Nyílt egy új hely az iroda mellett, ki szeretném próbálni."
+  },
+  "opt_resetText": {
+    "message": "Minden beállítás visszaáll az alapértékre, a postafiókok kapcsolói és címkéi is, az MI-kulcsok pedig törlődnek."
+  },
+  "opt_resetDo": {
+    "message": "Visszaállítás"
+  },
+  "opt_cancel": {
+    "message": "Mégse"
+  },
+  "opt_replace": {
+    "message": "Csere"
+  },
+  "opt_diagPassed": {
+    "message": "Minden ellenőrzés sikeres: $1"
+  },
+  "opt_diagFailed": {
+    "message": "Talált hibák: $1"
+  },
+  "opt_diagCopy": {
+    "message": "Jelentés másolása"
+  },
+  "opt_diagCopied": {
+    "message": "Jelentés kimásolva"
   },
   "opt_aiWelcome": {
     "message": "A ChatGPT-előfizetésedet használod"

@@ -9,7 +9,7 @@
     "message": "Толькі «Асноўныя»"
   },
   "opt_quietHint": {
-    "message": "Скрыня без апавяшчэнняў застаецца ў панэлі і ў лічыльніку, але не турбуе."
+    "message": "Ціхая: у панэлі і лічыльніку, без апавяшчэнняў і гуку"
   },
   "opt_primaryHint": {
     "message": "«Асноўныя» бяруцца са стужкі Gmail, якую Google не дакументуе, таму гэта можа перастаць працаваць."
@@ -30,16 +30,16 @@
     "message": "Канец"
   },
   "opt_quietWeekend": {
-    "message": "Цішыня і ўсе выхадныя"
+    "message": "І ўсе выхадныя"
   },
   "opt_quietWeekendText": {
-    "message": "Выхадныя дні — як прынята ў вашым рэгіёне."
+    "message": "$1 — як прынята ў вашым рэгіёне."
   },
   "opt_never": {
     "message": "Не апавяшчаць, калі адпраўнік або тэма змяшчае"
   },
   "opt_neverText": {
-    "message": "Па адным слове або адрасе ў радку. Ліст усё роўна з’явіцца ў панэлі, толькі без апавяшчэння і гуку."
+    "message": "Ліст усё роўна з’явіцца ў панэлі, толькі без апавяшчэння і гуку."
   },
   "opt_only": {
     "message": "Апавяшчаць, толькі калі адпраўнік або тэма змяшчае"
@@ -69,7 +69,7 @@
     "message": "Змяніць"
   },
   "opt_backup": {
-    "message": "Вашы налады"
+    "message": "Рэзервовая копія"
   },
   "opt_sync": {
     "message": "Захоўваць копію ў сінхранізацыі Chrome"
@@ -121,15 +121,6 @@
   },
   "opt_savedHint": {
     "message": "Змены захоўваюцца адразу."
-  },
-  "opt_scopeLabel": {
-    "message": "Якія налады паказаць"
-  },
-  "opt_essentials": {
-    "message": "Асноўныя"
-  },
-  "opt_everything": {
-    "message": "Усе"
   },
   "opt_checking": {
     "message": "Праверка"
@@ -201,10 +192,10 @@
     "message": "Забыць"
   },
   "opt_offHint": {
-    "message": "Выключаная скрыня знікае з панэлі, лічыльніка і апавяшчэнняў."
+    "message": "Схавана з панэлі, лічыльніка і апавяшчэнняў"
   },
   "opt_labelsHint": {
-    "message": "Ярлыкі: сачыць за гэтымі ярлыкамі Gmail замест уваходных, праз коску, напрыклад:"
+    "message": "Ярлыкі Gmail, за якімі сачыць замест уваходных. Націскайце Enter пасля кожнага."
   },
   "opt_services": {
     "message": "Іншая пошта"
@@ -267,10 +258,10 @@
     "message": "Выдаліць"
   },
   "opt_combined": {
-    "message": "Аб’ядноўваць некалькі новых лістоў у адно апавяшчэнне"
+    "message": "Аб’ядноўваць новыя лісты ў адно апавяшчэнне"
   },
   "opt_threatAsNew": {
-    "message": "Колькі ліст лічыцца новым"
+    "message": "Апавяшчаць толькі пра лісты, навейшыя за"
   },
   "opt_threatAsNewText": {
     "message": "Старыя непрачытаныя лісты не турбуюць. Датычыць і гуку."
@@ -369,7 +360,7 @@
     "message": "Лагатыпы адпраўнікоў Gmail бяруцца з сэрвісу значкоў Google, якому перадаецца дамен адпраўніка."
   },
   "opt_opening": {
-    "message": "Адкрыццё пошты"
+    "message": "Адкрыццё Gmail"
   },
   "opt_openIn": {
     "message": "Адкрываць Gmail"
@@ -404,17 +395,11 @@
   "opt_inFront": {
     "message": "Паведамляць, калі Gmail ужо на экране"
   },
-  "opt_actions": {
-    "message": "Дзеянні"
-  },
   "opt_readOnArchive": {
     "message": "Архіваванне таксама адзначае ліст прачытаным"
   },
   "opt_diag": {
-    "message": "Дыягностыка"
-  },
-  "opt_diagRow": {
-    "message": "Праверыць, як Mail Deck працуе з вашымі скрынямі"
+    "message": "Праверка Mail Deck"
   },
   "opt_diagText": {
     "message": "Пытаецца ў Gmail проста цяпер, па кожнай скрыні. У пошце нічога не мяняецца."
@@ -423,7 +408,7 @@
     "message": "Праверыць"
   },
   "opt_reset": {
-    "message": "Скінуць налады"
+    "message": "Скінуць усе налады"
   },
   "opt_saved": {
     "message": "Захавана"
@@ -447,13 +432,13 @@
     "message": "Выдаліць правіла"
   },
   "opt_noInboxes": {
-    "message": "Скрыні з’явяцца тут пасля першай праверкі."
+    "message": "Увайдзіце ў Gmail у гэтым браўзеры. Пры наступнай праверцы Mail Deck знойдзе ўсе акаўнты, у якія вы ўвайшлі."
   },
   "opt_showInbox": {
     "message": "Паказваць $1"
   },
   "opt_labelsPlaceholder": {
-    "message": "Ярлыкі: inbox"
+    "message": "Дадаць ярлык"
   },
   "opt_labelsFor": {
     "message": "Ярлыкі для $1"
@@ -1443,7 +1428,7 @@
     "message": "Дзе шукаць"
   },
   "opt_serviceAccess": {
-    "message": "Уключыце яго яшчэ раз, каб даць яму доступ."
+    "message": "Chrome не даў Mail Deck доступ да $1."
   },
   "panel_copyCode": {
     "message": "Скапіяваць код"
@@ -2016,25 +2001,25 @@
     "message": "Выключаны"
   },
   "opt_aiOffText": {
-    "message": "Без асістэнта, зводак і сартавання. Нічога нікуды не адпраўляецца."
+    "message": "Нічога нікуды не адпраўляецца"
   },
   "opt_aiBuiltin": {
     "message": "Убудаваны ў Chrome"
   },
   "opt_aiBuiltinText": {
-    "message": "Працуе на гэтым камп’ютары: бясплатна і прыватна, але ёсць не на кожным камп’ютары."
+    "message": "Бясплатна, на гэтым камп’ютары"
   },
   "opt_aiPlan": {
     "message": "Падпіска ChatGPT"
   },
   "opt_aiPlanText": {
-    "message": "Падпіска ChatGPT, якая ў вас ужо ёсць, без ключа API."
+    "message": "Ваша падпіска, без ключа API"
   },
   "opt_aiCloudText": {
-    "message": "Мадэлі $1, аплата за выкарыстанне."
+    "message": "$1 · ключ API"
   },
   "opt_aiZaiText": {
-    "message": "Мадэлі GLM, аплата за выкарыстанне; некаторыя бясплатныя."
+    "message": "GLM · ключ API, ёсць бясплатныя"
   },
   "opt_aiChecking": {
     "message": "Правяраю…"
@@ -2220,7 +2205,7 @@
     "message": "Знаходзіць лісты, якія чакаюць вашага адказу, важныя лісты і рассылкі, якія можна прыбраць за адзін раз."
   },
   "opt_aiButtons": {
-    "message": "Паказваць кнопкі ШІ, калі асістэнт выключаны"
+    "message": "Пакінуць кнопкі ШІ ў панэлі"
   },
   "opt_aiButtonsText": {
     "message": "Кнопкі зводкі, адказу і асістэнта застаюцца ў панэлі і прапануюць яго ўключыць."
@@ -2233,6 +2218,189 @@
   },
   "opt_aiPrivacyPlan": {
     "message": "Запыты ідуць з вашага браўзера проста ў OpenAI, ад імя вашага акаўнта ChatGPT. У Mail Deck няма сервераў. Для зводкі, адказу або пытання адпраўляецца тэкст гэтага ліста; для асістэнта — ваш запыт і знойдзеныя лісты; для «Сартавання непрачытаных» — адпраўнік, тэма і пачатак непрачытаных лістоў."
+  },
+  "opt_skip": {
+    "message": "Перайсці да налад"
+  },
+  "opt_sections": {
+    "message": "Раздзелы"
+  },
+  "opt_search": {
+    "message": "Пошук па наладах"
+  },
+  "opt_noMatch": {
+    "message": "Нічога не знайшлося па запыце «$1»"
+  },
+  "opt_clearSearch": {
+    "message": "Ачысціць пошук"
+  },
+  "opt_mailboxes": {
+    "message": "Паштовыя скрыні"
+  },
+  "opt_mailboxesLede": {
+    "message": "Скрыні, за якімі сочыць Mail Deck, і як часта ён іх правярае."
+  },
+  "opt_notificationsLede": {
+    "message": "Усплывальныя апавяшчэнні, гук і калі не турбаваць."
+  },
+  "opt_aiLede": {
+    "message": "Зводкі, сартаванне і асістэнт — з тым ШІ, які вы абярэце."
+  },
+  "opt_panelLede": {
+    "message": "Як панэль выглядае і паводзіць сябе, пакуль вы чытаеце."
+  },
+  "opt_toolbarLede": {
+    "message": "Лічыльнік на значку і што робіць пстрычка па ім."
+  },
+  "opt_openingLede": {
+    "message": "Дзе адкрываецца Gmail з панэлі і апавяшчэнняў."
+  },
+  "opt_backupLede": {
+    "message": "Захаваць, перанесці або скінуць налады."
+  },
+  "opt_help": {
+    "message": "Даведка"
+  },
+  "opt_helpLede": {
+    "message": "Праверце, ці ўсё працуе, або раскажыце нам, што не так."
+  },
+  "opt_more": {
+    "message": "Больш налад"
+  },
+  "opt_popups": {
+    "message": "Усплывальныя апавяшчэнні"
+  },
+  "opt_wordRules": {
+    "message": "Правілы"
+  },
+  "opt_saving": {
+    "message": "Захоўваю…"
+  },
+  "opt_savedSync": {
+    "message": "Захавана · у сінхранізацыі Chrome"
+  },
+  "opt_saveFailed": {
+    "message": "Не захавана: $1"
+  },
+  "opt_noInboxesTitle": {
+    "message": "Скрынь пакуль няма"
+  },
+  "opt_signInGmail": {
+    "message": "Увайсці ў Gmail"
+  },
+  "opt_checkNow": {
+    "message": "Праверыць зараз"
+  },
+  "opt_reading": {
+    "message": "Чытае $1"
+  },
+  "opt_needsAccess": {
+    "message": "$1: патрэбны доступ"
+  },
+  "opt_addWord": {
+    "message": "Дадаць слова або адрас"
+  },
+  "opt_removeToken": {
+    "message": "Выдаліць «$1»"
+  },
+  "opt_aiOffChip": {
+    "message": "ШІ выключаны"
+  },
+  "opt_aiSetup": {
+    "message": "ШІ трэба наладзіць"
+  },
+  "opt_aiSignedInBadge": {
+    "message": "Уваход выкананы"
+  },
+  "opt_aiConnectedBadge": {
+    "message": "Падключана"
+  },
+  "opt_aiNeedsAccess": {
+    "message": "Патрэбны доступ"
+  },
+  "opt_aiCheckingKey": {
+    "message": "Правяраю ключ у $1…"
+  },
+  "opt_quietChip": {
+    "message": "Цішыня $1–$2"
+  },
+  "opt_quietNow": {
+    "message": "Цяпер ціха"
+  },
+  "opt_quietUntil": {
+    "message": "Цяпер ціха · да $1"
+  },
+  "opt_quietNext": {
+    "message": "Пачнецца ў $1"
+  },
+  "opt_quietWeekendNow": {
+    "message": "Цяпер ціха · усе выхадныя"
+  },
+  "opt_pausedUntil": {
+    "message": "Паўза да $1"
+  },
+  "opt_paused": {
+    "message": "Апавяшчэнні на паўзе"
+  },
+  "opt_resume": {
+    "message": "Уключыць апавяшчэнні"
+  },
+  "opt_pinHint": {
+    "message": "Замацуйце Mail Deck на панэлі браўзера, каб бачыць лічыльнік: націсніце значок пазла каля адраснага радка, потым шпільку каля Mail Deck."
+  },
+  "opt_tokenName": {
+    "message": "Імя адпраўніка"
+  },
+  "opt_tokenEmail": {
+    "message": "Адрас адпраўніка"
+  },
+  "opt_tokenTitle": {
+    "message": "Тэма"
+  },
+  "opt_tokenSummary": {
+    "message": "Тэкст ліста"
+  },
+  "opt_tokenAccount": {
+    "message": "Скрыня"
+  },
+  "opt_tokenBreak": {
+    "message": "Новы радок"
+  },
+  "opt_preview": {
+    "message": "Папярэдні прагляд"
+  },
+  "opt_sampleName": {
+    "message": "Алена Ковальчык"
+  },
+  "opt_sampleSubject": {
+    "message": "Абед у пятніцу?"
+  },
+  "opt_sampleSummary": {
+    "message": "Сустрэнемся апоўдні? Каля офіса адкрылася новае месца, хачу яго паспрабаваць."
+  },
+  "opt_resetText": {
+    "message": "Усе налады вернуцца да пачатковых, разам з пераключальнікамі скрынь і ярлыкамі, а ключы ШІ будуць забытыя."
+  },
+  "opt_resetDo": {
+    "message": "Скінуць"
+  },
+  "opt_cancel": {
+    "message": "Скасаваць"
+  },
+  "opt_replace": {
+    "message": "Замяніць"
+  },
+  "opt_diagPassed": {
+    "message": "Усе праверкі пройдзены: $1"
+  },
+  "opt_diagFailed": {
+    "message": "Знойдзена праблем: $1"
+  },
+  "opt_diagCopy": {
+    "message": "Скапіяваць справаздачу"
+  },
+  "opt_diagCopied": {
+    "message": "Справаздача скапіявана"
   },
   "opt_aiWelcome": {
     "message": "Вы выкарыстоўваеце сваю падпіску ChatGPT"
