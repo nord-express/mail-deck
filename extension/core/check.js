@@ -58,6 +58,15 @@ if (typeof importScripts !== 'undefined') {
   const isPrivate = false;
   // a forced check shows the loading icon until a check publishes its result
   let loading = false;
+  // A feed that did not answer this time (a timeout, an outage of Gmail's) shows its last answer
+  // this long: its account stays in the panel and the badge, and its resolved mail stays hidden.
+  const STALE = 10 * 60 * 1000;
+  // A check no feed answered comes again this soon, then waits for the regular period: a laptop
+  // just awake meets a network that is not up yet, and the next check is minutes away.
+  const RETRY = [5000, 15000, 30000];
+  let retries = 0;
+  // Gmail's clock minus this computer's, as the last check found it: a feed's times are Gmail's
+  const SKEW = 'clock.skew';
 
   const read = (prefs, type = 'local') => chrome.storage[type].get(prefs);
 
@@ -73,7 +82,10 @@ if (typeof importScripts !== 'undefined') {
     if (prefs['badge.count'] !== 'new') {
       return count;
     }
-    return objs.filter(counted).reduce((p, o) => p + o.xml.entries.filter(e => helper.time(e.modified) > prefs['badge.seen']).length, 0);
+    // the panel was opened by this computer's clock, the mail came by Gmail's
+    const {[SKEW]: skew = 0} = await read({[SKEW]: 0}, 'session');
+    const seen = prefs['badge.seen'] + (Number(skew) || 0);
+    return objs.filter(counted).reduce((p, o) => p + o.xml.entries.filter(e => helper.time(e.modified) > seen).length, 0);
   };
 
   const notify = async (text, title, click = {}, buttons = []) => {
@@ -478,6 +490,10 @@ if (typeof importScripts !== 'undefined') {
    */
   const keep = async forced => {
     log('[feed]', 'no answer from the network, the last state stays');
+    if (retries < RETRY.length) {
+      repeater.reset('network.retry', RETRY[retries]);
+      retries += 1;
+    }
     if (!forced && !loading) {
       return;
     }
@@ -576,6 +592,10 @@ if (typeof importScripts !== 'undefined') {
       let top = -1; // the last signed-in account
       // a feed that answered at all, signed in or not; a signed-out account answers too
       let answered = false;
+      // the feeds that did not answer (a timeout, an error), for their last answer
+      const failed = [];
+      // the places a feed answered at with its mail
+      const fine = new Set();
       const uids = new Set();
       // The accounts signed in at the last check, and the one after them, which
       // tells a newly added account, are fetched all at once; the walk below
@@ -599,7 +619,7 @@ if (typeof importScripts !== 'undefined') {
           if (uid && uids.has(uid)) {
             const n = helper.id(feed.href);
             mn = mn === -1 ? n : Math.min(mn, n);
-            r = null;
+            r = {network: true, notAuthorized: true, signedOut: true, xml: null, newIDs: []};
           }
           else if (uid) {
             uids.add(uid);
@@ -622,8 +642,16 @@ if (typeof importScripts !== 'undefined') {
         if (signal.aborted) {
           return log('[feed]', 'skipped');
         }
-        if (r && r.notAuthorized && mn === -1) {
-          mn = helper.id(feed.href);
+        if (!r) {
+          failed.push(feed);
+          continue;
+        }
+        // Past the accounts signed in (Gmail sent the feed to the first account), or nobody signed
+        // in at all: the walk ends. One account that needs its password again is left out alone,
+        // the accounts after it are still there.
+        const n = helper.id(feed.href);
+        if (mn === -1 && (r.signedOut || (r.notAuthorized && n === 0 && !fine.has(0)))) {
+          mn = n;
         }
 
         if (r && r.xml) {
@@ -631,7 +659,8 @@ if (typeof importScripts !== 'undefined') {
           if (r.network && !r.notAuthorized && r.xml && r.xml.entries) {
             meta(r);
             objs.push(r);
-            top = Math.max(top, helper.id(feed.href) ?? -1);
+            fine.add(n);
+            top = Math.max(top, n ?? -1);
           }
         }
       }
@@ -639,9 +668,37 @@ if (typeof importScripts !== 'undefined') {
       if (signal.aborted) {
         return log('[feed]', 'skipped');
       }
-      // every Gmail feed failed (a fetch error or the timeout): the network, not a sign-out
+      // every Gmail feed failed (a fetch error, an error of Gmail's, the timeout): the network,
+      // not a sign-out
       if (!answered) {
         return keep(forced);
+      }
+      retries = 0;
+      // Gmail's clock against this one, from the feed that came the quickest: the time a feed
+      // took to come only makes the difference look smaller
+      const skews = objs.map(r => helper.time(r.xml.modified) - r.at).filter(Number.isFinite);
+      const skew = skews.length ? Math.max(...skews) : Number((await read({[SKEW]: 0}, 'session'))[SKEW]) || 0;
+      if (skews.length) {
+        chrome.storage.session.set({[SKEW]: skew});
+      }
+      // a feed that did not answer shows what it said last, for a while, unless its account has
+      // moved meanwhile: another account answers at its place, or it answers at another place
+      if (failed.length) {
+        const last = await self.checkEmails.getCached();
+        for (const feed of failed) {
+          const old = last.find(o => o.href === feed.href);
+          const n = helper.id(feed.href);
+          if (!old || !(Date.now() + skew - helper.time(old.xml.modified) < STALE) || (mn !== -1 && n >= mn) ||
+            objs.some(o => (helper.id(o.href || '') === n && o.xml.title !== old.xml.title) ||
+              (o.xml.title === old.xml.title && o.xml.label === old.xml.label))) {
+            continue;
+          }
+          log('[feed]', 'no answer, the last one stays', feed.href);
+          const r = {network: true, notAuthorized: false, href: feed.href, xml: old.xml, newIDs: [], commit() {}};
+          meta(r);
+          objs.push(r);
+          top = Math.max(top, n ?? -1);
+        }
       }
       for (const r of boxes) {
         meta(r);
@@ -705,6 +762,8 @@ if (typeof importScripts !== 'undefined') {
         };
         delete xml.parent;
         return {
+          // the feed it came from: its last answer stands in for one that does not come
+          ...(o.href ? {href: o.href} : {}),
           newIDs: o.newIDs,
           meta: o.meta,
           xml

@@ -4,10 +4,18 @@
 // This file is loaded by the background (importScripts) and by the panel
 // (script tag), so it must not rely on anything else.
 const Resolved = {
-  // [{link, at}], where `at` is the deadline: the action plus its grace period
+  // [{link, at}], where `at` is the deadline: the action plus its grace period, by the clock of
+  // the mail's feed (Gmail's for Gmail's mail)
   KEY: 'resolved.links',
-  LIMIT: 300
+  // Gmail's clock minus this computer's, as the last check found it (core/check.js)
+  SKEW: 'clock.skew',
+  // a mailbox archived at once with what Gmail's search adds, in every account
+  LIMIT: 1000
 };
+// The background's writes, one after the other: an action, its Undo and a check may come at
+// the same moment, and each reads the list before it writes it.
+Resolved.queue = Promise.resolve();
+Resolved.serial = fn => Resolved.queue = Resolved.queue.then(fn, fn);
 // Date.parse() returns NaN for anything it cannot read and throws only for
 // symbols; a clock that cannot be read must not become a comparison, so a NaN
 // keeps the entry hidden.
@@ -25,10 +33,9 @@ Resolved.time = value => {
 Resolved.write = list => {
   list = list.slice(-Resolved.LIMIT);
 
-  chrome.storage.session.set({
+  return chrome.storage.session.set({
     [Resolved.KEY]: list
-  });
-  return list;
+  }).then(() => list, () => list);
 };
 Resolved.read = () => chrome.storage.session.get({
   [Resolved.KEY]: []
@@ -45,8 +52,10 @@ Resolved.record = (links, grace = 10000) => {
   if (done.length === 0) {
     return Promise.resolve();
   }
-  return Resolved.read().then(list => {
-    const at = Date.now() + grace;
+  return Resolved.serial(() => Promise.all([Resolved.read(), chrome.storage.session.get({[Resolved.SKEW]: 0})]).then(([list, prefs]) => {
+    // Gmail's feed tells its time by Gmail's clock; another service's mailbox by this computer's
+    const skew = Number(prefs[Resolved.SKEW]) || 0;
+    const at = link => Date.now() + grace + (link.startsWith('https://mail.google.com/') ? skew : 0);
     const known = new Set(list.map(o => o.link));
     let changed = false;
     for (const link of done) {
@@ -55,20 +64,20 @@ Resolved.record = (links, grace = 10000) => {
         known.add(link);
         list.push({
           link,
-          at
+          at: at(link)
         });
         changed = true;
       }
     }
     return changed ? Resolved.write(list) : list;
-  });
+  }));
 };
 // An action undone or failed: its links show again.
-Resolved.forget = links => Resolved.read().then(list => {
+Resolved.forget = links => Resolved.serial(() => Resolved.read().then(list => {
   const gone = new Set(typeof links === 'string' ? [links] : links || []);
   const keep = list.filter(o => gone.has(o.link) === false);
   return keep.length === list.length ? list : Resolved.write(keep);
-});
+}));
 // Forget the links the feed does not report anymore, and the ones of a mailbox
 // which has been regenerated after the grace of the action while still listing
 // them.
@@ -80,7 +89,7 @@ Resolved.prune = objs => {
       modified.set(e.link, time);
     }
   }
-  return Resolved.read().then(list => {
+  return Resolved.serial(() => Resolved.read().then(list => {
     const keep = list.filter(({link, at}) => {
       if (modified.has(link) === false) {
         return false;
@@ -88,7 +97,7 @@ Resolved.prune = objs => {
       return modified.get(link) > at ? false : true;
     });
     return keep.length === list.length ? keep : Resolved.write(keep);
-  });
+  }));
 };
 // Hide the resolved entries and return new objects, so the caller decides what
 // to do with the result and nothing is written back into the feed cache.

@@ -65,6 +65,14 @@ class Feed {
       }
       return link;
     };
+    const host = href => {
+      try {
+        return new URL(href).host;
+      }
+      catch (e) {
+        return '';
+      }
+    };
     const controller = new AbortController();
     signal.addEventListener('abort', () => controller.abort(signal.reason), {
       signal: controller.signal
@@ -77,21 +85,43 @@ class Feed {
       cache: 'no-store',
       signal: controller.signal
     }).then(async r => {
-      if (!r.ok) {
+      // Gmail refuses the account: it needs its password again, or nobody is signed in
+      if (r.status === 401) {
         clearTimeout(id);
         return {
           isPrivate,
-          network: r.status !== 0,
-          notAuthorized: r.status === 401,
+          network: true,
+          notAuthorized: true,
           xml: null,
           newIDs: []
         };
       }
+      // any other refusal (an outage, a rate limit) says nothing of the account: the check
+      // takes it as a feed that did not answer
+      if (!r.ok) {
+        clearTimeout(id);
+        throw Error('feed -> ' + r.status);
+      }
+      // a place past the accounts signed in: Gmail sends it to the first account, and the walk
+      // of the accounts ends here
       if (r.url.includes('/u/0/') && this.href.includes('/u/0/') === false) {
         clearTimeout(id);
         return {
           isPrivate,
-          network: r.status !== 0,
+          network: true,
+          notAuthorized: true,
+          signedOut: true,
+          xml: null,
+          newIDs: []
+        };
+      }
+      // sent to another site, Google's sign-in page above all: this account is not signed in,
+      // the ones after it may be
+      if (r.url && host(r.url) !== host(this.href)) {
+        clearTimeout(id);
+        return {
+          isPrivate,
+          network: true,
           notAuthorized: true,
           xml: null,
           newIDs: []
@@ -100,6 +130,12 @@ class Feed {
 
       const content = await r.text();
       clearTimeout(id);
+      // when it came, for the difference between this computer's clock and Gmail's
+      const at = Date.now();
+      // a page in place of the feed (an error page of Gmail's) is no answer either
+      if (!/<feed[\s>]/.test(content)) {
+        throw Error('feed -> not a feed');
+      }
       // global id
       const uid = (content.split('<title>')[1] || '').split('</title>')[0];
       if (uid) {
@@ -257,7 +293,10 @@ class Feed {
           const own = Array.isArray(prefs[key]);
           const newIDs = [];
           const oldIDs = [];
-          const now = Date.now();
+          // a mail's age by Gmail's own clock, the feed's time: a computer whose clock runs
+          // ahead would find no mail new, one behind would tell old mail again
+          const sent = Date.parse(xml.modified);
+          const now = Number.isFinite(sent) ? sent : Date.now();
           for (const {id, modified} of xml.entries) {
             const age = (now - (new Date(modified)).getTime());
             if (age > 1000 * 60 * prefs.threatAsNew) {
@@ -274,6 +313,8 @@ class Feed {
             isPrivate,
             network: true,
             notAuthorized: xml.authorized === false,
+            href: this.href,
+            at,
             xml,
             newIDs,
             // we postpone the save of new ids to make sure the request is not being aborted

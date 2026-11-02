@@ -176,7 +176,7 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
     }
   });
   const out = {local, session, told: [], sounds: [], messages: [], opened: [], toasts: [], requests: 0, offline: false,
-    badges: [], icons: [], alarms: {}, alarmFns: [], changeFns: []};
+    badges: [], icons: [], alarms: {}, alarmFns: [], changeFns: [], resets: []};
   const chrome = new Proxy({}, {get: (t, k) => {
     if (k === 'storage') {
       return {session: area(session), local: area(local), onChanged: {addListener: fn => out.changeFns.push(fn)}};
@@ -235,7 +235,7 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
       if (k === 'icon') out.icons.push(v);
       return true;
     }, get: () => () => {}});
-    var context = {accounts() {}}; var repeater = {reset() {}};
+    var context = {accounts() {}}; var repeater = {reset: (reason, delay) => out.resets.push([reason, delay])};
     var sound = {play: e => (out.sounds.push(e.length), Promise.resolve()), stop() {}};
     var offscreen = {}; var toast = m => out.toasts.push(m); self.openLink = l => out.opened.push(l);`, ctx);
   ctx.Services = {of: () => undefined, collect: async () => []};
@@ -256,6 +256,21 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
   return out;
 };
 const linkOf = (n, id) => `https://mail.google.com/mail?account_id=user${n}@gmail.com&message_id=${id}&view=conv&extsrc=atom`;
+// a clock that runs ms ahead of Gmail's (behind, when negative)
+const shifted = ms => class extends Date {
+  constructor(...a) {
+    super(...(a.length ? a : [Date.now() + ms]));
+  }
+  static now() {
+    return Date.now() + ms;
+  }
+};
+// what Gmail answers a feed: 401 for an account that needs its password again, a status of an
+// outage, or Google's sign-in page it sends the request to
+const refuse = status => Promise.resolve({ok: false, status, url: 'x', text: async () => ''});
+const signInPage = () => Promise.resolve({ok: true, status: 200, url: 'https://accounts.google.com/v3/signin/identifier?continue=x',
+  text: async () => '<html><head><title>Sign in - Google Accounts</title></head><body></body></html>'});
+const titles = b => b.session['cached-objects'].map(o => o.xml.title);
 
 tests.push(
   // #1
@@ -281,6 +296,43 @@ tests.push(
     await b.run(true);
     assert.strictEqual(b.requests, 0);
     assert.deepStrictEqual([b.opened, b.toasts], [[], []]);
+  }],
+  ['an outage of Gmail (503 on every feed) is no sign-out: the last state stays, no tab opens, a check comes again soon', async () => {
+    const b = boot({mail: {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}]}});
+    await b.run();
+    await b.Resolved.record([linkOf(0, 'a')], 15000);
+    b.ctx.fetch = () => refuse(503);
+    await b.run(true);
+    assert.deepStrictEqual(titles(b), users(0, 1));
+    assert.deepStrictEqual([b.session.count, b.session[b.Resolved.KEY].length, b.opened, b.toasts], [1, 1, [], []]);
+    assert.ok(!b.icons.includes('blue'), 'the icon does not turn signed out');
+    // 5, 15 and 30 seconds, then the regular period
+    await b.run();
+    await b.run();
+    await b.run();
+    assert.deepStrictEqual(b.resets.filter(([r]) => r === 'network.retry').map(([, ms]) => ms), [5000, 15000, 30000]);
+  }],
+  ['a rate limit (429) is no sign-out either', async () => {
+    const b = boot({mail: {'0': [{id: 'a', age: 60}]}});
+    await b.run();
+    b.ctx.fetch = () => refuse(429);
+    await b.run(true);
+    assert.deepStrictEqual([titles(b), b.opened], [users(0), []]);
+  }],
+  ['an account that needs its password again is left out alone; the accounts after it stay', async () => {
+    const mail = {'0': [{id: 'a'}], '1': [{id: 'b'}], '2': [{id: 'c'}], '3': [{id: 'd'}]};
+    const b = boot({mail});
+    const gmail = b.ctx.fetch;
+    b.ctx.fetch = href => /u\/1\//.test(href) ? refuse(401) : gmail(href);
+    await b.run();
+    assert.deepStrictEqual(titles(b), users(0, 2, 3));
+    assert.strictEqual(b.session['accounts.count'], 4, 'the next check still asks all four at once');
+    assert.deepStrictEqual([b.told.length, b.opened], [1, []]);
+    // Gmail sends two such accounts to Google's sign-in page: the same page twice is no repeated feed
+    const c = boot({mail});
+    c.ctx.fetch = href => /u\/[13]\//.test(href) ? signInPage() : gmail(href);
+    await c.run();
+    assert.deepStrictEqual(titles(c), users(0, 2));
   }],
   ['a signed-out Google account still counts as signed out', async () => {
     const b = boot({mail: {}, session: {count: 1}});
@@ -357,6 +409,84 @@ tests.push(
     const b = boot({mail: {'0': [{id: 'a', age: 1}]}});
     await Promise.all([b.run(), b.run()]);
     assert.deepStrictEqual([b.told.length, b.sounds], [1, [1]]);
+  }]
+);
+
+tests.push(
+  // a feed that does not answer this once
+  ['a feed that does not answer shows its last answer: the account, its count and its resolved mail stay', async () => {
+    const mail = {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}, {id: 'c', age: 60}]};
+    const b = boot({mail});
+    await b.run();
+    await b.Resolved.record([linkOf(1, 'b')], 15000);
+    const gmail = b.ctx.fetch;
+    b.ctx.fetch = href => /u\/1\//.test(href) ? Promise.reject(Error('TIMEOUT')) : gmail(href);
+    await b.run();
+    assert.deepStrictEqual(titles(b), users(0, 1));
+    assert.deepStrictEqual([b.session.count, b.session[b.Resolved.KEY].length, b.told.length], [2, 1, 0]);
+    // Gmail answers 500 the next time: the same
+    b.ctx.fetch = href => /u\/1\//.test(href) ? refuse(500) : gmail(href);
+    await b.run();
+    assert.deepStrictEqual([titles(b), b.session.count], [users(0, 1), 2]);
+  }],
+  ['a last answer older than ten minutes is not shown', async () => {
+    const b = boot({mail: {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}]}});
+    await b.run();
+    // the last answer of user1 came eleven minutes ago, by Gmail's clock
+    b.session['cached-objects'][1].xml.modified = new Date(Date.now() - 11 * 60000).toISOString();
+    b.ctx.checkEmails.cached = null;
+    const gmail = b.ctx.fetch;
+    b.ctx.fetch = href => /u\/1\//.test(href) ? Promise.reject(Error('TIMEOUT')) : gmail(href);
+    await b.run();
+    assert.deepStrictEqual(titles(b), users(0));
+  }],
+  ['the last answer of a place another account has taken is not shown', async () => {
+    const b = boot({mail: {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}], '1/work': [{id: 'w', age: 60}], '2': [{id: 'c', age: 60}]},
+      local: {feeds_1: 'inbox, work'}});
+    await b.run();
+    assert.deepStrictEqual(titles(b), users(0, 1, 1, 2));
+    // user1 signs out: user2 is at /u/1 now, and the feed of user1's label there does not answer
+    const gmail = b.ctx.fetch;
+    b.ctx.fetch = href => {
+      if (/u\/1\/feed\/atom\/work/.test(href)) {
+        return Promise.reject(Error('TIMEOUT'));
+      }
+      if (/u\/1\/feed\/atom\?/.test(href)) {
+        return gmail('https://mail.google.com/mail/u/2/feed/atom').then(async r => {
+          const text = (await r.text()).replace(/mail\/u\/2/g, 'mail/u/1');
+          return {...r, url: href, text: async () => text};
+        });
+      }
+      return /u\/2\//.test(href) ? gmail('https://mail.google.com/mail/u/0/feed/atom').then(r => ({...r, url: 'https://mail.google.com/mail/u/0/feed/atom'})) : gmail(href);
+    };
+    await b.run();
+    assert.deepStrictEqual(titles(b), users(0, 2));
+  }],
+  // the computer's clock against Gmail's
+  ['a clock a quarter of an hour ahead of Gmail\'s still tells new mail', async () => {
+    const b = boot({mail: {'0': [{id: 'n', age: 1}, {id: 'o', age: 60}]}});
+    b.ctx.Date = shifted(15 * 60000);
+    await b.run();
+    assert.deepStrictEqual([b.told.length, b.sounds], [1, [1]]);
+  }],
+  ['a clock behind Gmail\'s keeps archived mail hidden while the feed still lists it', async () => {
+    for (const skew of [-60000, -5 * 60000, 3 * 60000]) {
+      const b = boot({mail: {'0': [{id: 'a', age: 60}, {id: 'b', age: 60}]}});
+      b.ctx.Date = shifted(skew);
+      await b.run();
+      await b.Resolved.record([linkOf(0, 'a')]);
+      await b.run();
+      assert.deepStrictEqual([b.panel(), b.session[b.Resolved.KEY].length], [1, 1], 'skew ' + skew);
+    }
+  }],
+  ['"new" in the count is the mail since the panel opened by Gmail\'s clock', async () => {
+    // the panel opened 30 minutes ago by a clock an hour ahead: by Gmail's, 30 minutes ago too; the
+    // mail of 20 minutes ago counts, the one of 45 does not
+    const b = boot({mail: {'0': [{id: 'a', age: 20}, {id: 'b', age: 45}]}, local: {'badge.count': 'new'}});
+    b.ctx.Date = shifted(60 * 60000);
+    b.local['badge.seen'] = Date.now() + 60 * 60000 - 30 * 60000;
+    await b.run();
+    assert.strictEqual(b.badges.at(-1), 1);
   }]
 );
 
