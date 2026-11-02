@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "Keine ungelesene E-Mail passt"
     },
+    "panel_pinHint": {
+        "message": "Heften Sie Mail Deck an die Symbolleiste an, um neue E-Mails auf einen Blick zu sehen."
+    },
     "panel_assistant": {
         "message": "KI-Assistent"
     },

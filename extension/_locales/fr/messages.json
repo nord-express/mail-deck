@@ -1637,6 +1637,9 @@
   "panel_noMatches": {
     "message": "Aucun message non lu ne correspond"
   },
+  "panel_pinHint": {
+    "message": "Épinglez Mail Deck à la barre d'outils pour voir les nouveaux messages d'un coup d'œil."
+  },
   "panel_assistant": {
     "message": "Assistant IA"
   },

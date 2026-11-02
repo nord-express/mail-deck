@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "Няма съвпадащи непрочетени писма"
     },
+    "panel_pinHint": {
+        "message": "Закачете Mail Deck в лентата с инструменти, за да виждате новата поща с един поглед."
+    },
     "panel_assistant": {
         "message": "ИИ асистент"
     },

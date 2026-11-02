@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "אין דואר שלא נקרא שמתאים"
     },
+    "panel_pinHint": {
+        "message": "הצמד את Mail Deck לסרגל הכלים כדי לראות דואר חדש במבט אחד."
+    },
     "panel_assistant": {
         "message": "עוזר בינה מלאכותית"
     },

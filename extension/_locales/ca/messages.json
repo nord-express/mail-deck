@@ -1809,6 +1809,9 @@
     "panel_noMatches": {
         "message": "Cap correu sense llegir hi coincideix"
     },
+    "panel_pinHint": {
+        "message": "Fixa Mail Deck a la barra d'eines per veure el correu nou d'un cop d'ull."
+    },
     "panel_assistant": {
         "message": "Assistent d'IA"
     },

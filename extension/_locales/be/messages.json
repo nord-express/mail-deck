@@ -1664,6 +1664,9 @@
   "panel_noMatches": {
     "message": "Сярод непрачытаных нічога не знайшлося"
   },
+  "panel_pinHint": {
+    "message": "Замацуйце Mail Deck на панэлі інструментаў, каб адразу бачыць новую пошту."
+  },
   "panel_assistant": {
     "message": "ШІ-асістэнт"
   },

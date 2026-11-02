@@ -1637,6 +1637,9 @@
   "panel_noMatches": {
     "message": "一致する未読メールはありません"
   },
+  "panel_pinHint": {
+    "message": "Mail Deck をツールバーに固定すると、新着メールがひと目でわかります。"
+  },
   "panel_assistant": {
     "message": "AI アシスタント"
   },

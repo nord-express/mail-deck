@@ -1667,6 +1667,9 @@
   "panel_noMatches": {
     "message": "No unread mail matches"
   },
+  "panel_pinHint": {
+    "message": "Pin Mail Deck to the toolbar to see new mail at a glance."
+  },
   "panel_assistant": {
     "message": "AI assistant"
   },

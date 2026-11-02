@@ -39,6 +39,7 @@ const ICONS = {
   sparkle: ['M11 3.5l1.9 4.6 4.6 1.9-4.6 1.9L11 16.5l-1.9-4.6L4.5 10l4.6-1.9Z', 'M18.5 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9Z'],
   calendar: ['M5.5 5.5h13A1.5 1.5 0 0 1 20 7v11.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5V7a1.5 1.5 0 0 1 1.5-1.5Z', 'M4 10h16', 'M8.5 3.5v4', 'M15.5 3.5v4'],
   more: ['M5.5 12h.01', 'M12 12h.01', 'M18.5 12h.01'],
+  pushpin: ['M8.5 3.5h7', 'M9.5 3.5v6l-3 3.5h11l-3-3.5v-6', 'M12 13v7.5'],
   keyboard: ['M4.5 6h15A1.5 1.5 0 0 1 21 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5v-9A1.5 1.5 0 0 1 4.5 6Z', 'M7 10h.01', 'M10.5 10h.01', 'M14 10h.01', 'M17 10h.01', 'M8.5 14h7'],
   plus: ['M12 5v14', 'M5 12h14']
 };
@@ -104,7 +105,8 @@ const state = {
   windowId: null,
   // after a browser start, until the background has read the mail once: the list shows lines
   // that stand for it, never "Sign in" to someone signed in
-  booting: false
+  booting: false,
+  unpinned: false // the toolbar button is not pinned, and the hint about it not closed (pinHint)
 };
 let refreshing = false;
 // the list drawn as one types in the search: nothing it draws may ask the network (searchList)
@@ -1328,6 +1330,24 @@ const signIn = () => h('div', {class: 'empty'},
   h('button', {class: 'primary-btn cta', type: 'button', onclick: () => openUrl(ADD_ACCOUNT)}, t('signIn')),
   h('button', {class: 'text-btn quiet', type: 'button', onclick: openServices}, t('otherServices'))
 );
+// The toolbar button not pinned: a line under the list says what pinning it gives, until closed.
+// Chrome says whether it is pinned (chrome.action.getUserSettings), and when that changes.
+const PIN_HINT = 'pinHint.dismissed';
+const pinHint = () => state.unpinned && h('div', {class: 'pin-hint'}, icon('pushpin'), h('span', {}, t('pinHint')),
+  btn('close', t('close'), () => {
+    state.unpinned = false;
+    chrome.storage.local.set({[PIN_HINT]: true});
+    render();
+  }));
+const pinned = async () => {
+  const [settings, prefs] = await Promise.all([chrome.action?.getUserSettings?.(), chrome.storage.local.get(PIN_HINT)]).catch(() => []);
+  const unpinned = settings?.isOnToolbar === false && prefs?.[PIN_HINT] !== true;
+  if (unpinned !== state.unpinned) {
+    state.unpinned = unpinned;
+    render();
+  }
+};
+chrome.action?.onUserSettingsChanged?.addListener(pinned);
 // under the list: another Google account, and the way to the keys
 const listFoot = () => h('div', {class: 'list-foot'},
   h('button', {'class': 'text-btn', 'type': 'button', 'data-focus': 'add-account', 'onclick': () => openUrl(ADD_ACCOUNT)}, icon('plus'), t('addAccount')),
@@ -1571,6 +1591,7 @@ const renderList = objs => {
   ].filter(Boolean) : state.booting ? [skeleton()] : [
     ...(!objs.length ? [signIn()] : objs.some(o => o.xml.fullcount) ? shown.map(o => section(o)) : [caughtUp(objs)]),
     !state.only && signedOut(),
+    objs.length > 0 && pinHint(),
     objs.length > 0 && listFoot()
   ].filter(Boolean)));
   paintSite(objs, false);
@@ -3757,6 +3778,8 @@ Promise.all([
     // the background hides the mail waiting for its reminder at the next check; until then this does
     update(Resolved.apply(Resolved.apply(cached || [], session[Resolved.KEY] || []), Remind.waiting(local[Remind.KEY])));
   }
+  // whether the toolbar button is pinned, once the list is up
+  pinned();
   // the assistant, once the list is on screen: a frame drawn, then the next task
   if (aiOn()) {
     requestAnimationFrame(() => setTimeout(startAI));

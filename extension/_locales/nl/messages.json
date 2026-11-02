@@ -1809,6 +1809,9 @@
     "panel_noMatches": {
         "message": "Geen ongelezen mail die overeenkomt"
     },
+    "panel_pinHint": {
+        "message": "Zet Mail Deck vast op de werkbalk om nieuwe mail in één oogopslag te zien."
+    },
     "panel_assistant": {
         "message": "AI-assistent"
     },

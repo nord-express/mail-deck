@@ -1809,6 +1809,9 @@
     "panel_noMatches": {
         "message": "没有匹配的未读邮件"
     },
+    "panel_pinHint": {
+        "message": "将 Mail Deck 固定到工具栏，一眼就能看到新邮件。"
+    },
     "panel_assistant": {
         "message": "AI 助手"
     },

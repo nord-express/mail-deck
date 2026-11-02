@@ -1809,6 +1809,9 @@
     "panel_noMatches": {
         "message": "Brak pasującej nieprzeczytanej poczty"
     },
+    "panel_pinHint": {
+        "message": "Przypnij Mail Deck do paska narzędzi, aby widzieć nową pocztę na pierwszy rzut oka."
+    },
     "panel_assistant": {
         "message": "Asystent AI"
     },

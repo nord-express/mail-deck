@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "Серед непрочитаних нічого не знайшлося"
     },
+    "panel_pinHint": {
+        "message": "Закріпіть Mail Deck на панелі інструментів, щоб одразу бачити нову пошту."
+    },
     "panel_assistant": {
         "message": "ШІ-асистент"
     },

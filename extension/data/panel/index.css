@@ -2776,6 +2776,38 @@ button.cite:hover {
   height: 18px;
 }
 
+/* the toolbar button not pinned: what pinning it gives, once, until closed */
+.pin-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-block: 6px;
+  padding-inline: 12px 6px;
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--accent) 6%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, var(--line));
+  color: var(--soft);
+  font-size: var(--fs-sm);
+}
+.pin-hint > svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+}
+.pin-hint > span {
+  flex: 1;
+  min-width: 0;
+}
+.pin-hint .icon-btn {
+  width: 28px;
+  height: 28px;
+}
+.pin-hint .icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
 /* the panel's first moments after a browser start, before the background has read any mail */
 .skel-head {
   display: flex;

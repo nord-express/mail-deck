@@ -1637,6 +1637,9 @@
   "panel_noMatches": {
     "message": "Nessuna email da leggere corrisponde"
   },
+  "panel_pinHint": {
+    "message": "Fissa Mail Deck alla barra degli strumenti per vedere la nuova posta a colpo d'occhio."
+  },
   "panel_assistant": {
     "message": "Assistente IA"
   },

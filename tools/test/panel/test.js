@@ -1320,6 +1320,23 @@
       out.empty = Boolean($('list').querySelector('.empty .cta')) && !$('list').querySelector('.skel');
     }
 
+    if (scenario === 'pin') {
+      // the toolbar button not pinned: a line under the list says so, until closed or pinned
+      const $ = id => document.getElementById(id);
+      const hint = () => $('list').querySelector('.pin-hint');
+      out.shown = hint()?.textContent === t('pinHint') && hint().nextElementSibling?.classList.contains('list-foot');
+      window.__pinnedNow = true;
+      await window.__pinChanged?.({isOnToolbar: true});
+      await wait(50);
+      out.goneWhenPinned = !hint();
+      window.__pinnedNow = false;
+      await window.__pinChanged?.({isOnToolbar: false});
+      await wait(50);
+      hint()?.querySelector('.icon-btn').click();
+      await wait(50);
+      out.closed = !hint() && window.__set.some(o => o['pinHint.dismissed'] === true);
+    }
+
     if (scenario === 'narrow') {
       // a side panel 320px wide: the mailbox line keeps its buttons whole and its address
       // readable, the reader's bar stays inside

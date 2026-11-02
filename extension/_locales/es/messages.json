@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "Ningún correo sin leer coincide"
     },
+    "panel_pinHint": {
+        "message": "Fija Mail Deck en la barra de herramientas para ver el correo nuevo de un vistazo."
+    },
     "panel_assistant": {
         "message": "Asistente de IA"
     },

@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "لا يوجد بريد غير مقروء مطابق"
     },
+    "panel_pinHint": {
+        "message": "ثبّت Mail Deck في شريط الأدوات لترى البريد الجديد بلمحة."
+    },
     "panel_assistant": {
         "message": "مساعد الذكاء الاصطناعي"
     },

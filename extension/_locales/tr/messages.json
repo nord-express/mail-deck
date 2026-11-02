@@ -1805,6 +1805,9 @@
     "panel_noMatches": {
         "message": "Eşleşen okunmamış posta yok"
     },
+    "panel_pinHint": {
+        "message": "Yeni postayı bir bakışta görmek için Mail Deck’i araç çubuğuna sabitleyin."
+    },
     "panel_assistant": {
         "message": "Yapay zekâ asistanı"
     },

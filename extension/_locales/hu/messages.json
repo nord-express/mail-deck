@@ -1625,6 +1625,9 @@
   "panel_noMatches": {
     "message": "Nincs egyező olvasatlan levél"
   },
+  "panel_pinHint": {
+    "message": "Rögzítse a Mail Decket az eszköztáron, hogy egy pillantással lássa az új leveleket."
+  },
   "panel_assistant": {
     "message": "MI-asszisztens"
   },

@@ -271,6 +271,8 @@
       onChanged: {addListener() {}}
     },
     sidePanel: {open: () => Promise.resolve()},
+    // ?pinned=0: the toolbar button is not pinned; __pinChanged(settings) is Chrome saying it changed
+    action: {getUserSettings: async () => ({isOnToolbar: window.__pinnedNow ?? q.get('pinned') !== '0'}), onUserSettingsChanged: {addListener: f => { window.__pinChanged = f; }}},
     windows: {getCurrent: () => Promise.resolve({id: 1})},
     // the active tab: its address is ?url= (none: a tab the panel may not read); a test changes
     // __tabUrl and calls __tabEvents.updated or .activated as Chrome would
