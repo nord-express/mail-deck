@@ -2369,6 +2369,15 @@
     "opt_copyCodesText": {
         "message": "Eine Benachrichtigung mit Anmeldecode bekommt eine Schaltfläche, die ihn kopiert, vor deinen anderen Schaltflächen. Chrome fragt dich zuerst um Erlaubnis: Mail Deck schreibt den Code nur in die Zwischenablage und liest sie nie."
     },
+    "opt_clickNotification": {
+        "message": "Klick auf die Benachrichtigung"
+    },
+    "opt_clickNotificationText": {
+        "message": "Wo sich das Panel nicht öffnen lässt, öffnet sich die Mail."
+    },
+    "opt_clickMail": {
+        "message": "Öffnet die Mail in Gmail"
+    },
     "opt_buttonsOver": {
         "message": "Passt nicht: Eine Benachrichtigung zeigt zwei Schaltflächen"
     },

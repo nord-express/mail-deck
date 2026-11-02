@@ -2373,6 +2373,15 @@
     "opt_copyCodesText": {
         "message": "含有验证码的通知会在其他按钮之前显示一个复制按钮。Chrome 会先请求你的许可：Mail Deck 只会把验证码写入剪贴板，从不读取剪贴板。"
     },
+    "opt_clickNotification": {
+        "message": "点击通知时"
+    },
+    "opt_clickNotificationText": {
+        "message": "无法打开面板时，将打开邮件。"
+    },
+    "opt_clickMail": {
+        "message": "在 Gmail 中打开邮件"
+    },
     "opt_buttonsOver": {
         "message": "放不下：通知最多显示两个按钮"
     },

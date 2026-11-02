@@ -19,6 +19,8 @@ const DEFAULTS = {
   'notification.buttons.later': false,
   // a notification's button that copies its sign-in code: on only with clipboardWrite (syncCopy)
   'notification.buttons.copy': false,
+  // what a click on a notification opens: the mail in Gmail, or the panel where Chrome can open it
+  'notification.click': 'mail',
   'combined': false,
   'threatAsNew': 10,
   'notificationFormat': chrome.i18n.getMessage('notification'),
@@ -146,6 +148,7 @@ const VALID = {
   'notify.never': upTo(20000),
   'notify.only': upTo(20000),
   'notify.repeat': oneOf(0, 5, 15, 30, 60), // minutes
+  'notification.click': oneOf('mail', 'panel'),
   'badge.count': oneOf('all', 'new'),
   'ai.engine': oneOf(...AI_ENGINES),
   'ai.summary': oneOf('off', 'click', 'auto'),
@@ -1876,6 +1879,8 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   syncNeeds();
   paintButtons();
   syncCopy();
+  // a click on a notification can open the panel where Chrome lets an extension open it
+  $('click-row').hidden = typeof chrome.action?.openPopup !== 'function';
   paintShortcut();
   // the background adds inboxes on its own; the copy catches up when the page opens
   if (prefs['sync.settings']) {

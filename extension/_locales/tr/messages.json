@@ -2369,6 +2369,15 @@
     "opt_copyCodesText": {
         "message": "Giriş kodu içeren bir bildirim, kodu kopyalayan bir düğme alır; bu düğme diğer düğmelerinizden önce gelir. Chrome önce izninizi ister: Mail Deck kodu yalnızca panoya yazar, panoyu asla okumaz."
     },
+    "opt_clickNotification": {
+        "message": "Bildirime tıklayınca"
+    },
+    "opt_clickNotificationText": {
+        "message": "Panelin açılamadığı yerde e-posta açılır."
+    },
+    "opt_clickMail": {
+        "message": "E-posta Gmail’de açılır"
+    },
     "opt_buttonsOver": {
         "message": "Sığmıyor: bir bildirim iki düğme gösterir"
     },

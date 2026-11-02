@@ -2373,6 +2373,15 @@
     "opt_copyCodesText": {
         "message": "Una notificació amb un codi d’inici de sessió té un botó que el copia, abans dels teus altres botons. Chrome et demana permís primer: Mail Deck només escriu el codi al porta-retalls i mai no el llegeix."
     },
+    "opt_clickNotification": {
+        "message": "En fer clic a la notificació"
+    },
+    "opt_clickNotificationText": {
+        "message": "Si el tauler no es pot obrir, s’obre el correu."
+    },
+    "opt_clickMail": {
+        "message": "S’obre el correu a Gmail"
+    },
     "opt_buttonsOver": {
         "message": "No hi cap: una notificació mostra dos botons"
     },

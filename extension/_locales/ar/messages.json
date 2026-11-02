@@ -2369,6 +2369,15 @@
     "opt_copyCodesText": {
         "message": "يحصل الإشعار الذي يحتوي على رمز تحقق على زر ينسخه، قبل أزرارك الأخرى. سيطلب Chrome إذنك أولًا: يكتب Mail Deck الرمز في الحافظة فقط ولا يقرأ منها أبدًا."
     },
+    "opt_clickNotification": {
+        "message": "النقر على الإشعار"
+    },
+    "opt_clickNotificationText": {
+        "message": "حيث لا يمكن فتح اللوحة، تُفتح الرسالة بدلًا منها."
+    },
+    "opt_clickMail": {
+        "message": "يفتح الرسالة في Gmail"
+    },
     "opt_buttonsOver": {
         "message": "لا يتسع: يعرض الإشعار زرين فقط"
     },

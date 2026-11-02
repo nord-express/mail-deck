@@ -2201,6 +2201,15 @@
   "opt_copyCodesText": {
     "message": "ログインコードを含む通知に、コードをコピーするボタンがほかのボタンより先に表示されます。最初に Chrome が許可を求めます。Mail Deck はコードをクリップボードに書き込むだけで、クリップボードを読み取ることはありません。"
   },
+  "opt_clickNotification": {
+    "message": "通知のクリック"
+  },
+  "opt_clickNotificationText": {
+    "message": "パネルを開けない場合は、メールが開きます。"
+  },
+  "opt_clickMail": {
+    "message": "Gmail でメールを開く"
+  },
   "opt_buttonsOver": {
     "message": "表示されません：通知のボタンは 2 つまでです"
   },

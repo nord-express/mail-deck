@@ -2201,6 +2201,15 @@
   "opt_copyCodesText": {
     "message": "Una notifica con un codice di accesso riceve un pulsante che lo copia, prima degli altri pulsanti. Chrome ti chiede prima il permesso: Mail Deck scrive soltanto il codice negli appunti e non li legge mai."
   },
+  "opt_clickNotification": {
+    "message": "Clic sulla notifica"
+  },
+  "opt_clickNotificationText": {
+    "message": "Se il pannello non può aprirsi, si apre il messaggio."
+  },
+  "opt_clickMail": {
+    "message": "Apre il messaggio in Gmail"
+  },
   "opt_buttonsOver": {
     "message": "Non ci sta: una notifica mostra due pulsanti"
   },

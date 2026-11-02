@@ -2201,6 +2201,15 @@
   "opt_copyCodesText": {
     "message": "Une notification avec un code de connexion reçoit un bouton qui le copie, avant vos autres boutons. Chrome vous demande d’abord l’autorisation : Mail Deck écrit seulement le code dans le presse-papiers et ne le lit jamais."
   },
+  "opt_clickNotification": {
+    "message": "Clic sur la notification"
+  },
+  "opt_clickNotificationText": {
+    "message": "Si le panneau ne peut pas s’ouvrir, le message s’ouvre à la place."
+  },
+  "opt_clickMail": {
+    "message": "Ouvre le message dans Gmail"
+  },
   "opt_buttonsOver": {
     "message": "Ne tient pas : une notification affiche deux boutons"
   },

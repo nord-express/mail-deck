@@ -467,7 +467,7 @@ check('the new settings default as the background does, and their rows and strin
   assert.ok(en.opt_formatText.message.includes('[account]'));
 });
 
-/* the notification's buttons: Later, and the Copy button of a sign-in code */
+/* the notification's buttons: Later, the Copy button of a sign-in code, and where a click goes */
 check('the Copy switch asks Chrome for the clipboard from its click, and shows on only while Chrome gives it', async () => {
   const sw = element('copy-codes');
   set.length = 0;
@@ -516,11 +516,16 @@ check('a reset, or a backup with the Copy button off, gives the clipboard back; 
     delete local[k];
   }
 });
-check('a backup keeps the new buttons, in range', () => {
+check('a backup keeps where a click goes and the new buttons, in range', () => {
   const sanitize = page('sanitize');
-  const good = {'notification.buttons.later': true, 'notification.buttons.copy': true};
+  const good = {'notification.click': 'panel', 'notification.buttons.later': true, 'notification.buttons.copy': true};
   assert.deepStrictEqual({...sanitize(good)}, good);
-  assert.deepStrictEqual({...sanitize({'notification.buttons.later': 'yes', 'notification.buttons.copy': 1})}, {});
+  assert.deepStrictEqual({...sanitize({'notification.click': 'popup', 'notification.buttons.later': 'yes', 'notification.buttons.copy': 1})}, {});
+  const select = /<select data-key="notification\.click"[^>]*>([\s\S]*?)<\/select>/.exec(html);
+  const values = [...select[1].matchAll(/value="([^"]*)"/g)].map(m => m[1]);
+  assert.deepStrictEqual(values, ['mail', 'panel']);
+  assert.ok(values.every(v => page('VALID')['notification.click'](v)));
+  assert.strictEqual(page('DEFAULTS')['notification.click'], 'mail');
 });
 check('the buttons come in the order the background picks them; the new rows, defaults and strings are there', () => {
   const background = fs.readFileSync(path.join(EXT, 'core/check.js'), 'utf8');
@@ -530,11 +535,15 @@ check('the buttons come in the order the background picks them; the new rows, de
   assert.ok(picked.every((at, i) => at > 0 && (i === 0 || at > picked[i - 1])), picked.join());
   // off by default, here and in the background: the saved choices of before stay as they were
   const defaults = page('DEFAULTS');
-  assert.deepStrictEqual([defaults['notification.buttons.later'], defaults['notification.buttons.copy']], [false, false]);
-  assert.ok(background.includes(`'notification.buttons.later': false`) && background.includes(`'notification.buttons.copy': false`));
+  assert.deepStrictEqual([defaults['notification.buttons.later'], defaults['notification.buttons.copy'], defaults['notification.click']],
+    [false, false, 'mail']);
+  assert.ok(background.includes(`'notification.buttons.later': false`) && background.includes(`'notification.buttons.copy': false`) &&
+    background.includes(`'notification.click': 'mail'`));
   // the switch has no data-key: the page saves it only once Chrome has answered
   assert.ok(/<label class="row" data-needs="notification">\s*<span class="text"><b data-i18n="copyCodes">[\s\S]*?<input type="checkbox" role="switch" id="copy-codes">/.test(html));
-  for (const key of ['opt_btnLater', 'opt_buttonsOver', 'opt_copyCodes', 'opt_copyCodesText', 'notification_copy']) {
+  assert.ok(/id="click-row" hidden/.test(html), 'the click row shows only where Chrome can open the panel');
+  for (const key of ['opt_btnLater', 'opt_copyCodes', 'opt_copyCodesText', 'opt_clickNotification', 'opt_clickNotificationText',
+    'opt_clickMail', 'opt_clickPanel', 'notification_copy']) {
     assert.ok(en[key]?.message, key);
   }
   // an optional permission: a required one would turn the extension off for everyone on the update

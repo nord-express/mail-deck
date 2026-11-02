@@ -2231,6 +2231,15 @@
   "opt_copyCodesText": {
     "message": "A notification with a sign-in code gets a button that copies it, ahead of your other buttons. Chrome asks for your permission first: Mail Deck only writes the code to the clipboard and never reads it."
   },
+  "opt_clickNotification": {
+    "message": "Clicking the notification"
+  },
+  "opt_clickNotificationText": {
+    "message": "Where the panel can’t open, the mail opens instead."
+  },
+  "opt_clickMail": {
+    "message": "Opens the mail in Gmail"
+  },
   "opt_buttonsOver": {
     "message": "Doesn’t fit: a notification shows two buttons"
   },

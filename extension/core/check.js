@@ -208,18 +208,44 @@ if (typeof importScripts !== 'undefined') {
     chrome.storage.session.remove(id);
     chrome.alarms.clear('clear.notification.' + id);
   };
+  /*
+   * The panel, for a click the settings send there ("notification.click"), where Chrome lets an
+   * extension open it (127 and later) and the toolbar button has one: with a single inbox it may
+   * open Gmail instead. Its window comes to the front first, for the browser may be behind
+   * another program when the click comes. False: it did not open, the mail opens as before.
+   */
+  const openPanel = async () => {
+    try {
+      if (typeof chrome.action?.openPopup !== 'function' || !await chrome.action.getPopup({})) {
+        return false;
+      }
+      const win = await chrome.windows.getLastFocused({windowTypes: ['normal']});
+      await chrome.windows.update(win.id, {focused: true});
+      await chrome.action.openPopup({windowId: win.id});
+      return true;
+    }
+    catch (e) {
+      log('[notification]', 'no panel', e?.message || e);
+      return false;
+    }
+  };
   chrome.notifications.onClicked.addListener(id => {
     chrome.notifications.clear(id);
     sound.stop();
     if (id.startsWith('action.')) {
       chrome.alarms.clear('clear.notification.' + id);
-      chrome.storage.session.get(id, prefs => {
+      chrome.storage.session.get(id, async prefs => {
         chrome.storage.session.remove(id);
         if (!prefs[id]) {
           return;
         }
         const {click} = prefs[id];
         if (click.cmd === 'open') {
+          // the panel shows the mail and leaves it unread
+          const {'notification.click': how} = await read({'notification.click': 'mail'});
+          if (how === 'panel' && await openPanel()) {
+            return;
+          }
           const {links} = click;
           // use open to open the first link and use chrome.tabs.create for the rest
           self.openLink(links[0]);

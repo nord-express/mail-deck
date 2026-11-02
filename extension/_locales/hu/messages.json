@@ -2189,6 +2189,15 @@
   "opt_copyCodesText": {
     "message": "A belépési kódot tartalmazó értesítés kap egy gombot, amely kimásolja a kódot, a többi gombod előtt. A Chrome előbb engedélyt kér tőled: a Mail Deck csak beírja a kódot a vágólapra, és soha nem olvassa a vágólapot."
   },
+  "opt_clickNotification": {
+    "message": "Kattintás az értesítésre"
+  },
+  "opt_clickNotificationText": {
+    "message": "Ahol a panel nem nyílhat meg, a levél nyílik meg."
+  },
+  "opt_clickMail": {
+    "message": "Megnyitja a levelet a Gmailben"
+  },
   "opt_buttonsOver": {
     "message": "Nem fér el: az értesítés két gombot mutat"
   },

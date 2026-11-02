@@ -181,6 +181,14 @@
                 <label class="chip"><input type="checkbox" data-key="notification.buttons.trash"><span><i data-icon="done" class="ck"></i><span data-i18n="btnDelete">Delete</span></span></label>
               </span>
             </div>
+            <!-- shown where Chrome lets an extension open its panel (127 and later) -->
+            <label class="row adv" data-needs="notification" id="click-row" hidden>
+              <span class="text"><b data-i18n="clickNotification">Clicking the notification</b><small data-i18n="clickNotificationText">Where the panel can’t open, the mail opens instead.</small></span>
+              <select data-key="notification.click">
+                <option value="mail" data-i18n="clickMail">Opens the mail in Gmail</option>
+                <option value="panel" data-i18n="clickPanel">Opens the panel</option>
+              </select>
+            </label>
             <div class="row adv" data-needs="notification">
               <span class="text"><b id="notify-while-label" data-i18n="notifyWhile">Notify while I am</b></span>
               <span class="chips" role="group" aria-labelledby="notify-while-label">

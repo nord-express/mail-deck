@@ -2369,6 +2369,15 @@
     "opt_copyCodesText": {
         "message": "התראה עם קוד כניסה תקבל כפתור שמעתיק אותו, לפני שאר הכפתורים. Chrome יבקש ממך רשות קודם: Mail Deck רק כותב את הקוד ללוח העריכה ולעולם לא קורא ממנו."
     },
+    "opt_clickNotification": {
+        "message": "לחיצה על ההתראה"
+    },
+    "opt_clickNotificationText": {
+        "message": "כשהחלונית לא יכולה להיפתח, נפתחת ההודעה."
+    },
+    "opt_clickMail": {
+        "message": "פותחת את ההודעה ב-Gmail"
+    },
     "opt_buttonsOver": {
         "message": "לא נכנס: התראה מציגה שני כפתורים"
     },

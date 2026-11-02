@@ -182,8 +182,9 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
   const out = {local, session, told: [], sounds: [], messages: [], opened: [], toasts: [], requests: 0, offline: false,
     badges: [], icons: [], alarms: {}, alarmFns: [], changeFns: [], resets: [],
     // a notification's id beside each one told; its click and button listeners; what reached the
-    // offscreen document; the permissions Chrome gives
-    ids: [], clickFns: [], buttonFns: [], offscreen: [], copied: true, perms: new Set(), dispatched: []};
+    // offscreen document; the permissions Chrome gives; the panel's popup and its openings
+    ids: [], clickFns: [], buttonFns: [], offscreen: [], copied: true, perms: new Set(), popup: '/data/panel/index.html', popups: [],
+    dispatched: []};
   const chrome = new Proxy({}, {get: (t, k) => {
     if (k === 'storage') {
       return {session: area(session), local: area(local), onChanged: {addListener: fn => out.changeFns.push(fn)}};
@@ -217,6 +218,18 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
     }
     if (k === 'permissions') {
       return {contains: async ({permissions = []}) => permissions.every(p => out.perms.has(p))};
+    }
+    // the panel opens where the toolbar button has one (out.popup) and Chrome lets it (out.noPanel)
+    if (k === 'action') {
+      return {setPopup() {}, getPopup: async () => out.popup, openPopup: async o => {
+        if (out.noPanel) {
+          throw Error('Could not find an active browser window.');
+        }
+        out.popups.push(copy(o));
+      }};
+    }
+    if (k === 'windows') {
+      return {getLastFocused: async () => ({id: 7}), update: async () => ({})};
     }
     if (k === 'tabs') {
       return {create: o => out.opened.push(o.url)};
@@ -727,7 +740,7 @@ tests.push(
 /*
  * A new mail with a sign-in code (core/utils/code.js): the notification leads with the code,
  * and its first button copies it where the settings ask for that and Chrome gives the
- * clipboard; and Later.
+ * clipboard; Later; and a click that opens the panel.
  */
 const CODE_MAIL = {title: 'Your GitHub launch code', summary: 'Here is your GitHub launch code: 482913. It expires in 10 minutes.', from: 'GitHub'};
 const copying = (mail, local = {}) => {
@@ -868,6 +881,28 @@ tests.push(
     assert.strictEqual(b.told.length, 2);
     await b.press(0);
     assert.deepStrictEqual(b.local['remind.links'].map(o => o.link), [linkOf(0, 'b')]);
+  }],
+  ['a click opens the mail by default; set to the panel it opens the panel, in front, and leaves the mail unread', async () => {
+    const b = boot({mail: {'0': [{id: 'a'}]}});
+    await b.run();
+    await b.click();
+    assert.deepStrictEqual([b.opened.length, b.popups], [1, []]);
+    const p = boot({mail: {'0': [{id: 'a'}]}, local: {'notification.click': 'panel'}});
+    await p.run();
+    await p.click();
+    assert.deepStrictEqual([p.popups, p.opened, p.session['resolved.links'] || []], [[{windowId: 7}], [], []]);
+  }],
+  ['where Chrome cannot open the panel, or the icon opens Gmail instead, the click opens the mail', async () => {
+    const b = boot({mail: {'0': [{id: 'a'}]}, local: {'notification.click': 'panel'}});
+    b.noPanel = true;
+    await b.run();
+    await b.click();
+    assert.deepStrictEqual([b.popups, b.opened.length], [[], 1]);
+    const one = boot({mail: {'0': [{id: 'a'}]}, local: {'notification.click': 'panel'}});
+    one.popup = '';
+    await one.run();
+    await one.click();
+    assert.deepStrictEqual([one.popups, one.opened.length], [[], 1]);
   }]
 );
 

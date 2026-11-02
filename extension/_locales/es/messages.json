@@ -2369,6 +2369,15 @@
     "opt_copyCodesText": {
         "message": "Una notificación con un código de inicio de sesión tiene un botón que lo copia, antes que tus otros botones. Chrome te pide permiso primero: Mail Deck solo escribe el código en el portapapeles y nunca lo lee."
     },
+    "opt_clickNotification": {
+        "message": "Al hacer clic en la notificación"
+    },
+    "opt_clickNotificationText": {
+        "message": "Si el panel no puede abrirse, se abre el correo."
+    },
+    "opt_clickMail": {
+        "message": "Se abre el correo en Gmail"
+    },
     "opt_buttonsOver": {
         "message": "No cabe: una notificación muestra dos botones"
     },

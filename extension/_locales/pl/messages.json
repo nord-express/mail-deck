@@ -2373,6 +2373,15 @@
     "opt_copyCodesText": {
         "message": "Powiadomienie z kodem logowania dostaje przycisk, który go kopiuje, przed pozostałymi przyciskami. Chrome najpierw poprosi cię o zgodę: Mail Deck tylko zapisuje kod w schowku i nigdy nie odczytuje schowka."
     },
+    "opt_clickNotification": {
+        "message": "Kliknięcie powiadomienia"
+    },
+    "opt_clickNotificationText": {
+        "message": "Gdy panelu nie da się otworzyć, otwiera się wiadomość."
+    },
+    "opt_clickMail": {
+        "message": "Otwiera wiadomość w Gmailu"
+    },
     "opt_buttonsOver": {
         "message": "Nie mieści się: powiadomienie pokazuje dwa przyciski"
     },
