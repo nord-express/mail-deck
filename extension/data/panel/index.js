@@ -2777,6 +2777,18 @@ const paintReplies = () => {
     document.querySelector(path)?.focus({preventScroll: true});
   }
 };
+// Gmail's own sorting: its unread promotions, social and forum mail of the last two weeks is
+// bulk with no model asked (unless a person wrote it, ai.js decides). One search an account.
+const BULK_QUERY = 'is:unread newer_than:14d (category:promotions OR category:social OR category:forums)';
+const bulkOf = async items => {
+  const accounts = new Set(items.map(it => it.account));
+  const gmails = view().filter(o => !serviceOf(o) && accounts.has(o.xml.title)).filter((o, i, l) => l.findIndex(x => x.xml.title === o.xml.title) === i);
+  const found = await Promise.all(gmails.map(o => searchIn(o, BULK_QUERY).then(list => (list || []).map(e => o.xml.title + '|' + thread(e.link)))));
+  const known = new Set(found.flat());
+  return items.filter(it => known.has(it.account + '|' + it.thread)).map(it => it.id);
+};
+// the sorting underway, for the assistant to wait for
+let replyRun = null;
 const runReplies = async () => {
   if (replyCtl) {
     replyAgain = true;
@@ -2784,7 +2796,7 @@ const runReplies = async () => {
   }
   const items = shownMail(view()).filter(({e, o}) => e.unread !== false && !replySeen.has(replyId(e, o))).map(({e, o}) => ({
     id: replyId(e, o), from: e.author_name || '', email: e.author_email || '', subject: e.title || '', snippet: e.summary || '',
-    date: e.modified || '', account: o.xml.title
+    date: e.modified || '', account: o.xml.title, thread: thread(e.link)
   }));
   if (items.length === 0) {
     return;
@@ -2796,9 +2808,18 @@ const runReplies = async () => {
     return;
   }
   const ctl = replyCtl = new AbortController();
+  let finish;
+  replyRun = new Promise(resolve => finish = resolve);
   const accounts = [...new Set([...state.objs.map(o => o.xml.title), ...Object.keys(state.accounts)])].filter(a => a.includes('@'));
+  // the chips fill in as the answers come, a request at a time
+  const onBatch = found => {
+    if (!ctl.signal.aborted) {
+      found.forEach((v, id) => state.replies.set(id, v));
+      paintReplies();
+    }
+  };
   try {
-    const found = await AI.needsReply({items, accounts, signal: ctl.signal});
+    const found = await AI.needsReply({items, accounts, signal: ctl.signal, onBatch, bulkOf});
     found.forEach((v, id) => state.replies.set(id, v));
     state.replyError = null;
   }
@@ -2813,11 +2834,22 @@ const runReplies = async () => {
     if (replyCtl === ctl) {
       replyCtl = null;
     }
+    replyRun = null;
+    finish();
   }
   paintReplies();
   if (replyAgain) {
     replyAgain = false;
     scheduleReplies();
+  }
+};
+// the sorting as far as it goes now: mail not asked about yet is asked about, and waited for
+// (one underway first, then what came meanwhile)
+const sorted = async () => {
+  for (let i = 0; i < 2; i += 1) {
+    clearTimeout(replyTimer);
+    const p = runReplies();
+    await (replyRun || p);
   }
 };
 const scheduleReplies = () => {

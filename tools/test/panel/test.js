@@ -754,6 +754,9 @@
         out.replyWaited = calls('needsReply')[0]?.t - window.__firstRow >= 750;
         out.chip = $('chips').firstElementChild?.classList.contains('reply-chip') && $('chips').querySelector('.reply-chip').getAttribute('aria-label') === t('replyChip', 2);
         out.asked = {calls: calls('needsReply').length, n: calls('needsReply')[0]?.n, own: calls('needsReply')[0]?.accounts.includes('work@arbitron.example')};
+        // Gmail's categories name the digest bulk before any model is asked
+        out.knownBulk = calls('needsReply')[0]?.known.length === 1 && calls('needsReply')[0].known[0].includes('|a4|') &&
+          calls('needsReply')[0].threads.every(Boolean) && sent('gmail.search').some(m => m.query.includes('category:promotions'));
         out.marks = [...document.querySelectorAll('#list .row')].filter(r => r.querySelector('.reply-mark'))
           .map(r => id(r.dataset.link) + ':' + r.querySelector('.reply-mark').title);
         // the chip narrows the list to that mail; Esc lets go

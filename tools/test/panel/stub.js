@@ -147,17 +147,24 @@
         };
         timer = setTimeout(next, ai.fail ? 20 : ai.step);
       }),
-      needsReply: async ({items, accounts}) => {
-        call('needsReply', {n: items.length, ids: items.map(it => it.id), accounts});
+      // what the page knows to be bulk (Gmail's categories) comes first, then the rest in one batch
+      needsReply: async ({items, accounts, onBatch, bulkOf}) => {
+        const known = new Set(bulkOf ? await bulkOf(items) : []);
+        call('needsReply', {n: items.length, ids: items.map(it => it.id), accounts, known: [...known], threads: items.map(it => it.thread)});
+        const first = new Map([...known].map(id => [id, {reply: false, important: false, bulk: true, why: ''}]));
+        if (first.size) {
+          onBatch?.(first);
+        }
         await new Promise(r => setTimeout(r, 20));
         // a question waits for a reply; GitHub's sign-in is important, a digest bulk
-        const out = new Map(items.map(it => [it.id, /\?|пожалуйста/.test(it.snippet) ?
+        const out = new Map(items.filter(it => !known.has(it.id)).map(it => [it.id, /\?|пожалуйста/.test(it.snippet) ?
           {reply: true, important: false, bulk: false, why: it.snippet.includes('?') ? 'asks a question' : 'asks for the mockups'} :
           {reply: false, important: /sign-in/i.test(it.subject), bulk: /digest|newsletter/i.test(it.subject), why: ''}]));
         if (ai.replyFail) {
-          throw Object.assign(err(ai.replyFail), {results: out});
+          throw Object.assign(err(ai.replyFail), {results: new Map([...first, ...out])});
         }
-        return out;
+        onBatch?.(out);
+        return new Map([...first, ...out]);
       },
       // the assistant: a plan by the words of the request, answers that cite the first mail;
       // __ai.planFail fails the plan with that code, __ai.hold keeps an answer going until stopped
@@ -214,6 +221,13 @@
     // a thread the feed lists too, found again by the search
     if (query === 'mockups') {
       return n === 0 ? [row('a1', 'Макеты на ревью', ['Anna Petrova', 'anna@figma.com'], '…', 4, ['^u', '^i'])] : [];
+    }
+    // Gmail's categories: the digest is a promotion
+    if (query.includes('category:')) {
+      return n === 0 ? [row('a4', 'Weekly digest', 'Notion <team@notion.so>', 'Your workspace this week', 2000, ['^u', '^i', 'STARRED'])] : [];
+    }
+    if (query.includes('nothing') || query.includes('zzz')) {
+      return [];
     }
     if (query.includes('is:unread')) {
       return n === 0 ? [

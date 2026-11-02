@@ -283,7 +283,8 @@ check('anthropic: a summary streams in, read as it comes; headers, effort, fallb
   assert.strictEqual(r.body.model, 'claude-opus-5-5');
   assert.strictEqual(r.body.fallbacks, 'default');
   assert.deepStrictEqual(r.body.output_config, {effort: 'low'});
-  assert.strictEqual(r.body.max_tokens, 2000);
+  // the summary's 2000 tokens, and room for the thinking that counts against them
+  assert.strictEqual(r.body.max_tokens, 6000);
   assert.strictEqual(r.body.stream, true);
   for (const k of ['temperature', 'top_p', 'top_k', 'thinking']) {
     assert.ok(!(k in r.body), k);
@@ -317,7 +318,7 @@ check('openai: a summary streams in; max_completion_tokens, reasoning_effort, de
   const r = t.requests[0];
   assert.strictEqual(r.url, 'https://api.openai.com/v1/chat/completions');
   assert.strictEqual(r.headers.authorization, 'Bearer sk-proj-SECRETSECRET');
-  assert.strictEqual(r.body.max_completion_tokens, 2000);
+  assert.strictEqual(r.body.max_completion_tokens, 6000);
   assert.strictEqual(r.body.reasoning_effort, 'low');
   assert.strictEqual(r.body.stream, true);
   assert.ok(!('max_tokens' in r.body) && !('temperature' in r.body));
@@ -368,29 +369,36 @@ check('stream: event names and data lines that span pieces, comments, a CR LF sp
 });
 
 /* waiting for a reply */
-check('anthropic: needs-reply asks with a JSON schema and reads the text block after thinking', async () => {
+check('anthropic: needs-reply asks the fast model with a JSON schema of the groups and reads the text block after thinking', async () => {
   const t = load({lang: 'fr', local: ANTHROPIC});
-  t.answers.push(anthropicJSON({results: [{i: 1, reply: true, important: true, bulk: false, why: 'Demande le fichier avant lundi, merci beaucoup encore'}, {i: 2, reply: false, important: false, bulk: true, why: 'Information'}]}));
-  const items = [person('a', 'anna@work.test'), person('b', 'boris@work.test', 2)];
+  t.answers.push(anthropicJSON({reply: [{i: 1, why: 'Demande le fichier avant lundi, merci beaucoup encore'}], important: [{i: 1, why: 'x'}], bulk: [2]}));
+  const items = [person('a', 'anna@work.test'), person('b', 'boris@work.test', 2, {subject: 'Weekly news'})];
   const out = await t.AI.needsReply({items});
   const r = t.requests[0];
-  assert.strictEqual(r.body.max_tokens, 1500);
+  // a sorting goes to Haiku, with the answer's tokens and room for thinking
+  assert.strictEqual(r.body.model, 'claude-haiku-5-5');
+  assert.strictEqual(r.body.max_tokens, 5500);
+  assert.ok(!('fallbacks' in r.body) && !r.headers['anthropic-beta']);
   assert.ok(!('stream' in r.body));
   assert.strictEqual(r.body.output_config.effort, 'low');
   assert.strictEqual(r.body.output_config.format.type, 'json_schema');
   const schema = r.body.output_config.format.schema;
   assert.strictEqual(schema.additionalProperties, false);
-  assert.deepStrictEqual(schema.required, ['results']);
-  assert.deepStrictEqual(schema.properties.results.items.required, ['i', 'reply', 'important', 'bulk', 'why']);
-  assert.strictEqual(schema.properties.results.items.additionalProperties, false);
+  assert.deepStrictEqual(schema.required, ['reply', 'important', 'bulk']);
+  assert.deepStrictEqual(schema.properties.reply.items.required, ['i', 'why']);
+  assert.strictEqual(schema.properties.important.items.additionalProperties, false);
+  assert.strictEqual(schema.properties.bulk.items.type, 'integer');
   assert.ok(!JSON.stringify(schema).match(/min|max/i), 'no min/max constraints');
   assert.match(r.body.system, /at most 8 words in French/);
+  assert.match(r.body.system, /Leave out every email that is none/);
   assert.deepStrictEqual(listed(r).map(x => x.i), [1, 2]);
   assert.strictEqual(listed(r)[0].from, 'anna <anna@work.test>');
+  // how long ago each came, so that "tomorrow" in it means something
+  assert.deepStrictEqual(listed(r).map(x => x.age), ['24h', '2d']);
   assert.strictEqual(out.get('a').reply, true);
   // why: at most 8 words
   assert.strictEqual(out.get('a').why.split(' ').length, 8);
-  assert.deepStrictEqual(plain(out.get('b')), {reply: false, important: false, bulk: true, why: 'Information'});
+  assert.deepStrictEqual(plain(out.get('b')), {reply: false, important: false, bulk: true, why: ''});
   const kept = t.store.local['ai.replies'];
   assert.strictEqual(kept.a.r, 1);
   assert.strictEqual(kept.a.i, 1);
@@ -400,19 +408,26 @@ check('anthropic: needs-reply asks with a JSON schema and reads the text block a
   assert.ok(Math.abs(kept.a.t - Date.now()) < 5000);
 });
 
-check('openai: needs-reply asks with a strict json_schema response_format', async () => {
+check('openai: needs-reply asks with a strict json_schema response_format, at the least effort', async () => {
   const t = load({local: OPENAI});
-  t.answers.push(openaiJSON({results: [{i: 1, reply: true, why: 'Asks for the file'}]}));
+  t.answers.push(openaiJSON({reply: [{i: 1, why: 'Asks for the file'}], important: [], bulk: []}));
   const out = await t.AI.needsReply({items: [person(7, 'anna@work.test')]});
   const r = t.requests[0];
   assert.strictEqual(r.body.response_format.type, 'json_schema');
   assert.strictEqual(r.body.response_format.json_schema.strict, true);
   assert.ok(r.body.response_format.json_schema.name);
-  assert.deepStrictEqual(r.body.response_format.json_schema.schema.required, ['results']);
-  assert.strictEqual(r.body.max_completion_tokens, 1500);
+  assert.deepStrictEqual(r.body.response_format.json_schema.schema.required, ['reply', 'important', 'bulk']);
+  // gpt-5-mini is small already; GPT-5 thinks least at minimal, with room for it
+  assert.strictEqual(r.body.model, 'gpt-5-mini');
+  assert.strictEqual(r.body.reasoning_effort, 'minimal');
+  assert.strictEqual(r.body.max_completion_tokens, 5500);
   assert.ok(!('stream' in r.body));
-  // a model that leaves out important and bulk answers no for them
   assert.deepStrictEqual(plain(out.get(7)), {reply: true, important: false, bulk: false, why: 'Asks for the file'});
+  // the shape of one result for each mail is read too; there, one left out answers no
+  const u = load({local: OPENAI});
+  u.answers.push(openaiJSON({results: [{i: 1, reply: true, why: 'Asks for the file'}]}));
+  assert.deepStrictEqual(plain((await u.AI.needsReply({items: [person(7, 'anna@work.test')]})).get(7)),
+    {reply: true, important: false, bulk: false, why: 'Asks for the file'});
 });
 
 check('sorting: own, old and read mail are not sent; a machine\'s mail is sorted but waits for no reply; cached ones are not sent again', async () => {
@@ -437,16 +452,9 @@ check('sorting: own, old and read mail are not sent; a machine\'s mail is sorted
     person('cached', 'carl@work.test'),
     person('oldform', 'digest@news.test')
   ];
-  t.answers.push(openaiJSON({results: [
-    {i: 1, reply: true, important: true, bulk: false, why: 'x'},
-    // a machine's mail the model thought waits for a reply: it does not
-    {i: 2, reply: true, important: true, bulk: false, why: 'Order problem'},
-    {i: 3, reply: false, important: false, bulk: true, why: 'Notification'},
-    {i: 4, reply: false, important: false, bulk: true, why: 'Newsletter'},
-    {i: 5, reply: false, important: false, bulk: true, why: 'Promotion'},
-    {i: 6, reply: false, important: false, bulk: true, why: 'Digest'},
-    {i: 7, reply: false, important: false, bulk: false, why: 'y'}
-  ]}));
+  // a machine's mail the model thought waits for a reply (2) does not; a mail named nowhere (7) is none
+  t.answers.push(openaiJSON({reply: [{i: 1, why: 'x'}, {i: 2, why: 'Order problem'}], important: [{i: 1, why: 'x'}, {i: 2, why: 'Order problem'}],
+    bulk: [3, 4, 5, 6, 1, 99, 'x']}));
   const out = await t.AI.needsReply({items, accounts: ['me@home.test']});
   assert.strictEqual(t.requests.length, 1);
   assert.deepStrictEqual(listed(t.requests[0]).map(x => x.subject),
@@ -455,6 +463,9 @@ check('sorting: own, old and read mail are not sent; a machine\'s mail is sorted
   assert.deepStrictEqual(plain(out.get('cached')), {reply: true, important: true, bulk: false, why: 'Asks about lunch'});
   assert.deepStrictEqual(plain(out.get('nr')), {reply: false, important: true, bulk: false, why: 'Order problem'});
   assert.strictEqual(out.get('news').bulk, true);
+  // what waits for a reply is never bulk; a mail no group names is none of them
+  assert.strictEqual(out.get('ok1').bulk, false);
+  assert.deepStrictEqual(plain(out.get('ok2')), {reply: false, important: false, bulk: false, why: ''});
   assert.strictEqual(t.store.local['ai.replies'].nr.r, 0);
   // nothing new to ask: no request
   const again = await t.AI.needsReply({items, accounts: ['me@home.test']});
@@ -467,20 +478,62 @@ check('sorting: own, old and read mail are not sent; a machine\'s mail is sorted
   assert.strictEqual(t.AI._internal.candidate(person('h', 'anna.info@startup.test')), true);
 });
 
-check('needs-reply: 20 a request, newest first; one request in flight at a time', async () => {
+check('needs-reply: 40 a request, three at once, newest first, each heard as it comes; one call in flight at a time', async () => {
   const t = load({local: OPENAI});
-  const items = Array.from({length: 25}, (_, i) => person('m' + i, `p${i}@work.test`, i * 0.1));
-  const answer = n => openaiJSON({results: Array.from({length: n}, (_, i) => ({i: i + 1, reply: i % 2 === 0, why: 'w' + i}))});
-  t.answers.push(answer(20), answer(5));
+  const items = Array.from({length: 100}, (_, i) => person('m' + i, `p${i}@work.test`, i * 0.1));
+  // the answers wait until all three requests are out
+  let release;
+  const out = new Promise(r => release = r);
+  const answer = n => async req => {
+    await out;
+    return openaiJSON({reply: Array.from({length: n}, (_, i) => ({i: i + 1, why: 'w' + i})).filter((_, i) => i % 2 === 0), important: [], bulk: []})(req);
+  };
+  t.answers.push(answer(40), answer(40), answer(20));
+  const heard = [];
   // the second call waits for the first, then finds its answers kept
-  const [a, b] = await Promise.all([t.AI.needsReply({items}), t.AI.needsReply({items})]);
-  assert.strictEqual(t.requests.length, 2);
-  assert.strictEqual(listed(t.requests[0]).length, 20);
-  assert.strictEqual(listed(t.requests[1]).length, 5);
+  const both = Promise.all([t.AI.needsReply({items, onBatch: m => heard.push(m.size)}), t.AI.needsReply({items})]);
+  await new Promise(r => setTimeout(r, 30));
+  assert.strictEqual(t.requests.length, 3, 'three requests at once');
+  release();
+  const [a, b] = await both;
+  assert.strictEqual(t.requests.length, 3);
+  assert.deepStrictEqual(t.requests.map(r => listed(r).length), [40, 40, 20]);
   assert.strictEqual(listed(t.requests[0])[0].subject, 'Question m0');
-  assert.strictEqual(a.size, 25);
-  assert.strictEqual(b.size, 25);
-  assert.strictEqual(Object.keys(t.store.local['ai.replies']).length, 25);
+  assert.strictEqual(listed(t.requests[2]).at(-1).subject, 'Question m99');
+  assert.deepStrictEqual(heard.sort(), [20, 40, 40]);
+  assert.strictEqual(a.size, 100);
+  assert.strictEqual(b.size, 100);
+  assert.strictEqual(Object.keys(t.store.local['ai.replies']).length, 100);
+  assert.strictEqual([...a.values()].filter(v => v.reply).length, 50);
+});
+
+check('needs-reply: what the page knows to be bulk is not sent, unless a person wrote it; a page that cannot tell leaves it to the model', async () => {
+  const t = load({local: OPENAI});
+  const items = [person('n1', 'news@shop.test'), person('n2', 'promo@shop.test'), person('p1', 'anna@work.test'), person('q1', 'boris@work.test')];
+  t.answers.push(openaiJSON({reply: [{i: 1, why: 'Asks'}], important: [], bulk: []}));
+  const asked = [];
+  const heard = [];
+  const out = await t.AI.needsReply({items, onBatch: m => heard.push([...m.keys()]), bulkOf: list => {
+    asked.push(list.map(it => it.id));
+    return ['n1', 'n2', 'p1'];
+  }});
+  // only mail no person wrote is asked about
+  assert.deepStrictEqual(plain(asked), [['n1', 'n2']]);
+  assert.deepStrictEqual(listed(t.requests[0]).map(x => x.subject), ['Question p1', 'Question q1']);
+  assert.deepStrictEqual(plain(out.get('n1')), {reply: false, important: false, bulk: true, why: ''});
+  assert.strictEqual(t.store.local['ai.replies'].n2.b, 1);
+  assert.deepStrictEqual(plain(heard), [['n1', 'n2'], ['p1', 'q1']]);
+  // all of it known: no request at all
+  const u = load({local: OPENAI});
+  await u.AI.needsReply({items: [person('n1', 'news@shop.test')], bulkOf: () => new Set(['n1'])});
+  assert.strictEqual(u.requests.length, 0);
+  // a page that fails to tell leaves it all to the model
+  const v = load({local: OPENAI});
+  v.answers.push(openaiJSON({reply: [], important: [], bulk: [1]}));
+  assert.strictEqual((await v.AI.needsReply({items: [person('n1', 'news@shop.test')], bulkOf: () => {
+    throw new Error('no search');
+  }})).get('n1').bulk, true);
+  assert.strictEqual(v.requests.length, 1);
 });
 
 check('needs-reply: a 429 waits retry-after once; a second batch that fails keeps what the first found', async () => {
@@ -503,11 +556,11 @@ check('needs-reply: a 429 waits retry-after once; a second batch that fails keep
   assert.strictEqual(v.requests.length, 1);
   // partial results come with the error
   const w = load({local: OPENAI});
-  const items = Array.from({length: 22}, (_, i) => person('m' + i, `p${i}@work.test`, i * 0.1));
-  w.answers.push(openaiJSON({results: Array.from({length: 20}, (_, i) => ({i: i + 1, reply: false, why: 'n'}))}), json(500, {error: {message: 'boom', type: 'server_error'}}));
+  const items = Array.from({length: 45}, (_, i) => person('m' + i, `p${i}@work.test`, i * 0.1));
+  w.answers.push(openaiJSON({reply: [], important: [], bulk: []}), json(500, {error: {message: 'boom', type: 'server_error'}}));
   const e = await failsWith(w.AI.needsReply({items}), 'server');
-  assert.strictEqual(e.results.size, 20);
-  assert.strictEqual(Object.keys(w.store.local['ai.replies']).length, 20);
+  assert.strictEqual(e.results.size, 40);
+  assert.strictEqual(Object.keys(w.store.local['ai.replies']).length, 40);
 });
 
 check('needs-reply: an answer that cannot be read is bad-output, and nothing is kept', async () => {
@@ -661,9 +714,21 @@ check('openai: a 400 about reasoning_effort is asked again once without it', asy
   t.answers.push(openaiJSON({results: [{i: 1, reply: true, why: 'Asks'}]}));
   const out = await t.AI.needsReply({items: [person('a', 'anna@work.test')]});
   assert.strictEqual(out.get('a').reply, true);
-  assert.strictEqual(t.requests[0].body.reasoning_effort, 'low');
+  assert.strictEqual(t.requests[0].body.reasoning_effort, 'minimal');
   assert.ok(!('reasoning_effort' in t.requests[1].body));
   assert.ok(t.requests[1].body.response_format);
+  // and not asked for again by this page, for a summary either
+  t.answers.push(stream(openaiEvents(SUMMARY)));
+  await t.AI.summarize(THREAD);
+  assert.ok(!('reasoning_effort' in t.requests[2].body));
+  // an effort it does not take: the lowest of those it names, kept for the page
+  const n = load({local: {...OPENAI, 'ai.openai.model': 'gpt-5.5', 'ai.fast': false}});
+  n.answers.push(json(400, {error: {message: 'Unsupported value: \'reasoning_effort\' does not support \'none\' with this model. Supported values are: \'low\', \'medium\', and \'high\'.',
+    type: 'invalid_request_error', param: 'reasoning_effort', code: 'unsupported_value'}}));
+  n.answers.push(openaiJSON({reply: [], important: [], bulk: []}), openaiJSON({reply: [], important: [], bulk: []}));
+  await n.AI.needsReply({items: [person('a', 'anna@work.test')]});
+  await n.AI.needsReply({items: [person('b', 'boris@work.test')]});
+  assert.deepStrictEqual(n.requests.map(r => r.body.reasoning_effort), ['none', 'low', 'low']);
   // another 400 is not asked again
   const u = load({local: OPENAI});
   u.answers.push(json(400, {error: {message: 'Invalid value for messages', type: 'invalid_request_error', param: 'messages'}}));
@@ -753,18 +818,18 @@ check('models: with no model picked, the default of the list is used', async () 
 /* settings and state */
 check('prefs and state: defaults, the key only for a cloud engine, the reasons', async () => {
   const t = load({lang: 'he'});
-  assert.deepStrictEqual(plain(await t.AI.prefs()), {engine: 'off', model: '', summary: 'click', reply: true, buttons: true});
+  assert.deepStrictEqual(plain(await t.AI.prefs()), {engine: 'off', model: '', summary: 'click', reply: true, buttons: true, fast: true});
   assert.deepStrictEqual(plain(await t.AI.state()), {ok: false, reason: 'off', lang: 'he'});
   assert.deepStrictEqual(plain(t.AI.ENGINES), ['off', 'builtin', 'chatgpt', 'openai', 'anthropic', 'zai']);
-  const b = load({local: {'ai.engine': 'builtin', 'ai.openai.key': 'sk-x', 'ai.summary': 'auto', 'ai.reply': false, 'ai.buttons': false}});
-  assert.deepStrictEqual(plain(await b.AI.prefs()), {engine: 'builtin', model: '', summary: 'auto', reply: false, buttons: false});
+  const b = load({local: {'ai.engine': 'builtin', 'ai.openai.key': 'sk-x', 'ai.summary': 'auto', 'ai.reply': false, 'ai.buttons': false, 'ai.fast': false}});
+  assert.deepStrictEqual(plain(await b.AI.prefs()), {engine: 'builtin', model: '', summary: 'auto', reply: false, buttons: false, fast: false});
   // the plan has a model, but no key: its sign-in is read where it is used
   const g = load({local: {'ai.engine': 'chatgpt', 'ai.chatgpt.model': 'gpt-5.5', 'ai.openai.key': 'sk-x'}});
-  assert.deepStrictEqual(plain(await g.AI.prefs()), {engine: 'chatgpt', model: 'gpt-5.5', summary: 'click', reply: true, buttons: true});
+  assert.deepStrictEqual(plain(await g.AI.prefs()), {engine: 'chatgpt', model: 'gpt-5.5', summary: 'click', reply: true, buttons: true, fast: true});
   assert.strictEqual((await g.AI.state()).reason, 'signed-out');
   await failsWith(g.AI.summarize(THREAD), 'signed-out');
   const z = load({local: {'ai.engine': 'zai', 'ai.zai.key': ' zkey.SECRET ', 'ai.zai.model': 'glm-4.7'}});
-  assert.deepStrictEqual(plain(await z.AI.prefs()), {engine: 'zai', model: 'glm-4.7', summary: 'click', reply: true, buttons: true, key: 'zkey.SECRET'});
+  assert.deepStrictEqual(plain(await z.AI.prefs()), {engine: 'zai', model: 'glm-4.7', summary: 'click', reply: true, buttons: true, fast: true, key: 'zkey.SECRET'});
   assert.deepStrictEqual(plain(await z.AI.state()), {ok: true, lang: 'en'});
   assert.strictEqual((await load({local: {'ai.engine': 'zai'}}).AI.state()).reason, 'no-key');
   const c = load({local: {...ANTHROPIC, 'ai.summary': 'nonsense', 'ai.engine': 'anthropic'}});
@@ -1227,11 +1292,11 @@ check('built-in: a summary from delta pieces or from the whole text so far, one 
 });
 
 check('built-in: needs-reply uses responseConstraint; the room is measured, a long thread cut to it', async () => {
-  const {LanguageModel, log} = stubLM({quota: 1000, answer: '{"results": [{"i": 1, "reply": true, "why": "Asks"}]}'});
+  const {LanguageModel, log} = stubLM({quota: 1000, answer: '{"reply": [{"i": 1, "why": "Asks"}], "important": [], "bulk": []}'});
   const t = load({local: BUILTIN, LanguageModel});
   const out = await t.AI.needsReply({items: [person('a', 'anna@work.test')]});
   assert.strictEqual(out.get('a').reply, true);
-  assert.deepStrictEqual(plain(log.constraints[0].required), ['results']);
+  assert.deepStrictEqual(plain(log.constraints[0].required), ['reply', 'important', 'bulk']);
   assert.ok(log.prompts[0].includes('<email_list>'));
   const s = await t.AI.summarize({subject: 'Long', messages: [{from: 'a', text: 'OLD ' + 'a'.repeat(9000)}, {from: 'b', text: 'NEW ' + 'b'.repeat(500) + ' END'}]});
   assert.strictEqual(s.truncated, true);
@@ -1335,7 +1400,7 @@ check('zai: older models think not at all; JSON is asked as json_object, without
   assert.deepStrictEqual(r.body.thinking, {type: 'enabled'});
   assert.strictEqual(r.body.reasoning_effort, 'low');
   assert.strictEqual(r.body.max_tokens, 1500 + 4000);
-  assert.match(r.body.messages[0].content, /Answer with JSON only, exactly like \{"results"/);
+  assert.match(r.body.messages[0].content, /Answer with JSON only, exactly like \{"reply"/);
   assert.deepStrictEqual(plain(out.get('a')), {reply: true, important: false, bulk: false, why: 'Asks for the file'});
   const {thinksAlways} = u.AI._internal;
   assert.deepStrictEqual(['glm-5.3', 'glm-5.3-flash', 'glm-5.3-flashx', 'glm-5.4', 'glm-6'].map(thinksAlways), [true, true, true, true, true]);
@@ -1471,7 +1536,9 @@ const HOST = 'urn:uuid:0b8f8a52-1d8a-4f0e-9a43-6c2f27c3c9d1';
 const planAuth = (extra = {}) => ({client_id: 'oaiapp_test', email: 'me@example.com', sub: 'user-1', access_token: 'at-SECRET',
   refresh_token: 'rt-SECRET', id_token: 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJ1c2VyLTEifQ.c2ln', expires_at: Date.now() + 3600000,
   scopes: SCOPES.split(' '), ...extra});
-const PLAN = (auth = {}) => ({'ai.engine': 'chatgpt', 'ai.chatgpt.model': 'gpt-5.5', 'ai.chatgpt.auth': planAuth(auth),
+// the plan's own model for every task, so that its checks count only their own requests (the
+// fast model has a check of its own)
+const PLAN = (auth = {}) => ({'ai.engine': 'chatgpt', 'ai.chatgpt.model': 'gpt-5.5', 'ai.fast': false, 'ai.chatgpt.auth': planAuth(auth),
   'ai.chatgpt.client': {id: 'oaiapp_test', sub: 'user-1', email: 'me@example.com'}, 'ai.chatgpt.host': HOST});
 // OpenAI's signing keys, made once: two RSA pairs, k1 and k2
 const RSA = {name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256'};
@@ -1936,7 +2003,7 @@ check('chatgpt: a summary streams from the Responses API: instructions, store fa
   assert.strictEqual(j.body.text.format.type, 'json_schema');
   assert.strictEqual(j.body.text.format.strict, true);
   assert.strictEqual(j.body.text.format.name, 'results');
-  assert.deepStrictEqual(j.body.text.format.schema.required, ['results']);
+  assert.deepStrictEqual(j.body.text.format.schema.required, ['reply', 'important', 'bulk']);
   for (const k of ['max_output_tokens', 'temperature', 'top_p', 'user', 'metadata', 'previous_response_id', 'truncation', 'max_tokens']) {
     assert.ok(!(k in j.body) && !(k in r.body), k);
   }
@@ -2339,6 +2406,51 @@ check('summary: the reader\'s own messages are marked, and a relative date count
   u.answers.push(stream(anthropicEvents(SUMMARY)));
   await u.AI.summarize({subject: 'x', messages: [{from: 'Evgeny', email: 'evgeny@example.com', text: 'hi'}]});
   assert.ok(!u.requests[0].body.messages[0].content.includes('(the reader)'));
+});
+
+check('fast model: a plan and the sorting go to the provider\'s smaller model, unless one is in use, turned off, or not the key\'s', async () => {
+  const plan = {action: 'find', scope: 'new', query: 'x', since: '', until: '', words: [], op: '', title: 'T'};
+  // Anthropic: Haiku for a plan, the model picked for an answer
+  const t = load({local: ANTHROPIC});
+  t.answers.push(anthropicJSON(plan), stream(anthropicEvents('A [1].')));
+  await t.AI.plan({request: 'x'});
+  await t.AI.answer({question: 'x', mail: [{text: 'x'}]});
+  assert.deepStrictEqual(t.requests.map(r => r.body.model), ['claude-haiku-5-5', 'claude-opus-5-5']);
+  // a key without it: the model picked, at once and from then on
+  const u = load({local: ANTHROPIC});
+  u.answers.push(json(404, {type: 'error', error: {type: 'not_found_error', message: 'model: claude-haiku-5-5'}}), anthropicJSON(plan), anthropicJSON(plan));
+  await u.AI.plan({request: 'x'});
+  await u.AI.plan({request: 'y'});
+  assert.deepStrictEqual(u.requests.map(r => r.body.model), ['claude-haiku-5-5', 'claude-opus-5-5', 'claude-opus-5-5']);
+  // turned off in the settings
+  const v = load({local: {...ANTHROPIC, 'ai.fast': false}});
+  v.answers.push(anthropicJSON(plan));
+  await v.AI.plan({request: 'x'});
+  assert.strictEqual(v.requests[0].body.model, 'claude-opus-5-5');
+  // Z.ai: Flash for GLM-5.3; a free model stays the one it is
+  const z = load({local: ZAI});
+  z.answers.push(zaiJSON(JSON.stringify(plan)));
+  await z.AI.plan({request: 'x'});
+  const f = load({local: {...ZAI, 'ai.zai.model': 'glm-4.7-flash'}});
+  f.answers.push(zaiJSON(JSON.stringify(plan)));
+  await f.AI.plan({request: 'x'});
+  assert.deepStrictEqual([z.requests[0].body.model, f.requests[0].body.model], ['glm-5.3-flash', 'glm-4.7-flash']);
+  // OpenAI: the list's gpt-N-mini, asked once a page, or the list this session already has
+  const o = load({local: {...OPENAI, 'ai.openai.model': 'gpt-5.5'}});
+  o.answers.push(json(200, {data: [{id: 'gpt-5.5', created: 3}, {id: 'gpt-5.5-mini', created: 2}]}), openaiJSON(plan), openaiJSON(plan));
+  await o.AI.plan({request: 'x'});
+  await o.AI.plan({request: 'y'});
+  assert.deepStrictEqual(o.requests.map(r => r.url.split('/').pop() + ':' + (r.body?.model || '')), ['models:', 'completions:gpt-5.5-mini', 'completions:gpt-5.5-mini']);
+  const s = load({local: {...OPENAI, 'ai.openai.model': 'gpt-5.5'}, session: {'ai.models': {openai: [{id: 'gpt-5.5'}, {id: 'gpt-5.5-mini', tag: 'fast'}]}}});
+  s.answers.push(openaiJSON(plan));
+  await s.AI.plan({request: 'x'});
+  assert.deepStrictEqual(s.requests.map(r => r.body.model), ['gpt-5.5-mini']);
+  // the ChatGPT plan: its first small model
+  const g = load({local: {...PLAN(), 'ai.fast': true}});
+  g.answers.push(json(200, {models: [{slug: 'gpt-5.5', visibility: 'list'}, {slug: 'gpt-5.5-mini', visibility: 'list'}]}), stream(planEvents(JSON.stringify(plan))));
+  await g.AI.plan({request: 'x'});
+  assert.deepStrictEqual(g.requests.map(r => r.body?.model || r.url), ['https://api.openai.com/v1/models', 'gpt-5.5-mini']);
+  assert.deepStrictEqual(g.requests[1].body.reasoning, {effort: 'none'});
 });
 
 check('the assistant asks nothing with the engine off or without a key', async () => {

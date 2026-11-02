@@ -209,6 +209,7 @@ const checks = {
     'the assistant starts after the list is on screen; waiting for a reply asks 800 ms later': r.afterPaint && r.replyWaited,
     'Reply · N comes first among the chips; the lines get ↩ with the reason': r.chip && r.asked?.calls === 1 && r.asked.n >= 3 && r.asked.own &&
       JSON.stringify(r.marks) === JSON.stringify(['a1:' + T('replyWhy', 'asks for the mockups'), 'b1:' + T('replyWhy', 'asks a question')]),
+    'Gmail\'s own categories mark bulk mail before any model is asked': r.knownBulk,
     'the chip narrows the list to that mail; Esc lets go': JSON.stringify(r.narrowed) === '["a1","b1"]' && r.letGo,
     'a check with nothing new asks nothing; new mail is asked about, alone': r.quietCheck && r.newMail,
     'the reader has a Summary button; nothing is asked before a click': r.button,
