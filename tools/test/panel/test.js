@@ -55,11 +55,12 @@
       await wait(50);
       const items = [...document.querySelectorAll('#menu button')];
       out.menuItems = items.length;
-      window.__set = [];
       items[0]?.click();
       await wait(250);
-      const reminder = window.__set.find(o => o['remind.links'])?.['remind.links']?.[0];
-      out.reminder = reminder ? Object.keys(reminder).sort() : null;
+      // the background writes it, with the account it belongs to
+      const asked = sent('remind.add').at(-1);
+      out.reminder = asked?.items?.[0] ? [...Object.keys(asked.items[0]), ...asked.until ? ['until'] : []].sort() : null;
+      out.reminderAccount = asked?.items?.[0]?.account;
       key(document, 'KeyZ');
       await wait(100);
 

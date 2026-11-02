@@ -5,7 +5,8 @@
 // This file is loaded by the background (importScripts) and by the panel
 // (script tag), so it must not rely on anything else.
 const Remind = {
-  // [{link, open, until, title, from}]; open is the address Gmail shows the thread at
+  // [{link, open, until, title, from, account}]; open is the address Gmail shows the thread at,
+  // account the mailbox's address (its place in the browser, /u/<n>, may move meanwhile)
   KEY: 'remind.links'
 };
 Remind.read = () => chrome.storage.local.get({

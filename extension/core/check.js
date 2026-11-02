@@ -411,10 +411,33 @@ if (typeof importScripts !== 'undefined') {
       }, 'session').then(prefs => prefs['cached-objects']);
     }
   };
+  /*
+   * The mail waiting for its reminder, as the feeds list it now: a reminder names its account,
+   * and the same thread of that account counts wherever the account is in the browser, though
+   * the link it was set with names the place (/u/<n>) it had then.
+   */
+  const waiting = (list, objs) => {
+    const due = Remind.waiting(list);
+    const named = due.filter(r => r.account).map(r => r.account + ' ' + helper.threadId(r.link));
+    if (named.length === 0) {
+      return due;
+    }
+    const moved = (objs || []).filter(o => !o.xml.service).flatMap(o => o.xml.entries
+      .filter(e => named.includes(o.xml.title + ' ' + helper.threadId(e.link))).map(e => ({link: e.link})));
+    return [...due, ...moved];
+  };
+  // a link of a Gmail account at the place the account is at now (/u/<n>), when it is signed in
+  self.checkEmails.relink = async (link, account) => {
+    const n = account && Object.entries(slotsOf(await self.checkEmails.getCached())).find(([, a]) => a === account)?.[0];
+    return n === undefined || typeof link !== 'string' || !link.startsWith('https://mail.google.com/') ? link :
+      link.replace(/\/mail\/u\/\d+/, '/mail/u/' + n);
+  };
   // the accounts as the panel and the badge show them: without the resolved mail and the
   // mail waiting for its reminder
-  self.checkEmails.visible = async () => Resolved.apply(Resolved.apply(await self.checkEmails.getCached(),
-    await Resolved.read()), Remind.waiting(await Remind.read()));
+  self.checkEmails.visible = async () => {
+    const objs = await self.checkEmails.getCached();
+    return Resolved.apply(Resolved.apply(objs, await Resolved.read()), waiting(await Remind.read(), objs));
+  };
   // Show the accounts as they are now: the badge, the panel and, when nothing
   // is left to read, the panel itself. The given objects are expected to be
   // already filtered by Resolved.apply(); the cache keeps the unfiltered ones.
@@ -855,7 +878,7 @@ if (typeof importScripts !== 'undefined') {
       // what the badge, the panel and the notifications take: mail waiting for its
       // reminder stays out like a resolved one
       const cachedObjs = Resolved.apply(Resolved.apply(simple, await Resolved.prune(objs)),
-        Remind.waiting(await Remind.read()));
+        waiting(await Remind.read(), simple));
       if (signal.aborted) {
         return log('[feed]', 'skipped');
       }

@@ -97,7 +97,8 @@ const checks = {
     'signed-out accounts are listed': r.signedOut?.some(s => s.includes('gone@example.com')),
     'an action reaches the background at once, with its Undo window': r.action?.cmd === 'rc_^i' && r.action.delay === 5000 && r.action.id && r.rowsAfterAction === 1,
     'Undo cancels that same action and brings the row back': r.cancelSameId && r.rowsAfterUndo,
-    'remind me later offers its times and writes the reminder': r.menuItems >= 3 && ['from', 'link', 'open', 'title', 'until'].every(k => r.reminder?.includes(k)),
+    'remind me later offers its times and has the background write the reminder, with its account':
+      r.menuItems >= 3 && ['account', 'from', 'link', 'open', 'title', 'until'].every(k => r.reminder?.includes(k)) && r.reminderAccount === 'evgeny@example.com',
     'a dragged mailbox moves, the order is saved': r.orderAfter?.[0] === r.orderBefore?.[1] && JSON.stringify(r.orderSaved) === JSON.stringify(r.orderAfter),
     'every mailbox keeps its colour when moved': r.coloursKept,
     'the reader shows the whole thread, newest open': r.thread?.messages === 3 && r.thread.lastOpen && r.thread.olderClosed && r.thread.to,

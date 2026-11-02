@@ -569,7 +569,8 @@ const undo = () => {
   clearTimeout(p.timer);
   hideToast();
   if (p.cmd === 'remind') {
-    Remind.remove(p.links);
+    // the background writes the list, one change after the other
+    chrome.runtime.sendMessage({method: 'remind.remove', links: p.links}).catch(() => Remind.remove(p.links));
   }
   else {
     chrome.runtime.sendMessage({method: 'gmail.action.cancel', id: p.id});
@@ -618,11 +619,14 @@ const act = (cmd, links, until) => {
 
   const p = {cmd, links, id: Math.random().toString(36).slice(2)};
   if (cmd === 'remind') {
-    // the background keeps it out of the badge and rings when its time comes
-    Remind.add(links.map(link => {
+    // the background keeps it out of the badge and rings when its time comes, in the account's
+    // place as it is then
+    const items = links.map(link => {
       const {e, o} = state.rows.get(link) || {};
-      return {link, open: e ? gmailLink(e, o) : link, title: e?.title || '', from: e?.author_name || e?.author_email || ''};
-    }), until);
+      return {link, open: e ? gmailLink(e, o) : link, title: e?.title || '', from: e?.author_name || e?.author_email || '',
+        ...(o && !serviceOf(o) ? {account: o.xml.title} : {})};
+    });
+    chrome.runtime.sendMessage({method: 'remind.add', items, until}).catch(() => Remind.add(items, until));
   }
   else {
     send(p, UNDO_MS);

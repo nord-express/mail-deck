@@ -458,6 +458,19 @@ tests.push(
     await b.run();
     assert.strictEqual(b.told.length, 1);
   }],
+  ['mail waiting for its reminder stays hidden after its account moves to another place', async () => {
+    const mail = {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}, {id: 'c', age: 60}]};
+    // set from Gmail's search at /u/1, whose link names the place alone
+    const link = 'https://mail.google.com/mail/u/1?message_id=b&view=conv&extsrc=atom';
+    const b = boot({mail, local: {'remind.links': [{link, open: 'https://mail.google.com/mail/u/1/?shva=1#inbox/b', account: 'user1@gmail.com', until: Date.now() + 3600000}]}});
+    await b.run();
+    assert.strictEqual(b.panel(), 2);
+    b.places = [1];
+    await b.run();
+    assert.deepStrictEqual([where(b), b.panel()], [['user1@0'], 1]);
+    assert.strictEqual(await b.ctx.checkEmails.relink(b.local['remind.links'][0].open, 'user1@gmail.com'), 'https://mail.google.com/mail/u/0/?shva=1#inbox/b');
+    assert.strictEqual(await b.ctx.checkEmails.relink(link, 'gone@gmail.com'), link);
+  }],
   ['a label setting of a place (1.5 and before) moves to the address of the account there, once', async () => {
     const mail = {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}], '1/work': [{id: 'w', age: 60}], '2': [{id: 'c', age: 60}]};
     const b = boot({mail, local: {feeds_1: 'inbox, work', feeds_4: 'news'}});

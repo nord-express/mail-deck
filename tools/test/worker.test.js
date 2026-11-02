@@ -197,6 +197,38 @@ tests.push(['a command the offscreen document never answers fails in time', asyn
   assert.strictEqual(vm.runInContext('offscreen.pending', ctx), 0);
 }]);
 
+// core/remind.js: the list has one writer, so a reminder set while another rings stays
+tests.push(['a reminder set while another one rings is kept, and the one that rang opens at its account\'s place now', async () => {
+  const local = {'remind.links': [{link: feedLink(1, 'old'), open: 'https://mail.google.com/mail/u/1/?shva=1#inbox/old', account: 'user1@gmail.com', until: Date.now() - 1000}]};
+  const session = {};
+  const store = area => ({
+    // as slow as a real one, so the ring and the message meet
+    get: async d => (await wait(5), JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(typeof d === 'string' ? {[d]: undefined} : d || {})
+      .map(([k, v]) => [k, k in area ? area[k] : v]))))),
+    set: async o => (await wait(5), Object.assign(area, JSON.parse(JSON.stringify(o)))),
+    remove: async k => [].concat(k).forEach(k => delete area[k])
+  });
+  const fns = {alarm: [], message: []};
+  const chrome = {
+    storage: {local: store(local), session: {...store(session), get: async () => ({})}, onChanged: {addListener() {}}},
+    alarms: {create() {}, clear() {}, onAlarm: {addListener: fn => fns.alarm.push(fn)}},
+    notifications: {getAll: cb => cb({}), create() {}, onClicked: {addListener() {}}},
+    runtime: {onMessage: {addListener: fn => fns.message.push(fn)}},
+    i18n: {getMessage: () => 'x'}
+  };
+  const ctx = {chrome, Date, Promise, Math, JSON, setTimeout, console, repeater: {reset() {}},
+    checkEmails: {relink: async link => link.replace('/u/1', '/u/0')}};
+  ctx.self = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(EXT + '/core/utils/remind.js', 'utf8'), ctx);
+  vm.runInContext(fs.readFileSync(EXT + '/core/remind.js', 'utf8'), ctx);
+  fns.alarm.forEach(fn => fn({name: 'remind'}));
+  await new Promise(resolve => fns.message.forEach(fn => fn({method: 'remind.add', items: [{link: feedLink(0, 'new')}], until: Date.now() + 3600000}, {}, resolve)));
+  await wait(50);
+  assert.deepStrictEqual(local['remind.links'].map(o => o.link), [feedLink(0, 'new')]);
+  assert.deepStrictEqual(Object.values(session).map(o => o.open), ['https://mail.google.com/mail/u/0/?shva=1#inbox/old']);
+}]);
+
 (async () => {
   let failed = 0;
   for (const [name, fn] of tests) {
