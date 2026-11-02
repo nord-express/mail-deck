@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Löschen"
     },
+    "opt_btnLater": {
+        "message": "In einer Stunde erinnern"
+    },
     "notification_copy": {
         "message": "$1 kopieren"
     },
@@ -2365,6 +2368,9 @@
     },
     "opt_copyCodesText": {
         "message": "Eine Benachrichtigung mit Anmeldecode bekommt eine Schaltfläche, die ihn kopiert, vor deinen anderen Schaltflächen. Chrome fragt dich zuerst um Erlaubnis: Mail Deck schreibt den Code nur in die Zwischenablage und liest sie nie."
+    },
+    "opt_buttonsOver": {
+        "message": "Passt nicht: Eine Benachrichtigung zeigt zwei Schaltflächen"
     },
     "opt_aiFree": {
         "message": "kostenlos"

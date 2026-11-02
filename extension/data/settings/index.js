@@ -15,6 +15,8 @@ const DEFAULTS = {
   'notification.buttons.markasread': true,
   'notification.buttons.archive': true,
   'notification.buttons.trash': false,
+  // a notification's button that puts its mail off for an hour (core/remind.js)
+  'notification.buttons.later': false,
   // a notification's button that copies its sign-in code: on only with clipboardWrite (syncCopy)
   'notification.buttons.copy': false,
   'combined': false,
@@ -291,6 +293,9 @@ document.addEventListener('change', ({target}) => {
     save({[key]: value});
     syncNeeds();
     paintQuiet();
+    if (key.startsWith('notification.buttons.')) {
+      paintButtons();
+    }
     if (key === 'sync.settings' && !value) {
       dropSync();
     }
@@ -302,6 +307,19 @@ document.addEventListener('change', ({target}) => {
     pickEngine(target.value);
   }
 });
+
+// A notification shows two buttons: the ones picked past the second stay picked, dimmed, and
+// say why (core/check.js takes them in the page's order)
+const paintButtons = () => {
+  const boxes = [...document.querySelectorAll('input[data-key^="notification.buttons."]')];
+  const picked = boxes.filter(el => el.checked);
+  for (const el of boxes) {
+    const over = picked.indexOf(el) > 1;
+    const chip = el.closest('.chip');
+    chip.classList.toggle('over', over);
+    chip.title = over ? t('buttonsOver') : '';
+  }
+};
 
 /* sign-in codes: a notification's Copy button writes the clipboard, which Chrome lets the
    extension do once asked from this switch's click (an optional permission) */
@@ -1856,6 +1874,7 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   paintRules();
   paintSaved();
   syncNeeds();
+  paintButtons();
   syncCopy();
   paintShortcut();
   // the background adds inboxes on its own; the copy catches up when the page opens

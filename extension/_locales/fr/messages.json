@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "Supprimer"
   },
+  "opt_btnLater": {
+    "message": "Me rappeler dans une heure"
+  },
   "notification_copy": {
     "message": "Copier $1"
   },
@@ -2197,6 +2200,9 @@
   },
   "opt_copyCodesText": {
     "message": "Une notification avec un code de connexion reçoit un bouton qui le copie, avant vos autres boutons. Chrome vous demande d’abord l’autorisation : Mail Deck écrit seulement le code dans le presse-papiers et ne le lit jamais."
+  },
+  "opt_buttonsOver": {
+    "message": "Ne tient pas : une notification affiche deux boutons"
   },
   "opt_aiFree": {
     "message": "gratuit"

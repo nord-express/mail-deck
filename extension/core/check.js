@@ -301,6 +301,16 @@ if (typeof importScripts !== 'undefined') {
     console.error(e);
     toast(chrome.i18n.getMessage('panel_copyCodeFailed'));
   });
+  // Later: the mail of the notification still unread comes back in an hour, the panel's first
+  // choice, as a reminder (core/remind.js); until then it stays out of the badge and the panel.
+  // Gmail is not told.
+  const later = ({links, items = []}) => {
+    const until = Remind.times().find(o => o.key === 'remindHour').until;
+    return self.reminders.add(items.filter(o => links.includes(o.link)), until).catch(e => {
+      console.error(e);
+      toast(e?.message || 'Unknown Error - 1');
+    });
+  };
   if (chrome.notifications.onButtonClicked) {
     chrome.notifications.onButtonClicked.addListener((id, index) => {
       sound.stop();
@@ -317,6 +327,9 @@ if (typeof importScripts !== 'undefined') {
         // the code goes to the clipboard and nothing else happens: the mail stays unread where it is
         if (request.cmd === 'copy') {
           return copy(request.text);
+        }
+        if (request.cmd === 'later') {
+          return later(request);
         }
         // links might be from different accounts; the mail of the other services is one
         // request, which they split by mailbox themselves
@@ -648,6 +661,7 @@ if (typeof importScripts !== 'undefined') {
       'notification.buttons.markasread': true,
       'notification.buttons.archive': true,
       'notification.buttons.trash': false,
+      'notification.buttons.later': false,
       'alert': true,
       'notificationFormat': chrome.i18n.getMessage('notification'),
       'notify.never': '',
@@ -1083,6 +1097,29 @@ if (typeof importScripts !== 'undefined') {
         }
 
         if (prefs.notification && !hushed) {
+          // the address Gmail shows each mail's thread at, for its click
+          const links = [];
+          for (const o of reportArray) {
+            try {
+              const account = parents.get(o);
+              const base = helper.base(o.link);
+              const thread = helper.thread(o.link);
+
+              if (thread && account.xml.link.indexOf('#') === -1) {
+                links.push(base + '/?shva=1#inbox/' + thread);
+              }
+              else if (thread) {
+                links.push(account.xml.link + '/' + thread);
+              }
+              else {
+                links.push(o.link);
+              }
+            }
+            catch (e) {
+              console.error(e);
+              links.push(o.link);
+            }
+          }
           // the buttons the settings pick, in the settings' order; the first two fit (notify)
           const buttons = [];
           if (prefs['notification.buttons.markasread']) {
@@ -1106,6 +1143,22 @@ if (typeof importScripts !== 'undefined') {
               }
             });
           }
+          // each mail as the panel's Remind me later sends it: its account by address, for its
+          // place in the browser may move before the reminder rings
+          if (prefs['notification.buttons.later']) {
+            buttons.push({
+              title: chrome.i18n.getMessage('opt_btnLater'),
+              iconUrl: '/data/images/later.png',
+              action: {
+                links: reportArray.map(o => o.link),
+                cmd: 'later',
+                items: reportArray.map((e, i) => ({
+                  link: e.link, open: links[i], title: e.title || '', from: e.author_name || e.author_email || '',
+                  ...(parents.get(e)?.xml.service ? {} : {account: inboxOf(e)})
+                }))
+              }
+            });
+          }
           if (prefs['notification.buttons.trash']) {
             buttons.push({
               title: chrome.i18n.getMessage('opt_btnDelete'),
@@ -1115,30 +1168,6 @@ if (typeof importScripts !== 'undefined') {
                 cmd: 'tr'
               }
             });
-          }
-
-          // convert links
-          const links = [];
-          for (const o of reportArray) {
-            try {
-              const account = parents.get(o);
-              const base = helper.base(o.link);
-              const thread = helper.thread(o.link);
-
-              if (thread && account.xml.link.indexOf('#') === -1) {
-                links.push(base + '/?shva=1#inbox/' + thread);
-              }
-              else if (thread) {
-                links.push(account.xml.link + '/' + thread);
-              }
-              else {
-                links.push(o.link);
-              }
-            }
-            catch (e) {
-              console.error(e);
-              links.push(o.link);
-            }
           }
           // the newest mail with a sign-in code still fresh by Gmail's clock: the notification
           // leads with its code (notify). until: when it no longer does, by this computer's clock.

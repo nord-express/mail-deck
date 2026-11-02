@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "Törlés"
   },
+  "opt_btnLater": {
+    "message": "Emlékeztetés egy óra múlva"
+  },
   "notification_copy": {
     "message": "$1 másolása"
   },
@@ -2185,6 +2188,9 @@
   },
   "opt_copyCodesText": {
     "message": "A belépési kódot tartalmazó értesítés kap egy gombot, amely kimásolja a kódot, a többi gombod előtt. A Chrome előbb engedélyt kér tőled: a Mail Deck csak beírja a kódot a vágólapra, és soha nem olvassa a vágólapot."
+  },
+  "opt_buttonsOver": {
+    "message": "Nem fér el: az értesítés két gombot mutat"
   },
   "opt_aiFree": {
     "message": "ingyenes"

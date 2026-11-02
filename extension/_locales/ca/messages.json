@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Suprimeix"
     },
+    "opt_btnLater": {
+        "message": "Recorda-m’ho d’aquí a una hora"
+    },
     "notification_copy": {
         "message": "Copia $1"
     },
@@ -2369,6 +2372,9 @@
     },
     "opt_copyCodesText": {
         "message": "Una notificació amb un codi d’inici de sessió té un botó que el copia, abans dels teus altres botons. Chrome et demana permís primer: Mail Deck només escriu el codi al porta-retalls i mai no el llegeix."
+    },
+    "opt_buttonsOver": {
+        "message": "No hi cap: una notificació mostra dos botons"
     },
     "opt_aiFree": {
         "message": "gratuït"

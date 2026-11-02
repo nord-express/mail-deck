@@ -199,7 +199,7 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
     }
     // the buttons' titles by name, so a check can tell them apart
     if (k === 'i18n') {
-      const names = {opt_btnRead: 'Read', opt_btnArchive: 'Archive', opt_btnDelete: 'Delete'};
+      const names = {opt_btnRead: 'Read', opt_btnArchive: 'Archive', opt_btnLater: 'Later', opt_btnDelete: 'Delete'};
       return {getMessage: (k, subs) => k === 'notification' ? '[title]' : k === 'notification_copy' ? 'Copy ' + subs[0] : names[k] || 'x'};
     }
     if (k === 'runtime') {
@@ -265,6 +265,8 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
   ctx.offscreen = {command: async r => (out.offscreen.push(copy(r)), out.copied === true ? true : {error: 'Document is not focused.'})};
   ctx.Services = {of: () => undefined, collect: async () => [], dispatch: async r => (out.dispatched.push({cmd: r.cmd, links: [...r.links]}), true)};
   vm.runInContext(fs.readFileSync(EXT + '/core/check.js', 'utf8'), ctx, {filename: 'check.js'});
+  // the reminders a notification's Later sets, written as the panel's are
+  vm.runInContext(fs.readFileSync(EXT + '/core/remind.js', 'utf8'), ctx, {filename: 'remind.js'});
   out.ctx = ctx;
   out.Resolved = vm.runInContext('Resolved', ctx);
   out.Remind = vm.runInContext('Remind', ctx);
@@ -725,7 +727,7 @@ tests.push(
 /*
  * A new mail with a sign-in code (core/utils/code.js): the notification leads with the code,
  * and its first button copies it where the settings ask for that and Chrome gives the
- * clipboard.
+ * clipboard; and Later.
  */
 const CODE_MAIL = {title: 'Your GitHub launch code', summary: 'Here is your GitHub launch code: 482913. It expires in 10 minutes.', from: 'GitHub'};
 const copying = (mail, local = {}) => {
@@ -761,7 +763,8 @@ tests.push(
     assert.deepStrictEqual(b.buttons(), ['Copy 482913', 'Read']);
     await b.press(0);
     assert.deepStrictEqual(b.offscreen, [{cmd: 'copy', text: '482913'}]);
-    assert.deepStrictEqual([b.dispatched, b.opened, b.toasts, b.session['resolved.links'] || []], [[], [], [], []]);
+    assert.deepStrictEqual([b.dispatched, b.opened, b.toasts, b.session['resolved.links'] || [], b.local['remind.links'] || []],
+      [[], [], [], [], []]);
     assert.deepStrictEqual([await listed(b), b.session.count], [['c'], 1]);
     // the other button still acts on the mail
     const c = copying({'0': [{id: 'c', ...CODE_MAIL}]});
@@ -819,6 +822,52 @@ tests.push(
     b.session['repeat.report'].code.until = Date.now() - 1;
     await b.fire('repeat.notify');
     assert.deepStrictEqual([b.told.length, b.told[2].title, b.buttons()], [3, 'user0@gmail.com', ['Read', 'Archive']]);
+  }],
+  ['Later takes its place among the buttons the settings pick; the first two fit', async () => {
+    const pick = async local => {
+      const b = boot({mail: {'0': [{id: 'a'}]}, local});
+      await b.run();
+      return b.buttons();
+    };
+    assert.deepStrictEqual(await pick({'notification.buttons.later': true}), ['Read', 'Archive']);
+    assert.deepStrictEqual(await pick({'notification.buttons.later': true, 'notification.buttons.markasread': false}), ['Archive', 'Later']);
+    assert.deepStrictEqual(await pick({'notification.buttons.later': true, 'notification.buttons.markasread': false,
+      'notification.buttons.archive': false, 'notification.buttons.trash': true}), ['Later', 'Delete']);
+    // the saved choices of before stay as they were
+    assert.deepStrictEqual(await pick({'notification.buttons.trash': true}), ['Read', 'Archive']);
+    assert.deepStrictEqual(await pick({'notification.buttons.archive': false, 'notification.buttons.trash': true}), ['Read', 'Delete']);
+    // a code's Copy button comes first, then the first the settings pick
+    const b = copying({'0': [{id: 'c', ...CODE_MAIL}]}, {'notification.buttons.later': true, 'notification.buttons.markasread': false,
+      'notification.buttons.archive': false});
+    await b.run();
+    assert.deepStrictEqual(b.buttons(), ['Copy 482913', 'Later']);
+  }],
+  ['Later puts the mail off for an hour as the panel does: out of the badge and the panel until then, Gmail not told', async () => {
+    const b = boot({mail: {'0': [{id: 'a'}, {id: 'b', age: 2}]}, local: {'notification.buttons.later': true, 'notification.buttons.markasread': false}});
+    await b.run();
+    assert.deepStrictEqual(b.buttons(), ['Archive', 'Later']);
+    await b.press(1);
+    const list = b.local['remind.links'];
+    assert.deepStrictEqual(list.map(o => [o.link, o.title, o.from, o.account]),
+      [[linkOf(0, 'a'), 'Mail a', 'A', 'user0@gmail.com'], [linkOf(0, 'b'), 'Mail b', 'A', 'user0@gmail.com']]);
+    assert.ok(list.every(o => /#inbox\/[ab]$/.test(o.open)), 'each opens at its thread when it rings');
+    assert.ok(list.every(o => Math.abs(o.until - Date.now() - 3600000) < 5000), 'in an hour');
+    assert.deepStrictEqual([b.dispatched, b.opened, b.session['resolved.links'] || []], [[], [], []]);
+    // the list changed, as Chrome tells core/remind.js: the alarm and the badge follow it
+    await b.change({'remind.links': {newValue: list}});
+    assert.deepStrictEqual([await listed(b), b.session.count], [[], 0]);
+    assert.ok(Math.abs(b.alarms.remind.when - Date.now() - 3600000) < 5000, 'the reminder rings in an hour');
+  }],
+  ['Later on a repeat puts off only the mail still unread', async () => {
+    const b = boot({mail: {'0': [{id: 'a'}, {id: 'b', age: 2}]}, local: {'notify.repeat': 5, 'notification.buttons.later': true,
+      'notification.buttons.markasread': false, 'notification.buttons.archive': false}});
+    await b.run();
+    await b.Resolved.record([linkOf(0, 'a')], 60000);
+    delete b.alarms['repeat.notify'];
+    await b.fire('repeat.notify');
+    assert.strictEqual(b.told.length, 2);
+    await b.press(0);
+    assert.deepStrictEqual(b.local['remind.links'].map(o => o.link), [linkOf(0, 'b')]);
   }]
 );
 

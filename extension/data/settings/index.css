@@ -608,6 +608,9 @@
   .row.stack > .btn {
     align-self: flex-start;
   }
+  .row.stack > .chips {
+    justify-content: flex-start;
+  }
   .text {
     flex: 1;
     min-width: 0;
@@ -813,6 +816,12 @@
   }
   .chip:has(input:disabled) {
     cursor: default;
+  }
+  /* picked, but past what fits (a notification shows two buttons): kept, and plainly not shown */
+  .chip.over input:checked + span {
+    background: transparent;
+    color: var(--muted);
+    box-shadow: inset 0 0 0 1px var(--line-strong);
   }
 
   /* segmented: one of a few, a raised card under the one picked */

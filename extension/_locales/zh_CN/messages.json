@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "删除"
     },
+    "opt_btnLater": {
+        "message": "1 小时后提醒我"
+    },
     "notification_copy": {
         "message": "复制 $1"
     },
@@ -2369,6 +2372,9 @@
     },
     "opt_copyCodesText": {
         "message": "含有验证码的通知会在其他按钮之前显示一个复制按钮。Chrome 会先请求你的许可：Mail Deck 只会把验证码写入剪贴板，从不读取剪贴板。"
+    },
+    "opt_buttonsOver": {
+        "message": "放不下：通知最多显示两个按钮"
     },
     "opt_aiFree": {
         "message": "免费"

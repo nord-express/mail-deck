@@ -4,8 +4,8 @@
 // One alarm for the earliest reminder; when it rings, the due mail gets its
 // notification and a check brings it back to the panel and the badge.
 // The list is written here alone, one change after the other: the panel asks
-// (remind.add, remind.remove), and a reminder that rings takes its mail out, so
-// a reminder set at that moment is not lost.
+// (remind.add, remind.remove), a notification's Later too (reminders.add), and a
+// reminder that rings takes its mail out, so a reminder set at that moment is not lost.
 {
   let queue = Promise.resolve();
   const serial = fn => queue = queue.then(fn, fn);
@@ -74,6 +74,10 @@
       });
     }
   });
+  // the panel asks by a message; a notification's Later button (core/check.js) from here
+  self.reminders = {
+    add: (items, until) => serial(() => Remind.add(items, until))
+  };
   chrome.runtime.onMessage.addListener((request, sender, response) => {
     // a panel closed meanwhile has closed its port too
     const answer = ok => {
@@ -83,7 +87,7 @@
       catch (e) {}
     };
     if (request.method === 'remind.add' && Array.isArray(request.items)) {
-      serial(() => Remind.add(request.items, request.until)).then(() => answer(true), () => answer(false));
+      self.reminders.add(request.items, request.until).then(() => answer(true), () => answer(false));
       return true;
     }
     if (request.method === 'remind.remove' && Array.isArray(request.links)) {

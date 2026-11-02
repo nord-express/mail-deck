@@ -171,11 +171,13 @@
               <span class="text"><b data-i18n="combined">Combine new emails into one notification</b></span>
               <input type="checkbox" role="switch" data-key="combined">
             </label>
-            <div class="row adv" data-needs="notification">
+            <!-- four choices: under the words, which keep their room in every language -->
+            <div class="row stack adv" data-needs="notification">
               <span class="text"><b id="buttons-label" data-i18n="buttons">Buttons on the notification</b><small data-i18n="buttonsText">The first two you pick fit.</small></span>
               <span class="chips" role="group" aria-labelledby="buttons-label">
                 <label class="chip"><input type="checkbox" data-key="notification.buttons.markasread"><span><i data-icon="done" class="ck"></i><span data-i18n="btnRead">Mark as read</span></span></label>
                 <label class="chip"><input type="checkbox" data-key="notification.buttons.archive"><span><i data-icon="done" class="ck"></i><span data-i18n="btnArchive">Archive</span></span></label>
+                <label class="chip"><input type="checkbox" data-key="notification.buttons.later"><span><i data-icon="done" class="ck"></i><span data-i18n="btnLater">Remind me in an hour</span></span></label>
                 <label class="chip"><input type="checkbox" data-key="notification.buttons.trash"><span><i data-icon="done" class="ck"></i><span data-i18n="btnDelete">Delete</span></span></label>
               </span>
             </div>

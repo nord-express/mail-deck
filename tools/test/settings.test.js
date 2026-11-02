@@ -467,7 +467,7 @@ check('the new settings default as the background does, and their rows and strin
   assert.ok(en.opt_formatText.message.includes('[account]'));
 });
 
-/* the Copy button of a sign-in code on a notification */
+/* the notification's buttons: Later, and the Copy button of a sign-in code */
 check('the Copy switch asks Chrome for the clipboard from its click, and shows on only while Chrome gives it', async () => {
   const sw = element('copy-codes');
   set.length = 0;
@@ -516,19 +516,25 @@ check('a reset, or a backup with the Copy button off, gives the clipboard back; 
     delete local[k];
   }
 });
-check('a backup keeps the Copy button\'s switch, in range', () => {
+check('a backup keeps the new buttons, in range', () => {
   const sanitize = page('sanitize');
-  assert.deepStrictEqual({...sanitize({'notification.buttons.copy': true})}, {'notification.buttons.copy': true});
-  assert.deepStrictEqual({...sanitize({'notification.buttons.copy': 1})}, {});
+  const good = {'notification.buttons.later': true, 'notification.buttons.copy': true};
+  assert.deepStrictEqual({...sanitize(good)}, good);
+  assert.deepStrictEqual({...sanitize({'notification.buttons.later': 'yes', 'notification.buttons.copy': 1})}, {});
 });
-check('the Copy switch\'s row, default and strings are there', () => {
+check('the buttons come in the order the background picks them; the new rows, defaults and strings are there', () => {
   const background = fs.readFileSync(path.join(EXT, 'core/check.js'), 'utf8');
-  // off by default, here and in the background
-  assert.strictEqual(page('DEFAULTS')['notification.buttons.copy'], false);
-  assert.ok(background.includes(`'notification.buttons.copy': false`));
+  const chips = [...html.matchAll(/data-key="notification\.buttons\.(\w+)"/g)].map(m => m[1]);
+  assert.deepStrictEqual(chips, ['markasread', 'archive', 'later', 'trash']);
+  const picked = chips.map(name => background.indexOf(`if (prefs['notification.buttons.${name}']`));
+  assert.ok(picked.every((at, i) => at > 0 && (i === 0 || at > picked[i - 1])), picked.join());
+  // off by default, here and in the background: the saved choices of before stay as they were
+  const defaults = page('DEFAULTS');
+  assert.deepStrictEqual([defaults['notification.buttons.later'], defaults['notification.buttons.copy']], [false, false]);
+  assert.ok(background.includes(`'notification.buttons.later': false`) && background.includes(`'notification.buttons.copy': false`));
   // the switch has no data-key: the page saves it only once Chrome has answered
   assert.ok(/<label class="row" data-needs="notification">\s*<span class="text"><b data-i18n="copyCodes">[\s\S]*?<input type="checkbox" role="switch" id="copy-codes">/.test(html));
-  for (const key of ['opt_copyCodes', 'opt_copyCodesText', 'notification_copy']) {
+  for (const key of ['opt_btnLater', 'opt_buttonsOver', 'opt_copyCodes', 'opt_copyCodesText', 'notification_copy']) {
     assert.ok(en[key]?.message, key);
   }
   // an optional permission: a required one would turn the extension off for everyone on the update

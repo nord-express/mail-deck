@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Verwijderen"
     },
+    "opt_btnLater": {
+        "message": "Over een uur herinneren"
+    },
     "notification_copy": {
         "message": "$1 kopiëren"
     },
@@ -2369,6 +2372,9 @@
     },
     "opt_copyCodesText": {
         "message": "Een melding met een inlogcode krijgt een knop die de code kopieert, vóór je andere knoppen. Chrome vraagt je eerst om toestemming: Mail Deck schrijft de code alleen naar het klembord en leest het nooit."
+    },
+    "opt_buttonsOver": {
+        "message": "Past niet: een melding toont twee knoppen"
     },
     "opt_aiFree": {
         "message": "gratis"

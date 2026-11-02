@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "מחיקה"
     },
+    "opt_btnLater": {
+        "message": "הזכר לי בעוד שעה"
+    },
     "notification_copy": {
         "message": "העתק $1"
     },
@@ -2365,6 +2368,9 @@
     },
     "opt_copyCodesText": {
         "message": "התראה עם קוד כניסה תקבל כפתור שמעתיק אותו, לפני שאר הכפתורים. Chrome יבקש ממך רשות קודם: Mail Deck רק כותב את הקוד ללוח העריכה ולעולם לא קורא ממנו."
+    },
+    "opt_buttonsOver": {
+        "message": "לא נכנס: התראה מציגה שני כפתורים"
     },
     "opt_aiFree": {
         "message": "חינם"

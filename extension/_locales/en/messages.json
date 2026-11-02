@@ -257,6 +257,9 @@
   "opt_btnDelete": {
     "message": "Delete"
   },
+  "opt_btnLater": {
+    "message": "Remind me in an hour"
+  },
   "notification_copy": {
     "message": "Copy $1"
   },
@@ -2227,6 +2230,9 @@
   },
   "opt_copyCodesText": {
     "message": "A notification with a sign-in code gets a button that copies it, ahead of your other buttons. Chrome asks for your permission first: Mail Deck only writes the code to the clipboard and never reads it."
+  },
+  "opt_buttonsOver": {
+    "message": "Doesn’t fit: a notification shows two buttons"
   },
   "opt_aiFree": {
     "message": "free"

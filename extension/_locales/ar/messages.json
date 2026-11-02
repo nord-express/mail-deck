@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "حذف"
     },
+    "opt_btnLater": {
+        "message": "ذكّرني بعد ساعة"
+    },
     "notification_copy": {
         "message": "نسخ $1"
     },
@@ -2365,6 +2368,9 @@
     },
     "opt_copyCodesText": {
         "message": "يحصل الإشعار الذي يحتوي على رمز تحقق على زر ينسخه، قبل أزرارك الأخرى. سيطلب Chrome إذنك أولًا: يكتب Mail Deck الرمز في الحافظة فقط ولا يقرأ منها أبدًا."
+    },
+    "opt_buttonsOver": {
+        "message": "لا يتسع: يعرض الإشعار زرين فقط"
     },
     "opt_aiFree": {
         "message": "مجاني"

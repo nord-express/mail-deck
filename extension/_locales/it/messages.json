@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "Elimina"
   },
+  "opt_btnLater": {
+    "message": "Ricordamelo tra un’ora"
+  },
   "notification_copy": {
     "message": "Copia $1"
   },
@@ -2197,6 +2200,9 @@
   },
   "opt_copyCodesText": {
     "message": "Una notifica con un codice di accesso riceve un pulsante che lo copia, prima degli altri pulsanti. Chrome ti chiede prima il permesso: Mail Deck scrive soltanto il codice negli appunti e non li legge mai."
+  },
+  "opt_buttonsOver": {
+    "message": "Non ci sta: una notifica mostra due pulsanti"
   },
   "opt_aiFree": {
     "message": "gratuito"

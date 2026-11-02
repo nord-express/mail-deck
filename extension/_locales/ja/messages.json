@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "削除"
   },
+  "opt_btnLater": {
+    "message": "1 時間後にリマインド"
+  },
   "notification_copy": {
     "message": "$1 をコピー"
   },
@@ -2197,6 +2200,9 @@
   },
   "opt_copyCodesText": {
     "message": "ログインコードを含む通知に、コードをコピーするボタンがほかのボタンより先に表示されます。最初に Chrome が許可を求めます。Mail Deck はコードをクリップボードに書き込むだけで、クリップボードを読み取ることはありません。"
+  },
+  "opt_buttonsOver": {
+    "message": "表示されません：通知のボタンは 2 つまでです"
   },
   "opt_aiFree": {
     "message": "無料"

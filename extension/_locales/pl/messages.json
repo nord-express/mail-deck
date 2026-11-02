@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Usuń"
     },
+    "opt_btnLater": {
+        "message": "Przypomnij za godzinę"
+    },
     "notification_copy": {
         "message": "Kopiuj $1"
     },
@@ -2369,6 +2372,9 @@
     },
     "opt_copyCodesText": {
         "message": "Powiadomienie z kodem logowania dostaje przycisk, który go kopiuje, przed pozostałymi przyciskami. Chrome najpierw poprosi cię o zgodę: Mail Deck tylko zapisuje kod w schowku i nigdy nie odczytuje schowka."
+    },
+    "opt_buttonsOver": {
+        "message": "Nie mieści się: powiadomienie pokazuje dwa przyciski"
     },
     "opt_aiFree": {
         "message": "bezpłatny"
