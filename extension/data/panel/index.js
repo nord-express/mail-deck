@@ -578,7 +578,7 @@ const categoriesOf = labels => labels.some(l => SORTED.test(l)) ?
   Object.keys(CATEGORIES).filter(k => CATEGORIES[k].labels.some(l => labels.includes(l))) : null;
 // the categories that have a chip now
 const shownCategories = () => !state.categories ? [] :
-  Object.keys(CATEGORIES).filter(k => !(CATEGORIES[k].bulk && aiOn() && state.ai.reply));
+  Object.keys(CATEGORIES).filter(k => !(CATEGORIES[k].bulk && aiOn() && state.ai.reply && state.ai.ok));
 // The categories of a mailbox's unread mail come with the search for its mail past the feed's 20
 // (loadExtra): its rows' labels say them, and nothing more is asked. An inbox whose rows carry
 // none has each category searched for instead, asked as that search is (once its count moves, at
@@ -3203,6 +3203,8 @@ const startAI = async () => {
   catch (e) {
     state.ai.ok = false;
   }
+  // the AI's Newsletters chip stands for Gmail's promotions and social once it works
+  renderChips(view());
   scheduleReplies();
   paintAssist();
   if (state.ai.ok) {
