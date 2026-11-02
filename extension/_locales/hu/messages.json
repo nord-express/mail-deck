@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "Törlés"
   },
+  "notification_copy": {
+    "message": "$1 másolása"
+  },
   "opt_combined": {
     "message": "Az új levelek egy értesítésben"
   },
@@ -2176,6 +2179,12 @@
   },
   "opt_aiFast": {
     "message": "a leggyorsabb és legolcsóbb"
+  },
+  "opt_copyCodes": {
+    "message": "Belépési kódok másolása az értesítésekből"
+  },
+  "opt_copyCodesText": {
+    "message": "A belépési kódot tartalmazó értesítés kap egy gombot, amely kimásolja a kódot, a többi gombod előtt. A Chrome előbb engedélyt kér tőled: a Mail Deck csak beírja a kódot a vágólapra, és soha nem olvassa a vágólapot."
   },
   "opt_aiFree": {
     "message": "ingyenes"

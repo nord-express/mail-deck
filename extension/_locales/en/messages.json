@@ -257,6 +257,9 @@
   "opt_btnDelete": {
     "message": "Delete"
   },
+  "notification_copy": {
+    "message": "Copy $1"
+  },
   "opt_combined": {
     "message": "Combine new emails into one notification"
   },
@@ -2218,6 +2221,12 @@
   },
   "opt_aiFast": {
     "message": "fastest, cheapest"
+  },
+  "opt_copyCodes": {
+    "message": "Copy sign-in codes from notifications"
+  },
+  "opt_copyCodesText": {
+    "message": "A notification with a sign-in code gets a button that copies it, ahead of your other buttons. Chrome asks for your permission first: Mail Deck only writes the code to the clipboard and never reads it."
   },
   "opt_aiFree": {
     "message": "free"

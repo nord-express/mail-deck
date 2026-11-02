@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Sil"
     },
+    "notification_copy": {
+        "message": "$1 kodunu kopyala"
+    },
     "opt_combined": {
         "message": "Yeni postaları tek bildirimde topla"
     },
@@ -2356,6 +2359,12 @@
     },
     "opt_aiFast": {
         "message": "en hızlı ve en ucuz"
+    },
+    "opt_copyCodes": {
+        "message": "Bildirimlerdeki giriş kodlarını kopyala"
+    },
+    "opt_copyCodesText": {
+        "message": "Giriş kodu içeren bir bildirim, kodu kopyalayan bir düğme alır; bu düğme diğer düğmelerinizden önce gelir. Chrome önce izninizi ister: Mail Deck kodu yalnızca panoya yazar, panoyu asla okumaz."
     },
     "opt_aiFree": {
         "message": "ücretsiz"

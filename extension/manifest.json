@@ -18,6 +18,9 @@
     "declarativeNetRequestWithHostAccess",
     "activeTab"
   ],
+  "optional_permissions": [
+    "clipboardWrite"
+  ],
   "host_permissions": [
     "https://mail.google.com/*"
   ],

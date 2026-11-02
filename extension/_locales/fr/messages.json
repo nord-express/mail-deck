@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "Supprimer"
   },
+  "notification_copy": {
+    "message": "Copier $1"
+  },
   "opt_combined": {
     "message": "Regrouper les nouveaux messages dans une notification"
   },
@@ -2188,6 +2191,12 @@
   },
   "opt_aiFast": {
     "message": "le plus rapide et le moins cher"
+  },
+  "opt_copyCodes": {
+    "message": "Copier les codes de connexion depuis les notifications"
+  },
+  "opt_copyCodesText": {
+    "message": "Une notification avec un code de connexion reçoit un bouton qui le copie, avant vos autres boutons. Chrome vous demande d’abord l’autorisation : Mail Deck écrit seulement le code dans le presse-papiers et ne le lit jamais."
   },
   "opt_aiFree": {
     "message": "gratuit"

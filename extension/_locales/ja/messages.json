@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "削除"
   },
+  "notification_copy": {
+    "message": "$1 をコピー"
+  },
   "opt_combined": {
     "message": "新着メールを 1 つの通知にまとめる"
   },
@@ -2188,6 +2191,12 @@
   },
   "opt_aiFast": {
     "message": "最速・最安"
+  },
+  "opt_copyCodes": {
+    "message": "通知からログインコードをコピー"
+  },
+  "opt_copyCodesText": {
+    "message": "ログインコードを含む通知に、コードをコピーするボタンがほかのボタンより先に表示されます。最初に Chrome が許可を求めます。Mail Deck はコードをクリップボードに書き込むだけで、クリップボードを読み取ることはありません。"
   },
   "opt_aiFree": {
     "message": "無料"

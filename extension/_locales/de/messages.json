@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Löschen"
     },
+    "notification_copy": {
+        "message": "$1 kopieren"
+    },
     "opt_combined": {
         "message": "Neue Mails in einer Benachrichtigung zusammenfassen"
     },
@@ -2356,6 +2359,12 @@
     },
     "opt_aiFast": {
         "message": "am schnellsten und günstigsten"
+    },
+    "opt_copyCodes": {
+        "message": "Anmeldecodes aus Benachrichtigungen kopieren"
+    },
+    "opt_copyCodesText": {
+        "message": "Eine Benachrichtigung mit Anmeldecode bekommt eine Schaltfläche, die ihn kopiert, vor deinen anderen Schaltflächen. Chrome fragt dich zuerst um Erlaubnis: Mail Deck schreibt den Code nur in die Zwischenablage und liest sie nie."
     },
     "opt_aiFree": {
         "message": "kostenlos"

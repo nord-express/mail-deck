@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "Suprimeix"
     },
+    "notification_copy": {
+        "message": "Copia $1"
+    },
     "opt_combined": {
         "message": "Agrupa els correus nous en una notificació"
     },
@@ -2360,6 +2363,12 @@
     },
     "opt_aiFast": {
         "message": "el més ràpid i barat"
+    },
+    "opt_copyCodes": {
+        "message": "Copia els codis d’inici de sessió des de les notificacions"
+    },
+    "opt_copyCodesText": {
+        "message": "Una notificació amb un codi d’inici de sessió té un botó que el copia, abans dels teus altres botons. Chrome et demana permís primer: Mail Deck només escriu el codi al porta-retalls i mai no el llegeix."
     },
     "opt_aiFree": {
         "message": "gratuït"

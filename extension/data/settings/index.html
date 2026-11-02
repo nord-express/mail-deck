@@ -152,6 +152,11 @@
                 <option value="60" data-i18n="min1">1 minute</option>
               </select>
             </label>
+            <!-- on only while the setting wants it and Chrome lets the extension write the clipboard -->
+            <label class="row" data-needs="notification">
+              <span class="text"><b data-i18n="copyCodes">Copy sign-in codes from notifications</b><small data-i18n="copyCodesText">A notification with a sign-in code gets a button that copies it, ahead of your other buttons. Chrome asks for your permission first: Mail Deck only writes the code to the clipboard and never reads it.</small></span>
+              <input type="checkbox" role="switch" id="copy-codes">
+            </label>
             <label class="row adv" data-needs="notification">
               <span class="text"><b data-i18n="repeat">Repeat the notification every</b><small data-i18n="repeatText">It comes back, with its sound, until you read, archive or delete the mail. Quiet hours still apply.</small></span>
               <select data-key="notify.repeat" data-type="number">

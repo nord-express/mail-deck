@@ -180,7 +180,10 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
     }
   });
   const out = {local, session, told: [], sounds: [], messages: [], opened: [], toasts: [], requests: 0, offline: false,
-    badges: [], icons: [], alarms: {}, alarmFns: [], changeFns: [], resets: []};
+    badges: [], icons: [], alarms: {}, alarmFns: [], changeFns: [], resets: [],
+    // a notification's id beside each one told; its click and button listeners; what reached the
+    // offscreen document; the permissions Chrome gives
+    ids: [], clickFns: [], buttonFns: [], offscreen: [], copied: true, perms: new Set(), dispatched: []};
   const chrome = new Proxy({}, {get: (t, k) => {
     if (k === 'storage') {
       return {session: area(session), local: area(local), onChanged: {addListener: fn => out.changeFns.push(fn)}};
@@ -194,8 +197,10 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
         onAlarm: {addListener: fn => out.alarmFns.push(fn)}
       };
     }
+    // the buttons' titles by name, so a check can tell them apart
     if (k === 'i18n') {
-      return {getMessage: k => k === 'notification' ? '[title]' : 'x'};
+      const names = {opt_btnRead: 'Read', opt_btnArchive: 'Archive', opt_btnDelete: 'Delete'};
+      return {getMessage: (k, subs) => k === 'notification' ? '[title]' : k === 'notification_copy' ? 'Copy ' + subs[0] : names[k] || 'x'};
     }
     if (k === 'runtime') {
       return {sendMessage: (m, cb) => {
@@ -204,7 +209,17 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
       }, lastError: null, onMessage: {addListener() {}}};
     }
     if (k === 'notifications') {
-      return {create: (id, o) => out.told.push(o), clear() {}, onClicked: {addListener() {}}, onButtonClicked: {addListener() {}}};
+      return {create: (id, o) => {
+        out.ids.push(id);
+        out.told.push(o);
+      }, clear() {}, getAll: cb => cb({}), onClicked: {addListener: fn => out.clickFns.push(fn)},
+      onButtonClicked: {addListener: fn => out.buttonFns.push(fn)}};
+    }
+    if (k === 'permissions') {
+      return {contains: async ({permissions = []}) => permissions.every(p => out.perms.has(p))};
+    }
+    if (k === 'tabs') {
+      return {create: o => out.opened.push(o.url)};
     }
     if (k === 'idle') {
       return {queryState: async () => 'active'};
@@ -214,7 +229,7 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
   const iso = age => new Date(Date.now() - age * 60000).toISOString();
   // the feed of user<who> signed in at /u/<n>
   const xml = (n, label, entries, who = n) => `<?xml version="1.0" encoding="UTF-8"?><feed version="0.3" xmlns="http://purl.org/atom/ns#"><title>Gmail - ${label ? `Label '${label}'` : 'Inbox'} for user${who}@gmail.com</title><tagline>New messages in your Gmail ${label ? `'${label}' label` : 'Inbox'}</tagline><fullcount>${entries.length}</fullcount><link rel="alternate" href="https://mail.google.com/mail/u/${n}" type="text/html"/><modified>${iso(0)}</modified>` +
-    entries.map(({id, age = 1}) => `<entry><title>Mail ${id}</title><summary>s</summary><link rel="alternate" href="https://mail.google.com/mail?account_id=user${who}@gmail.com&amp;message_id=${id}&amp;view=conv&amp;extsrc=atom" type="text/html"/><modified>${iso(age)}</modified><issued>${iso(age)}</issued><id>tag:gmail.google.com,2004:${id}</id><author><name>A</name><email>a@x.com</email></author></entry>`).join('') + '</feed>';
+    entries.map(({id, age = 1, title = 'Mail ' + id, summary = 's', from = 'A'}) => `<entry><title>${title}</title><summary>${summary}</summary><link rel="alternate" href="https://mail.google.com/mail?account_id=user${who}@gmail.com&amp;message_id=${id}&amp;view=conv&amp;extsrc=atom" type="text/html"/><modified>${iso(age)}</modified><issued>${iso(age)}</issued><id>tag:gmail.google.com,2004:${id}</id><author><name>${from}</name><email>a@x.com</email></author></entry>`).join('') + '</feed>';
   // out.places, when set, says who is signed in at each place: [1, 2] is user1 at /u/0 and
   // user2 at /u/1, as after user0 signed out; mail is kept by user. Otherwise user<n> is at /u/<n>.
   const fetch = href => {
@@ -246,8 +261,9 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
     }, get: () => () => {}});
     var context = {accounts() {}}; var repeater = {reset: (reason, delay) => out.resets.push([reason, delay])};
     var sound = {play: e => (out.sounds.push(e.length), Promise.resolve()), stop() {}};
-    var offscreen = {}; var toast = m => out.toasts.push(m); self.openLink = l => out.opened.push(l);`, ctx);
-  ctx.Services = {of: () => undefined, collect: async () => []};
+    var toast = m => out.toasts.push(m); self.openLink = l => out.opened.push(l);`, ctx);
+  ctx.offscreen = {command: async r => (out.offscreen.push(copy(r)), out.copied === true ? true : {error: 'Document is not focused.'})};
+  ctx.Services = {of: () => undefined, collect: async () => [], dispatch: async r => (out.dispatched.push({cmd: r.cmd, links: [...r.links]}), true)};
   vm.runInContext(fs.readFileSync(EXT + '/core/check.js', 'utf8'), ctx, {filename: 'check.js'});
   out.ctx = ctx;
   out.Resolved = vm.runInContext('Resolved', ctx);
@@ -257,6 +273,11 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
   // an alarm rings, a stored setting changes (Chrome tells every listener of the area)
   out.fire = name => Promise.all(out.alarmFns.map(fn => fn({name}))).then(() => wait(20));
   out.change = (ps, where = 'local') => Promise.all(out.changeFns.map(fn => fn(ps, where))).then(() => wait(20));
+  // a click on the last notification told, or on its button at index
+  out.click = () => Promise.all(out.clickFns.map(fn => fn(out.ids.at(-1)))).then(() => wait(20));
+  out.press = index => Promise.all(out.buttonFns.map(fn => fn(out.ids.at(-1), index))).then(() => wait(20));
+  // the titles of the last notification's buttons
+  out.buttons = () => Array.from(out.told.at(-1).buttons || [], b => b.title);
   // the entries of the last 'update' the panel was sent, all mailboxes together
   out.panel = () => {
     const m = out.messages.filter(m => m.method === 'update').at(-1);
@@ -698,6 +719,106 @@ tests.push(
     await on.fire('repeat.notify');
     assert.strictEqual(on.told.length, 1);
     assert.ok(!('repeat.report' in on.session));
+  }]
+);
+
+/*
+ * A new mail with a sign-in code (core/utils/code.js): the notification leads with the code,
+ * and its first button copies it where the settings ask for that and Chrome gives the
+ * clipboard.
+ */
+const CODE_MAIL = {title: 'Your GitHub launch code', summary: 'Here is your GitHub launch code: 482913. It expires in 10 minutes.', from: 'GitHub'};
+const copying = (mail, local = {}) => {
+  const b = boot({mail, local: {'notification.buttons.copy': true, ...local}});
+  b.perms.add('clipboardWrite');
+  return b;
+};
+// what the panel and the badge show of the mail now
+const listed = async b => Array.from((await b.ctx.checkEmails.visible()).flatMap(o => o.xml.entries), e => e.id.split(':').pop()).sort();
+tests.push(
+  ['a mail with a sign-in code leads its notification with it, the inbox below; no Copy button without the permission', async () => {
+    const b = boot({mail: {'0': [{id: 'c', ...CODE_MAIL}]}});
+    await b.run();
+    assert.strictEqual(b.told.length, 1);
+    assert.deepStrictEqual([b.told[0].title, b.told[0].contextMessage, b.told[0].message], ['482913 · GitHub', 'user0@gmail.com', CODE_MAIL.title]);
+    assert.deepStrictEqual(b.buttons(), ['Read', 'Archive']);
+    // the switch on without Chrome's permission, or the permission without the switch: still none
+    const wanted = boot({mail: {'0': [{id: 'c', ...CODE_MAIL}]}, local: {'notification.buttons.copy': true}});
+    await wanted.run();
+    assert.deepStrictEqual([wanted.told[0].title, wanted.buttons()], ['482913 · GitHub', ['Read', 'Archive']]);
+    const granted = boot({mail: {'0': [{id: 'c', ...CODE_MAIL}]}});
+    granted.perms.add('clipboardWrite');
+    await granted.run();
+    assert.deepStrictEqual(granted.buttons(), ['Read', 'Archive']);
+    // its click opens the mail as before
+    await b.click();
+    assert.strictEqual(b.opened.length, 1);
+    assert.deepStrictEqual(b.offscreen, []);
+  }],
+  ['with the switch and the permission the first button copies the code, and only that: the mail stays unread and listed', async () => {
+    const b = copying({'0': [{id: 'c', ...CODE_MAIL}]});
+    await b.run();
+    assert.deepStrictEqual(b.buttons(), ['Copy 482913', 'Read']);
+    await b.press(0);
+    assert.deepStrictEqual(b.offscreen, [{cmd: 'copy', text: '482913'}]);
+    assert.deepStrictEqual([b.dispatched, b.opened, b.toasts, b.session['resolved.links'] || []], [[], [], [], []]);
+    assert.deepStrictEqual([await listed(b), b.session.count], [['c'], 1]);
+    // the other button still acts on the mail
+    const c = copying({'0': [{id: 'c', ...CODE_MAIL}]});
+    await c.run();
+    await c.press(1);
+    assert.deepStrictEqual(c.dispatched, [{cmd: 'rd', links: [linkOf(0, 'c')]}]);
+  }],
+  ['a copy Chrome refuses, the permission taken back since the notification came, says so', async () => {
+    const b = copying({'0': [{id: 'c', ...CODE_MAIL}]});
+    await b.run();
+    b.copied = false;
+    await b.press(0);
+    assert.deepStrictEqual([b.offscreen.length, b.toasts.length, b.dispatched], [1, 1, []]);
+  }],
+  ['a code shows as the mail writes it and copies as digits', async () => {
+    const b = copying({'0': [{id: 'g', title: 'Google verification', summary: 'G-482913 is your Google verification code.', from: 'Google'}]});
+    await b.run();
+    assert.deepStrictEqual([b.told[0].title, b.buttons()[0]], ['G-482913 · Google', 'Copy 482913']);
+    await b.press(0);
+    assert.deepStrictEqual(b.offscreen, [{cmd: 'copy', text: '482913'}]);
+  }],
+  ['of two mails with codes that come together the newest leads, in one notification; combined the same', async () => {
+    const mail = {'0': [{id: 'old', age: 3, title: 'Your shop code', summary: 'Your verification code is 111222', from: 'Shop'},
+      {id: 'new', age: 1, ...CODE_MAIL}]};
+    const b = copying(mail);
+    await b.run();
+    assert.deepStrictEqual([b.told.length, b.told[0].type, b.told[0].title, b.buttons()], [1, 'list', '482913 · GitHub', ['Copy 482913', 'Read']]);
+    // the other buttons act on both
+    await b.press(1);
+    assert.deepStrictEqual(b.dispatched.map(r => r.links.length), [2]);
+    const c = copying(mail, {combined: true});
+    await c.run();
+    assert.deepStrictEqual([c.told.length, c.told[0].type, c.told[0].title], [1, 'basic', '482913 · GitHub']);
+  }],
+  ['a code too old to use, or a number that is no code, leaves the notification as it was', async () => {
+    // mail told as new up to an hour old (threatAsNew): a code of 40 minutes has most likely expired
+    const b = copying({'0': [{id: 'c', age: 40, ...CODE_MAIL}]}, {threatAsNew: 60});
+    await b.run();
+    assert.deepStrictEqual([b.told.length, b.told[0].title, 'contextMessage' in b.told[0], b.buttons()], [1, 'user0@gmail.com', false, ['Read', 'Archive']]);
+    const none = copying({'0': [{id: 'i', title: 'Invoice Available', summary: 'Invoice ID: 2882561041. Tax code 0801, VAT code: 0802', from: 'AWS'}]});
+    await none.run();
+    assert.deepStrictEqual([none.told[0].title, none.buttons()], ['user0@gmail.com', ['Read', 'Archive']]);
+  }],
+  ['a notification about several inboxes keeps no extension name below the code', async () => {
+    const b = copying({'0': [{id: 'c', ...CODE_MAIL}], '1': [{id: 'b', age: 2}]});
+    await b.run();
+    assert.deepStrictEqual([b.told[0].title, 'contextMessage' in b.told[0]], ['482913 · GitHub', false]);
+  }],
+  ['a repeat leads with the code while its mail is unread and the code fresh, then as before', async () => {
+    const b = copying({'0': [{id: 'c', ...CODE_MAIL}]}, {'notify.repeat': 5});
+    await b.run();
+    delete b.alarms['repeat.notify'];
+    await b.fire('repeat.notify');
+    assert.deepStrictEqual([b.told.length, b.told[1].title, b.buttons()], [2, '482913 · GitHub', ['Copy 482913', 'Read']]);
+    b.session['repeat.report'].code.until = Date.now() - 1;
+    await b.fire('repeat.notify');
+    assert.deepStrictEqual([b.told.length, b.told[2].title, b.buttons()], [3, 'user0@gmail.com', ['Read', 'Archive']]);
   }]
 );
 

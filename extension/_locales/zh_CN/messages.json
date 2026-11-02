@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "删除"
     },
+    "notification_copy": {
+        "message": "复制 $1"
+    },
     "opt_combined": {
         "message": "将新邮件合并为一条通知"
     },
@@ -2360,6 +2363,12 @@
     },
     "opt_aiFast": {
         "message": "最快、最便宜"
+    },
+    "opt_copyCodes": {
+        "message": "从通知中复制验证码"
+    },
+    "opt_copyCodesText": {
+        "message": "含有验证码的通知会在其他按钮之前显示一个复制按钮。Chrome 会先请求你的许可：Mail Deck 只会把验证码写入剪贴板，从不读取剪贴板。"
     },
     "opt_aiFree": {
         "message": "免费"

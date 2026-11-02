@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "מחיקה"
     },
+    "notification_copy": {
+        "message": "העתק $1"
+    },
     "opt_combined": {
         "message": "לאחד הודעות חדשות בהתראה אחת"
     },
@@ -2356,6 +2359,12 @@
     },
     "opt_aiFast": {
         "message": "המהיר והזול ביותר"
+    },
+    "opt_copyCodes": {
+        "message": "להעתיק קודי כניסה מההתראות"
+    },
+    "opt_copyCodesText": {
+        "message": "התראה עם קוד כניסה תקבל כפתור שמעתיק אותו, לפני שאר הכפתורים. Chrome יבקש ממך רשות קודם: Mail Deck רק כותב את הקוד ללוח העריכה ולעולם לא קורא ממנו."
     },
     "opt_aiFree": {
         "message": "חינם"

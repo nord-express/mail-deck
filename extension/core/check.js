@@ -1,4 +1,4 @@
-/* global log, button, context, Feed, repeater, sound, toast, Resolved, Remind, Quiet, Services */
+/* global log, button, context, Feed, repeater, sound, toast, offscreen, Resolved, Remind, Quiet, Services, codeOf */
 
 if (typeof importScripts !== 'undefined') {
   self.importScripts('/core/utils/feed.js');
@@ -68,6 +68,11 @@ if (typeof importScripts !== 'undefined') {
   let retries = 0;
   // Gmail's clock minus this computer's, as the last check found it: a feed's times are Gmail's
   const SKEW = 'clock.skew';
+  // A sign-in code leads a notification while it is this fresh, as long as the panel shows a
+  // site's code: one in a mail that waited out a sleep has most likely expired.
+  const CODE_AGE = 30 * 60 * 1000;
+  // what lets a notification copy a code: an optional permission the settings page asks for
+  const CLIPBOARD = {permissions: ['clipboardWrite']};
 
   const read = (prefs, type = 'local') => chrome.storage[type].get(prefs);
 
@@ -89,7 +94,9 @@ if (typeof importScripts !== 'undefined') {
     return objs.filter(counted).reduce((p, o) => p + o.xml.entries.filter(e => helper.time(e.modified) > seen).length, 0);
   };
 
-  const notify = async (text, title, click = {}, buttons = []) => {
+  // buttons: the ones the settings pick, in their order; code: the sign-in code the notification
+  // leads with ({shown, copy, from}), or none
+  const notify = async (text, title, click = {}, buttons = [], code = null) => {
     title = title || chrome.i18n.getMessage('gmail');
 
     const p2 = await read({
@@ -103,7 +110,8 @@ if (typeof importScripts !== 'undefined') {
       'notificationTime': 10, // seconds
       'notification.state.active': true,
       'notification.state.idle': true,
-      'notification.state.locked': true
+      'notification.state.locked': true,
+      'notification.buttons.copy': false
     }, 'local');
 
     if (
@@ -129,11 +137,30 @@ if (typeof importScripts !== 'undefined') {
       text = text.join('\n\n');
     }
 
+    // A sign-in code leads: the title is the code and its sender, the inbox goes below, and the
+    // first button copies the code when the settings ask for that and Chrome lets the extension
+    // write the clipboard. Without that leave the code still shows, and the rest stays as it was.
+    let context = '';
+    if (code) {
+      context = title === chrome.i18n.getMessage('gmail') ? '' : title;
+      title = [code.shown, code.from].filter(Boolean).join(' · ');
+      if (p1['notification.buttons.copy'] && await chrome.permissions.contains(CLIPBOARD).catch(() => false)) {
+        buttons = [{
+          title: chrome.i18n.getMessage('notification_copy', [code.copy]),
+          iconUrl: '/data/images/copy.png',
+          action: {cmd: 'copy', text: code.copy}
+        }, ...buttons];
+      }
+    }
+    // Chrome shows two buttons at most
+    buttons = buttons.slice(0, 2);
+
     const when = Date.now() + p1.notificationTime * 1000;
     const options = {
       type: isArray ? 'list' : 'basic',
       iconUrl: '/data/icons/notification/48.png',
       title,
+      ...(context ? {contextMessage: context} : {}),
       message: isArray ? '' : text,
       priority: 2,
       eventTime: when,
@@ -154,6 +181,7 @@ if (typeof importScripts !== 'undefined') {
     if (navigator.userAgent.includes('Firefox')) {
       delete options.requireInteraction;
       delete options.buttons;
+      delete options.contextMessage;
     }
     // if (config.notification.actions === false) {
     //   delete options.buttons;
@@ -251,8 +279,10 @@ if (typeof importScripts !== 'undefined') {
       // a combined notification is one text for all its mail
       const pick = list => list.length === r.links.length ? keep.map(i => list[i]) : list;
       const links = keep.map(i => r.links[i]);
+      // the code leads again while its mail is unread and the code fresh
+      const code = r.code && links.includes(r.code.link) && r.code.until > Date.now() ? r.code : null;
       await notify(pick(r.text), r.title, {...r.click, links: pick(r.click.links)},
-        r.buttons.map(b => ({...b, action: {...b.action, links}})));
+        r.buttons.map(b => ({...b, action: {...b.action, links}})), code);
       if (prefs.alert) {
         sound.play(links.map(link => listed.get(link))).catch(e => toast(e.message));
       }
@@ -260,6 +290,16 @@ if (typeof importScripts !== 'undefined') {
     chrome.alarms.create('repeat.notify', {
       when: Date.now() + prefs['notify.repeat'] * 60000
     });
+  });
+  // A sign-in code to the clipboard, by the offscreen document: the worker has no page to copy
+  // from. A copy Chrome refuses (the permission taken back since the notification came) says so.
+  const copy = text => offscreen.command({cmd: 'copy', text}).then(r => {
+    if (r !== true) {
+      throw Error(r?.error || r?.message || 'no copy');
+    }
+  }).catch(e => {
+    console.error(e);
+    toast(chrome.i18n.getMessage('panel_copyCodeFailed'));
   });
   if (chrome.notifications.onButtonClicked) {
     chrome.notifications.onButtonClicked.addListener((id, index) => {
@@ -273,6 +313,10 @@ if (typeof importScripts !== 'undefined') {
         const request = prefs[id]?.buttons?.[index];
         if (!request) {
           return;
+        }
+        // the code goes to the clipboard and nothing else happens: the mail stays unread where it is
+        if (request.cmd === 'copy') {
+          return copy(request.text);
         }
         // links might be from different accounts; the mail of the other services is one
         // request, which they split by mailbox themselves
@@ -1039,6 +1083,7 @@ if (typeof importScripts !== 'undefined') {
         }
 
         if (prefs.notification && !hushed) {
+          // the buttons the settings pick, in the settings' order; the first two fit (notify)
           const buttons = [];
           if (prefs['notification.buttons.markasread']) {
             buttons.push({
@@ -1095,10 +1140,18 @@ if (typeof importScripts !== 'undefined') {
               links.push(o.link);
             }
           }
+          // the newest mail with a sign-in code still fresh by Gmail's clock: the notification
+          // leads with its code (notify). until: when it no longer does, by this computer's clock.
+          const coded = reportArray.map(e => ({e, age: Date.now() + skew - helper.time(e.modified)}))
+            .filter(({age}) => age < CODE_AGE)
+            .map(o => ({...o, code: codeOf((o.e.title || '') + ' ' + (o.e.summary || ''))}))
+            .find(o => o.code);
+          const code = coded ? {...coded.code, from: coded.e.author_name || coded.e.author_email || '', link: coded.e.link,
+            until: Date.now() + CODE_AGE - Math.max(0, coded.age)} : null;
           notify(report, inboxTitle, {
             cmd: 'open',
             links
-          }, buttons.slice(0, 2));
+          }, buttons, code);
           // the same notification comes back every few minutes while its mail stays unread
           if (prefs['notify.repeat'] > 0) {
             chrome.storage.session.set({
@@ -1107,7 +1160,8 @@ if (typeof importScripts !== 'undefined') {
                 text: report,
                 title: inboxTitle,
                 click: {cmd: 'open', links},
-                buttons: buttons.slice(0, 2)
+                buttons,
+                code
               }
             });
             chrome.alarms.create('repeat.notify', {

@@ -68,6 +68,8 @@ const AI_SITES = ['https://api.openai.com/*', 'https://api.anthropic.com/*', 'ht
 const PLAN_SITES = ['https://api.openai.com/*', 'https://auth.openai.com/*'];
 const granted = new Set();
 const requested = [];
+const requestedApis = [];
+const removedApis = [];
 let grant = true;
 const store = {
   // the page's own start waits for this forever: the checks below call its parts one by one
@@ -96,19 +98,22 @@ const chrome = {
     }, remove: async () => {}},
     onChanged: {addListener() {}}
   },
+  // sites ({origins}) and, apart from them, the API permissions ({permissions}: clipboardWrite),
+  // which are given only when asked for too
   permissions: {
-    contains: async ({origins}) => origins.every(o => !AI_SITES.includes(o) || granted.has(o)),
+    contains: async ({origins = [], permissions = []}) => origins.every(o => !AI_SITES.includes(o) || granted.has(o)) &&
+      permissions.every(p => granted.has(p)),
     // written down as it is asked, before anything is awaited: that is what Chrome takes as the click's
-    request: async ({origins}) => {
-      requested.push(origins);
+    request: async ({origins, permissions}) => {
+      (permissions ? requestedApis : requested).push(permissions || origins);
       if (grant) {
-        origins.forEach(o => granted.add(o));
+        [...origins || [], ...permissions || []].forEach(o => granted.add(o));
       }
       return grant;
     },
-    remove: async ({origins}) => {
-      removed.push(...origins);
-      origins.forEach(o => granted.delete(o));
+    remove: async ({origins, permissions}) => {
+      (permissions ? removedApis : removed).push(...permissions || origins);
+      [...origins || [], ...permissions || []].forEach(o => granted.delete(o));
       return true;
     },
     onAdded: {addListener() {}},
@@ -462,8 +467,77 @@ check('the new settings default as the background does, and their rows and strin
   assert.ok(en.opt_formatText.message.includes('[account]'));
 });
 
+/* the Copy button of a sign-in code on a notification */
+check('the Copy switch asks Chrome for the clipboard from its click, and shows on only while Chrome gives it', async () => {
+  const sw = element('copy-codes');
+  set.length = 0;
+  requestedApis.length = 0;
+  removedApis.length = 0;
+  granted.delete('clipboardWrite');
+  grant = true;
+  page('prefs = {...DEFAULTS}');
+  await page('syncCopy()');
+  assert.strictEqual(sw.checked, false);
+  // on: asked at once, from the click itself; given, it is saved and stays on
+  sw.checked = true;
+  const asking = sw.onchange();
+  assert.deepStrictEqual(requestedApis.map(a => [...a]), [['clipboardWrite']]);
+  await asking;
+  assert.deepStrictEqual(set.map(v => ({...v})), [{'notification.buttons.copy': true}]);
+  assert.strictEqual(sw.checked, true);
+  // taken back on chrome://extensions: off here, while the setting still wants it
+  granted.delete('clipboardWrite');
+  await page('syncCopy()');
+  assert.deepStrictEqual([sw.checked, local['notification.buttons.copy']], [false, true]);
+  // refused: off, and saved off
+  grant = false;
+  sw.checked = true;
+  await sw.onchange();
+  assert.deepStrictEqual([sw.checked, local['notification.buttons.copy']], [false, false]);
+  // off gives the permission back
+  grant = true;
+  sw.checked = true;
+  await sw.onchange();
+  assert.strictEqual(sw.checked, true);
+  sw.checked = false;
+  await sw.onchange();
+  assert.deepStrictEqual([sw.checked, local['notification.buttons.copy'], [...removedApis], granted.has('clipboardWrite')],
+    [false, false, ['clipboardWrite'], false]);
+  delete local['notification.buttons.copy'];
+});
+check('a reset, or a backup with the Copy button off, gives the clipboard back; other backups leave it', async () => {
+  granted.add('clipboardWrite');
+  removedApis.length = 0;
+  await page('apply')({alert: true});
+  assert.deepStrictEqual([...removedApis], []);
+  await page('apply')({...page('DEFAULTS')});
+  assert.deepStrictEqual([...removedApis], ['clipboardWrite']);
+  for (const k of Object.keys(page('DEFAULTS'))) {
+    delete local[k];
+  }
+});
+check('a backup keeps the Copy button\'s switch, in range', () => {
+  const sanitize = page('sanitize');
+  assert.deepStrictEqual({...sanitize({'notification.buttons.copy': true})}, {'notification.buttons.copy': true});
+  assert.deepStrictEqual({...sanitize({'notification.buttons.copy': 1})}, {});
+});
+check('the Copy switch\'s row, default and strings are there', () => {
+  const background = fs.readFileSync(path.join(EXT, 'core/check.js'), 'utf8');
+  // off by default, here and in the background
+  assert.strictEqual(page('DEFAULTS')['notification.buttons.copy'], false);
+  assert.ok(background.includes(`'notification.buttons.copy': false`));
+  // the switch has no data-key: the page saves it only once Chrome has answered
+  assert.ok(/<label class="row" data-needs="notification">\s*<span class="text"><b data-i18n="copyCodes">[\s\S]*?<input type="checkbox" role="switch" id="copy-codes">/.test(html));
+  for (const key of ['opt_copyCodes', 'opt_copyCodesText', 'notification_copy']) {
+    assert.ok(en[key]?.message, key);
+  }
+  // an optional permission: a required one would turn the extension off for everyone on the update
+  const manifest = JSON.parse(fs.readFileSync(path.join(EXT, 'manifest.json'), 'utf8'));
+  assert.deepStrictEqual([manifest.optional_permissions, manifest.permissions.includes('clipboardWrite')], [['clipboardWrite'], false]);
+});
+
 /* the AI card */
-const msg = (key, ...subs) => chrome.i18n.getMessage(key, subs.map(String));
+const msg =(key, ...subs) => chrome.i18n.getMessage(key, subs.map(String));
 const tick = () => new Promise(r => setTimeout(r, 0));
 const OPENAI_KEY = 'sk-proj-SECRET-openai-0123456789';
 const ANTHROPIC_KEY = 'sk-ant-api03-SECRET-anthropic-0123456789';

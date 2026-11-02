@@ -19,10 +19,13 @@ offscreen.ready = () => {
         });
         if (existingContexts.length === 0) {
           log('[offscreen]', 'creating...');
+          // a sign-in code a notification's button copies (core/check.js), once the user has let
+          // the extension write the clipboard (an optional permission)
+          const clipboard = await (async () => chrome.permissions.contains({permissions: ['clipboardWrite']}))().catch(() => false);
           await chrome.offscreen.createDocument({
             url: '/core/offscreen/index.html',
-            reasons: ['AUDIO_PLAYBACK', 'DOM_SCRAPING'],
-            justification: 'parse a command or play alert'
+            reasons: ['AUDIO_PLAYBACK', 'DOM_SCRAPING', ...(clipboard ? ['CLIPBOARD'] : [])],
+            justification: 'parse a command, play alert or copy a sign-in code'
           });
         }
       }

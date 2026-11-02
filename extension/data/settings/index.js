@@ -15,6 +15,8 @@ const DEFAULTS = {
   'notification.buttons.markasread': true,
   'notification.buttons.archive': true,
   'notification.buttons.trash': false,
+  // a notification's button that copies its sign-in code: on only with clipboardWrite (syncCopy)
+  'notification.buttons.copy': false,
   'combined': false,
   'threatAsNew': 10,
   'notificationFormat': chrome.i18n.getMessage('notification'),
@@ -300,6 +302,31 @@ document.addEventListener('change', ({target}) => {
     pickEngine(target.value);
   }
 });
+
+/* sign-in codes: a notification's Copy button writes the clipboard, which Chrome lets the
+   extension do once asked from this switch's click (an optional permission) */
+const CLIPBOARD = {permissions: ['clipboardWrite']};
+// on only while the settings want it and Chrome gives the permission (core/check.js asks both);
+// one taken back on chrome://extensions shows off here. While Chrome asks, the switch stays as clicked.
+let copyAsking = false;
+const syncCopy = async () => {
+  const granted = await Promise.resolve(chrome.permissions.contains(CLIPBOARD)).catch(() => false);
+  if (!copyAsking) {
+    $('copy-codes').checked = Boolean(prefs['notification.buttons.copy'] && granted);
+  }
+};
+$('copy-codes').onchange = () => {
+  const on = $('copy-codes').checked;
+  copyAsking = true;
+  // Chrome asks only from the click itself, before anything is awaited; off gives it back
+  const asked = on ? chrome.permissions.request(CLIPBOARD) : chrome.permissions.remove(CLIPBOARD);
+  return Promise.resolve(asked).catch(() => false)
+    .then(ok => save({'notification.buttons.copy': on && ok === true}))
+    .finally(() => {
+      copyAsking = false;
+      return syncCopy();
+    });
+};
 
 /* badge colour: a few presets and any other colour */
 const paintSwatches = () => {
@@ -1522,6 +1549,10 @@ const apply = async values => {
   if (Array.isArray(values.services)) {
     await revokeOff(values.services);
   }
+  // a reset, or a backup that leaves the Copy button off, gives back the clipboard as well
+  if (values['notification.buttons.copy'] === false) {
+    await Promise.resolve(chrome.permissions.remove(CLIPBOARD)).catch(() => false);
+  }
 };
 
 $('export').onclick = async () => {
@@ -1825,6 +1856,7 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   paintRules();
   paintSaved();
   syncNeeds();
+  syncCopy();
   paintShortcut();
   // the background adds inboxes on its own; the copy catches up when the page opens
   if (prefs['sync.settings']) {
@@ -1860,6 +1892,7 @@ Promise.all([store.get(DEFAULTS), parsed]).then(([stored]) => {
   });
   const followAccess = () => {
     syncServices();
+    syncCopy();
     syncAIAccess().then(paintCloud);
   };
   chrome.permissions.onAdded?.addListener(followAccess);

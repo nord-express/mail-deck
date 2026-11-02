@@ -48,6 +48,29 @@ const stop = () => {
   exit();
 };
 
+// A sign-in code a notification's button copies (core/check.js). This document never has the
+// focus navigator.clipboard asks for; the copy command needs none once the user has let the
+// extension write the clipboard (clipboardWrite). Firefox's background keeps the clipboard API.
+const copy = async text => {
+  if (typeof text !== 'string' || text === '') {
+    throw Error('nothing to copy');
+  }
+  const area = document.createElement('textarea');
+  area.value = text;
+  document.body.append(area);
+  area.select();
+  let done = false;
+  try {
+    done = document.execCommand('copy');
+  }
+  catch (e) {}
+  area.remove();
+  if (!done) {
+    await navigator.clipboard.writeText(text);
+  }
+  return true;
+};
+
 chrome.runtime.onMessage.addListener(({request, method}, sender, response) => {
   if (method === 'offscreen') {
     console.info('%c[offscreen iframe]', 'color:#ff9900', 'request', request);
@@ -68,6 +91,15 @@ chrome.runtime.onMessage.addListener(({request, method}, sender, response) => {
       response(true);
       ids.delete(request.id);
       exit();
+    }
+    else if (request.cmd === 'copy') {
+      copy(request.text).then(() => response(true), e => response({
+        error: e?.message || String(e)
+      })).finally(() => {
+        ids.delete(request.id);
+        exit();
+      });
+      return true;
     }
     else if (request.cmd === 'gmail.action') {
       gmail.action(request.request).then(() => response(true)).catch(e => {

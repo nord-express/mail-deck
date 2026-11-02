@@ -260,6 +260,9 @@
   "opt_btnDelete": {
     "message": "Elimina"
   },
+  "notification_copy": {
+    "message": "Copia $1"
+  },
   "opt_combined": {
     "message": "Raggruppa i nuovi messaggi in una notifica"
   },
@@ -2188,6 +2191,12 @@
   },
   "opt_aiFast": {
     "message": "il più veloce ed economico"
+  },
+  "opt_copyCodes": {
+    "message": "Copia i codici di accesso dalle notifiche"
+  },
+  "opt_copyCodesText": {
+    "message": "Una notifica con un codice di accesso riceve un pulsante che lo copia, prima degli altri pulsanti. Chrome ti chiede prima il permesso: Mail Deck scrive soltanto il codice negli appunti e non li legge mai."
   },
   "opt_aiFree": {
     "message": "gratuito"

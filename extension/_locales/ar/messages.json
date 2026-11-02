@@ -260,6 +260,9 @@
     "opt_btnDelete": {
         "message": "حذف"
     },
+    "notification_copy": {
+        "message": "نسخ $1"
+    },
     "opt_combined": {
         "message": "جمع الرسائل الجديدة في إشعار واحد"
     },
@@ -2356,6 +2359,12 @@
     },
     "opt_aiFast": {
         "message": "الأسرع والأرخص"
+    },
+    "opt_copyCodes": {
+        "message": "نسخ رموز التحقق من الإشعارات"
+    },
+    "opt_copyCodesText": {
+        "message": "يحصل الإشعار الذي يحتوي على رمز تحقق على زر ينسخه، قبل أزرارك الأخرى. سيطلب Chrome إذنك أولًا: يكتب Mail Deck الرمز في الحافظة فقط ولا يقرأ منها أبدًا."
     },
     "opt_aiFree": {
         "message": "مجاني"
