@@ -2410,9 +2410,32 @@ html body {
     }
   }
   @layer sections {
+    /* one engine to a line, the way the server's card is: its icon, then its name over what it is
+       (three in two columns would leave the last alone) */
     .engines {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr);
       padding: 12px;
+    }
+    .engine:not(.pick, .wide) {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 12px;
+      align-items: center;
+      min-height: 0;
+      padding-inline-end: 40px;
+    }
+    .engine:not(.pick, .wide) .tile {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .engine:not(.pick, .wide) input {
+      top: calc(50% - 9px);
+    }
+    .engine:not(.pick, .wide) .badge {
+      top: calc(50% - 8px);
+    }
+    .engine:not(.pick, .wide):has(.badge:not([hidden])) {
+      padding-inline-end: 140px;
     }
     .row > .models {
       flex: 1 0 100%;
