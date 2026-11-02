@@ -1302,6 +1302,12 @@
       out.enterAsks = sent('gmail.search').at(-1)?.query === 'zzzq';
       key(field, 'Escape');
       await wait(30);
+
+      // an update without mail is a page asking for a check, not a list to draw
+      const before = document.querySelectorAll('#list .row').length;
+      window.__onMessage?.({method: 'update'});
+      await wait(30);
+      out.dataless = before > 0 && document.querySelectorAll('#list .row').length === before;
     }
 
     if (scenario === 'boot') {

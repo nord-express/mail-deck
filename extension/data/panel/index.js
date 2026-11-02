@@ -3648,7 +3648,8 @@ frameReady.then(doc => doc.addEventListener('keydown', onKey));
 
 /* background */
 chrome.runtime.onMessage.addListener(request => {
-  if (request.method === 'update' || request.method === 'update-reset' || request.method === 'update-date') {
+  // an update without data is a page asking the background for a check, not a list
+  if ((request.method === 'update' || request.method === 'update-reset' || request.method === 'update-date') && Array.isArray(request.data)) {
     stopSpin();
     update(request.data);
   }
