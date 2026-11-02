@@ -1589,6 +1589,30 @@
   "panel_attachments": {
     "message": "Mellékletek: $1"
   },
+  "panel_shortcuts": {
+    "message": "Billentyűparancsok"
+  },
+  "panel_keyAsk": {
+    "message": "Kérdés erről a levélről"
+  },
+  "panel_keyMove": {
+    "message": "Postafiók mozgatása fel vagy le"
+  },
+  "panel_moreActions": {
+    "message": "További műveletek"
+  },
+  "panel_signInTitle": {
+    "message": "Kapcsolja be a levelezését"
+  },
+  "panel_replyList": {
+    "message": "Válaszra vár"
+  },
+  "panel_importantList": {
+    "message": "Fontos"
+  },
+  "panel_bulkList": {
+    "message": "Hírlevelek és reklámok"
+  },
   "panel_assistant": {
     "message": "MI-asszisztens"
   },

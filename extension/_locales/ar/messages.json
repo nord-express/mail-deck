@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "المرفقات: $1"
     },
+    "panel_shortcuts": {
+        "message": "اختصارات لوحة المفاتيح"
+    },
+    "panel_keyAsk": {
+        "message": "اسأل عن هذه الرسالة"
+    },
+    "panel_keyMove": {
+        "message": "نقل صندوق البريد لأعلى أو لأسفل"
+    },
+    "panel_moreActions": {
+        "message": "إجراءات أخرى"
+    },
+    "panel_signInTitle": {
+        "message": "اربط بريدك"
+    },
+    "panel_replyList": {
+        "message": "بانتظار ردّك"
+    },
+    "panel_importantList": {
+        "message": "مهم"
+    },
+    "panel_bulkList": {
+        "message": "النشرات والعروض الترويجية"
+    },
     "panel_assistant": {
         "message": "مساعد الذكاء الاصطناعي"
     },

@@ -37,16 +37,19 @@ const ICONS = {
   attach: ['M20 11.5l-7.8 7.8a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8'],
   download: ['M12 4v11', 'M7.5 10.5L12 15l4.5-4.5', 'M5 19.5h14'],
   sparkle: ['M11 3.5l1.9 4.6 4.6 1.9-4.6 1.9L11 16.5l-1.9-4.6L4.5 10l4.6-1.9Z', 'M18.5 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9Z'],
-  calendar: ['M5.5 5.5h13A1.5 1.5 0 0 1 20 7v11.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5V7a1.5 1.5 0 0 1 1.5-1.5Z', 'M4 10h16', 'M8.5 3.5v4', 'M15.5 3.5v4']
+  calendar: ['M5.5 5.5h13A1.5 1.5 0 0 1 20 7v11.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5V7a1.5 1.5 0 0 1 1.5-1.5Z', 'M4 10h16', 'M8.5 3.5v4', 'M15.5 3.5v4'],
+  more: ['M5.5 12h.01', 'M12 12h.01', 'M18.5 12h.01'],
+  keyboard: ['M4.5 6h15A1.5 1.5 0 0 1 21 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5v-9A1.5 1.5 0 0 1 4.5 6Z', 'M7 10h.01', 'M10.5 10h.01', 'M14 10h.01', 'M17 10h.01', 'M8.5 14h7'],
+  plus: ['M12 5v14', 'M5 12h14']
 };
 // the strings live in _locales as panel_*; a language without one falls back to English
 const t = (key, ...subs) => chrome.i18n.getMessage('panel_' + key, subs.map(String)) || key;
 const LANG = chrome.i18n.getUILanguage();
 const ACTIONS = {
-  'rd': {icon: 'read', title: t('markRead') + ' (R)', done: t('doneRead')},
-  'rc_^i': {icon: 'archive', title: t('archive') + ' (E)', done: t('doneArchive')},
-  'tr': {icon: 'trash', title: t('delete') + ' (Delete)', done: t('doneDelete'), danger: true},
-  'sp': {icon: 'spam', title: t('spam') + ' (!)', done: t('doneSpam'), danger: true}
+  'rd': {icon: 'read', title: t('markRead'), key: 'R', done: t('doneRead')},
+  'rc_^i': {icon: 'archive', title: t('archive'), key: 'E', done: t('doneArchive')},
+  'tr': {icon: 'trash', title: t('delete'), key: 'Del', done: t('doneDelete'), danger: true},
+  'sp': {icon: 'spam', title: t('spam'), key: '!', done: t('doneSpam'), danger: true}
 };
 // how long an action waits for its Undo before it reaches Gmail
 const UNDO_MS = 5000;
@@ -98,9 +101,14 @@ const state = {
   readOnOpen: false,
   senderLogos: true, // the settings may turn the logos off; they come from Google's icon service
   avatars: {}, // address -> {url}: the accounts' own pictures
-  windowId: null
+  windowId: null,
+  // after a browser start, until the background has read the mail once: the list shows lines
+  // that stand for it, never "Sign in" to someone signed in
+  booting: false
 };
 let refreshing = false;
+// the first list with mail gives its first line the focus (renderList)
+let firstFocus = true;
 
 const h = (tag, props, ...kids) => {
   const el = document.createElement(tag);
@@ -128,18 +136,33 @@ const icon = name => {
   svg.innerHTML = ICONS[name].map(d => `<path d="${d}"/>`).join('');
   return svg;
 };
-// data-focus names the button, so it gets the focus back once the list is drawn again
-const btn = (name, title, onclick, extra = '') => h('button', {
-  class: 'icon-btn ' + extra,
-  type: 'button',
-  title,
-  'aria-label': title,
-  'data-focus': name,
-  onclick: ev => {
-    ev.stopPropagation();
-    onclick(ev);
-  }
-}, icon(name));
+// A key as aria-keyshortcuts names it, from the way the tooltips write it
+const ariaKey = key => ({Del: 'Delete', Esc: 'Escape', 'Alt+↑/↓': 'Alt+ArrowUp Alt+ArrowDown'})[key] || key;
+// what a tooltip shows: a name, and its key when it has one. A key given in the name, as
+// "Hide (I)", is taken out of it
+const KEY_IN = /^(.+?) \(((?:Alt|Shift)\+\S+|[^()\s]{1,6})\)$/;
+const tipped = (label, key = '') => {
+  const m = !key && KEY_IN.exec(label);
+  key = key || (m ? m[2] : '');
+  label = m ? m[1] : label;
+  return {'data-tip': label, ...(key ? {'data-key': key, 'aria-keyshortcuts': ariaKey(key)} : {})};
+};
+// data-focus names the button, so it gets the focus back once the list is drawn again; its name
+// is its label and its tooltip (no native title, which would show as well)
+const btn = (name, title, onclick, extra = '', key = '') => {
+  const tip = tipped(title, key);
+  return h('button', {
+    'class': 'icon-btn ' + extra,
+    'type': 'button',
+    'aria-label': tip['data-tip'],
+    ...tip,
+    'data-focus': name,
+    'onclick': ev => {
+      ev.stopPropagation();
+      onclick(ev);
+    }
+  }, icon(name));
+};
 // a check stands in for the icon for a moment, so a copy needs no look at the toast
 const copyBtn = text => btn('copy', t('copyAddress'), ev => {
   const el = ev.currentTarget;
@@ -210,7 +233,7 @@ const copyCode = (code, el, said) => navigator.clipboard.writeText(code.copy).th
 const codePill = code => h('button', {
   'class': 'code',
   'type': 'button',
-  'title': t('copyCode') + ' (C)',
+  ...tipped(t('copyCode'), 'C'),
   'aria-label': t('copyCode') + ' ' + code.shown,
   'data-focus': 'code',
   // the pill is not the mail: a click on it opens nothing
@@ -246,6 +269,12 @@ const when = iso => {
 const fullDate = iso => {
   const d = new Date(iso);
   return isNaN(d) ? '' : d.toLocaleString(LANG, {dateStyle: 'long', timeStyle: 'short'});
+};
+// the reader's: the day and the time, the year only for another year's mail
+const shortDate = iso => {
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleString(LANG, {weekday: 'short', day: 'numeric', month: 'short',
+    ...(d.getFullYear() === new Date().getFullYear() ? {} : {year: 'numeric'}), hour: 'numeric', minute: '2-digit'});
 };
 // a reminder's moment: the time today, the day and the time later on
 const later = ms => {
@@ -521,13 +550,19 @@ let toastTimer;
 const hideToast = () => $('toast').classList.remove('show');
 const toast = (text, error, undo) => {
   const el = $('toast');
-  el.replaceChildren(text, undo ? h('button', {
+  el.replaceChildren(h('span', {}, text), undo ? h('button', {
     class: 'undo',
     type: 'button',
-    title: t('undo') + ' (Z)',
+    ...tipped(t('undo'), 'Z'),
     onclick: undo
   }, t('undo')) : '');
   el.classList.toggle('error', Boolean(error));
+  // the line under an Undo runs out with it, from the start for each new one
+  el.classList.remove('counting');
+  if (undo) {
+    el.style.setProperty('--undo', UNDO_MS + 'ms');
+    requestAnimationFrame(() => el.classList.add('counting'));
+  }
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(hideToast, undo ? UNDO_MS : error ? 4000 : 1800);
@@ -641,7 +676,8 @@ const paintStar = () => {
   if (el && state.reading) {
     const on = state.starred.has(thread(state.reading.e.link));
     el.classList.toggle('on', on);
-    el.title = el.ariaLabel = on ? t('unstar') : t('star');
+    el.ariaLabel = el.dataset.tip = on ? t('unstar') : t('star');
+    el.ariaPressed = String(on);
   }
 };
 const star = e => {
@@ -662,8 +698,8 @@ const star = e => {
   }));
 };
 
-/* remind me later: a short menu of times under the clock */
-// the clock the menu opened from; Esc gives it the focus back, or its mail's line
+/* menus: remind me later under the clock, the reader's other actions under ⋯ */
+// the button the menu opened from; Esc gives it the focus back, or its mail's line
 let menuFrom = null;
 const closeMenu = (refocus = false) => {
   const from = menuFrom;
@@ -677,70 +713,222 @@ const closeMenu = (refocus = false) => {
     (from.closest('.row') || from).focus({preventScroll: true});
   }
 };
-const remindMenu = (anchor, links) => {
+// A box placed in the window by a button: under it, above it when there is no room below,
+// inside the window either way. A larger text size zooms the page: the button's place and the
+// window come in zoomed pixels, the box's size and place are written in the page's own, so
+// the zoom is taken off. align: 'end' lines the box up with the button's end, 'center' with
+// its middle; gap: the room between them.
+const place = (box, anchor, align = 'end', gap = 4) => {
+  const z = parseFloat(document.documentElement.style.zoom) || 1;
+  const r = anchor.getBoundingClientRect();
+  const [left, right, top, bottom, width, height] = [r.left, r.right, r.top, r.bottom, innerWidth, innerHeight].map(v => v / z);
+  const w = box.offsetWidth;
+  const ht = box.offsetHeight;
+  const x = align === 'center' ? (left + right - w) / 2 : document.dir === 'rtl' ? left : right - w;
+  box.style.left = Math.max(8, Math.min(x, width - w - 8)) + 'px';
+  box.style.top = (bottom + gap + ht + 4 > height ? Math.max(4, top - ht - gap) : bottom + gap) + 'px';
+};
+// items: {label, hint, key, icon, danger, run} or 'sep'; the keys work while it is open
+const openMenu = (anchor, title, items, label = title) => {
   closeMenu();
   // focusable itself, so a click on its title or edge keeps the focus inside
-  const menu = h('div', {class: 'menu', id: 'menu', role: 'menu', tabIndex: -1, onclick: ev => ev.stopPropagation()},
-    h('p', {class: 'menu-title'}, t('remind')),
-    Remind.times().map(o => h('button', {
-      type: 'button',
-      role: 'menuitem',
-      onclick: () => {
-        closeMenu();
-        if (state.reading) {
-          actFromReader('remind', state.reading.e, o.until);
-        }
-        else {
-          act('remind', links, o.until);
-        }
-      }
-    }, h('span', {}, t(o.key)), h('span', {class: 'hint'}, later(o.until)))));
+  const menu = h('div', {'class': 'menu', 'id': 'menu', 'role': 'menu', 'tabIndex': -1, 'aria-label': label, 'onclick': ev => ev.stopPropagation()},
+    title && h('p', {class: 'menu-title'}, title),
+    items.filter(Boolean).map(it => it === 'sep' ? h('div', {'class': 'menu-sep', 'role': 'separator'}) : h('button', {
+      'type': 'button',
+      'role': 'menuitem',
+      'class': it.danger ? 'danger' : '',
+      ...(it.key ? {'data-key': it.key, 'aria-keyshortcuts': ariaKey(it.key)} : {}),
+      'onclick': ev => it.run(ev)
+    }, it.icon && icon(it.icon), h('span', {}, it.label), it.hint && h('span', {class: 'hint'}, it.hint),
+    it.key && h('kbd', {'aria-hidden': 'true'}, it.key))));
   // Tab, or a click into the message, leaves it: it closes, the focus stays where it went
   menu.addEventListener('focusout', ev => menu.id === 'menu' && !menu.contains(ev.relatedTarget) && closeMenu());
   document.body.append(menu);
   menuFrom = anchor;
   anchor.setAttribute('aria-expanded', 'true');
-  // under the button and inside the window, above it when there is no room below. A larger
-  // text size zooms the page: the button's place and the window come in zoomed pixels, the
-  // menu's size and place are written in the page's own, so the zoom is taken off
-  const z = parseFloat(document.documentElement.style.zoom) || 1;
-  const r = anchor.getBoundingClientRect();
-  const [right, top, bottom, width, height] = [r.right, r.top, r.bottom, innerWidth, innerHeight].map(v => v / z);
-  const w = menu.offsetWidth;
-  const ht = menu.offsetHeight;
-  menu.style.left = Math.max(8, Math.min(right - w, width - w - 8)) + 'px';
-  menu.style.top = (bottom + ht + 8 > height ? Math.max(8, top - ht - 4) : bottom + 4) + 'px';
-  menu.querySelector('button').focus();
+  hideTip();
+  place(menu, anchor);
+  menu.querySelector('[role="menuitem"]').focus();
+  return menu;
 };
 document.addEventListener('click', () => closeMenu());
-const remindBtn = links => {
-  const el = btn('clock', t('remind') + ' (B)', ev => remindMenu(ev.currentTarget, links), 'remind');
+const menuBtn = (name, label, key, open, extra) => {
+  const el = btn(name, label, ev => open(ev.currentTarget), extra, key);
   el.setAttribute('aria-haspopup', 'menu');
   el.setAttribute('aria-expanded', 'false');
   return el;
+};
+
+/* remind me later: a short menu of times under the clock */
+const remindAt = (links, until) => {
+  closeMenu();
+  if (state.reading) {
+    actFromReader('remind', state.reading.e, until);
+  }
+  else {
+    act('remind', links, until);
+  }
+};
+const remindMenu = (anchor, links) => openMenu(anchor, t('remind'),
+  Remind.times().map(o => ({label: t(o.key), hint: later(o.until), run: () => remindAt(links, o.until)})));
+const remindBtn = links => menuBtn('clock', t('remind'), 'B', anchor => remindMenu(anchor, links), 'remind');
+// what the reader does less often: the mail service's own page, spam (not first, where the
+// focus lands), and the keys
+const moreBtn = (e, o) => menuBtn('more', t('moreActions'), '', anchor => openMenu(anchor, '', [
+  {icon: 'open', label: openIn(o), key: 'O', run: ev => {
+    closeMenu();
+    openEntry(e, o, ev);
+  }},
+  allowed('sp', o) && {icon: 'spam', label: t('spam'), key: '!', danger: true, run: () => {
+    closeMenu();
+    actFromReader('sp', e);
+  }},
+  'sep',
+  {icon: 'keyboard', label: t('shortcuts'), key: '?', run: () => {
+    closeMenu();
+    openSheet();
+  }}
+], t('moreActions')), 'more-acts');
+
+/* tooltips: a button's name and its key, a moment after the pointer or the keyboard comes to it */
+const TIP_MS = 450;
+let tipFor = null; // the element whose tooltip shows, or is about to
+let tipTimer = 0;
+// a tooltip just shown makes the next one come at once: the pointer going along a row of buttons
+let tipWarm = 0;
+const hideTip = () => {
+  clearTimeout(tipTimer);
+  if ($('tip').classList.contains('show')) {
+    tipWarm = performance.now() + 600;
+  }
+  tipFor = null;
+  $('tip').classList.remove('show');
+};
+// its button drawn again (render), or gone with its menu: the tooltip goes too
+const tipGone = () => tipFor && !tipFor.isConnected && hideTip();
+const showTip = el => {
+  const label = el.dataset.tip;
+  const key = el.dataset.key;
+  // a button that says its own name in full has nothing to add
+  if (!label || (!key && el.innerText.trim() === label)) {
+    return;
+  }
+  $('tip').replaceChildren(h('span', {}, label), key ? h('kbd', {}, key) : '');
+  $('tip').classList.add('show');
+  place($('tip'), el, 'center', 6);
+};
+const wantTip = el => {
+  if (el === tipFor) {
+    return;
+  }
+  hideTip();
+  if (!el || el.disabled) {
+    return;
+  }
+  tipFor = el;
+  tipTimer = setTimeout(() => tipFor === el && el.isConnected && showTip(el), performance.now() < tipWarm ? 0 : TIP_MS);
+};
+document.addEventListener('pointerover', ev => ev.pointerType !== 'touch' && wantTip(ev.target.closest?.('[data-tip]')));
+// the pointer out of the panel
+document.addEventListener('pointerout', ev => !ev.relatedTarget && hideTip());
+// the keyboard's way to a button shows its tooltip too; the pointer's click does not
+document.addEventListener('focusin', ev => {
+  const el = ev.target.closest?.('[data-tip]');
+  if (el?.matches(':focus-visible')) {
+    wantTip(el);
+  }
+});
+document.addEventListener('focusout', ev => ev.target === tipFor && !tipFor.matches(':hover') && hideTip());
+// a click, a key, a scroll: the tooltip has said what it had to
+for (const type of ['pointerdown', 'keydown', 'scroll', 'wheel']) {
+  document.addEventListener(type, hideTip, {capture: true, passive: true});
+}
+
+/* ?: the keys there are, where the panel is now: the list's, or the open mail's and its mailbox's */
+const isQuestion = ev => ev.key === '?' || (ev.code === 'Slash' && ev.shiftKey);
+// a key as the tooltips and the menus write it, by its place on the keyboard, so any layout works
+const pressed = ev => ev.code.startsWith('Key') ? ev.code.slice(3) : ev.code === 'Digit1' && ev.shiftKey ? '!' : isQuestion(ev) ? '?' :
+  ev.code.startsWith('Digit') && !ev.shiftKey ? ev.code.slice(5) : ev.code === 'Delete' || ev.code === 'Backspace' ? 'Del' : ev.key;
+// [what it does, [its keys, one of them each]]; a key the mailbox cannot use is not listed
+const sheetRows = from => {
+  const r = state.reading;
+  const objs = view();
+  const line = from?.closest?.('#list .row');
+  const o = r?.o || (line && state.rows.get(line.dataset.link)?.o) || objs.find(x => x.xml.fullcount) || objs[0];
+  const any = what => r ? can(r.o, what) : objs.some(x => can(x, what));
+  return [
+    [t('nextMessage'), r ? ['J'] : ['J', '↓']],
+    [t('prevMessage'), r ? ['K'] : ['K', '↑']],
+    !r && [t('open'), ['Enter']],
+    [t('markRead'), ['R']],
+    any('archive') && [t('archive'), ['E']],
+    [t('delete'), ['Del']],
+    any('spam') && [t('spam'), ['!']],
+    [t('remind'), ['B']],
+    r && !serviceOf(r.o) && [t('star'), ['S']],
+    o && [openIn(o), ['O']],
+    [t('copyCode'), ['C']],
+    r && showAI() && can(r.o, 'body') && !(aiOn() && state.ai.summary === 'off') && [t('summary'), ['I']],
+    showAI() && (r ? can(r.o, 'body') && [t('keyAsk'), ['A']] : [t('assistant'), ['A']]),
+    [t('undo'), ['Z']],
+    !r && objs.some(x => !serviceOf(x)) && [t('search'), ['/']],
+    !r && objs.length > 1 && [t('keyMove'), ['Alt+↑', 'Alt+↓']],
+    r && [t('back'), ['Esc']],
+    [t('shortcuts'), ['?']]
+  ].filter(Boolean);
+};
+// the element that had the focus before; it has it again after
+let sheetFrom = null;
+const openSheet = () => {
+  if ($('sheet')) {
+    return;
+  }
+  closeMenu();
+  hideTip();
+  sheetFrom = document.activeElement;
+  const keys = alts => alts.flatMap((alt, i) => [i > 0 && h('span', {}, '/'), ...alt.split('+').flatMap((k, j) => [j > 0 && '+', h('kbd', {}, k)])]).filter(Boolean);
+  const box = h('div', {'class': 'sheet', 'role': 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'sheet-title', 'tabIndex': -1},
+    h('header', {class: 'sheet-head'}, h('h2', {id: 'sheet-title'}, t('shortcuts')), btn('close', t('close'), () => closeSheet(), '', 'Esc')),
+    h('div', {}, sheetRows(sheetFrom).map(([label, alts]) => h('div', {class: 'sheet-row'}, h('span', {}, label), h('span', {class: 'keys'}, keys(alts))))));
+  // a click beside it closes it
+  const shade = h('div', {'class': 'sheet-shade', 'id': 'sheet', 'onclick': ev => ev.target === shade && closeSheet()}, box);
+  document.body.append(shade);
+  $('app').inert = true;
+  box.focus();
+};
+const closeSheet = () => {
+  $('sheet')?.remove();
+  $('app').inert = false;
+  (sheetFrom?.isConnected && sheetFrom !== document.body ? sheetFrom : state.reading ? $('reader') : null)?.focus({preventScroll: true});
+  sheetFrom = null;
 };
 
 /* side panel: the deck stays open beside the page; Chrome opens it only from a click */
 const openSide = () => chrome.sidePanel.open({windowId: state.windowId}).then(() => window.close(), () => toast(t('actionFailed'), true));
 
 /* header */
+// With no mailbox signed in, the tools for mail (the assistant, search, a new mail) wait for
+// one; before the first list after a browser start they stand as they will (state.booting).
+// Another account is added at the end of the list.
 const renderBar = objs => {
   const total = objs.reduce((p, o) => p + o.xml.fullcount, 0);
   const busy = objs.filter(o => o.xml.fullcount).length;
+  const mail = objs.length > 0 || state.booting;
+  // all caught up: the list says it (caughtUp), the bar only over a search
   $('sub').replaceChildren(!objs.length ? '' :
-    total ? (busy === 1 ? t('summaryOne', total) : t('summaryMany', total, busy)) : h('span', {class: 'ok'}, icon('done'), t('caughtUp')));
+    total ? (busy === 1 ? t('summaryOne', total) : t('summaryMany', total, busy)) : state.search ? h('span', {class: 'ok'}, icon('done'), t('caughtUp')) : '');
   $('tools').replaceChildren(...[
-    showAI() && btn('sparkle', t('assistant') + ' (A)', () => openAssist(), 'assist-btn'),
+    mail && showAI() && btn('sparkle', t('assistant'), () => openAssist(), 'assist-btn', 'A'),
     btn('refresh', t('checkMail'), ev => {
       refreshing = true;
       ev.currentTarget.classList.add('spin');
       chrome.runtime.sendMessage({method: 'update', forced: true});
       setTimeout(stopSpin, 15000);
     }, refreshing ? 'refresh spin' : 'refresh'),
-    objs.some(o => !serviceOf(o)) && btn('search', t('search') + ' (/)', openSearch, state.search ? 'on' : ''),
-    btn('compose', t('compose') + (objs.length > 1 ? ': ' + composeFrom(objs).xml.title : ''),
+    (state.booting || objs.some(o => !serviceOf(o))) && btn('search', t('search'), openSearch, state.search ? 'on' : '', '/'),
+    mail && btn('compose', t('compose') + (objs.length > 1 ? ': ' + composeFrom(objs).xml.title : ''),
       () => openUrl(composeUrl(composeFrom(objs)))),
-    btn('addUser', t('addAccount'), () => openUrl(ADD_ACCOUNT)),
     !SIDE && chrome.sidePanel && btn('side', t('sidePanel'), openSide),
     btn('tune', t('settings'), () => chrome.runtime.openOptionsPage())
   ].filter(Boolean));
@@ -778,7 +966,7 @@ const renderChips = objs => {
     'type': 'button',
     'aria-pressed': 'true',
     'aria-label': t('fromSite', state.site.domain),
-    'title': t('all') + ' (Esc)',
+    ...tipped(t('all'), 'Esc'),
     'data-focus': 'chip:site',
     'onclick': () => {
       state.siteOnly = false;
@@ -786,10 +974,13 @@ const renderChips = objs => {
     }
   }, state.site.domain, icon('close'));
   paintChipsEdge.observed ||= ($('chips').addEventListener('scroll', paintChipsEdge, {passive: true}), true);
-  $('chips').replaceChildren(...[...sortChips(objs), site, ...(busy.length < 2 || state.search ? [] : [
+  const sorts = [...sortChips(objs), site].filter(Boolean);
+  const boxes = busy.length < 2 || state.search ? [] : [
     chip(null, t('all'), busy.reduce((p, o) => p + o.xml.fullcount, 0)),
     ...busy.map(o => chip(o, short(o, busy) + (o.xml.label ? ` [${o.xml.label}]` : ''), o.xml.fullcount))
-  ])].filter(Boolean));
+  ];
+  // a hairline between the assistant's sorting and the mailboxes
+  $('chips').replaceChildren(...sorts, ...(sorts.length && boxes.length ? [h('span', {'class': 'chip-sep', 'aria-hidden': 'true'})] : []), ...boxes);
   paintChipsEdge();
 };
 
@@ -851,6 +1042,10 @@ const runSearch = q => {
     });
 };
 const note = text => h('div', {class: 'empty'}, h('p', {}, text));
+// lines that stand for mail on its way
+const skeleton = (rows = 3) => h('div', {'class': 'section skel', 'aria-hidden': 'true'},
+  h('div', {class: 'skel-head'}, h('i'), h('i')),
+  h('div', {class: 'cards'}, Array.from({length: rows}, () => h('div', {class: 'skel-row'}, h('i'), h('i'), h('i'), h('i')))));
 const searchList = () => {
   const s = state.search;
   if (s.busy) {
@@ -863,20 +1058,21 @@ const searchList = () => {
     return [note(t('searchFailed'))];
   }
   // an account that did not answer keeps its line, saying so, with its way to Gmail's own search
-  const shown = s.results.map(r => ({...r, entries: r.entries.filter(e => !state.hidden.has(e.link))}))
+  const results = s.results.map(r => ({...r, entries: r.entries.filter(e => !state.hidden.has(e.link))}))
     .filter(r => r.failed || r.entries.length);
   return [
-    ...shown.map(r => h('section', {'class': 'section', 'style': `--c:${r.o.color}`, 'data-scope': r.o.xml.title},
-      h('header', {class: 'section-head', title: t('openInGmail'), onclick: () => openUrl(searchUrl(r.o, s.q))},
+    ...results.map(r => h('section', {'class': 'section', 'style': `--c:${r.o.color}`, 'data-scope': r.o.xml.title},
+      h('header', {'class': 'section-head', 'data-tip': t('openInGmail'), 'onclick': () => openUrl(searchUrl(r.o, s.q))},
         mark(r.o.xml.title),
         h('span', {class: 'addr'}, r.o.xml.title),
-        h('span', {class: 'none'}, r.failed ? t('searchFailed') : t('found', r.entries.length)),
+        r.failed ? h('span', {class: 'none'}, t('searchFailed')) :
+          h('span', {class: 'n found'}, h('span', {class: 'sr'}, t('found', r.entries.length)), h('span', {'aria-hidden': 'true'}, r.entries.length)),
         h('span', {class: 'grow'}),
-        btn('open', t('openInGmail'), () => openUrl(searchUrl(r.o, s.q)))
+        h('span', {class: 'head-acts'}, btn('open', t('openInGmail'), () => openUrl(searchUrl(r.o, s.q))))
       ),
       r.entries.length > 0 && h('div', {class: 'cards'}, r.entries.map(e => row(e, r.o)))
     )),
-    shown.every(r => r.failed) && note(t('searchNone'))
+    results.every(r => r.failed) && note(t('searchNone'))
   ].filter(Boolean);
 };
 
@@ -896,7 +1092,8 @@ const realFiles = list => (list || []).filter(f => f.name && !INLINE.test(f.name
 const fileChip = (f, big = false) => h('button', {
   'class': 'file-chip' + (big ? ' big' : ''),
   'type': 'button',
-  'title': f.name + (big ? '' : ' (' + t('openFile') + ')'),
+  // its whole name, when the chip has cut it short
+  'data-tip': f.name,
   'aria-label': t('openFile') + ': ' + f.name,
   'data-kind': kindOf(f.name),
   // a file is not the mail: a click on it opens the file alone
@@ -909,7 +1106,7 @@ h('span', {class: 'name'}, f.name));
 // the line's files: two of them and how many more
 const rowFiles = list => {
   const shown = realFiles(list);
-  return shown.length > 0 && h('div', {class: 'row-files', title: shown.map(f => f.name).join('\n')},
+  return shown.length > 0 && h('div', {'class': 'row-files', 'data-tip': shown.map(f => f.name).join('\n')},
     h('span', {class: 'clip', role: 'img', 'aria-label': t('attachments', shown.length)}, icon('attach')),
     shown.slice(0, 2).map(f => fileChip(f)),
     shown.length > 2 && h('span', {class: 'more-files'}, '+' + (shown.length - 2)));
@@ -925,16 +1122,22 @@ const paintReaderFiles = list => {
   const shown = realFiles(list);
   el.hidden = shown.length === 0;
   el.replaceChildren(...(shown.length ? [
-    h('span', {class: 'files-head'}, icon('attach'), t('attachments', shown.length)),
+    h('span', {'class': 'files-head', 'role': 'img', 'aria-label': t('attachments', shown.length)}, icon('attach')),
     ...shown.map(f => h('span', {class: 'file-pair'}, fileChip(f, true),
       f.view && f.download && btn('download', t('download') + ': ' + f.name, () => openUrl(f.download), 'file-dl')))
   ] : []));
 };
 const fileKey = e => e.link.replace('http://', 'https://') + '#' + (e.modified || '');
-// a Gmail line asks for its files once; they come onto the line as they are known
+// A Gmail line asks for its files once; they come onto the line as they are known. What the
+// session knew already (gmail.filesNow) is on the line from its first frame.
 const filesFor = (e, o) => {
   if (serviceOf(o) || state.files.has(fileKey(e))) {
     return state.files.get(fileKey(e));
+  }
+  const known = gmail.filesNow(e.link, e.modified);
+  if (known) {
+    state.files.set(fileKey(e), known);
+    return known;
   }
   state.files.set(fileKey(e), undefined);
   gmail.files(e.link, e.modified).then(list => {
@@ -955,6 +1158,8 @@ const paintFiles = link => {
     old.replaceWith(made || '');
   }
   else if (made) {
+    // files learnt of after the line was drawn come in rather than pop
+    made.classList.add('enter');
     el.querySelector('.snippet').after(made);
   }
 };
@@ -999,9 +1204,9 @@ const row = (e, o) => {
   rowFiles(filesFor(e, o)),
   h('div', {class: 'acts'},
     ['rd', 'rc_^i', 'tr'].filter(cmd => cmd !== 'rc_^i' || can(o, 'archive'))
-      .map(cmd => btn(ACTIONS[cmd].icon, ACTIONS[cmd].title, () => act(cmd, [e.link]), ACTIONS[cmd].danger ? 'danger' : '')),
+      .map(cmd => btn(ACTIONS[cmd].icon, ACTIONS[cmd].title, () => act(cmd, [e.link]), ACTIONS[cmd].danger ? 'danger' : '', ACTIONS[cmd].key)),
     remindBtn([e.link]),
-    btn('open', openIn(o) + ' (O)', ev => openEntry(e, o, ev))
+    btn('open', openIn(o), ev => openEntry(e, o, ev), '', 'O')
   ));
 };
 // every signed-in mailbox gets its line, with its unread mail under it; keep(e, o), when given,
@@ -1016,17 +1221,19 @@ const section = (o, keep) => {
   const links = entries.map(e => e.link);
   const rest = n - entries.length;
   return h('section', {'class': 'section' + (n ? '' : ' idle'), 'style': `--c:${o.color}`, 'data-key': accountName(o)},
-    h('header', {class: 'section-head', title: openInbox(o), draggable: true, onclick: () => openUrl(o.xml.link)},
-      h('span', {class: 'grip', title: t('drag') + ' (Alt+↑/↓)'}, icon('grip')),
+    h('header', {'class': 'section-head', 'data-tip': openInbox(o), 'draggable': true, 'onclick': () => openUrl(o.xml.link)},
+      h('span', {class: 'grip', ...tipped(t('drag'), 'Alt+↑/↓')}, icon('grip')),
       mark(o.xml.title),
       h('span', {class: 'addr'}, accountName(o)),
       n ? h('span', {class: 'n'}, n > 999 ? '999+' : n) : h('span', {class: 'none'}, t('noNewMail')),
       copyBtn(o.xml.title),
       h('span', {class: 'grow'}),
-      entries.length > 0 && btn('readAll', t('markAllRead'), () => act('rd', links)),
-      entries.length > 0 && can(o, 'archive') && btn('archive', t('archiveAll'), () => act('rc_^i', links)),
-      !serviceOf(o) && btn('meet', t('newMeeting'), () => openUrl(meetUrl(o)), 'meet'),
-      btn('open', openInbox(o), () => openUrl(o.xml.link))
+      // over the end of the line, with the pointer or the keys: at rest the address has its room
+      h('span', {class: 'head-acts'},
+        entries.length > 0 && btn('readAll', t('markAllRead'), () => act('rd', links)),
+        entries.length > 0 && can(o, 'archive') && btn('archive', t('archiveAll'), () => act('rc_^i', links)),
+        !serviceOf(o) && btn('meet', t('newMeeting'), () => openUrl(meetUrl(o)), 'meet'),
+        btn('open', openInbox(o), () => openUrl(o.xml.link)))
     ),
     entries.length > 0 && h('div', {class: 'cards'}, entries.map(e => row(e, o)),
       !open && extra.length > 0 ? h('button', {class: 'more', type: 'button', onclick: () => {
@@ -1041,19 +1248,28 @@ const section = (o, keep) => {
 };
 const signIn = () => h('div', {class: 'empty'},
   h('span', {class: 'badge mail'}, icon('mail')),
-  h('h3', {}, t('signIn')),
+  h('h3', {}, t('signInTitle')),
   h('p', {}, t('signInText')),
-  h('button', {class: 'text-btn', type: 'button', onclick: () => openUrl(ADD_ACCOUNT)}, t('signIn')),
+  h('button', {class: 'primary-btn cta', type: 'button', onclick: () => openUrl(ADD_ACCOUNT)}, t('signIn')),
   h('button', {class: 'text-btn quiet', type: 'button', onclick: openServices}, t('otherServices'))
 );
+// under the list: another Google account, and the way to the keys
+const listFoot = () => h('div', {class: 'list-foot'},
+  h('button', {'class': 'text-btn', 'type': 'button', 'data-focus': 'add-account', 'onclick': () => openUrl(ADD_ACCOUNT)}, icon('plus'), t('addAccount')),
+  h('button', {'class': 'text-btn keys-btn', 'type': 'button', 'aria-label': t('shortcuts'), 'aria-keyshortcuts': '?', 'data-focus': 'keys', 'onclick': () => openSheet()},
+    h('kbd', {'aria-hidden': 'true'}, '?'), h('span', {'aria-hidden': 'true'}, t('shortcuts'))));
 const openServices = () => {
   chrome.tabs.create({url: chrome.runtime.getURL('/data/settings/index.html#services')});
   if (!SIDE) {
     window.close();
   }
 };
-// every mailbox is empty: the bar says so, the list keeps a way into each of them
+// every mailbox is empty: said once, over a way into each of them
 const caughtUp = objs => h('div', {class: 'caught-up'},
+  h('div', {class: 'empty'},
+    h('span', {class: 'badge'}, icon('done')),
+    h('h3', {}, t('caughtUp')),
+    h('p', {}, objs.length === 1 ? t('caughtUpOne') : t('caughtUpMany', objs.length))),
   h('div', {class: 'accounts'}, objs.map(o => h('div', {
     'class': 'acc',
     'style': `--c:${o.color}`,
@@ -1062,7 +1278,7 @@ const caughtUp = objs => h('div', {class: 'caught-up'},
     'tabIndex': 0,
     'onclick': () => openUrl(o.xml.link)
   },
-    h('span', {class: 'grip', title: t('drag') + ' (Alt+↑/↓)'}, icon('grip')),
+    h('span', {class: 'grip', ...tipped(t('drag'), 'Alt+↑/↓')}, icon('grip')),
     mark(o.xml.title),
     h('span', {class: 'addr'}, accountName(o)),
     copyBtn(o.xml.title),
@@ -1152,9 +1368,9 @@ const siteMail = (site, objs) => {
   }
   return found.sort((a, b) => (Date.parse(b.e.modified) || 0) - (Date.parse(a.e.modified) || 0));
 };
-// 482913 reads 482 913; it is copied as it came
-const grouped = digits => digits.length === 6 || digits.length === 7 ? digits.slice(0, 3) + ' ' + digits.slice(3) :
-  digits.length === 8 ? digits.slice(0, 4) + ' ' + digits.slice(4) : digits;
+// 482913 reads 482 913, set apart by a margin (index.css): it is copied as it came
+const grouped = digits => (digits.length === 6 || digits.length === 7 ? [digits.slice(0, 3), digits.slice(3)] :
+  digits.length === 8 ? [digits.slice(0, 4), digits.slice(4)] : [digits]).map(g => h('span', {}, g));
 // a mail of the site: opens as its line in the list does
 const pin = (e, o) => h('button', {
   'class': 'pin',
@@ -1180,18 +1396,25 @@ h('span', {class: 'pin-from'}, e.author_name || e.author_email),
 h('span', {class: 'pin-subject'}, e.title || t('noSubject')),
 h('time', {class: 'when', dateTime: e.modified, title: fullDate(e.modified)}, when(e.modified)));
 const siteBlock = (site, found) => {
-  // the code of the newest mail young enough to be the one the page waits for
-  const code = found.map(({e}) => Date.now() - Date.parse(e.modified) < SITE_CODE_MS && codeOf(e.title + ' ' + e.summary)).find(Boolean);
+  // the code of the newest mail young enough to be the one the page waits for, and how old it is
+  const coded = found.map(({e}) => Date.now() - Date.parse(e.modified) < SITE_CODE_MS && {e, code: codeOf(e.title + ' ' + e.summary)})
+    .find(x => x?.code);
+  const code = coded?.code;
+  // the site's logo, once its senders' pictures have shown it has one: Google is asked nothing new
+  const logo = state.senderLogos && logos.get(site.domain) === true;
   return h('section', {'class': 'site', 'aria-label': t('fromSite', site.domain)},
-    h('p', {class: 'site-head'}, t('fromSite', site.domain)),
+    h('p', {class: 'site-head'},
+      logo && h('img', {class: 'site-logo', alt: '', referrerPolicy: 'no-referrer', src: `https://www.google.com/s2/favicons?domain=${encodeURIComponent(site.domain)}&sz=64`}),
+      t('fromSite', site.domain)),
     code && h('button', {
       'class': 'site-code',
       'type': 'button',
-      'title': t('copyCode') + ' (C)',
+      ...tipped(t('copyCode'), 'C'),
       'aria-label': t('copyCode') + ' ' + code.copy,
       'data-focus': 'site-code',
       'onclick': ev => copyCode(code, ev.currentTarget, t('codeCopied'))
-    }, h('span', {class: 'digits'}, grouped(code.copy)), h('span', {class: 'copy-word'}, t('copyCode'))),
+    }, h('span', {class: 'digits'}, grouped(code.copy)), h('span', {'class': 'copy-pill', 'aria-hidden': 'true'}, icon('copy'), t('copyCode')),
+    h('time', {class: 'when', dateTime: coded.e.modified}, when(coded.e.modified))),
     found.slice(0, 3).map(({e, o}) => pin(e, o)),
     found.length > 3 && h('button', {
       'class': 'site-more',
@@ -1258,23 +1481,36 @@ const renderList = objs => {
   // an action or its Undo names the line that takes the focus, and brings it into view; any
   // other drawing keeps the focused line where it is, scrolled to or not
   const wanted = state.focus;
-  const focused = wanted || document.activeElement?.dataset?.link;
+  let focused = wanted || document.activeElement?.dataset?.link;
+  // a line marked quietly stays so once drawn again
+  let quietly = !wanted && Boolean(document.activeElement?.matches?.('.row:not(:focus-visible)'));
   state.focus = null;
   state.rows.clear();
 
   const shown = state.only ? objs.filter(o => o.xml.link === state.only) : objs;
   const keep = state.siteOnly ? e => ofSite(e, state.site) : state.sortOnly ? (e, o) => SORTS[state.sortOnly].has(replyOf(e, o)) : null;
+  list.ariaBusy = String(state.booting);
   list.replaceChildren(...(state.search ? searchList() : keep ? [
     state.sortOnly && sortBar(shown),
     ...shown.map(o => section(o, keep)).filter(s => s.querySelector('.row'))
-  ].filter(Boolean) : [
+  ].filter(Boolean) : state.booting ? [skeleton()] : [
     ...(!objs.length ? [signIn()] : objs.some(o => o.xml.fullcount) ? shown.map(o => section(o)) : [caughtUp(objs)]),
-    !state.only && signedOut()
+    !state.only && signedOut(),
+    objs.length > 0 && listFoot()
   ].filter(Boolean)));
   paintSite(objs, false);
   list.scrollTop = top;
+  // The panel opens with its first mail under the keys, E, R or Delete act on it at once. It is
+  // marked quietly (index.css), not with the keyboard's ring and the line's buttons
+  if (firstFocus && list.querySelector('.row')) {
+    firstFocus = false;
+    if (!focused && !state.search && (!document.activeElement || document.activeElement === document.body)) {
+      focused = FIRST;
+      quietly = true;
+    }
+  }
   const el = focused === FIRST ? list.querySelector('.row, .acc') : focused && rowOf(focused);
-  el?.focus({preventScroll: true});
+  el?.focus(quietly ? {preventScroll: true, focusVisible: false} : {preventScroll: true});
   if (wanted) {
     el?.scrollIntoView({block: 'nearest'});
   }
@@ -1374,6 +1610,8 @@ const render = () => {
   if (path && (!document.activeElement || document.activeElement === document.body)) {
     document.querySelector(path)?.focus({preventScroll: true});
   }
+  // a tooltip whose button was drawn again goes with it
+  tipGone();
 };
 // What the panel knows of mail no longer listed goes (its files, the assistant's sorting): a side
 // panel stays open for days. Mail listed again is asked about again.
@@ -1389,6 +1627,9 @@ const prune = () => {
   [...replySeen].filter(k => !ids.has(k)).forEach(k => replySeen.delete(k));
 };
 const update = objs => {
+  // the background's first list takes the place of the lines that stood for it
+  const booted = state.booting;
+  state.booting = false;
   state.objs = objs || [];
   // the search's mail counts as listed too, the feed never lists it
   const listed = new Set([
@@ -1405,7 +1646,7 @@ const update = objs => {
   // A check that found nothing new, every two minutes, leaves the list as it is: the focus,
   // the pointer's line and its pictures stay; only the times move on. Mail folding away
   // after its action draws the list itself once the fold is done.
-  if (sig(state.objs) === drawn) {
+  if (!booted && sig(state.objs) === drawn) {
     for (const el of $('list').querySelectorAll('time.when')) {
       el.textContent = when(el.dateTime);
     }
@@ -1425,11 +1666,15 @@ const frame = $('body');
 const frameReady = new Promise(resolve => {
   const ready = () => {
     const doc = frame.contentDocument;
+    // the message lines up with the header over it (22px). The dark theme inverts the frame:
+    // this grey comes out as the card's own #1a1b1e. The thread's files stand over the message
+    // (#reader-files): its own chips of them step aside meanwhile (paintFrameFiles)
     doc.head.append(h('style', {}, `
-      body { font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; padding: 16px 20px 28px; color: #1b1f24; }
+      body { font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; padding: 16px 22px 28px; color: #1b1f24; }
       body, td { font-size: 14px; }
       body.summary { color: #5f6772; }
-      html.dark, html.dark body { background: #e1e1df; }
+      html.dark, html.dark body { background: #e3e4e7; }
+      html.files-shown .files { display: none; }
       .note { margin-top: 16px; color: #5f6772; }
       .pictures { margin: 0 0 14px; }
       .pictures button { padding: 6px 12px; border: 1px solid #d6d9de; border-radius: 14px; background: #fff; color: #1b1f24; font: inherit; font-size: 13px; cursor: pointer; }
@@ -1444,6 +1689,15 @@ const frameReady = new Promise(resolve => {
     frame.addEventListener('load', ready, {once: true});
   }
 });
+// The thread's files over the message stand for the message's own chips of them; while a card
+// of the assistant has the header give way (index.css), the message shows them again
+const paintFrameFiles = () => frame.contentDocument?.documentElement.classList.toggle('files-shown',
+  !$('reader-files').hidden && $('ai-card').hidden && $('ai-tool').hidden);
+{
+  const watch = new MutationObserver(paintFrameFiles);
+  ['reader-files', 'ai-card', 'ai-tool'].forEach(id => watch.observe($(id), {attributes: true, attributeFilter: ['hidden']}));
+  frameReady.then(paintFrameFiles);
+}
 frameReady.then(doc => {
   const paint = () => doc.documentElement.classList.toggle('dark', dark.matches);
   paint();
@@ -1533,25 +1787,30 @@ const read = async (e, o, trail) => {
   const r = state.reading = {e, o, next: neighbour([e.link])?.dataset.link, code: codeOf(e.title + ' ' + e.summary), ai: {ctl: null}, texts};
   closeMenu();
   const walk = [...state.trail.keys()].filter(k => k === e.link || !state.hidden.has(k));
-  $('reader-bar').replaceChildren(
-    btn('back', t('back') + ' (Esc)', back),
+  // with several mailboxes the bar says which one the mail came to (in a narrow panel, the header)
+  const several = view().length > 1;
+  // Where it is first: back, the arrows (they stay put from one mail to the next), its place and
+  // its mailbox. Then what is done with it, Reply by its name, and what is rarer under ⋯
+  $('reader-bar').replaceChildren(...[
+    btn('back', t('back'), back, '', 'Esc'),
+    btn('up', t('prevMessage'), () => stepReader(-1), 'prev', 'K'),
+    btn('down', t('nextMessage'), () => stepReader(1), 'next', 'J'),
     h('span', {class: 'pos'}, t('position', walk.indexOf(e.link) + 1, walk.length)),
-    btn('up', t('prevMessage') + ' (K)', () => stepReader(-1), 'prev'),
-    btn('down', t('nextMessage') + ' (J)', () => stepReader(1), 'next'),
-    ...Object.entries(ACTIONS).filter(([cmd]) => allowed(cmd, o)).map(([cmd, a]) => btn(a.icon, a.title,
-      () => actFromReader(cmd, e), a.danger ? 'danger' : '')),
+    several && h('span', {class: 'box', style: `--c:${o.color}`}, h('span', {class: 'dot'}), h('span', {}, accountName(o))),
+    h('span', {class: 'grow'}),
+    ...['rd', 'rc_^i', 'tr'].filter(cmd => allowed(cmd, o)).map(cmd => btn(ACTIONS[cmd].icon, ACTIONS[cmd].title,
+      () => actFromReader(cmd, e), ACTIONS[cmd].danger ? 'danger' : '', ACTIONS[cmd].key)),
     remindBtn([e.link]),
     h('span', {class: 'sep'}),
-    !serviceOf(o) && btn('star', t('star') + ' (S)', () => star(e), 'star'),
-    btn('reply', t('reply'), () => openUrl(replyUrl(e, o))),
-    btn('open', openIn(o) + ' (O)', ev => openEntry(e, o, ev))
-  );
+    !serviceOf(o) && btn('star', t('star'), () => star(e), 'star', 'S'),
+    h('button', {'class': 'text-btn reply-btn', 'type': 'button', 'aria-label': t('reply'), 'data-tip': t('reply'), 'data-focus': 'reply',
+      'onclick': () => openUrl(replyUrl(e, o))}, icon('reply'), h('span', {'aria-hidden': 'true'}, t('reply'))),
+    moreBtn(e, o)
+  ].filter(Boolean));
   $('reader-bar').querySelector('.prev').disabled = !besideOpen(e.link, -1);
   $('reader-bar').querySelector('.next').disabled = !besideOpen(e.link, 1);
   paintStar();
-  // the key hints say only what this mailbox can do
-  $('reader').classList.toggle('no-star', Boolean(serviceOf(o)));
-  $('reader').classList.toggle('no-archive', !can(o, 'archive'));
+  $('reader').classList.toggle('one-box', !several);
   resetSummary(r);
   resetTool(r);
   paintStrip(r);
@@ -1564,7 +1823,9 @@ const read = async (e, o, trail) => {
   $('reader-avatar').replaceChildren(avatar(e, o));
   $('reader-name').textContent = e.author_name;
   $('reader-addr').replaceChildren(h('span', {}, e.author_email), copyBtn(e.author_email));
-  $('reader-date').textContent = fullDate(e.modified);
+  $('reader-date').textContent = shortDate(e.modified);
+  $('reader-date').dateTime = e.modified || '';
+  $('reader-date').title = fullDate(e.modified);
   // the files the line knew of show at once; the message's own replace them
   paintReaderFiles(state.files.get(fileKey(e)));
   $('app').classList.add('reading');
@@ -2294,17 +2555,17 @@ const sortChips = objs => {
   if (!chips.length && err) {
     chips.push({kind: 'reply', n: 0});
   }
-  // beside the mailboxes' chips, more than one of these says only its count, its name in its tooltip
-  const compact = chips.length > 1 && objs.filter(o => o.xml.fullcount).length > 1;
+  // each says its name and count; a narrow panel shows only the count (index.css), the name
+  // staying in its tooltip
   return chips.map(({kind, n}, i) => {
     const dot = err && i === 0;
     const label = t(kind + 'Chip', n);
     return h('button', {
-      'class': 'chip sort-chip ' + kind + '-chip' + (state.sortOnly === kind ? ' on' : '') + (compact ? ' compact' : ''),
+      'class': 'chip sort-chip ' + kind + '-chip' + (state.sortOnly === kind ? ' on' : ''),
       'type': 'button',
       'aria-pressed': String(state.sortOnly === kind),
       'aria-label': label + (dot ? ' · ' + err.message : ''),
-      'title': dot ? err.message : compact ? label + ' — ' + t(kind + 'Tip') : t(kind + 'Tip'),
+      'data-tip': dot ? err.message : label + ' — ' + t(kind + 'Tip'),
       'data-focus': 'chip:' + kind,
       'onclick': () => {
         if (!n) {
@@ -2316,7 +2577,8 @@ const sortChips = objs => {
         state.focus = FIRST;
         render();
       }
-    }, icon(SORTS[kind].icon), compact ? h('span', {class: 'count'}, n) : label, dot && h('span', {class: 'err-dot', 'aria-hidden': 'true'}));
+    }, icon(SORTS[kind].icon), h('span', {class: 'full'}, label), h('span', {class: 'short count'}, n),
+    dot && h('span', {class: 'err-dot', 'aria-hidden': 'true'}));
   });
 };
 // over the list narrowed to one kind: how much, and the mail all read or archived at once
@@ -2324,8 +2586,10 @@ const sortBar = objs => {
   const mail = shownMail(objs).filter(({e, o}) => SORTS[state.sortOnly].has(replyOf(e, o)));
   const links = mail.map(({e}) => e.link);
   const archivable = mail.filter(({o}) => can(o, 'archive')).map(({e}) => e.link);
+  // what it is, and how many as a count of its own; a screen reader hears the sentence
   return h('div', {class: 'sort-bar'},
-    h('span', {class: 'sort-what'}, icon(SORTS[state.sortOnly].icon), t(state.sortOnly + 'Shown', mail.length)),
+    h('span', {class: 'sort-what'}, icon(SORTS[state.sortOnly].icon), h('span', {'class': 'sr'}, t(state.sortOnly + 'Shown', mail.length)),
+      h('span', {'class': 'label', 'aria-hidden': 'true'}, t(state.sortOnly + 'List')), h('span', {'class': 'n', 'aria-hidden': 'true'}, mail.length)),
     h('span', {class: 'grow'}),
     links.length > 0 && h('button', {class: 'text-btn', type: 'button', 'data-focus': 'sort:read', onclick: () => act('rd', links)},
       icon('readAll'), t('markAllRead')),
@@ -3042,6 +3306,18 @@ const moveMailbox = (key, step) => {
     $('list').querySelector(`.acc[data-key="${CSS.escape(key)}"]`))?.focus();
 };
 const onKey = ev => {
+  // the keys' sheet over the panel: Esc or ? closes it, Tab stays in it, the rest waits
+  if ($('sheet')) {
+    if (ev.code === 'Escape' || isQuestion(ev)) {
+      ev.preventDefault();
+      closeSheet();
+    }
+    else if (ev.code === 'Tab') {
+      ev.preventDefault();
+      $('sheet').querySelector('button')?.focus();
+    }
+    return;
+  }
   if (ev.altKey && !ev.metaKey && !ev.ctrlKey && (ev.code === 'ArrowUp' || ev.code === 'ArrowDown') && !state.reading) {
     const key = document.activeElement?.closest?.('[data-key]')?.dataset.key;
     if (key) {
@@ -3065,16 +3341,21 @@ const onKey = ev => {
   }
   const menu = $('menu');
   if (menu) {
-    const items = [...menu.querySelectorAll('button')];
+    const items = [...menu.querySelectorAll('[role="menuitem"]')];
     const i = items.indexOf(document.activeElement);
+    // an item's own key: O and ! under ⋯
+    const keyed = items.find(b => b.dataset.key === pressed(ev));
     if (ev.code === 'Escape') {
       closeMenu(true);
     }
-    else if (ev.code === 'ArrowDown' || ev.code === 'KeyJ') {
+    else if (items.length && (ev.code === 'ArrowDown' || ev.code === 'KeyJ')) {
       items[Math.min(items.length - 1, i + 1)].focus();
     }
-    else if (ev.code === 'ArrowUp' || ev.code === 'KeyK') {
+    else if (items.length && (ev.code === 'ArrowUp' || ev.code === 'KeyK')) {
       items[Math.max(0, i - 1)].focus();
+    }
+    else if (keyed) {
+      keyed.click();
     }
     else {
       return;
@@ -3141,6 +3422,9 @@ const onKey = ev => {
   else if (ev.code === 'KeyB' && target) {
     const anchor = (state.reading ? $('reader-bar') : rowEl).querySelector('.remind');
     remindMenu(anchor, [target.e.link]);
+  }
+  else if (isQuestion(ev)) {
+    openSheet();
   }
   else if (ev.code === 'Slash' && !state.reading) {
     openSearch();
@@ -3212,9 +3496,9 @@ frameReady.then(doc => doc.addEventListener('keydown', onKey));
   input.placeholder = t('searchPlaceholder');
   $('search').prepend(icon('search'));
   // the words typed, asked of the assistant instead: a question, or a search in plain words
-  const askAI = h('button', {class: 'ask-ai', type: 'button', 'data-focus': 'askAI', title: t('askAITip'), onclick: () => openAssist({question: input.value.trim(), run: true})},
+  const askAI = h('button', {'class': 'ask-ai', 'type': 'button', 'data-focus': 'askAI', 'data-tip': t('askAITip'), 'onclick': () => openAssist({question: input.value.trim(), run: true})},
     icon('sparkle'), t('askAI'));
-  $('search').append(askAI, btn('close', t('closeSearch') + ' (Esc)', closeSearch));
+  $('search').append(askAI, btn('close', t('closeSearch'), closeSearch, '', 'Esc'));
   $('search').addEventListener('submit', ev => {
     ev.preventDefault();
     runSearch(input.value);
@@ -3340,6 +3624,10 @@ chrome.storage.onChanged.addListener((ps, area) => {
     prefsChanged(Object.fromEntries(Object.keys(AI_PREFS).filter(k => k in ps).map(k => [k, ps[k].newValue])));
     aiChanged();
   }
+  // the background's first answer from Gmail: its list follows at once, unless no one is signed in
+  if (area === 'session' && ps['accounts.count'] && state.booting) {
+    setTimeout(endBoot, 1500);
+  }
 });
 chrome.windows?.getCurrent().then(w => state.windowId = w.id);
 // the page the panel opened over, and in the side panel each page after it: another tab, or
@@ -3351,16 +3639,38 @@ if (chrome.tabs?.query) {
   followTab();
 }
 
+// After a browser start the background may not have read the mail yet: until it has (its first
+// list, or its first answer from Gmail with no one signed in), lines stand for the mail, never
+// "Sign in" to someone signed in. Long enough without an answer, the panel shows what it has.
+const BOOT_MS = 10000;
+const endBoot = () => {
+  if (state.booting) {
+    state.booting = false;
+    render();
+  }
+};
 Promise.all([
   chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, avatars: {},
     autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS}),
-  chrome.storage.session.get({'cached-objects': [], [Resolved.KEY]: [], logos: {}})
+  // no default for the accounts: none at all is not the same as none read yet
+  chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos']),
+  // the files the session knows, for the first lines to show theirs
+  gmail.filesLoad()
 ]).then(([local, session]) => {
   prefsChanged(local);
   markSeen();
-  Object.entries(session.logos).forEach(([domain, has]) => logos.set(domain, has));
-  // the background hides the mail waiting for its reminder at the next check; until then this does
-  update(Resolved.apply(Resolved.apply(session['cached-objects'], session[Resolved.KEY]), Remind.waiting(local[Remind.KEY])));
+  Object.entries(session.logos || {}).forEach(([domain, has]) => logos.set(domain, has));
+  const cached = session['cached-objects'];
+  // (an update from the background may have come first: drawn says the list was drawn)
+  if (cached === undefined && session['accounts.count'] === undefined && drawn === '' && Object.keys(state.accounts).some(a => a.includes('@'))) {
+    state.booting = true;
+    render();
+    setTimeout(endBoot, BOOT_MS);
+  }
+  else {
+    // the background hides the mail waiting for its reminder at the next check; until then this does
+    update(Resolved.apply(Resolved.apply(cached || [], session[Resolved.KEY] || []), Remind.waiting(local[Remind.KEY])));
+  }
   // the assistant, once the list is on screen: a frame drawn, then the next task
   if (aiOn()) {
     requestAnimationFrame(() => setTimeout(startAI));

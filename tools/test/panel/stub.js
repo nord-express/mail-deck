@@ -68,7 +68,7 @@
     // ?ai=on|off|real: the assistant's engine (real: the real ai.js, loaded by the panel, with no key)
     ...(q.get('ai') ? {'ai.engine': q.get('ai') === 'off' ? 'off' : 'openai', 'ai.summary': q.get('summary') || 'click', 'ai.reply': q.get('reply') !== '0',
       'ai.buttons': q.get('buttons') !== '0'} : {})};
-  window.__sent = []; window.__set = [];
+  window.__sent = []; window.__set = []; window.__objs = objs;
   window.__tabUrl = q.get('url') || ''; window.__tabEvents = {};
   // what the panel copies (__copied): a page under test has no clipboard of its own to ask
   Object.defineProperty(navigator, 'clipboard', {configurable: true, value: {writeText: async s => { window.__copied = s; }}});
@@ -260,11 +260,13 @@
   };
   window.chrome = {
     i18n: {getUILanguage: () => lang, getMessage: (k, subs = []) => { const m = msgs[k]; return m ? m.message.replace(/\$(\d)/g, (_, i) => subs[i - 1] ?? '') : ''; }},
-    runtime: {sendMessage: respond, onMessage: {addListener() {}}, openOptionsPage() {}, getURL: p => location.origin + p},
+    // what the background would send the panel goes to __onMessage
+    runtime: {sendMessage: respond, onMessage: {addListener(f) { window.__onMessage = f; }}, openOptionsPage() {}, getURL: p => location.origin + p},
     storage: {
       // the files of every line are known already (none), so the print views stay the reader's,
       // as the other scenarios count them; ?scenario=files reads them ahead
-      session: (() => { const area = {'cached-objects': objs, 'resolved.links': [], ...(q.get('scenario') === 'files' ? {} : {'files.index': new Proxy({}, {get: (o, k) => typeof k === 'string' && k.includes('#') ? o[k] ?? [] : o[k], has: () => true})})}; return {get: store(area), set: o => { Object.assign(area, o); return Promise.resolve(); }, remove: k => { [k].flat().forEach(x => delete area[x]); return Promise.resolve(); }, getKeys: () => Promise.resolve(Object.keys(area)), area}; })(),
+      // ?boot=1: a browser just started, the background has read no mail yet (__objs is what it will)
+      session: (() => { const area = {...(q.get('boot') ? {} : {'cached-objects': objs}), 'resolved.links': [], ...(q.get('scenario') === 'files' ? {} : {'files.index': new Proxy({}, {get: (o, k) => typeof k === 'string' && k.includes('#') ? o[k] ?? [] : o[k], has: () => true})})}; return {get: store(area), set: o => { Object.assign(area, o); return Promise.resolve(); }, remove: k => { [k].flat().forEach(x => delete area[x]); return Promise.resolve(); }, getKeys: () => Promise.resolve(Object.keys(area)), area}; })(),
       local: {get: store(local), set: (o) => { window.__set.push(o); Object.assign(local, o); return Promise.resolve(); }},
       onChanged: {addListener() {}}
     },

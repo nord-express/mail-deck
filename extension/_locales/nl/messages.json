@@ -1773,6 +1773,30 @@
     "panel_attachments": {
         "message": "Bijlagen: $1"
     },
+    "panel_shortcuts": {
+        "message": "Sneltoetsen"
+    },
+    "panel_keyAsk": {
+        "message": "Vragen over deze e-mail"
+    },
+    "panel_keyMove": {
+        "message": "Postvak omhoog of omlaag verplaatsen"
+    },
+    "panel_moreActions": {
+        "message": "Meer acties"
+    },
+    "panel_signInTitle": {
+        "message": "Koppel je mail"
+    },
+    "panel_replyList": {
+        "message": "Wacht op je antwoord"
+    },
+    "panel_importantList": {
+        "message": "Belangrijk"
+    },
+    "panel_bulkList": {
+        "message": "Nieuwsbrieven en reclame"
+    },
     "panel_assistant": {
         "message": "AI-assistent"
     },

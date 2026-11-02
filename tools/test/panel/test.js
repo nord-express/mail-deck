@@ -10,6 +10,17 @@
   const report = () => fetch('/__result?scenario=' + scenario, {method: 'POST', body: JSON.stringify(out)});
   // what the stub's mail has loaded so far, by name (panel.test.js counts it)
   const pixels = prefix => fetch('/__pixels?prefix=' + encodeURIComponent(prefix), {cache: 'no-store'}).then(r => r.json());
+  // a button's name, as its label says it (the tooltip shows the same)
+  const label = b => b?.getAttribute('aria-label') || '';
+  // the keys' sheet (?): what each of its lines says, then closed again with Esc
+  const sheet = async () => {
+    key(document, 'Slash', {shiftKey: true, key: '?'});
+    await wait(30);
+    const rows = [...document.querySelectorAll('#sheet .sheet-row')].map(r => [r.firstChild.textContent, r.querySelector('.keys').textContent]);
+    key(document, 'Escape');
+    await wait(30);
+    return rows;
+  };
   const until = async (test, ms = 3000) => {
     for (const end = Date.now() + ms; Date.now() < end; await wait(25)) {
       if (test()) {
@@ -147,7 +158,7 @@
       out.keptForSession = (chrome.storage.session.area['print.index'] || []).length;
 
       // an action makes the kept answers old
-      const archive = [...document.querySelectorAll('#reader-bar button')].find(b => b.title.startsWith(t('archive')));
+      const archive = [...document.querySelectorAll('#reader-bar button')].find(b => label(b) === t('archive'));
       archive?.click();
       await wait(100);
       out.cacheDroppedAfterAction = !('extra.cache' in chrome.storage.session.area);
@@ -161,7 +172,7 @@
       // sender logos come from Google: a Gmail mailbox's senders only
       out.logos = ['evgeny@example.com', 'ev@yahoo.com'].map(n => head(n)?.querySelectorAll('.row .avatar img').length);
       const yahooRow = head('ev@yahoo.com').querySelector('.row');
-      out.openTitle = [...yahooRow.querySelectorAll('button')].map(b => b.title).find(t => t.includes('Yahoo')) || '';
+      out.openTitle = [...yahooRow.querySelectorAll('button')].map(label).find(t => t.includes('Yahoo')) || '';
       out.signedOut = [...document.querySelectorAll('#list .away .acc')].map(e => e.textContent);
       document.querySelector('#list .away .acc')?.click();
       await wait(50);
@@ -220,7 +231,9 @@
       out.panelStayed = location.pathname.endsWith('/__panel.html');
       out.pingAfterClicks = (await pixels('services-svc-ping'))['services-svc-ping'] || 0;
       out.star = Boolean(document.querySelector('#reader-bar .star'));
-      out.noStarHint = getComputedStyle([...document.querySelectorAll('.keys > span')].find(el => el.textContent.includes('S'))).display === 'none';
+      // the keys' sheet lists only what the mailbox can do
+      const keys = (await sheet()).map(([, k]) => k);
+      out.noStarHint = keys.includes('R') && !keys.includes('S') && !document.getElementById('sheet') && document.getElementById('app').classList.contains('reading');
       key(document, 'Escape');
       await wait(50);
 
@@ -366,7 +379,7 @@
         objs[0].xml.entries[0].summary += ' ';
         return objs;
       };
-      [...$('tools').querySelectorAll('.icon-btn')].find(b => b.title.startsWith(t('compose'))).focus();
+      [...$('tools').querySelectorAll('.icon-btn')].find(b => label(b).startsWith(t('compose'))).focus();
       update(changed());
       out.toolKept = focus();
       const list = $('list');
@@ -466,7 +479,8 @@
       $('search').requestSubmit();
       await until(() => !state.search?.busy);
       await wait(50);
-      out.searchLines = [...document.querySelectorAll('#list .section-head')].map(h => h.querySelector('.addr')?.textContent + ': ' + h.querySelector('.none')?.textContent);
+      // a failure in words, what was found as a count (its words for a screen reader)
+      out.searchLines = [...document.querySelectorAll('#list .section-head')].map(h => h.querySelector('.addr')?.textContent + ': ' + h.querySelector('.none, .n.found .sr')?.textContent);
       out.searchFailedLine = out.searchLines.includes('evgeny@example.com: ' + t('searchFailed'));
       out.searchFoundLine = out.searchLines.includes('old@example.org: ' + t('found', 2));
       out.searchSaid = $('status')?.textContent === t('found', 2);
@@ -499,7 +513,9 @@
       const doc = document.getElementById('body').contentDocument;
       await until(() => doc.querySelector('.thread'));
       out.stripFiles = [...document.querySelectorAll('#reader-files .file-chip .name')].map(n => n.textContent);
-      out.download = document.querySelector('#reader-files .file-dl')?.title || '';
+      out.download = label(document.querySelector('#reader-files .file-dl'));
+      // the files over the message stand for its own chips of them, which step aside
+      out.frameChipsHidden = doc.documentElement.classList.contains('files-shown') && getComputedStyle(doc.querySelector('.files')).display === 'none';
       out.noSecondPrint = printsOf() === before;
       // written once the answers of a moment are in
       await until(() => Object.keys(chrome.storage.session.area['files.index'] || {}).length);
@@ -620,7 +636,8 @@
       out.noRows = block().querySelectorAll('.row, [data-link]').length === 0;
       // the code, large and grouped; a click copies its digits, says so, and leaves the mail as it was
       const code = block().querySelector('.site-code');
-      out.codeShown = code?.querySelector('.digits').textContent === '482 913';
+      // in groups set apart by a margin: what is copied has no space in it
+      out.codeShown = [...code?.querySelector('.digits').children || []].map(g => g.textContent).join(' ') === '482 913';
       const acted = window.__sent.filter(m => m.method === 'gmail.action').length;
       code?.click();
       await wait(50);
@@ -772,6 +789,9 @@
         const asked = calls('summarize')[0];
         out.summary = {points: items('ai-points').length, todo: items('ai-todo').length, events: items('ai-events').length,
           key: asked?.key === keyOf('a1'), messages: asked?.messages, fresh: asked?.fresh};
+        // the card open, the message keeps room under it, and the header steps back
+        out.room = {body: Math.round(document.querySelector('.reader-body').getBoundingClientRect().height),
+          files: getComputedStyle($('reader-files')).display, inside: card().getBoundingClientRect().bottom <= document.querySelector('.reader-card').getBoundingClientRect().bottom};
         const links = [...card().querySelectorAll('.ai-cal')];
         out.calendar = links.length === 2 && links.every(a => a.href.includes('authuser=evgeny%40example.com') && a.target === '_blank' &&
           a.textContent === t('addToCalendar')) && links[0].getAttribute('aria-label') === t('addToCalendar') + ': Design review';
@@ -851,7 +871,7 @@
         update(later);
         await until(() => $('chips').querySelector('.reply-chip .err-dot'), 2500);
         const chip = $('chips').querySelector('.reply-chip');
-        out.errorDot = Boolean(chip?.querySelector('.err-dot')) && chip.title === msg('quota') && chip.getAttribute('aria-label') === t('replyChip', 4) + ' · ' + msg('quota');
+        out.errorDot = Boolean(chip?.querySelector('.err-dot')) && chip.dataset.tip === msg('quota') && chip.getAttribute('aria-label') === t('replyChip', 4) + ' · ' + msg('quota');
         out.consoleClean = window.__errors.length === 0 ? true : window.__errors;
       }
 
@@ -953,7 +973,8 @@
         out.chips = [...$('chips').querySelectorAll('.sort-chip')].map(c => c.className.match(/\b(reply|important|bulk)-chip/)[1]);
         $('chips').querySelector('.important-chip')?.click();
         await wait(50);
-        out.bar = $('list').querySelector('.sort-bar .sort-what')?.textContent;
+        out.bar = $('list').querySelector('.sort-bar .sort-what .sr')?.textContent;
+        out.barShown = [...$('list').querySelectorAll('.sort-bar .sort-what > span[aria-hidden]')].map(el => el.textContent);
         out.narrowed = document.querySelectorAll('#list .row').length;
         $('list').querySelector('.sort-bar .text-btn').click();
         await wait(50);
@@ -1009,7 +1030,7 @@
         out.off = {calls: ai.calls.length, button: shown($('reader-ai').querySelector('.ai-btn')), card: shown(card()),
           offerCard: shown($('ai-tool')) && Boolean($('ai-tool').querySelector('.primary-btn')),
           chip: Boolean($('chips').querySelector('.reply-chip')), offer, header, script: Boolean(document.querySelector('script[src*="/ai/ai.js"]')),
-          hint: shown(document.querySelector('.keys > span:has([data-i18n="summaryKey"])'))};
+          hint: (await sheet()).some(([, k]) => k === 'I')};
         out.firstRow = window.__firstRow;
       }
 
@@ -1160,6 +1181,87 @@
       out.lostGone = !('print:lost#v' in area);
     }
 
+    if (scenario === 'ux') {
+      // the panel as it opens and is used: a1 a2 (evgeny's), b1 (work's)
+      const $ = id => document.getElementById(id);
+      const id = link => link.match(/message_id=([^&]*)/)[1];
+      const rowOf = x => [...document.querySelectorAll('#list .row')].find(r => id(r.dataset.link) === x);
+      const overlap = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+      // the first line has the keys from the start, marked without the keyboard's ring
+      const first = document.querySelector('#list .row');
+      out.firstFocused = document.activeElement === first && !first.matches(':focus-visible');
+      key(document, 'KeyE');
+      await wait(250);
+      out.firstActed = sent('gmail.action').at(-1)?.cmd === 'rc_^i' && sent('gmail.action').at(-1).links[0] === first.dataset.link;
+      key(document, 'KeyZ');
+      await wait(100);
+
+      // no native titles on the buttons: a tooltip with the name and the key, under the button
+      out.noTitles = !$('tools').querySelector('[title]') && !document.querySelector('#list .row button[title]');
+      const search = $('tools').querySelector('[data-focus="search"]');
+      search.dispatchEvent(new PointerEvent('pointerover', {bubbles: true, pointerType: 'mouse'}));
+      await wait(150);
+      const early = $('tip').classList.contains('show');
+      await wait(450);
+      const tip = $('tip');
+      out.tip = {early, shown: tip.classList.contains('show'), text: tip.querySelector('span')?.textContent, key: tip.querySelector('kbd')?.textContent,
+        clear: !overlap(tip.getBoundingClientRect(), search.getBoundingClientRect()), label: label(search)};
+      document.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true}));
+      out.tipGone = !tip.classList.contains('show');
+      // Add another account is at the end of the list, not in the header
+      out.addAccount = !$('tools').querySelector('[data-focus="addUser"]') && Boolean($('list').querySelector('.list-foot [data-focus="add-account"]'));
+
+      // ?: the list's keys; Esc closes it, the focus back where it was
+      rowOf('a2').focus();
+      key(document, 'Slash', {shiftKey: true, key: '?'});
+      await wait(30);
+      const rows = () => [...document.querySelectorAll('#sheet .sheet-row')].map(r => r.querySelector('.keys').textContent);
+      out.sheetList = {open: Boolean($('sheet')), modal: $('app').inert, inside: $('sheet')?.contains(document.activeElement), keys: rows()};
+      key(document, 'KeyE');
+      await wait(30);
+      out.sheetHoldsKeys = Boolean($('sheet')) && !sent('gmail.action').some(a => a.links.some(l => l.includes('message_id=a2&')));
+      key(document, 'Escape');
+      await wait(30);
+      out.sheetClosed = !$('sheet') && !$('app').inert && document.activeElement === rowOf('a2');
+      // in a message: its keys, Esc for back, no Enter
+      rowOf('a1').click();
+      await wait(100);
+      key(document, 'Slash', {shiftKey: true, key: '?'});
+      await wait(30);
+      out.sheetReader = rows();
+      key(document, 'Escape');
+      await wait(30);
+      out.sheetReaderClosed = !$('sheet') && $('app').classList.contains('reading');
+
+      // the reader: the arrows before its place, Reply by name, the rest under ⋯
+      const bar = [...$('reader-bar').children].map(el => el.dataset.focus || el.className);
+      out.bar = bar;
+      $('reader-bar').querySelector('.more-acts').click();
+      await wait(30);
+      out.more = [...document.querySelectorAll('#menu [role="menuitem"]')].map(b => b.dataset.key);
+      key(document.activeElement, 'Escape');
+      await wait(30);
+      out.moreClosed = !$('menu') && document.activeElement === $('reader-bar').querySelector('.more-acts');
+      key(document, 'Escape');
+      await wait(50);
+    }
+
+    if (scenario === 'boot') {
+      // a browser just started: lines stand for the mail, never "Sign in", until the first list
+      const $ = id => document.getElementById(id);
+      out.skeleton = Boolean($('list').querySelector('.skel')) && !$('list').querySelector('.empty, .row') && $('list').ariaBusy === 'true';
+      out.tools = Boolean($('tools').querySelector('[data-focus="compose"]'));
+      window.__onMessage({method: 'update', data: window.__objs});
+      await wait(50);
+      out.listed = !$('list').querySelector('.skel') && document.querySelectorAll('#list .row').length >= 3 && $('list').ariaBusy === 'false';
+      // no one signed in after all: the panel says so, not lines
+      state.booting = true;
+      render();
+      window.__onMessage({method: 'update', data: []});
+      await wait(50);
+      out.empty = Boolean($('list').querySelector('.empty .cta')) && !$('list').querySelector('.skel');
+    }
+
     if (scenario === 'narrow') {
       // a side panel 320px wide: the mailbox line keeps its buttons whole and its address
       // readable, the reader's bar stays inside
@@ -1172,6 +1274,10 @@
       await wait(350);
       const bar = document.getElementById('reader-bar');
       out.barInside = bar.scrollWidth <= bar.clientWidth && [...bar.querySelectorAll('.icon-btn')].at(-1).getBoundingClientRect().right <= bar.getBoundingClientRect().right;
+      // the date under the sender, not squeezed beside the name
+      const name = document.getElementById('reader-name').getBoundingClientRect();
+      const date = document.getElementById('reader-date').getBoundingClientRect();
+      out.dateBelow = date.top >= name.bottom - 1 && date.width > 0;
     }
 
     if (scenario === 'wide') {

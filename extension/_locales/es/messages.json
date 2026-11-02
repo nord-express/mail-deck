@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "Archivos adjuntos: $1"
     },
+    "panel_shortcuts": {
+        "message": "Atajos de teclado"
+    },
+    "panel_keyAsk": {
+        "message": "Preguntar sobre este correo"
+    },
+    "panel_keyMove": {
+        "message": "Mover el buzón arriba o abajo"
+    },
+    "panel_moreActions": {
+        "message": "Más acciones"
+    },
+    "panel_signInTitle": {
+        "message": "Conecta tu correo"
+    },
+    "panel_replyList": {
+        "message": "Espera tu respuesta"
+    },
+    "panel_importantList": {
+        "message": "Importante"
+    },
+    "panel_bulkList": {
+        "message": "Boletines y promociones"
+    },
     "panel_assistant": {
         "message": "Asistente de IA"
     },

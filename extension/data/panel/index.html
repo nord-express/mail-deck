@@ -57,12 +57,13 @@
           <div class="progress"></div>
           <iframe id="body" src="body/index.html" title="Message body" data-i18n-label="messageBody"></iframe>
         </div>
-        <p class="keys"><span><kbd>R</kbd><span data-i18n="keyRead">read</span></span><span><kbd>E</kbd><span data-i18n="keyArchive">archive</span></span><span><kbd>Del</kbd><span data-i18n="keyDelete">delete</span></span><span><kbd>B</kbd><span data-i18n="keyRemind">later</span></span><span><kbd>S</kbd><span data-i18n="keyStar">star</span></span><span><kbd>I</kbd><span data-i18n="summaryKey">summary</span></span><span><kbd>J</kbd><span data-i18n="keyNext">next</span></span><span><kbd>K</kbd><span data-i18n="keyPrev">previous</span></span><span><kbd>Esc</kbd><span data-i18n="keyBack">back</span></span></p>
         </div>
       </section>
     </main>
   </div>
   <div class="toast" id="toast" role="status"></div>
+  <!-- a button's name and its key; the button's own label is what a screen reader says -->
+  <div class="tip" id="tip" aria-hidden="true"></div>
   <!-- what the search found, said to a screen reader -->
   <p class="sr" id="status" role="status"></p>
 

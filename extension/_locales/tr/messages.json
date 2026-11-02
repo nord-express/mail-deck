@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "Ekler: $1"
     },
+    "panel_shortcuts": {
+        "message": "Klavye kısayolları"
+    },
+    "panel_keyAsk": {
+        "message": "Bu ileti hakkında sor"
+    },
+    "panel_keyMove": {
+        "message": "Kutuyu yukarı veya aşağı taşı"
+    },
+    "panel_moreActions": {
+        "message": "Diğer işlemler"
+    },
+    "panel_signInTitle": {
+        "message": "Postanızı bağlayın"
+    },
+    "panel_replyList": {
+        "message": "Yanıtınızı bekliyor"
+    },
+    "panel_importantList": {
+        "message": "Önemli"
+    },
+    "panel_bulkList": {
+        "message": "Bültenler ve tanıtımlar"
+    },
     "panel_assistant": {
         "message": "Yapay zekâ asistanı"
     },

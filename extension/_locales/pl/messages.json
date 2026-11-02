@@ -1773,6 +1773,30 @@
     "panel_attachments": {
         "message": "Załączniki: $1"
     },
+    "panel_shortcuts": {
+        "message": "Skróty klawiszowe"
+    },
+    "panel_keyAsk": {
+        "message": "Zapytaj o tę wiadomość"
+    },
+    "panel_keyMove": {
+        "message": "Przesuń skrzynkę w górę lub w dół"
+    },
+    "panel_moreActions": {
+        "message": "Więcej działań"
+    },
+    "panel_signInTitle": {
+        "message": "Połącz swoją pocztę"
+    },
+    "panel_replyList": {
+        "message": "Czeka na twoją odpowiedź"
+    },
+    "panel_importantList": {
+        "message": "Ważne"
+    },
+    "panel_bulkList": {
+        "message": "Newslettery i reklamy"
+    },
     "panel_assistant": {
         "message": "Asystent AI"
     },

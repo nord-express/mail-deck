@@ -1601,6 +1601,30 @@
   "panel_attachments": {
     "message": "Allegati: $1"
   },
+  "panel_shortcuts": {
+    "message": "Scorciatoie da tastiera"
+  },
+  "panel_keyAsk": {
+    "message": "Chiedi di questa email"
+  },
+  "panel_keyMove": {
+    "message": "Sposta la casella su o giù"
+  },
+  "panel_moreActions": {
+    "message": "Altre azioni"
+  },
+  "panel_signInTitle": {
+    "message": "Collega la tua posta"
+  },
+  "panel_replyList": {
+    "message": "Attende la tua risposta"
+  },
+  "panel_importantList": {
+    "message": "Importanti"
+  },
+  "panel_bulkList": {
+    "message": "Newsletter e promozioni"
+  },
   "panel_assistant": {
     "message": "Assistente IA"
   },

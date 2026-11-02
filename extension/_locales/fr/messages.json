@@ -1601,6 +1601,30 @@
   "panel_attachments": {
     "message": "Pièces jointes : $1"
   },
+  "panel_shortcuts": {
+    "message": "Raccourcis clavier"
+  },
+  "panel_keyAsk": {
+    "message": "Poser une question sur ce message"
+  },
+  "panel_keyMove": {
+    "message": "Monter ou descendre la boîte"
+  },
+  "panel_moreActions": {
+    "message": "Plus d'actions"
+  },
+  "panel_signInTitle": {
+    "message": "Connectez votre messagerie"
+  },
+  "panel_replyList": {
+    "message": "Attend votre réponse"
+  },
+  "panel_importantList": {
+    "message": "Important"
+  },
+  "panel_bulkList": {
+    "message": "Newsletters et promotions"
+  },
   "panel_assistant": {
     "message": "Assistant IA"
   },

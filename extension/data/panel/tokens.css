@@ -17,6 +17,26 @@
   --shadow: 0 0 0 1px var(--line);
   --lift: 0 2px 4px rgba(22, 27, 36, .06), 0 10px 24px -10px rgba(22, 27, 36, .22);
   --ease: cubic-bezier(.2, .8, .2, 1);
+  /* a button filled with the accent, and what is written on it: 5.9:1 */
+  --accent-solid: #4352e3;
+  --on-accent: #fff;
+  /* one scale of type, weight and corners: what is not on it stands out as a mistake */
+  --fs-2xs: 10px;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-lg: 14px;
+  --fs-xl: 16px;
+  --fs-2xl: 19px;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --r-sm: 6px;
+  --r-md: 9px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-pill: 999px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -35,6 +55,8 @@
     --ok: #2fa874;
     --shadow: 0 0 0 1px #24252a;
     --lift: 0 2px 4px rgba(0, 0, 0, .35), 0 10px 24px -10px rgba(0, 0, 0, .6);
+    /* the light accent of the dark theme leaves white at 2.8:1; this one 4.9:1 */
+    --accent-solid: #5263e8;
     color-scheme: dark;
   }
 }

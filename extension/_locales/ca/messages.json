@@ -1773,6 +1773,30 @@
     "panel_attachments": {
         "message": "Fitxers adjunts: $1"
     },
+    "panel_shortcuts": {
+        "message": "Dreceres de teclat"
+    },
+    "panel_keyAsk": {
+        "message": "Pregunta sobre aquest missatge"
+    },
+    "panel_keyMove": {
+        "message": "Mou la bústia amunt o avall"
+    },
+    "panel_moreActions": {
+        "message": "Més accions"
+    },
+    "panel_signInTitle": {
+        "message": "Connecta el teu correu"
+    },
+    "panel_replyList": {
+        "message": "Espera la teva resposta"
+    },
+    "panel_importantList": {
+        "message": "Important"
+    },
+    "panel_bulkList": {
+        "message": "Butlletins i promocions"
+    },
     "panel_assistant": {
         "message": "Assistent d'IA"
     },

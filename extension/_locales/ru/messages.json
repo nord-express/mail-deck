@@ -1773,6 +1773,30 @@
     "panel_attachments": {
         "message": "Вложения: $1"
     },
+    "panel_shortcuts": {
+        "message": "Горячие клавиши"
+    },
+    "panel_keyAsk": {
+        "message": "Спросить об этом письме"
+    },
+    "panel_keyMove": {
+        "message": "Переместить ящик выше или ниже"
+    },
+    "panel_moreActions": {
+        "message": "Другие действия"
+    },
+    "panel_signInTitle": {
+        "message": "Подключите почту"
+    },
+    "panel_replyList": {
+        "message": "Ждут вашего ответа"
+    },
+    "panel_importantList": {
+        "message": "Важное"
+    },
+    "panel_bulkList": {
+        "message": "Рассылки и реклама"
+    },
     "panel_assistant": {
         "message": "ИИ-ассистент"
     },

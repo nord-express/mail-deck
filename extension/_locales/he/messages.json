@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "קבצים מצורפים: $1"
     },
+    "panel_shortcuts": {
+        "message": "קיצורי מקלדת"
+    },
+    "panel_keyAsk": {
+        "message": "שאל על ההודעה הזו"
+    },
+    "panel_keyMove": {
+        "message": "הזז את התיבה למעלה או למטה"
+    },
+    "panel_moreActions": {
+        "message": "פעולות נוספות"
+    },
+    "panel_signInTitle": {
+        "message": "חבר את הדואר שלך"
+    },
+    "panel_replyList": {
+        "message": "מחכה לתשובה שלך"
+    },
+    "panel_importantList": {
+        "message": "חשוב"
+    },
+    "panel_bulkList": {
+        "message": "ניוזלטרים ופרסומות"
+    },
     "panel_assistant": {
         "message": "עוזר בינה מלאכותית"
     },

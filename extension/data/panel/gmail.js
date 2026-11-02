@@ -213,8 +213,14 @@ gmail.get = {
   const FILES = 'files.index';
   const FILES_MAX = 400;
   let index = null;
+  // the same answers once read, for a line drawn at once (gmail.filesNow)
+  let known = null;
   const files = {};
-  const loadIndex = () => index ||= chrome.storage.session.get(FILES).then(prefs => prefs[FILES] || {}, () => ({}));
+  const loadIndex = () => index ||= chrome.storage.session.get(FILES).then(prefs => known = prefs[FILES] || {}, () => known = {});
+  // read ahead with the panel's other settings, so its first lines have their files
+  gmail.filesLoad = () => loadIndex().then(() => {});
+  // a thread's files as the session knows them, asking nothing: [{name, view, download}] or undefined
+  gmail.filesNow = (link, version = '') => known?.[link.replace('http://', 'https://') + '#' + version];
   // written once the answers of a moment are in, not once for each line
   let saving = Promise.resolve();
   let saveTimer;

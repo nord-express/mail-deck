@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "Συνημμένα: $1"
     },
+    "panel_shortcuts": {
+        "message": "Συντομεύσεις πληκτρολογίου"
+    },
+    "panel_keyAsk": {
+        "message": "Ερώτηση για αυτό το μήνυμα"
+    },
+    "panel_keyMove": {
+        "message": "Μετακίνηση του γραμματοκιβωτίου πάνω ή κάτω"
+    },
+    "panel_moreActions": {
+        "message": "Περισσότερες ενέργειες"
+    },
+    "panel_signInTitle": {
+        "message": "Συνδέστε την αλληλογραφία σας"
+    },
+    "panel_replyList": {
+        "message": "Περιμένει την απάντησή σας"
+    },
+    "panel_importantList": {
+        "message": "Σημαντικά"
+    },
+    "panel_bulkList": {
+        "message": "Ενημερωτικά και προωθητικά"
+    },
     "panel_assistant": {
         "message": "Βοηθός τεχνητής νοημοσύνης"
     },

@@ -1601,6 +1601,30 @@
   "panel_attachments": {
     "message": "添付ファイル: $1"
   },
+  "panel_shortcuts": {
+    "message": "キーボードショートカット"
+  },
+  "panel_keyAsk": {
+    "message": "このメールについて質問"
+  },
+  "panel_keyMove": {
+    "message": "受信トレイを上下に移動"
+  },
+  "panel_moreActions": {
+    "message": "その他の操作"
+  },
+  "panel_signInTitle": {
+    "message": "メールを接続"
+  },
+  "panel_replyList": {
+    "message": "返信待ち"
+  },
+  "panel_importantList": {
+    "message": "重要"
+  },
+  "panel_bulkList": {
+    "message": "ニュースレターと宣伝"
+  },
   "panel_assistant": {
     "message": "AI アシスタント"
   },

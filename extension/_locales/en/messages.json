@@ -1631,6 +1631,30 @@
   "panel_attachments": {
     "message": "Attachments: $1"
   },
+  "panel_shortcuts": {
+    "message": "Keyboard shortcuts"
+  },
+  "panel_keyAsk": {
+    "message": "Ask about this email"
+  },
+  "panel_keyMove": {
+    "message": "Move the inbox up or down"
+  },
+  "panel_moreActions": {
+    "message": "More actions"
+  },
+  "panel_signInTitle": {
+    "message": "Connect your mail"
+  },
+  "panel_replyList": {
+    "message": "Waiting for your reply"
+  },
+  "panel_importantList": {
+    "message": "Important"
+  },
+  "panel_bulkList": {
+    "message": "Newsletters and promotions"
+  },
   "panel_assistant": {
     "message": "AI assistant"
   },

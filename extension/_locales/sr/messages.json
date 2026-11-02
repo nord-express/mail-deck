@@ -1773,6 +1773,30 @@
     "panel_attachments": {
         "message": "Прилози: $1"
     },
+    "panel_shortcuts": {
+        "message": "Пречице на тастатури"
+    },
+    "panel_keyAsk": {
+        "message": "Питај о овој поруци"
+    },
+    "panel_keyMove": {
+        "message": "Помери сандуче горе или доле"
+    },
+    "panel_moreActions": {
+        "message": "Још радњи"
+    },
+    "panel_signInTitle": {
+        "message": "Повежите пошту"
+    },
+    "panel_replyList": {
+        "message": "Чека ваш одговор"
+    },
+    "panel_importantList": {
+        "message": "Важно"
+    },
+    "panel_bulkList": {
+        "message": "Билтени и рекламе"
+    },
     "panel_assistant": {
         "message": "Асистент вештачке интелигенције"
     },

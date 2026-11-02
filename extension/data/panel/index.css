@@ -6,7 +6,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font: 13px/1.38 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font: var(--fs-md)/1.38 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 button {
@@ -44,22 +44,6 @@ html.side .app {
   max-height: none;
   height: calc(100vh / var(--zoom, 1));
 }
-/* a narrow side panel keeps the actions and drops what only explains them */
-@media (max-width: 440px) {
-  .reader-bar .pos,
-  .reader-bar .prev,
-  .reader-bar .next,
-  .keys {
-    display: none;
-  }
-}
-/* narrower still, a mailbox line keeps its address readable: copy and Meet wait for a wider panel */
-@media (max-width: 400px) {
-  .section-head .copy,
-  .section-head .meet {
-    display: none;
-  }
-}
 
 /* main column */
 .main {
@@ -84,35 +68,41 @@ html.side .app {
 }
 h1 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -.01em;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: -.015em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* "6 new in 3 inboxes" stays one line, however long a language says it */
 .sub {
-  margin: 2px 0 0;
+  margin: 1px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .sub .ok {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   color: var(--ok);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 .sub .ok svg {
   width: 14px;
   height: 14px;
   stroke-width: 2.4;
 }
-/* the panel's own bar is shorter than the reader's: the list gets the room */
+/* the panel's own bar is shorter than the reader's: the list gets the room. Its title starts
+   where the mailboxes' dots and the senders' pictures do (26px); the chips, the search and the
+   cards start at the list's edge (12px) */
 .main > .bar {
   min-height: 52px;
   padding-block: 10px 8px;
-  padding-inline: 20px 14px;
+  padding-inline: 26px 14px;
 }
 .caught-up {
   padding-top: 4px;
@@ -128,13 +118,20 @@ h1 {
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--r-md);
   background: none;
   color: var(--muted);
   cursor: pointer;
-  transition: background .12s, color .12s;
+  transition: background .12s, color .12s, transform .08s;
   /* a long address must not squeeze the buttons next to it below their size */
   flex: none;
+}
+/* a press gives a little */
+.icon-btn:active:not(:disabled),
+.chip:active,
+.primary-btn:active:not(:disabled),
+.text-btn:active {
+  transform: scale(.96);
 }
 /* the reader's ten buttons do not fit a narrow side panel at full size: there they shrink
    rather than run past the edge */
@@ -145,8 +142,10 @@ h1 {
   background: color-mix(in srgb, var(--ink) 8%, transparent);
   color: var(--ink);
 }
-.icon-btn.danger,
+/* delete and spam look like the others until the pointer is on them: two red icons in a row
+   shout louder than the mail */
 .icon-btn.danger:hover {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
   color: var(--danger);
 }
 /* the reader's arrows at the first and the last mail */
@@ -169,7 +168,7 @@ h1 {
 .icon-btn.copy {
   width: 24px;
   height: 24px;
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   color: var(--faint);
   opacity: 0;
   transition: opacity .12s, background .12s, color .12s;
@@ -211,8 +210,9 @@ h1 {
 .chips {
   flex: none;
   display: flex;
+  align-items: center;
   gap: 6px;
-  padding: 0 16px 12px;
+  padding: 0 12px 12px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -229,17 +229,19 @@ h1 {
   display: flex;
   align-items: center;
   gap: 7px;
+  flex: none;
   height: 30px;
   padding: 0 12px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--card);
   box-shadow: var(--shadow);
   color: var(--soft);
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   white-space: nowrap;
   cursor: pointer;
+  transition: background .15s, color .15s, box-shadow .15s, transform .08s;
 }
 .chip:hover {
   background: var(--hover);
@@ -252,13 +254,23 @@ h1 {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
-.chip.on {
-  background: var(--ink);
-  box-shadow: none;
-  color: var(--paper);
+/* the chosen chip is tinted, not filled: a filter, not the loudest thing on screen */
+.chip.on,
+.chip.on:hover {
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
 }
 .chip.on .count {
-  color: color-mix(in srgb, var(--paper) 70%, transparent);
+  color: color-mix(in srgb, var(--accent) 75%, var(--muted));
+}
+/* between the assistant's sorting and the mailboxes */
+.chip-sep {
+  flex: none;
+  width: 1px;
+  height: 18px;
+  margin-inline: 2px;
+  background: var(--line);
 }
 
 .list {
@@ -312,12 +324,12 @@ h1 {
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 10px;
+  border-radius: var(--r-pill);
   /* darkened, so white digits read on every colour of the palette (4.8:1 at least) */
   background: color-mix(in srgb, var(--c) 75%, #000);
   color: #fff;
-  font-size: 11.5px;
-  font-weight: 650;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
   line-height: 20px;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -327,6 +339,34 @@ h1 {
     background: color-mix(in srgb, var(--c) 65%, #fff);
     color: #0f1012;
   }
+}
+/* what a search found in the mailbox: a count, not unread mail */
+.section-head .n.found {
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+  color: var(--soft);
+}
+/* the mailbox line's own actions come with the pointer or the keys, over the end of the line:
+   at rest the line is its address and its count, the address with all the room */
+.head-acts {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-inline-start: 24px;
+  background: linear-gradient(to right, transparent, var(--paper) 22px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s;
+}
+[dir="rtl"] .head-acts {
+  background: linear-gradient(to left, transparent, var(--paper) 22px);
+}
+.section-head:hover .head-acts,
+.section-head:focus-within .head-acts {
+  opacity: 1;
+  pointer-events: auto;
 }
 .section-head .none {
   color: var(--faint);
@@ -347,7 +387,7 @@ h1 {
 
 /* a mailbox's mail: one card, a hairline between letters */
 .cards {
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -378,14 +418,18 @@ h1 {
 .row:focus-visible {
   box-shadow: inset 0 0 0 2px var(--focus);
 }
+/* the line the keys act on when the panel opens: marked, without the keyboard's full ring */
+.row:focus:not(:focus-visible) {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
 .row .avatar {
   grid-area: av;
   margin-top: 1px;
 }
 .from {
   grid-area: from;
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -394,14 +438,14 @@ h1 {
   grid-area: when;
   padding-inline-start: 10px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .subject {
   grid-area: subj;
   color: var(--soft);
-  font-size: 13.5px;
+  font-size: var(--fs-lg);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -409,7 +453,7 @@ h1 {
 .snippet {
   grid-area: snip;
   color: var(--faint);
-  font-size: 12.5px;
+  font-size: var(--fs-md);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -443,6 +487,10 @@ h1 {
   min-width: 0;
   margin-top: 6px;
 }
+/* files that became known after the line was drawn come in rather than pop */
+.row-files.enter {
+  animation: arrive .22s var(--ease);
+}
 .row-files .clip {
   display: grid;
   flex: none;
@@ -467,12 +515,12 @@ h1 {
   height: 26px;
   padding: 0 9px 0 3px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   background: var(--card);
   color: var(--soft);
   font: inherit;
-  font-size: 12px;
-  font-weight: 550;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   cursor: pointer;
   transition: border-color .12s, background .12s;
 }
@@ -491,11 +539,11 @@ h1 {
   min-width: 30px;
   height: 18px;
   padding: 0 4px;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   background: var(--k);
   color: #fff;
-  font-size: 9.5px;
-  font-weight: 750;
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-bold);
   letter-spacing: .02em;
 }
 .file-chip .kind svg {
@@ -522,8 +570,8 @@ h1 {
 .more-files {
   flex: none;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
 }
 .row:has(.row-files) {
   grid-template-areas:
@@ -533,13 +581,17 @@ h1 {
     "av files files";
 }
 
+/* the line's buttons come with the pointer, or with the keyboard on the line: not with the
+   quiet mark the first line gets when the panel opens */
 .row:hover .acts,
-.row:focus-within .acts {
+.row:focus-visible .acts,
+.row:has(:focus-visible) .acts {
   opacity: 1;
   pointer-events: auto;
 }
 .row:hover .when,
-.row:focus-within .when {
+.row:focus-visible .when,
+.row:has(:focus-visible) .when {
   visibility: hidden;
 }
 
@@ -553,13 +605,13 @@ h1 {
   overflow: hidden;
   background: color-mix(in srgb, var(--c, var(--muted)) 18%, var(--card));
   color: color-mix(in srgb, var(--c, var(--muted)) 75%, var(--ink));
-  font-size: 14px;
-  font-weight: 650;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
 }
 .avatar img {
   display: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 .avatar.logo {
   font-size: 0;
@@ -569,7 +621,15 @@ h1 {
 .avatar.logo img {
   display: block;
 }
+/* a white disc glares on the dark theme: a softer one, the logo still on light */
+@media (prefers-color-scheme: dark) {
+  .avatar.logo {
+    background: #e9eaee;
+    box-shadow: none;
+  }
+}
 
+/* links are the accent; the focus colour is for rings */
 .more {
   display: block;
   width: 100%;
@@ -577,9 +637,9 @@ h1 {
   border: 0;
   border-top: 1px solid var(--line);
   background: none;
-  color: var(--focus);
-  font-size: 12.5px;
-  font-weight: 500;
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   cursor: pointer;
 }
 .more:hover {
@@ -595,27 +655,27 @@ h1 {
   text-align: center;
 }
 .empty .badge {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   margin-bottom: 16px;
-  border-radius: 20px;
+  border-radius: var(--r-xl);
   display: grid;
   place-items: center;
   background: var(--card);
   box-shadow: var(--shadow);
-  color: #2fa874;
+  color: var(--ok);
 }
 .empty .badge.mail {
   color: var(--accent);
 }
 .empty .badge svg {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 .empty h3 {
   margin: 0 0 6px;
-  font-size: 18px;
-  font-weight: 650;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
 }
 .empty p {
   margin: 0;
@@ -623,27 +683,40 @@ h1 {
   max-width: 300px;
   line-height: 1.5;
 }
-.text-btn {
+/* the one thing to do on an empty panel, and a quieter way next to it */
+.empty .cta {
+  height: 36px;
   margin-top: 18px;
-  padding: 10px 18px;
-  border: 0;
-  border-radius: 20px;
-  background: var(--ink);
-  color: var(--card);
-  font-weight: 600;
-  cursor: pointer;
+  padding: 0 16px;
+  font-size: var(--fs-md);
+}
+.empty .text-btn.quiet {
+  margin-top: 8px;
 }
 .text-btn.quiet {
-  margin-top: 8px;
-  background: none;
   color: var(--muted);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
 }
 .text-btn.quiet:hover {
   color: var(--ink);
 }
+/* every mailbox empty: said once, above the ways into them */
+.caught-up .empty {
+  padding: 18px 40px 22px;
+}
+.caught-up .badge {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 12px;
+  border-radius: var(--r-lg);
+}
+.caught-up .badge svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.2;
+}
 .accounts {
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -654,8 +727,8 @@ h1 {
   gap: 10px;
   height: 46px;
   padding: 0 16px;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
   cursor: pointer;
 }
 .acc + .acc {
@@ -678,10 +751,10 @@ h1 {
   margin-inline: auto -6px;
   padding: 4px 6px;
   border: 0;
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   background: none;
   color: var(--faint);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 .acc .go svg {
@@ -724,18 +797,66 @@ h1 {
   width: 34px;
   height: 34px;
 }
+/* where it is: the arrows first, so they stay under the pointer from one mail to the next */
 .reader-bar .pos {
-  flex: 1;
-  padding-inline-start: 4px;
+  flex: none;
+  padding-inline-start: 6px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--fs-md);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* and the mailbox it came to, when there are several */
+.reader-bar .box {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding-inline-start: 8px;
+  color: var(--muted);
+  font-size: var(--fs-md);
+}
+.reader-bar .box::before {
+  content: "\00b7";
+  color: var(--faint);
+}
+.reader-bar .box .dot {
+  width: 8px;
+  height: 8px;
+}
+.reader-bar .box > span:last-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.reader-bar .grow {
+  flex: 1;
+  min-width: 6px;
 }
 .reader-bar .sep {
+  flex: none;
   width: 1px;
   height: 20px;
   margin: 0 4px;
   background: var(--line);
+}
+/* Reply says its name: the way out of the reader that most mail ends in */
+.reader-bar .reply-btn {
+  flex: none;
+  height: 34px;
+  margin-inline: 2px;
+  padding-inline: 10px 12px;
+  font-size: var(--fs-md);
+}
+.reader-bar .reply-btn svg {
+  width: 16px;
+  height: 16px;
+}
+[dir="rtl"] .reader-bar .reply-btn svg {
+  transform: scaleX(-1);
+}
+.icon-btn.more-acts svg {
+  stroke-width: 2.8;
 }
 .reader-card {
   flex: 1;
@@ -743,33 +864,34 @@ h1 {
   display: flex;
   flex-direction: column;
   margin: 0 12px 12px;
-  border-radius: 16px;
+  border-radius: var(--r-xl);
   background: var(--card);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 .reader-head {
-  padding: 20px 22px 16px;
+  padding: 16px 22px 14px;
   border-bottom: 1px solid var(--line);
 }
+/* the mailbox the mail came to stands in the bar; here only where the bar has no room for it */
 .reader-account {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 8px;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .reader-account .dot {
   width: 8px;
   height: 8px;
 }
 .reader-head h2 {
-  margin: 0 0 14px;
-  font-size: 19px;
-  font-weight: 650;
+  margin: 0 0 12px;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
   line-height: 1.3;
-  letter-spacing: -.01em;
+  letter-spacing: -.015em;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -783,7 +905,7 @@ h1 {
 .reader-from .avatar {
   width: 38px;
   height: 38px;
-  font-size: 15px;
+  font-size: var(--fs-xl);
 }
 .reader-from .who {
   flex: 1;
@@ -793,16 +915,20 @@ h1 {
   gap: 1px;
 }
 .reader-from .name {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
 }
 .reader-from .addr,
 .reader-from time {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.reader-from time {
+  flex: none;
+  font-variant-numeric: tabular-nums;
 }
 .reader-from .addr {
   display: flex;
@@ -817,10 +943,12 @@ h1 {
 .reader-from .copy {
   margin: -4px 0;
 }
+/* The message keeps room whatever the assistant opens over it: a card shrinks and scrolls
+   first, the message gives up little and never all of it */
 .reader-body {
   position: relative;
-  flex: 1;
-  min-height: 0;
+  flex: 1 .25 180px;
+  min-height: 140px;
 }
 .reader-body iframe {
   display: block;
@@ -828,36 +956,48 @@ h1 {
   height: 100%;
   border: 0;
 }
-.keys {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 0;
-  padding: 9px 22px;
-  border-top: 1px solid var(--line);
-  color: var(--faint);
-  font-size: 11.5px;
+/* with a card of the assistant open the header steps back: the subject on one line, the
+   files in the message itself (frameReady shows them there again) */
+.reader-card:has(> .ai-card:not([hidden])) .reader-head {
+  padding-block: 12px;
 }
-.keys span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.reader-card:has(> .ai-card:not([hidden])) .reader-head h2 {
+  margin-bottom: 10px;
+  -webkit-line-clamp: 1;
 }
-/* a mailbox of another service may have no stars or no archive; with the assistant off, or for
-   mail the panel cannot show, there is no summary */
-.no-star .keys > span:has([data-i18n="keyStar"]),
-.no-archive .keys > span:has([data-i18n="keyArchive"]),
-.no-ai .keys > span:has([data-i18n="summaryKey"]),
+.reader-card:has(> .ai-card:not([hidden])) :is(.reader-files, .reader-account) {
+  display: none;
+}
+/* a reply drafted in a card that has to scroll keeps its Open in Gmail in sight */
+.ai-tool > .row-btns {
+  position: sticky;
+  bottom: -12px;
+  z-index: 1;
+  margin-inline: -14px;
+  padding-block: 8px 12px;
+  padding-inline: 14px;
+  background: inherit;
+}
+/* with the assistant off, or for mail the panel cannot show, there is no summary */
 .no-ai .ai-card:not(.ai-tool) {
   display: none;
 }
 kbd {
-  padding: 1px 5px;
-  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
-  border-radius: 5px;
-  font: 500 10.5px/1.4 inherit;
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-bottom-width: 2px;
+  border-radius: var(--r-sm);
+  background: var(--card);
+  color: var(--soft);
   font-family: inherit;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
 }
 .progress {
   position: absolute;
@@ -891,13 +1031,15 @@ kbd {
   left: 50%;
   bottom: 18px;
   z-index: 10;
-  max-width: 440px;
+  /* inside a 320px side panel too, at any text size */
+  max-width: min(440px, calc(100vw / var(--zoom, 1) - 32px));
   padding: 10px 18px;
-  border-radius: 20px;
+  overflow: hidden;
+  border-radius: var(--r-pill);
   background: var(--ink);
   color: var(--card);
-  font-size: 12.5px;
-  font-weight: 550;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-medium);
   box-shadow: var(--lift);
   opacity: 0;
   transform: translate(-50%, 8px);
@@ -915,16 +1057,43 @@ kbd {
   padding-inline-end: 8px;
   white-space: nowrap;
 }
+.toast:has(.undo) > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .toast .undo {
+  flex: none;
   margin: -6px 0;
   padding: 5px 10px;
   border: 0;
-  border-radius: 14px;
+  border-radius: var(--r-pill);
   background: none;
   color: inherit;
   font: inherit;
-  font-weight: 650;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
+}
+/* how long the Undo stays: a line that runs out with it */
+.toast.counting::after {
+  content: "";
+  position: absolute;
+  inset-inline: 18px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: .35;
+  transform-origin: left;
+  animation: countdown var(--undo, 5s) linear forwards;
+}
+[dir="rtl"] .toast.counting::after {
+  transform-origin: right;
+}
+@keyframes countdown {
+  to {
+    transform: scaleX(0);
+  }
 }
 .toast .undo:hover,
 .toast .undo:focus-visible {
@@ -960,11 +1129,11 @@ kbd {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 16px 12px;
+  margin: 0 12px 12px;
   padding-block: 0;
   padding-inline: 12px 4px;
   height: 38px;
-  border-radius: 11px;
+  border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow);
   color: var(--muted);
@@ -984,7 +1153,7 @@ kbd {
   background: none;
   color: var(--ink);
   font: inherit;
-  font-size: 13.5px;
+  font-size: var(--fs-lg);
 }
 .search input::-webkit-search-cancel-button {
   display: none;
@@ -1001,7 +1170,7 @@ kbd {
 /* mail the search found already read */
 .row.seen .from,
 .row.seen .subject {
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: var(--muted);
 }
 .subject .starred svg {
@@ -1018,7 +1187,7 @@ kbd {
   margin-inline: 2px 6px;
   padding: 0 6px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--card);
   color: var(--ink);
   font: 600 12px/18px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -1042,7 +1211,7 @@ kbd {
 }
 .reader-head h2 .code {
   margin-inline: 4px 0;
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 20px;
   vertical-align: 3px;
 }
@@ -1050,17 +1219,18 @@ kbd {
 /* the assistant's summary: a card over the message, tinted with the accent, its own scroll */
 .ai-card {
   --ai: var(--accent);
-  flex: none;
-  max-height: 46%;
+  /* it takes what it needs and gives way first when the reader is short (.reader-body) */
+  flex: 0 1 auto;
+  min-height: 88px;
   overflow-y: auto;
   margin-block: 14px 2px;
   margin-inline: 16px;
   padding-block: 10px 12px;
   padding-inline: 14px;
   border: 1px solid color-mix(in srgb, var(--ai) 22%, var(--line));
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   background: color-mix(in srgb, var(--ai) 5%, var(--card));
-  font-size: 13px;
+  font-size: var(--fs-md);
   line-height: 1.45;
   scrollbar-width: thin;
 }
@@ -1075,9 +1245,13 @@ kbd {
   margin-inline-end: -8px;
 }
 .ai-head h3 {
+  min-width: 0;
   margin: 0;
-  font-size: 13px;
-  font-weight: 650;
+  overflow: hidden;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .ai-mark {
   display: grid;
@@ -1089,8 +1263,12 @@ kbd {
   fill: color-mix(in srgb, var(--ai) 18%, transparent);
 }
 .ai-state {
+  min-width: 0;
+  overflow: hidden;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .ai-card.busy .ai-mark svg {
   animation: glow 1.2s ease-in-out infinite alternate;
@@ -1106,7 +1284,7 @@ kbd {
 .ai-head .icon-btn {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
 }
 .ai-head .icon-btn svg {
   width: 15px;
@@ -1199,9 +1377,9 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--focus);
-  font-size: 12px;
-  font-weight: 500;
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -1216,7 +1394,7 @@ kbd {
 .ai-note,
 .ai-error {
   margin: 8px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .ai-note {
   color: var(--muted);
@@ -1228,9 +1406,9 @@ kbd {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--focus);
+  color: var(--accent);
   font: inherit;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
@@ -1240,10 +1418,6 @@ kbd {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
   border-radius: 4px;
-}
-.reader-bar .ai-btn.on {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
 }
 
 /* waiting for your reply: the chip first, a mark on the lines */
@@ -1263,10 +1437,9 @@ kbd {
 .chip.bulk-chip:not(.on) svg {
   color: var(--muted);
 }
-/* beside the mailboxes' chips the sorting's say only their count */
-.chip.sort-chip.compact {
-  gap: 5px;
-  padding: 0 10px;
+/* a sorting chip says its name; in a narrow panel only its count (the name is in its tooltip) */
+.sort-chip .short {
+  display: none;
 }
 .chip.ai-offer {
   background: color-mix(in srgb, var(--accent) 7%, var(--card));
@@ -1300,49 +1473,80 @@ kbd {
 /* mail from the site of the page the panel opened over: first in the list, its code large */
 .site {
   margin-bottom: 14px;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 .site-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
-  padding-block: 10px 6px;
+  padding-block: 12px 4px;
   padding-inline: 14px;
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+}
+/* the site's own logo, when the senders' pictures already showed it has one */
+.site-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
 }
 .site-code {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  padding-block: 2px 10px;
+  padding-block: 4px 12px;
   padding-inline: 14px;
   border: 0;
   background: none;
   color: var(--ink);
+  font: inherit;
   text-align: start;
   cursor: copy;
 }
+/* the digits in groups, apart by a margin: what is copied has no space in it */
 .site-code .digits {
-  font: 650 24px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  letter-spacing: .06em;
+  font: 600 24px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .05em;
   direction: ltr;
   unicode-bidi: isolate;
 }
-.site-code .copy-word {
-  color: var(--focus);
-  font-size: 12.5px;
-  font-weight: 600;
+.site-code .digits > span + span {
+  margin-left: .35em;
 }
-.site-code .copy-word::before {
-  content: "· ";
-  color: var(--muted);
+.site-code .copy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--soft);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  transition: background .12s, color .12s;
+}
+.site-code .copy-pill svg {
+  width: 14px;
+  height: 14px;
+}
+.site-code:hover .copy-pill {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+}
+.site-code .when {
+  grid-area: auto;
+  margin-inline-start: auto;
+  padding: 0;
 }
 .site-code.copied .digits,
-.site-code.copied .copy-word {
+.site-code.copied .copy-pill {
   color: var(--ok);
 }
 .pin {
@@ -1357,7 +1561,7 @@ kbd {
   border-top: 1px solid var(--line);
   background: none;
   color: var(--ink);
-  font-size: 12.5px;
+  font-size: var(--fs-md);
   cursor: pointer;
 }
 .pin .dot {
@@ -1366,7 +1570,7 @@ kbd {
 }
 .pin-from {
   max-width: 160px;
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 .pin-subject {
   color: var(--soft);
@@ -1381,7 +1585,6 @@ kbd {
 .pin .when {
   grid-area: auto;
   padding: 0;
-  font-size: 11.5px;
 }
 .site-more {
   display: block;
@@ -1390,9 +1593,9 @@ kbd {
   border: 0;
   border-top: 1px solid var(--line);
   background: none;
-  color: var(--focus);
-  font-size: 12.5px;
-  font-weight: 500;
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   cursor: pointer;
 }
 .site-code:hover,
@@ -1413,45 +1616,70 @@ kbd {
   stroke-width: 2.4;
 }
 
-/* remind me later */
+/* a short menu under its button: remind me later, the reader's other actions */
 .menu {
   position: fixed;
   z-index: 10;
   min-width: 230px;
   padding: 6px;
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow), var(--lift);
 }
 .menu-title {
   margin: 4px 10px 6px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
-.menu button {
+.menu [role="menuitem"] {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  padding: 8px 10px;
+  min-height: 34px;
+  padding: 6px 10px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   background: none;
   color: var(--ink);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--fs-md);
   text-align: start;
   cursor: pointer;
 }
-.menu button:hover,
-.menu button:focus-visible {
+.menu [role="menuitem"] > span:first-of-type {
+  flex: 1;
+}
+.menu [role="menuitem"] svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+.menu [role="menuitem"].danger:hover {
+  color: var(--danger);
+}
+.menu [role="menuitem"].danger:hover svg {
+  color: currentColor;
+}
+.menu [role="menuitem"]:hover,
+.menu [role="menuitem"]:focus-visible {
   background: var(--hover);
   outline: none;
 }
 /* the keys move through the times; the hover tint alone barely differs from the card */
-.menu button:focus-visible {
+.menu [role="menuitem"]:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
+}
+.menu kbd {
+  min-width: 18px;
+  height: 18px;
+  color: var(--muted);
+}
+.menu-sep {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--line);
 }
 /* the menu itself takes the focus of a click on its title or edge */
 .menu:focus {
@@ -1482,8 +1710,8 @@ kbd {
 }
 .section-head.plain .addr {
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   text-decoration: none;
 }
 .away .dot {
@@ -1624,27 +1852,21 @@ kbd {
   margin-inline: 6.5px;
 }
 
-/* the open thread's files, over the message */
+/* the open thread's files, over the message: a clip says what they are */
 .reader-files {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+  margin-top: 12px;
 }
 .reader-files[hidden] {
   display: none;
 }
 .files-head {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-grid;
   margin-inline-end: 2px;
   color: var(--muted);
-  font-size: 12.5px;
-  font-weight: 600;
 }
 .files-head svg {
   width: 16px;
@@ -1663,14 +1885,14 @@ kbd {
   max-width: 300px;
   height: 34px;
   padding: 0 12px 0 4px;
-  border-radius: 10px;
-  font-size: 13px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-md);
 }
 .file-chip.big .kind {
   min-width: 36px;
   height: 24px;
-  border-radius: 7px;
-  font-size: 10.5px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
 }
 .reader-files .file-pair:has(.file-dl) .file-chip {
   border-start-end-radius: 0;
@@ -1681,10 +1903,10 @@ kbd {
   height: 34px;
   border: 1px solid var(--line);
   border-inline-start: 0;
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
 }
 .reader-files .file-dl:dir(rtl) {
-  border-radius: 10px 0 0 10px;
+  border-radius: var(--r-md) 0 0 var(--r-md);
 }
 
 /* buttons with words: a quiet one, and the one that does what the card is for */
@@ -1696,13 +1918,13 @@ kbd {
   height: 30px;
   padding: 0 11px;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--r-md);
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
   white-space: nowrap;
   cursor: pointer;
-  transition: background .12s, color .12s;
+  transition: background .12s, color .12s, transform .08s;
 }
 .text-btn {
   background: none;
@@ -1712,11 +1934,11 @@ kbd {
   background: var(--hover);
 }
 .primary-btn {
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-solid);
+  color: var(--on-accent);
 }
 .primary-btn:hover {
-  background: color-mix(in srgb, var(--accent) 88%, #000);
+  background: color-mix(in srgb, var(--accent-solid) 88%, #000);
 }
 .primary-btn:disabled {
   opacity: .5;
@@ -1765,7 +1987,7 @@ kbd {
   margin-bottom: 12px;
   padding-block: 6px;
   padding-inline: 14px 6px;
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   background: var(--card);
   box-shadow: var(--shadow);
 }
@@ -1773,8 +1995,27 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 13px;
-  font-weight: 600;
+  min-width: 0;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+}
+.sort-what .label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.sort-what .n {
+  flex: none;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 .sort-what svg {
   width: 15px;
@@ -1794,12 +2035,12 @@ kbd {
   height: 28px;
   padding: 0 10px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
   font: inherit;
-  font-size: 12px;
-  font-weight: 650;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
   cursor: pointer;
 }
 .ask-ai:hover {
@@ -1842,8 +2083,8 @@ kbd {
   align-items: center;
   gap: 7px;
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
 }
 .assist-title svg {
   width: 17px;
@@ -1854,7 +2095,7 @@ kbd {
 .assist-bar .engine {
   overflow: hidden;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1874,8 +2115,9 @@ kbd {
   align-items: flex-end;
   gap: 8px;
   margin: 0 12px 12px;
-  padding: 8px 8px 8px 14px;
-  border-radius: 14px;
+  padding-block: 8px;
+  padding-inline: 14px 8px;
+  border-radius: var(--r-xl);
   background: var(--card);
   box-shadow: var(--shadow), var(--lift);
 }
@@ -1893,19 +2135,19 @@ kbd {
   background: none;
   color: var(--ink);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--fs-lg);
   line-height: 1.45;
 }
 .assist-ask .send {
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: #fff;
+  border-radius: var(--r-md);
+  background: var(--accent-solid);
+  color: var(--on-accent);
 }
 .assist-ask .send:hover {
-  background: color-mix(in srgb, var(--accent) 88%, #000);
-  color: #fff;
+  background: color-mix(in srgb, var(--accent-solid) 88%, #000);
+  color: var(--on-accent);
 }
 .assist-ask .send.stop {
   background: var(--ink);
@@ -2304,6 +2546,8 @@ button.cite:hover {
   flex-wrap: wrap;
   gap: 6px;
   padding: 10px 22px 0;
+  /* the header gives way to a card, the buttons that open one do not */
+  flex: none;
 }
 .reader-ai[hidden] {
   display: none;
@@ -2315,12 +2559,12 @@ button.cite:hover {
   height: 30px;
   padding: 0 11px;
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--accent) 5%, var(--card));
   color: var(--soft);
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   transition: background .12s, border-color .12s, color .12s;
 }
@@ -2337,12 +2581,12 @@ button.cite:hover {
   color: var(--accent);
 }
 .ai-act.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
+  background: var(--accent-solid);
+  border-color: var(--accent-solid);
+  color: var(--on-accent);
 }
 .ai-act.on svg {
-  color: #fff;
+  color: var(--on-accent);
 }
 [dir="rtl"] .ai-reply svg {
   transform: scaleX(-1);
@@ -2381,4 +2625,237 @@ button.cite:hover {
 }
 .ai-tool .ai-error p {
   margin: 0;
+}
+
+/* a button's name and its key, a moment after the pointer or the keyboard comes to it: under
+   the button, or over it where there is no room below; never on it */
+.tip {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+  padding: 5px 8px;
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: var(--card);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1.3;
+  /* a mail's files, one name a line */
+  white-space: pre-line;
+  box-shadow: var(--lift);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .1s;
+}
+.tip.show {
+  opacity: 1;
+}
+.tip kbd {
+  min-width: 18px;
+  height: 18px;
+  border-color: color-mix(in srgb, var(--card) 35%, transparent);
+  background: none;
+  color: inherit;
+}
+
+/* ? : the keys there are, where the panel is now */
+.sheet-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, #000 24%, transparent);
+  animation: fade .15s;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+.sheet {
+  width: min(380px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 10px 6px 8px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow), var(--lift);
+  scrollbar-width: thin;
+  animation: arrive .18s var(--ease);
+}
+.sheet:focus {
+  outline: none;
+}
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 0 6px;
+  padding-inline: 12px 4px;
+}
+.sheet-head h2 {
+  flex: 1;
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+}
+.sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-md);
+}
+.sheet-row:nth-child(even) {
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.sheet-row > span:first-child {
+  flex: 1;
+  min-width: 0;
+  color: var(--soft);
+}
+.sheet-row .keys {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  color: var(--faint);
+  font-size: var(--fs-xs);
+}
+
+/* under the list: another account, and the keys */
+.list-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-top: 10px;
+}
+.list-foot .text-btn {
+  color: var(--muted);
+  font-weight: var(--fw-medium);
+}
+.list-foot .text-btn:hover {
+  color: var(--ink);
+}
+.list-foot kbd {
+  min-width: 18px;
+  height: 18px;
+}
+
+/* the panel's first moments after a browser start, before the background has read any mail */
+.skel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding-inline: 14px 4px;
+}
+.skel-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 8px;
+  padding: 15px 14px;
+}
+.skel-row + .skel-row {
+  border-top: 1px solid var(--line);
+}
+.skel i {
+  display: block;
+  height: 10px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  animation: glow 1s ease-in-out infinite alternate;
+}
+.skel-head i {
+  width: 150px;
+}
+.skel-head i:first-child {
+  width: 9px;
+  height: 9px;
+}
+.skel-row i:first-child {
+  grid-row: span 3;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+.skel-row i:nth-child(2) {
+  width: 35%;
+}
+.skel-row i:nth-child(3) {
+  width: 80%;
+}
+.skel-row i:nth-child(4) {
+  width: 60%;
+  animation-delay: .15s;
+}
+.skel-row:nth-child(2) i {
+  animation-delay: .1s;
+}
+.skel-row:nth-child(3) i {
+  animation-delay: .2s;
+}
+
+/* The panel narrower than its popup: the side panel at its narrowest, or a larger text size.
+   Last in the file, so that they win over the rules above. */
+/* a narrow side panel keeps the actions and drops what only explains them */
+@media (max-width: 440px) {
+  .reader-bar .pos,
+  .reader-bar .prev,
+  .reader-bar .next,
+  .reader-bar .box {
+    display: none;
+  }
+  /* the mailbox the mail came to: in the header, the bar has no room for it */
+  .reader:not(.one-box) .reader-account {
+    display: flex;
+  }
+  .reader-bar .reply-btn {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+  .reader-bar .reply-btn span {
+    display: none;
+  }
+  /* the date under the sender, rather than squeezed beside the name */
+  .reader-from {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+  .reader-from time {
+    flex-basis: 100%;
+    padding-inline-start: 50px;
+  }
+  /* the sorting's chips say only their count; the name is in their tooltip */
+  .chip.sort-chip {
+    gap: 5px;
+    padding: 0 10px;
+  }
+  .sort-chip .full {
+    display: none;
+  }
+  .sort-chip .short {
+    display: inline;
+  }
+  .list-foot .keys-btn span {
+    display: none;
+  }
+}
+/* narrower still, a mailbox line keeps its address readable: copy and Meet wait for a wider panel */
+@media (max-width: 400px) {
+  .section-head .copy,
+  .section-head .meet {
+    display: none;
+  }
 }

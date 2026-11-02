@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "Anhänge: $1"
     },
+    "panel_shortcuts": {
+        "message": "Tastenkürzel"
+    },
+    "panel_keyAsk": {
+        "message": "Fragen zu dieser E-Mail"
+    },
+    "panel_keyMove": {
+        "message": "Postfach nach oben oder unten verschieben"
+    },
+    "panel_moreActions": {
+        "message": "Weitere Aktionen"
+    },
+    "panel_signInTitle": {
+        "message": "Verbinden Sie Ihre E-Mail"
+    },
+    "panel_replyList": {
+        "message": "Wartet auf Antwort"
+    },
+    "panel_importantList": {
+        "message": "Wichtig"
+    },
+    "panel_bulkList": {
+        "message": "Newsletter und Werbung"
+    },
     "panel_assistant": {
         "message": "KI-Assistent"
     },

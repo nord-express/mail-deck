@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "Вкладення: $1"
     },
+    "panel_shortcuts": {
+        "message": "Гарячі клавіші"
+    },
+    "panel_keyAsk": {
+        "message": "Запитати про цей лист"
+    },
+    "panel_keyMove": {
+        "message": "Перемістити скриньку вище або нижче"
+    },
+    "panel_moreActions": {
+        "message": "Інші дії"
+    },
+    "panel_signInTitle": {
+        "message": "Підключіть пошту"
+    },
+    "panel_replyList": {
+        "message": "Чекає на вашу відповідь"
+    },
+    "panel_importantList": {
+        "message": "Важливе"
+    },
+    "panel_bulkList": {
+        "message": "Розсилки й реклама"
+    },
     "panel_assistant": {
         "message": "ШІ-асистент"
     },

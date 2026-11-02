@@ -133,7 +133,7 @@ const checks = {
     'a click opens a web link in front, Ctrl and the middle button behind, Shift in a window; other links open nothing':
       JSON.stringify(r.opened) === JSON.stringify([['https://evil.test/top', true, 3], ['https://evil.test/top', false, 3], ['https://evil.test/top', false, 3]]) &&
       JSON.stringify(r.windowOpened) === '["https://evil.test/top"]' && r.panelStayed && !r.pingAfterClicks,
-    'no star where the service has none': r.star === false && r.noStarHint,
+    'no star where the service has none, nor S in the keys\' sheet; Esc closes the sheet, not the mail': r.star === false && r.noStarHint,
     'a mail the panel cannot read opens on its site': r.protonReader === false && r.protonOpened?.startsWith('https://mail.proton.me/'),
     'Enter on it opens it on its site too, not a reader that cannot load it': r.protonEnterReader === false && r.protonEnterOpened?.startsWith('https://mail.proton.me/'),
     'pointing at a service mail fetches nothing': r.hoverFetched === 0,
@@ -166,6 +166,7 @@ const checks = {
     'each line\'s print view is fetched once for it': r.onePrintEach,
     'a click on a file opens the file alone, not the mail': r.fileOpened.includes('view=att') && r.fileOpened.includes('disp=safe') && !r.readingAfterFile,
     'the open mail shows its files over the message, at once and with Download, with no second request': r.stripAtOnce && JSON.stringify(r.stripFiles) === '["Макеты-v3.pdf"]' && r.download.startsWith(T('download')) && r.noSecondPrint,
+    'the message\'s own chips of its files step aside for them, so no file shows twice': r.frameChipsHidden,
     'the files found stay for the session': r.kept > 0
   }),
   codes: r => ({
@@ -215,6 +216,7 @@ const checks = {
     'the summary: points, to do, dates, for that mail and its version, from the whole thread':
       JSON.stringify(r.summary) === '{"points":3,"todo":1,"events":2,"key":true,"messages":3,"fresh":false}',
     'each date links to Google Calendar in the mail\'s own account': r.calendar,
+    'with the card open the message keeps room (140px at least) and the header gives way': r.room?.body >= 140 && r.room.files === 'none' && r.room.inside,
     'Copy copies the summary with its headings': r.copied,
     'Hide hides it; I shows it again from the session, Regenerate asks anew': r.hidden && r.again && r.regenerating,
     'back hides the card; the mail opened again shows its summary without a click': r.backHides && r.keptShown,
@@ -242,7 +244,7 @@ const checks = {
   }),
   aitools: r => ({
     'the sorting: a chip for each kind found, the list narrowed with all of it read at once': JSON.stringify(r.chips) === '["reply","important","bulk"]' &&
-      r.bar === T('importantShown', 1) && r.narrowed === 1 && r.readAll,
+      r.bar === T('importantShown', 1) && JSON.stringify(r.barShown) === JSON.stringify([T('importantList'), '1']) && r.narrowed === 1 && r.readAll,
     'the open mail offers a summary, a reply, a translation and a question': JSON.stringify(r.strip) === '["ai:sparkle","ai:reply","ai:translate","ai:ask"]',
     'a reply drafted from an intent opens in Gmail\'s compose window with the text': r.draft.startsWith('Привет, Аня!') && r.draftCall.intent === T('intentYes') &&
       r.draftCall.reader === 'evgeny@example.com' && r.replyUrl.includes('to=anna%40figma.com') && r.replyUrl.includes('su=Re%3A') && r.replyUrl.includes('body=' + encodeURIComponent('Привет, Аня!')),
@@ -251,8 +253,8 @@ const checks = {
     'A asks about the open mail': r.keyA
   }),
   aioff: r => ({
-    'the assistant off: its buttons offer it, I too, with no ai.js, no summary, no sorting and not one call': JSON.stringify(r.off) ===
-      '{"calls":0,"button":true,"card":false,"offerCard":true,"chip":false,"offer":true,"header":true,"script":false,"hint":false}'
+    'the assistant off: its buttons offer it, I too (the keys\' sheet says so), with no ai.js, no summary, no sorting and not one call': JSON.stringify(r.off) ===
+      '{"calls":0,"button":true,"card":false,"offerCard":true,"chip":false,"offer":true,"header":true,"script":false,"hint":true}'
   }),
   ainone: r => ({
     'the assistant off and its buttons too: nothing of it shows, and nothing is loaded or asked': JSON.stringify(r.off) ===
@@ -282,10 +284,27 @@ const checks = {
       r.printBytes > 0 && r.printBytes <= 3 * 1024 * 1024 && r.printIndexed && r.hugeKept === false,
     'a print view no index names goes': r.lostGone
   }),
+  ux: r => ({
+    'the panel opens with its first mail under the keys, marked without the keyboard\'s ring; E archives it': r.firstFocused && r.firstActed,
+    'buttons have no native title: their tooltip says the name and the key, after a moment, beside the button, gone on a click':
+      r.noTitles && !r.tip?.early && r.tip.shown && r.tip.text === T('search') && r.tip.key === '/' && r.tip.clear && r.tip.label === T('search') && r.tipGone,
+    'Add another account is at the end of the list, not in the header': r.addAccount,
+    '? lists the list\'s keys over the panel and holds them; Esc closes it and gives the focus back': r.sheetList?.open && r.sheetList.modal && r.sheetList.inside &&
+      ['J/↓', 'Enter', 'E', '/', '?'].every(k => r.sheetList.keys.includes(k)) && !r.sheetList.keys.includes('Esc') && r.sheetHoldsKeys && r.sheetClosed,
+    'in a message ? lists its keys (Esc for back, star, summary off), and Esc closes only the sheet': ['J', 'S', 'Esc', 'O'].every(k => r.sheetReader?.includes(k)) &&
+      !r.sheetReader.includes('Enter') && r.sheetReaderClosed,
+    'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, Spam and the keys': JSON.stringify(r.bar) ===
+      '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' && JSON.stringify(r.more) === '["O","!","?"]' && r.moreClosed
+  }),
+  boot: r => ({
+    'after a browser start: lines stand for the mail, never Sign in, until the first list; then the list': r.skeleton && r.tools && r.listed,
+    'lines only before the first answer: no one signed in shows Sign in': r.empty
+  }),
   narrow: r => ({
     'a 320px side panel: the mailbox line keeps whole buttons, without copy and Meet, and a readable address':
       r.width === 320 && JSON.stringify(r.buttons) === '["readAll:32","archive:32","open:32"]' && r.addr >= 60,
-    'a 320px side panel: the reader\'s bar stays inside': r.barInside
+    'a 320px side panel: the reader\'s bar stays inside': r.barInside,
+    'a 320px side panel: the reader\'s date stands under the sender': r.dateBelow
   })
 };
 
@@ -295,7 +314,7 @@ server.listen(0, '127.0.0.1', async () => {
   for (const [scenario, query, frame] of [['main', ''], ['speed', ''], ['services', '&s=services'], ['wide', '&wide=1'], ['keys', ''], ['narrow', '&side', 320],
     ['files', ''], ['codes', '&s=codes'], ['advance', '&advance=1'], ['readnext', '&read=1'], ['seen', '&badge=new'],
     ['site', '&s=site&url=' + encodeURIComponent('https://github.com/login?return_to=%2Fsettings')],
-    ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
+    ['ux', ''], ['boot', '&boot=1'], ['ai', '&ai=on'], ['aiassist', '&ai=on'], ['aitools', '&ai=on'], ['aiauto', '&ai=on&summary=auto'], ['aioff', '&ai=off'], ['ainone', '&ai=off&buttons=0'], ['aireal', '&ai=real'], ['reliable', '']].filter(([name]) => !process.env.ONLY || process.env.ONLY.split(',').includes(name))) {
     const r = await run(port, scenario, query, frame);
     if (r.error) {
       failed += 1;

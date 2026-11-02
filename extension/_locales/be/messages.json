@@ -1628,6 +1628,30 @@
   "panel_attachments": {
     "message": "Далучаныя файлы: $1"
   },
+  "panel_shortcuts": {
+    "message": "Спалучэнні клавіш"
+  },
+  "panel_keyAsk": {
+    "message": "Спытаць пра гэты ліст"
+  },
+  "panel_keyMove": {
+    "message": "Перамясціць скрыню вышэй або ніжэй"
+  },
+  "panel_moreActions": {
+    "message": "Іншыя дзеянні"
+  },
+  "panel_signInTitle": {
+    "message": "Падключыце пошту"
+  },
+  "panel_replyList": {
+    "message": "Чакае вашага адказу"
+  },
+  "panel_importantList": {
+    "message": "Важнае"
+  },
+  "panel_bulkList": {
+    "message": "Рассылкі і рэклама"
+  },
   "panel_assistant": {
     "message": "ШІ-асістэнт"
   },

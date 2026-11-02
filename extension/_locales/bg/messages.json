@@ -1769,6 +1769,30 @@
     "panel_attachments": {
         "message": "Прикачени файлове: $1"
     },
+    "panel_shortcuts": {
+        "message": "Клавишни комбинации"
+    },
+    "panel_keyAsk": {
+        "message": "Въпрос за това писмо"
+    },
+    "panel_keyMove": {
+        "message": "Преместване на кутията нагоре или надолу"
+    },
+    "panel_moreActions": {
+        "message": "Още действия"
+    },
+    "panel_signInTitle": {
+        "message": "Свържете пощата си"
+    },
+    "panel_replyList": {
+        "message": "Очаква вашия отговор"
+    },
+    "panel_importantList": {
+        "message": "Важни"
+    },
+    "panel_bulkList": {
+        "message": "Бюлетини и реклами"
+    },
     "panel_assistant": {
         "message": "ИИ асистент"
     },

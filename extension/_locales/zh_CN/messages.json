@@ -1773,6 +1773,30 @@
     "panel_attachments": {
         "message": "附件：$1"
     },
+    "panel_shortcuts": {
+        "message": "键盘快捷键"
+    },
+    "panel_keyAsk": {
+        "message": "询问这封邮件"
+    },
+    "panel_keyMove": {
+        "message": "上下移动邮箱"
+    },
+    "panel_moreActions": {
+        "message": "更多操作"
+    },
+    "panel_signInTitle": {
+        "message": "连接你的邮箱"
+    },
+    "panel_replyList": {
+        "message": "等待你回复"
+    },
+    "panel_importantList": {
+        "message": "重要"
+    },
+    "panel_bulkList": {
+        "message": "订阅和推广邮件"
+    },
     "panel_assistant": {
         "message": "AI 助手"
     },
