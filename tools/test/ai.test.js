@@ -2110,17 +2110,24 @@ check('every provider\'s site is an optional one of the manifest, asked for only
       assert.ok(!manifest.host_permissions.includes(o));
     }
   }
-  // a summary under way for the server's old address stops when it changes
+  // a summary under way for the server's old address stops when it changes: its answer never ends
+  // by itself, and the change comes once its request is out, however fast or slow the machine
+  const asked = async r => {
+    for (let i = 0; i < 400 && !r.requests.length; i += 1) {
+      await new Promise(res => setTimeout(res, 5));
+    }
+    assert.strictEqual(r.requests.length, 1, 'the summary asked');
+  };
   const t = load({local: compatOf('local')});
-  t.answers.push(stream(openaiEvents(SUMMARY), {hang: true}));
+  t.answers.push(stream('', {hang: true}));
   const p = t.AI.summarize(THREAD);
-  await new Promise(r => setTimeout(r, 10));
+  await asked(t);
   await t.set({'ai.local.base': 'http://localhost:1234/v1'});
   await failsWith(p, 'aborted');
   const u = load({local: compatOf('yandex')});
-  u.answers.push(stream(openaiEvents(SUMMARY), {hang: true}));
+  u.answers.push(stream('', {hang: true}));
   const q = u.AI.summarize(THREAD);
-  await new Promise(r => setTimeout(r, 10));
+  await asked(u);
   await u.set({'ai.yandex.folder': 'b1gother'});
   await failsWith(q, 'aborted');
 });
