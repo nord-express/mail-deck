@@ -82,12 +82,12 @@ loads('settings', fs.readFileSync(path.join(EXT, 'data/settings/index.html'), 'u
   }
 }
 
-// every locale: parses, and has en's panel, settings and AI strings with the same placeholders
+// every locale: parses, and has en's panel, settings, AI and welcome page strings with the same placeholders
 const LOCALES = path.join(EXT, '_locales');
 const read = lang => JSON.parse(fs.readFileSync(path.join(LOCALES, lang, 'messages.json'), 'utf8'));
 const holes = text => (String(text).match(/\$\d/g) || []).sort().join(',');
 const en = read('en');
-const OURS = /^(panel_|opt_|ai_)/;
+const OURS = /^(panel_|opt_|ai_|welcome_)/;
 const keys = Object.keys(en).filter(k => OURS.test(k));
 for (const lang of fs.readdirSync(LOCALES)) {
   let d;
@@ -123,8 +123,8 @@ const older = [...new Set([
 // follows (above): the panel's t('x'), data-i18n="x" and data-i18n-label="x" are panel_x; the
 // settings page's are opt_x, and so are its diagnostics' check('x') and its AI card's 'aiX'
 // names; each code the AI module (data/ai/ai.js) throws an AIError with has its ai_err_<code>,
-// which the module and the settings page read. A name made at run time (t(name), a template
-// literal) is not looked for.
+// which the module and the settings page read; the welcome page's are welcome_x. A name made at
+// run time (t(name), a template literal) is not looked for.
 const uncommented = f => fs.readFileSync(f, 'utf8').replace(/^\s*\/\/.*$/gm, '');
 const pageKeys = (dir, prefix, extra = []) => {
   const found = new Set();
@@ -141,7 +141,8 @@ const pageKeys = (dir, prefix, extra = []) => {
 };
 const used = {
   panel: pageKeys(path.join(EXT, 'data/panel'), 'panel_'),
-  settings: pageKeys(path.join(EXT, 'data/settings'), 'opt_', [/(?<![\w$.])check\(\s*'([A-Za-z0-9_]+)'/g, /'(ai[A-Z]\w*)'/g])
+  settings: pageKeys(path.join(EXT, 'data/settings'), 'opt_', [/(?<![\w$.])check\(\s*'([A-Za-z0-9_]+)'/g, /'(ai[A-Z]\w*)'/g]),
+  'welcome page': pageKeys(path.join(EXT, 'data/welcome'), 'welcome_')
 };
 const AI_JS = path.join(EXT, 'data/ai/ai.js');
 if (fs.existsSync(AI_JS)) {

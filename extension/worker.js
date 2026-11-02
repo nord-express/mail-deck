@@ -66,11 +66,12 @@ const onClicked = link => {
   });
 };
 
-// a new user meets the website first: what the deck does, where its keys are
+// a new user meets the welcome page: the inboxes found, the icon pinned, the panel tried; it
+// links the website. An update opens nothing.
 chrome.runtime.onInstalled.addListener(({reason}) => {
   if (reason === 'install') {
     chrome.tabs.create({
-      url: chrome.runtime.getManifest().homepage_url
+      url: '/data/welcome/index.html'
     });
   }
 });
