@@ -88,7 +88,9 @@
       author_email: e.author_email || ''
     }));
     const key = 'ids.account.' + email;
-    const seen = known[key] || [];
+    // a local storage that is full refuses the list; the session keeps it then (core/utils/feed.js)
+    const spare = 'ids.spare.' + key;
+    const seen = [...known[key] || [], ...known[spare] || []];
     const newIDs = [];
     const oldIDs = [];
     for (const {id, modified} of entries) {
@@ -117,7 +119,9 @@
       newIDs,
       commit() {
         if (newIDs.length) {
-          chrome.storage.local.set({[key]: [...oldIDs, ...newIDs]});
+          const list = [...oldIDs, ...newIDs];
+          chrome.storage.local.set({[key]: list}).then(() => known[spare] && chrome.storage.session.remove(spare),
+            () => chrome.storage.session.set({[spare]: list})).catch(() => {});
         }
       }
     };
@@ -166,7 +170,10 @@
     }
     const now = Date.now();
     const emails = answers.flatMap(([, boxes]) => boxes.map(b => 'ids.account.' + String(b.email).toLowerCase()));
-    const known = await chrome.storage.local.get({...Object.fromEntries(emails.map(k => [k, []])), threatAsNew: 10});
+    const known = {
+      ...await chrome.storage.local.get({...Object.fromEntries(emails.map(k => [k, []])), threatAsNew: 10}),
+      ...await chrome.storage.session.get(emails.map(k => 'ids.spare.' + k)).catch(() => ({}))
+    };
     const objs = [];
     for (const [s, boxes, fresh] of answers) {
       for (const b of boxes) {

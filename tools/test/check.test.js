@@ -165,7 +165,11 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
       cb && cb(o);
       return Promise.resolve(o);
     },
+    // out.full: a local storage with no room for the mail told
     set: (o, cb) => {
+      if (store === local && out.full && Object.keys(o).some(k => k.startsWith('ids.'))) {
+        return Promise.reject(Error('QUOTA_BYTES quota exceeded'));
+      }
       Object.assign(store, copy(o));
       cb && cb();
       return Promise.resolve();
@@ -387,6 +391,14 @@ tests.push(
     await b.run();
     assert.strictEqual(b.told.length, 0);
     assert.ok(Array.isArray(b.local['ids.box.user0@gmail.com']));
+  }],
+  ['a local storage that is full does not make the same mail be told at every check', async () => {
+    const b = boot({mail: {'0': [{id: 'n', age: 1}]}});
+    b.full = true;
+    await b.run();
+    await b.run();
+    await b.run();
+    assert.strictEqual(b.told.length, 1);
   }],
   ['the list of an earlier version\'s feed is read once, then the account keeps its own', async () => {
     const b = boot({mail: {'0': [{id: 'i1'}]}, local: {'ids.feed.https://mail.google.com/mail/u/0/feed/atom': ['tag:gmail.google.com,2004:i1']}});

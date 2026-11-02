@@ -287,14 +287,18 @@ class Feed {
       const key = box && xml.title ? 'ids.box.' + xml.title + box[1] : 'ids.feed.' + this.href;
       const older = 'ids.feed.' + this.href;
       const legacy = 'ids.account.' + xml.title;
-      return new Promise(resolve => {
+      // A local storage that is full (an own sound takes most of its 10 MB) refuses the list:
+      // the session keeps it then, or the same mail would be told at every check.
+      const spare = 'ids.spare.' + key;
+      return chrome.storage.session.get(spare).catch(() => ({})).then(kept => new Promise(resolve => {
         chrome.storage.local.get({
           [key]: null,
           [older]: null,
           [legacy]: [],
           'threatAsNew': 10 // minutes
         }, prefs => {
-          const seen = [key, older, legacy].map(k => prefs[k]).find(Array.isArray) || [];
+          const seen = [...[key, older, legacy].map(k => prefs[k]).find(Array.isArray) || [],
+            ...Array.isArray(kept?.[spare]) ? kept[spare] : []];
           const own = Array.isArray(prefs[key]);
           const newIDs = [];
           const oldIDs = [];
@@ -326,12 +330,11 @@ class Feed {
             commit() {
               // the first commit of a feed writes its own list, so the account's one is read once
               if (newIDs.length || own === false) {
+                const list = [...oldIDs, ...newIDs];
                 chrome.storage.local.set({
-                  [key]: [
-                    ...oldIDs,
-                    ...newIDs
-                  ]
-                });
+                  [key]: list
+                }).then(() => kept?.[spare] && chrome.storage.session.remove(spare),
+                  () => chrome.storage.session.set({[spare]: list})).catch(() => {});
                 if (own === false && older !== key && Array.isArray(prefs[older])) {
                   chrome.storage.local.remove(older);
                 }
@@ -339,7 +342,7 @@ class Feed {
             }
           });
         });
-      });
+      }));
     }).catch(e => {
       clearTimeout(id);
       throw e;
