@@ -2,6 +2,13 @@
    come from /data/panel/tokens.css; the ones only this page uses are defined here. */
 @layer reset, base, layout, components, sections, states, motion;
 
+/* Chrome gives every page of an extension a body { font-size: 75% } of its own, outside any
+   layer, which would beat the layers below and shrink all the text that inherits its size.
+   The page's own type is set here, outside the layers too. */
+html body {
+  font: 14px/20px var(--font);
+}
+
 :root {
   --sunk: #f7f8fa;
   --field: #f0f1f4;

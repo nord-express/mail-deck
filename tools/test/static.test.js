@@ -192,6 +192,34 @@ for (const lang of fs.readdirSync(LOCALES)) {
   }
 }
 
+// Chrome gives every page of an extension a body { font-size: 75% } outside any layer, which beats
+// whatever a layer says: a stylesheet that keeps its rules in layers sizes body's text outside them
+for (const file of walk(EXT).filter(f => f.endsWith('.css'))) {
+  const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  if (!/@layer\b/.test(css)) {
+    continue;
+  }
+  // the rules at the top level, outside any @layer, @media or other block
+  const top = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < css.length; i += 1) {
+    if (css[i] === '{' && depth++ === 0) {
+      top.push({selector: css.slice(start, i).trim(), from: i + 1});
+    }
+    else if (css[i] === '}' && --depth === 0) {
+      top.at(-1).body = css.slice(top.at(-1).from, i);
+      start = i + 1;
+    }
+    else if (css[i] === ';' && depth === 0) {
+      start = i + 1;
+    }
+  }
+  const sized = top.some(r => !r.selector.startsWith('@') && /(^|[\s,>])body\b/.test(r.selector) &&
+    /(^|[;\s])font(-size)?\s*:/.test(r.body));
+  ok(`${path.relative(EXT, file)}: body's text is sized outside the layers`, sized);
+}
+
 for (const [name, pass, detail] of results) {
   console.log(pass ? 'ok' : 'not ok', name + (pass || !detail ? '' : ' - ' + detail));
 }
