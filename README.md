@@ -29,19 +29,24 @@ Gmail, Yahoo Mail, AOL Mail, Proton Mail, Yandex Mail and Mail.ru. Read, archive
 - **Read in place.** Click a message to read it in the panel: a Gmail conversation whole, attachments included, and mail from Yahoo, AOL, Yandex and Mail.ru too. Proton mail opens on Proton's site. <kbd>J</kbd> and <kbd>K</kbd> go to the next and previous message without going back to the list.
 - **Mail from this site.** Open the panel on a web page and that site's unread mail is at the top, from every inbox, with a fresh sign-in code ready to copy. [More below](#mail-from-this-site).
 - **Attachments in plain sight.** A Gmail message's files show on its line before you open it, each with a coloured tag of its kind (PDF, sheet, picture…); a click opens the file without the mail. The open message lists them under the sender, with Download.
-- **Sign-in codes.** A mail that carries a one-time code shows it as a pill before the subject and in the open message. A click or <kbd>C</kbd> copies the digits; the mail is not opened, marked or moved.
+- **Sign-in codes.** A mail that carries a one-time code shows it as a pill before the subject and in the open message. A click or <kbd>C</kbd> copies the digits; the mail is not opened, marked or moved. The new mail's notification shows the code in its title, and can have a **Copy** button.
+- **Trackers stay out.** Before a message loads, the pictures that only report that you opened it (known tracking pixels, hidden one-pixel images) are kept out, and the reader says how many and whose. Gmail's pictures can wait for **Show pictures** too.
+- **Who really sent it.** A calm warning when the sender's name claims a well-known brand its address does not belong to, when its domain imitates another (`paypa1.com`), or when replies would go somewhere else.
+- **Unsubscribe in one click.** A newsletter's ⋯ menu offers **Unsubscribe**, the way its header asks: one request, an email to send, or the sender's page, always after you confirm; its unread mail can go to the archive at once. The Newsletters chip lists its senders to leave.
 - **AI assistant, if you want one.** Ask your mail anything in plain words (“when is my flight?”, “invoices from October”), get what is important in your unread mail, have replies and new mail drafted, mail translated and summarized, and unread mail sorted into waiting for your reply, important and newsletters to clear at once. It runs with Chrome's built-in model on this computer, your ChatGPT plan, or your own Anthropic, OpenAI or Z.ai API key, and stays off until you turn it on. [More below](#ai-assistant).
-- **Search every Gmail inbox.** One search runs in all your Google accounts at once.
+- **Search as you type.** The list narrows at once while you type; <kbd>Enter</kbd> searches all your Google accounts. Save searches you run often ("Invoices": `has:attachment invoice newer_than:30d`) as chips.
+- **Gmail's categories as chips.** Promotions, Social and Updates, each with its count, narrow the list, with **Mark all read** and **Archive all** over it; no AI needed.
 - **Later.** Put a message away until this evening, tomorrow or next week; it comes back with a notification.
-- **One key per action.** Mark as read, archive, delete or report spam from the list, from the open message or from a notification. If you like, the next message opens by itself after an action.
+- **One key per action.** Mark as read or unread, archive, delete or report spam from the list, from the open message or from a notification. <kbd>?</kbd> shows every key. If you like, the next message opens by itself after an action, and replies open in a small window of their own.
 - **Labels.** Watch chosen Gmail labels instead of the inbox, set per account, or only Gmail's Primary tab.
 - **Your order.** Drag the inboxes into the order you want. Accounts you signed out of stay listed, one click from signing back in.
 - **Meet in one click.** Each Gmail mailbox has a button that starts a Google Meet from its account.
-- **Notifications and sound.** A desktop notification and an optional sound for new mail. A notification about one inbox has its address as the title, and your own notification text can name it with `[account]`. It can come back every 5 to 60 minutes while the mail stays unread. Mute an inbox while it stays in the panel, set quiet hours and a quiet weekend, or notify only for, or never for, chosen senders and subjects.
+- **Notifications and sound.** A desktop notification and an optional sound for new mail, with **Later** among its buttons if you like, and a click that opens the mail or the panel. A notification about one inbox has its address as the title, and your own notification text can name it with `[account]`. It can come back every 5 to 60 minutes while the mail stays unread. Mute an inbox while it stays in the panel, set quiet hours and a quiet weekend, or notify only for, or never for, chosen senders and subjects.
 - **Your count.** Leave an inbox out of the number on the toolbar icon while it stays in the panel, or have the number count only the mail that came since you last opened the panel.
 - **Side panel and keyboard.** Keep the deck open beside the page, or open it with Alt+Shift+M. Text size is yours to set.
 - **Backup.** Export your settings to a file, or keep a copy in Chrome sync. An AI key or sign-in is never in either.
-- **Light and dark.** The panel and the settings follow your system theme.
+- **Light and dark.** The panel, the settings and the welcome page follow your system theme. Settings has a search, and each section shows what it needs first.
+- **A first run that works.** Installing opens a welcome page that finds your inboxes, shows how to pin the icon (and notices when you do) and sends a test notification.
 - **Nothing in between.** No servers, no analytics. The extension talks only to Google and to the mail services you turn on, with the session your browser already has, and never sees your password. The AI assistant adds the one provider you connect, if you connect one.
 
 ## Mail from this site
@@ -63,9 +68,9 @@ Chrome lets the panel read the tab's address when you open it (the `activeTab` p
 
 Its buttons are in view from the start (the ✨ in the header, **Sort with AI**, and **Summary**, **Reply with AI** and **Ask** in an open message), and the first click offers to turn it on. Nothing is sent anywhere until you do. **Settings → AI** has a switch to hide the buttons while it is off.
 
-- **Ask your mail.** The ✨ button (or <kbd>A</kbd>) opens the assistant. Type a question or a search in plain words: “when is my flight to Rome?”, “what did Anna say about the budget?”, “invoices from October”, “mail with attachments this week”. It turns that into a Gmail search across all your accounts (and looks through the other services' unread mail), reads the first few mails it finds, and answers with numbered references; a number opens its mail, and <kbd>J</kbd>/<kbd>K</kbd> walk the mail it found. “What's important?” sums up your unread mail: what needs you soon first, newsletters in one line. The search field has **Ask AI** for the same.
-- **Write.** “Write to Anna that the meeting moves to Friday” drafts a new mail with its address, subject and text, to change and then open in Gmail's compose window. In an open message, **Reply with AI** drafts a reply in the thread's language and tone, from a quick choice (Yes, Decline politely, Ask for details, Thank them) or your own words; **Open in Gmail** puts it in the compose window, ready to send. Nothing is ever sent for you.
-- **Summary.** **Summary** (or <kbd>I</kbd>) puts a card above the conversation: its key points, what it asks of you, and its dates, each with an **Add to Google Calendar** link. It fills in as the answer arrives, can be copied, asked again or hidden, and is kept for the session. Summaries come on click (the default) or by themselves for long mail.
+- **Ask your mail.** The ✨ button (or <kbd>A</kbd>) opens the assistant. Type a question or a search in plain words: “when is my flight to Rome?”, “what did Anna say about the budget?”, “invoices from October”, “mail with attachments this week”. It turns that into a Gmail search across all your accounts (and looks through the other services' unread mail), reads the first few mails it finds, and answers with numbered references; a number opens its mail, and <kbd>J</kbd>/<kbd>K</kbd> walk the mail it found. “What's important?” sums up your unread mail: what needs you soon first, newsletters in one line. Ask on from there (“only last week”, “summarize them”), and act on what it found: **Mark all read** or **Archive all**, with Undo; it never acts until you click. A search that finds nothing is tried more broadly by itself, and a citation that does not match its mail is marked. The search field has **Ask AI** for the same.
+- **Write.** “Write to Anna that the meeting moves to Friday” drafts a new mail with its address, subject and text, to change and then open in Gmail's compose window. In an open message, **Reply with AI** drafts a reply in the thread's language and tone, from a quick choice (Yes, Decline politely, Ask for details, Thank them, Propose times) or your own words, then **Shorter**, **Longer**, **More formal**, **Friendlier** or **Fix grammar**; **Open in Gmail** puts it in the compose window, ready to send. Nothing is ever sent for you.
+- **Summary.** **Summary** (or <kbd>I</kbd>) puts a card above the conversation: its key points, what it asks of you (leaving out what you already answered), its dates, counted from the message that says them, each with an **Add to Google Calendar** link, and its details to copy: an order number, an amount, a tracking number. It fills in as the answer arrives, can be copied, asked again or hidden, and is kept for the session. Summaries come on click (the default) or by themselves for long mail.
 - **Ask about this mail.** **Ask** (or <kbd>A</kbd> in an open message) answers a question about the conversation you are reading.
 - **Translate.** A message in another language than Chrome's gets **Translate from …**: Chrome's own translator turns it into your language where it stands, on this computer and free, with **Show original** to go back; it needs no engine. Where Chrome has no translator for that language, the assistant translates it.
 - **Sort unread mail.** Unread mail gets chips: **Reply** (people who expect an answer from you, each marked with the reason), **Important** (deadlines, payments, travel, alerts about your accounts) and **Newsletters** (mail you can clear without reading). A chip narrows the list to that mail, with **Mark all read** and **Archive all** above it. Mail from your own addresses and mail older than 14 days are left out; each answer is kept on this computer for 30 days, so a mail is asked about once.
@@ -164,19 +169,21 @@ None of these services has a public interface for this, so Mail Deck follows the
 | <kbd>J</kbd> / <kbd>K</kbd> or arrows | <kbd>J</kbd> / <kbd>K</kbd> | Next / previous message |
 | <kbd>Enter</kbd> | | Open the message |
 | <kbd>R</kbd> | <kbd>R</kbd> | Mark as read |
+| <kbd>U</kbd> | <kbd>U</kbd> | Mark as unread (Gmail) |
 | <kbd>E</kbd> | <kbd>E</kbd> | Archive |
 | <kbd>Delete</kbd> or <kbd>Backspace</kbd> | <kbd>Delete</kbd> or <kbd>Backspace</kbd> | Delete |
 | <kbd>!</kbd> | <kbd>!</kbd> | Report spam |
 | <kbd>O</kbd> | <kbd>O</kbd> | Open in the web app |
-| <kbd>B</kbd> | <kbd>B</kbd> | Remind me later |
+| <kbd>B</kbd> | <kbd>B</kbd> | Remind me later; then <kbd>1</kbd>–<kbd>4</kbd> pick a time |
 | <kbd>C</kbd> | <kbd>C</kbd> | Copy the one-time code: the open message's, the focused line's, or else the site's at the top |
 | | <kbd>S</kbd> | Star (Gmail) |
 | | <kbd>I</kbd> | Show or hide the summary (AI assistant) |
 | | <kbd>A</kbd> | The AI assistant; in an open message, a question about it |
 | <kbd>Z</kbd> | <kbd>Z</kbd> | Undo the last action |
-| <kbd>/</kbd> | | Search every Gmail inbox |
+| <kbd>/</kbd> | | Search: the list narrows as you type, <kbd>Enter</kbd> searches every Gmail inbox |
 | <kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>↓</kbd> | | Move the inbox of the focused line up or down |
-| <kbd>Esc</kbd> | <kbd>Esc</kbd> | Back to the list from a message; out of the search, the site's mail or the Reply chip |
+| <kbd>Esc</kbd> | <kbd>Esc</kbd> | Back to the list from a message; out of the search, the site's mail or a chip |
+| <kbd>?</kbd> | <kbd>?</kbd> | All the keys, in the panel |
 
 The keys go by position, so they work with any keyboard layout. In a message, the arrows scroll it. Archive is not there for Yandex Mail and Mail.ru.
 
@@ -199,16 +206,18 @@ extension/            the extension (load this folder unpacked)
   core/               background: checking feeds, badge, notifications, actions
   core/services/      the other mail services, one file each: Yahoo, AOL, Proton, Yandex, Mail.ru
   core/services.js    runs them: their permissions, the Origin rules, their mailboxes in the check
-  data/panel/         the toolbar panel
+  core/utils/code.js  the one-time code finder, shared by the panel and the notifications
+  data/panel/         the toolbar panel; trackers.js keeps tracking pixels out, sender.js warns of a sender who is not who the name says
   data/ai/ai.js       the AI assistant: the engines, summaries, sorting, the assistant's plans, answers, drafts and translations
   data/ai/callback.*  where Sign in with ChatGPT comes back to
-  data/settings/      the settings page
+  data/settings/      the settings page (ui.js: its rail, search, More options and components)
+  data/welcome/       the page a new install opens
   _locales/           translations
 store/                Chrome Web Store listing text and images
 tools/icon/           the icon's SVG sources; render.py renders every PNG
 tools/package.sh      zips the extension for the store into dist/
 tools/publish.py      uploads that zip to the Chrome Web Store and submits it for review
-tools/test/run.sh     runs the tests: scripts, locales, settings, the background check, the mail services, the AI module, the panel in headless Chrome
+tools/test/run.sh     runs the tests: scripts, locales, settings, the background check and the worker, the mail services, Gmail's headers, the AI module, trackers and sender warnings, the panel and the welcome page in headless Chrome
 tools/test/services/  one test per mail service, against a fake of that service
 docs/images/          the pictures in this README
 ```

@@ -1,6 +1,6 @@
 # Mail Deck: privacy policy
 
-Last updated: 2026-11-02
+Last updated: 2026-11-03
 
 Mail Deck has no servers, no analytics and no tracking. Nothing it reads leaves your browser except the requests it sends to the mail services themselves: to Google for Gmail, and to each other mail service you turn on. If you turn on the AI assistant with your ChatGPT plan or your own Anthropic, OpenAI or Z.ai key, the mail it works on also goes to that provider, as described below.
 
@@ -59,9 +59,13 @@ Requests go from your browser straight to that provider; Mail Deck has no server
 
 The provider handles this data under its own terms: [OpenAI](https://openai.com/policies/row-privacy-policy/), [Anthropic](https://www.anthropic.com/legal/privacy), [Z.ai](https://docs.z.ai/legal-agreement/privacy-policy).
 
-Your API keys and the ChatGPT sign-in (its tokens, the app id OpenAI issued to this browser, an anonymous random id of this browser that OpenAI asks for, and your account's email address) are kept only in this browser's extension storage on your device (`chrome.storage.local`). They are never part of a settings backup or of Chrome sync, never shown in diagnostics, and sent only to their own provider. Disconnect removes them and Chrome's access to the provider. Summaries are kept in session storage, in memory only, until the browser closes, and so is the assistant's conversation. How a mail was sorted (waiting for a reply, important or newsletter, and a few words why) is kept on your device for 30 days, so the same mail is not sent again.
+Your API keys and the ChatGPT sign-in (its tokens, the app id OpenAI issued to this browser, an anonymous random id of this browser that OpenAI asks for, and your account's email address) are kept only in this browser's extension storage on your device (`chrome.storage.local`). They are never part of a settings backup or of Chrome sync, never shown in diagnostics, and sent only to their own provider. Disconnect removes them and Chrome's access to the provider. A summary (its key points, what it asks of you, its dates and details, not the mail itself) is kept on your device for 7 days, at most 200 of them, so a mail opened again shows it at once; the assistant's conversation is kept in session storage, in memory only, until the browser closes. How a mail was sorted (waiting for a reply, important or newsletter, and a few words why) is kept on your device for 30 days, so the same mail is not sent again.
 
 Translation by Chrome's own translator (**Translate from …** in an open message) runs on your computer and needs no assistant: Chrome may download a language pack from Google once, from your click, and nothing of the mail leaves your device.
+
+## The clipboard
+
+When you turn on Settings → Notifications → **Copy sign-in codes from notifications**, Chrome asks you to let Mail Deck write to the clipboard (the optional `clipboardWrite` permission). Then a new mail's notification that carries a one-time code has a **Copy** button: a click puts that code, found in the mail's subject or preview, on your clipboard. Mail Deck never reads the clipboard, and nothing is sent anywhere. Turning the switch off gives the permission back.
 
 ## Where it goes
 
@@ -70,13 +74,17 @@ To the mail services themselves: `mail.google.com` for Gmail, and the sites abov
 - **Sender icons.** For mail in your Gmail inboxes, the panel shows the sender's site icon from Google's icon service (`www.google.com/s2/favicons`), which receives the sender's domain, such as `github.com`, never an address or a message. Like any request your browser makes to Google, it may carry your Google cookies. Mail of the other services gets no icon from Google. "Show sender logos" in settings turns this off.
 - **Chrome sync.** If you turn on the settings copy in Chrome sync, your Mail Deck settings are stored with `chrome.storage.sync`, which Chrome keeps in your Google account like your other synced data. It is off by default.
 
-A Gmail message you open in the panel shows its pictures through Google's image proxy, as Gmail does. In a message of another service, pictures from the internet stay hidden until you press Show pictures, since loading them can tell the sender that the message was opened.
+**Pictures and trackers.** A Gmail message you open in the panel shows its pictures through Google's image proxy, as Gmail does, unless you turn on "Ask before showing pictures in Gmail mail" (Settings → Panel → More options); then they wait for Show pictures. In a message of another service, pictures from the internet always wait for Show pictures. Before anything of a message loads, Mail Deck checks each of its pictures inside the extension: a picture that only reports that you opened the message (a known open-tracking pixel, or a hidden or one-pixel picture whose address could identify you) is never loaded, not even by Show pictures, and the panel says how many it kept out and whose. The list is built into Mail Deck: nothing is downloaded or sent to check a picture.
+
+**Sender warnings.** For the message you open, the panel compares the sender's name and address, and its Reply-To when Gmail shows one, with a list of well-known brands and domains built into Mail Deck, and says so when they do not match. This happens inside the panel; nothing is sent anywhere.
+
+**Unsubscribe.** When you open a Gmail message, Mail Deck reads its header from `mail.google.com` (only the lines that say how to unsubscribe, the message id and Gmail's own check of the sender's signature) to offer Unsubscribe. Nothing is sent until you choose Unsubscribe and confirm: then, as the sender's header asks, Mail Deck either sends one request to the sender's unsubscribe address, with no cookies and nothing about you but what that address already holds, or opens a pre-filled email in Gmail for you to send, or opens the sender's page in a tab.
 
 Mail Deck does not send your mail, addresses, cookies or settings to its author, or to anyone other than the services named above. It does not sell or share data, and it does not use your data for advertising or credit decisions.
 
 ## What it stores
 
-Your settings (including which mail services you turned on), the order of your inboxes, the reminders you set and the current unread counts are kept in the browser's extension storage (`chrome.storage`) on your device. So that a message opens at once, the last dozen messages you opened (or, in Gmail, pointed at), from any service, and Gmail's answers to the panel's searches, are kept in the session part of that storage: in memory only, never written to disk, and gone when the browser closes. The same session storage holds what the other services need between checks: the tokens their pages hand out, which Proton session is which account, each service's last answer, shown for up to 30 minutes when a check fails, and which listed message belongs to which mailbox. Reminders never reach Gmail or any other service. Removing the extension deletes all of it, except a settings copy you chose to keep in Chrome sync, which you can turn off in settings.
+Your settings (including which mail services you turned on), the order of your inboxes, the reminders you set and the current unread counts are kept in the browser's extension storage (`chrome.storage`) on your device. So that a message opens at once, the last messages you opened (or, in Gmail, pointed at), from any service, up to 3 MB, and Gmail's answers to the panel's searches, are kept in the session part of that storage: in memory only, never written to disk, and gone when the browser closes. An action you just took waits out its five-second Undo in the extension's storage on your device, so that a browser closing meanwhile does not lose it. The same session storage holds what the other services need between checks: the tokens their pages hand out, which Proton session is which account, each service's last answer, shown for up to 30 minutes when a check fails, and which listed message belongs to which mailbox. Reminders never reach Gmail or any other service. Removing the extension deletes all of it, except a settings copy you chose to keep in Chrome sync, which you can turn off in settings.
 
 ## Contact
 
