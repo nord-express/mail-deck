@@ -74,6 +74,7 @@
       "/core/utils/resolved.js",
       "/core/utils/remind.js",
       "/core/utils/quiet.js",
+      "/core/utils/code.js",
       "/core/check.js",
       "/core/repeater.js",
       "/core/watch.js",

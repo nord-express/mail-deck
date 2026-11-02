@@ -5,6 +5,7 @@ if (typeof importScripts !== 'undefined') {
   self.importScripts('/core/utils/resolved.js');
   self.importScripts('/core/utils/remind.js');
   self.importScripts('/core/utils/quiet.js');
+  self.importScripts('/core/utils/code.js');
 }
 
 {
