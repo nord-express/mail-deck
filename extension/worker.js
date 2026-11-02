@@ -153,6 +153,9 @@ const perform = async ({cmd, links}, response) => {
     }
     await self.checkEmails.refresh();
   }
+  catch (err) {
+    console.error(err);
+  }
   finally {
     reply(response, failed.length ? {message: e?.message || 'Unknown Error - 1', failed} : undefined);
     repeater.reset('popup.action', 500);

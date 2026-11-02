@@ -737,12 +737,17 @@ if (typeof importScripts !== 'undefined') {
       }
       retries = 0;
       // An account found at another place than the last check thought (one before it signed out,
-      // the browser has just started) is asked again for its own labels.
+      // the browser has just started) is asked again for its own labels; a feed of them asked
+      // already stands.
       const found = slotsOf(objs);
       const again = Object.entries(found).filter(([n, address]) => labelsOf(prefs, address, n) !== planned[n]);
       if (again.length) {
         const answers = await Promise.all(again.map(([n, address]) => Promise.all(feedsAt(n, labelsOf(prefs, address, n)).map(href => {
           const feed = new Feed(href, prefs.timeout, isPrivate);
+          const asked = objs.find(o => o.href === href);
+          if (asked) {
+            return [feed, asked];
+          }
           return feed.execute(signal).then(r => [feed, r], e => {
             if (!signal.aborted) {
               log('[feed]', 'error', e);
@@ -755,6 +760,7 @@ if (typeof importScripts !== 'undefined') {
         }
         for (const [i, [n]] of again.entries()) {
           const here = o => helper.id(o.href || '') === Number(n);
+          // the ones that stand come back below, in the order of the new plan
           objs.splice(0, objs.length, ...objs.filter(o => !here(o)));
           failed.splice(0, failed.length, ...failed.filter(feed => !here(feed)));
           for (const [feed, r] of answers[i]) {
@@ -771,14 +777,17 @@ if (typeof importScripts !== 'undefined') {
       // a label setting of a place goes to the address of the account found there
       const legacy = LEGACY.filter((k, n) => prefs[k] && found[n] !== undefined);
       if (legacy.length) {
-        for (const k of legacy) {
-          const address = found[LEGACY.indexOf(k)];
-          if (typeof prefs.labels[address] !== 'string') {
-            prefs.labels[address] = prefs[k];
+        // into the labels as they are stored now: the settings page may have saved meanwhile
+        chrome.storage.local.get({labels: {}}).then(({labels}) => {
+          for (const k of legacy) {
+            const address = found[LEGACY.indexOf(k)];
+            if (typeof labels[address] !== 'string') {
+              labels[address] = prefs[k];
+            }
           }
-        }
-        moved = JSON.stringify(prefs.labels);
-        chrome.storage.local.set({labels: prefs.labels}).then(() => chrome.storage.local.remove(legacy));
+          moved = JSON.stringify(labels);
+          return chrome.storage.local.set({labels});
+        }).then(() => chrome.storage.local.remove(legacy)).catch(e => log('[feed]', 'labels', e));
       }
       // Gmail's clock against this one, from the feed that came the quickest: the time a feed
       // took to come only makes the difference look smaller

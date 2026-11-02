@@ -447,8 +447,11 @@ tests.push(
     assert.deepStrictEqual(where(b), ['user0@0', 'user1@1', 'user1/work@1', 'user2@2']);
     // user0 signs out: user1 is at /u/0, user2 at /u/1; the check that finds it asks again
     b.places = [1, 2];
+    const moving = b.requests;
     await b.run();
     assert.deepStrictEqual(where(b), ['user1@0', 'user1/work@0', 'user2@1']);
+    // /u/0 inbox, /u/1 inbox and work, /u/2 and /u/3 at once; then /u/0 work: the inboxes are not asked twice
+    assert.strictEqual(b.requests - moving, 6);
     // and the next one asks for each feed once
     const before = b.requests;
     await b.run();
