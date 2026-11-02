@@ -1803,6 +1803,12 @@
     "panel_remindSet": {
         "message": "Ustaw"
     },
+    "panel_searchGmailFor": {
+        "message": "Szukaj „$1” w Gmailu"
+    },
+    "panel_noMatches": {
+        "message": "Brak pasującej nieprzeczytanej poczty"
+    },
     "panel_assistant": {
         "message": "Asystent AI"
     },

@@ -1275,6 +1275,33 @@
       out.remindPicked = until() === at.getTime() && !$('menu');
       key(document, 'KeyZ');
       await wait(100);
+
+      // search as one types: the list's own mail, nothing asked; Enter asks Gmail
+      const searches = sent('gmail.search').length;
+      const prints = window.__prints;
+      key(document, 'Slash');
+      await wait(30);
+      const field = $('search-input');
+      const type = text => {
+        field.value = text;
+        field.dispatchEvent(new Event('input'));
+      };
+      type('figma');
+      await wait(30);
+      out.typed = [...document.querySelectorAll('#list .row')].map(r => id(r.dataset.link));
+      out.searchAll = $('list').querySelector('.search-all')?.textContent;
+      type('zzzq');
+      await wait(30);
+      out.none = $('list').querySelector('.search-note')?.textContent === t('noMatches') && rows().length === 0;
+      out.nothingAsked = sent('gmail.search').length === searches && window.__prints === prints;
+      key(field, 'ArrowDown');
+      out.downToAll = document.activeElement === $('list').querySelector('.search-all');
+      field.focus();
+      $('search').requestSubmit();
+      await wait(100);
+      out.enterAsks = sent('gmail.search').at(-1)?.query === 'zzzq';
+      key(field, 'Escape');
+      await wait(30);
     }
 
     if (scenario === 'boot') {

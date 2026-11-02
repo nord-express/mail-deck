@@ -1631,6 +1631,12 @@
   "panel_remindSet": {
     "message": "設定"
   },
+  "panel_searchGmailFor": {
+    "message": "Gmail で「$1」を検索"
+  },
+  "panel_noMatches": {
+    "message": "一致する未読メールはありません"
+  },
   "panel_assistant": {
     "message": "AI アシスタント"
   },

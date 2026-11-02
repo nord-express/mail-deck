@@ -1803,6 +1803,12 @@
     "panel_remindSet": {
         "message": "Задать"
     },
+    "panel_searchGmailFor": {
+        "message": "Искать «$1» в Gmail"
+    },
+    "panel_noMatches": {
+        "message": "Среди непрочитанных ничего не нашлось"
+    },
     "panel_assistant": {
         "message": "ИИ-ассистент"
     },

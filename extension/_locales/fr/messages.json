@@ -1631,6 +1631,12 @@
   "panel_remindSet": {
     "message": "Définir"
   },
+  "panel_searchGmailFor": {
+    "message": "Rechercher « $1 » dans Gmail"
+  },
+  "panel_noMatches": {
+    "message": "Aucun message non lu ne correspond"
+  },
   "panel_assistant": {
     "message": "Assistant IA"
   },

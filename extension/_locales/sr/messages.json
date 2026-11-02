@@ -1803,6 +1803,12 @@
     "panel_remindSet": {
         "message": "Постави"
     },
+    "panel_searchGmailFor": {
+        "message": "Претражи Gmail за „$1“"
+    },
+    "panel_noMatches": {
+        "message": "Нема непрочитаних порука које одговарају"
+    },
     "panel_assistant": {
         "message": "Асистент вештачке интелигенције"
     },

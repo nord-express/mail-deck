@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "קבע"
     },
+    "panel_searchGmailFor": {
+        "message": "חפש ב-Gmail את \"$1\""
+    },
+    "panel_noMatches": {
+        "message": "אין דואר שלא נקרא שמתאים"
+    },
     "panel_assistant": {
         "message": "עוזר בינה מלאכותית"
     },

@@ -1631,6 +1631,12 @@
   "panel_remindSet": {
     "message": "Imposta"
   },
+  "panel_searchGmailFor": {
+    "message": "Cerca «$1» in Gmail"
+  },
+  "panel_noMatches": {
+    "message": "Nessuna email da leggere corrisponde"
+  },
   "panel_assistant": {
     "message": "Assistente IA"
   },

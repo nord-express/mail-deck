@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "Задати"
     },
+    "panel_searchGmailFor": {
+        "message": "Шукати «$1» у Gmail"
+    },
+    "panel_noMatches": {
+        "message": "Серед непрочитаних нічого не знайшлося"
+    },
     "panel_assistant": {
         "message": "ШІ-асистент"
     },

@@ -1619,6 +1619,12 @@
   "panel_remindSet": {
     "message": "Beállítás"
   },
+  "panel_searchGmailFor": {
+    "message": "„$1” keresése a Gmailben"
+  },
+  "panel_noMatches": {
+    "message": "Nincs egyező olvasatlan levél"
+  },
   "panel_assistant": {
     "message": "MI-asszisztens"
   },

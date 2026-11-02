@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "Задай"
     },
+    "panel_searchGmailFor": {
+        "message": "Търсене на „$1“ в Gmail"
+    },
+    "panel_noMatches": {
+        "message": "Няма съвпадащи непрочетени писма"
+    },
     "panel_assistant": {
         "message": "ИИ асистент"
     },

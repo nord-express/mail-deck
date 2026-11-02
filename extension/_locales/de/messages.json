@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "Festlegen"
     },
+    "panel_searchGmailFor": {
+        "message": "In Gmail nach „$1“ suchen"
+    },
+    "panel_noMatches": {
+        "message": "Keine ungelesene E-Mail passt"
+    },
     "panel_assistant": {
         "message": "KI-Assistent"
     },

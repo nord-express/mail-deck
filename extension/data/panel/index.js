@@ -107,6 +107,8 @@ const state = {
   booting: false
 };
 let refreshing = false;
+// the list drawn as one types in the search: nothing it draws may ask the network (searchList)
+let quiet = false;
 // the first list with mail gives its first line the focus (renderList)
 let firstFocus = true;
 
@@ -316,7 +318,8 @@ const avatar = (e, o) => {
   const el = h('span', {class: 'avatar', style: `--c:${PALETTE[hash % PALETTE.length]}`},
     (name.match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase());
   const root = senderDomain(e);
-  if (state.senderLogos && !serviceOf(o) && root.includes('.') && !FREEMAIL.test(root) && logos.get(root) !== false) {
+  // the search drawing as one types shows only the logos it already knows
+  if (state.senderLogos && !serviceOf(o) && root.includes('.') && !FREEMAIL.test(root) && logos.get(root) !== false && !(quiet && !logos.has(root))) {
     const img = h('img', {alt: '', referrerPolicy: 'no-referrer'});
     // the service answers an unknown domain with a 16px globe
     img.onload = () => {
@@ -1025,12 +1028,35 @@ const paintChipsEdge = () => {
   el.classList.toggle('at-end', !over || Math.abs(el.scrollLeft) + el.clientWidth >= el.scrollWidth - 2);
 };
 
-/* search: every mailbox at once, or the one the chips chose */
+/* search: the list's own mail as one types, every Gmail mailbox at once (or the one the chips
+   chose) on Enter. typed: the field's words; q: the words Gmail was asked for, results its answer */
 const openSearch = () => {
-  state.search = state.search || {q: '', busy: false, results: null};
+  state.search = state.search || {typed: '', q: '', busy: false, results: null};
   $('search').hidden = false;
   render();
   $('search-input').focus();
+};
+// what one types narrows the list at once, from what it holds: nothing is asked of anyone. A
+// search is asked for again only with Enter; words that differ from it leave its answer
+const typeSearch = typed => {
+  const s = state.search;
+  if (!s || s.typed === typed) {
+    return;
+  }
+  state.search = typed.trim() === s.q && !s.busy ? {...s, typed} : {typed, q: '', busy: false, results: null};
+  if (state.search.results === null && s.q) {
+    say('');
+  }
+  renderList(view());
+};
+// a mail with every word typed in its sender, subject or preview; a Gmail operator counts for
+// its value (from:anna is anna)
+const matcher = typed => {
+  const words = typed.toLowerCase().split(/\s+/).map(w => w.replace(/^[a-z_]+:/, '').replace(/^"|"$/g, '')).filter(Boolean);
+  return e => {
+    const hay = [e.author_name, e.author_email, e.title, e.summary].join(' ').toLowerCase();
+    return words.every(w => hay.includes(w));
+  };
 };
 const closeSearch = () => {
   const inside = $('search').contains(document.activeElement);
@@ -1058,7 +1084,7 @@ const runSearch = q => {
   const gmails = view().filter(o => !serviceOf(o));
   const chosen = gmails.filter(o => o.xml.link === state.only);
   const accounts = (chosen.length ? chosen : gmails).filter((o, i, l) => l.findIndex(x => x.xml.title === o.xml.title) === i);
-  const s = state.search = {q, busy: true, results: null};
+  const s = state.search = {typed: $('search-input').value, q, busy: true, results: null};
   render();
   say(t('searching'));
   Promise.all(accounts.map(o => searchIn(o, q).then(entries => ({o, entries: entries || [], failed: !entries}))))
@@ -1079,13 +1105,27 @@ const note = text => h('div', {class: 'empty'}, h('p', {}, text));
 const skeleton = (rows = 3) => h('div', {'class': 'section skel', 'aria-hidden': 'true'},
   h('div', {class: 'skel-head'}, h('i'), h('i')),
   h('div', {class: 'cards'}, Array.from({length: rows}, () => h('div', {class: 'skel-row'}, h('i'), h('i'), h('i'), h('i')))));
-const searchList = () => {
+const searchList = (objs, shown) => {
   const s = state.search;
   if (s.busy) {
-    return [note(t('searching'))];
+    return [h('p', {class: 'search-note'}, t('searching')), skeleton(2)];
   }
   if (!s.results) {
-    return [];
+    // the list's own mail, narrowed as one types; Enter (or this line) asks Gmail
+    const typed = s.typed.trim();
+    if (!typed) {
+      return shown.map(o => section(o));
+    }
+    // drawn quietly: a line new to the list asks for neither its files nor its sender's logo
+    quiet = true;
+    const found = shown.map(o => section(o, matcher(typed))).filter(el => el.querySelector('.row'));
+    quiet = false;
+    return [
+      // Gmail's own search, when a Gmail mailbox is signed in
+      objs.some(o => !serviceOf(o)) && h('button', {'class': 'search-all', 'type': 'button', 'data-focus': 'search-all', 'onclick': () => runSearch(typed)},
+        icon('search'), h('span', {}, t('searchGmailFor', typed)), h('kbd', {'aria-hidden': 'true'}, '↵')),
+      ...(found.length ? found : [h('p', {class: 'search-note'}, t('noMatches'))])
+    ].filter(Boolean);
   }
   if (s.results.every(r => r.failed)) {
     return [note(t('searchFailed'))];
@@ -1168,8 +1208,10 @@ const filesFor = (e, o) => {
     return state.files.get(fileKey(e));
   }
   const known = gmail.filesNow(e.link, e.modified);
-  if (known) {
-    state.files.set(fileKey(e), known);
+  if (known || quiet) {
+    if (known) {
+      state.files.set(fileKey(e), known);
+    }
     return known;
   }
   state.files.set(fileKey(e), undefined);
@@ -1523,7 +1565,7 @@ const renderList = objs => {
   const shown = state.only ? objs.filter(o => o.xml.link === state.only) : objs;
   const keep = state.siteOnly ? e => ofSite(e, state.site) : state.sortOnly ? (e, o) => SORTS[state.sortOnly].has(replyOf(e, o)) : null;
   list.ariaBusy = String(state.booting);
-  list.replaceChildren(...(state.search ? searchList() : keep ? [
+  list.replaceChildren(...(state.search ? searchList(objs, shown) : keep ? [
     state.sortOnly && sortBar(shown),
     ...shown.map(o => section(o, keep)).filter(s => s.querySelector('.row'))
   ].filter(Boolean) : state.booting ? [skeleton()] : [
@@ -3536,10 +3578,21 @@ frameReady.then(doc => doc.addEventListener('keydown', onKey));
     ev.preventDefault();
     runSearch(input.value);
   });
+  // each word typed narrows the list (typeSearch); IME text counts once it is written
+  input.addEventListener('input', ev => !ev.isComposing && typeSearch(input.value));
+  input.addEventListener('compositionend', () => typeSearch(input.value));
   input.addEventListener('keydown', ev => {
     if (ev.code === 'Escape') {
       ev.preventDefault();
       closeSearch();
+    }
+    // down from the field into what it found
+    else if (ev.code === 'ArrowDown' && !ev.isComposing) {
+      const first = $('list').querySelector('.search-all, .row');
+      if (first) {
+        ev.preventDefault();
+        first.focus();
+      }
     }
   });
 }

@@ -1803,6 +1803,12 @@
     "panel_remindSet": {
         "message": "Instellen"
     },
+    "panel_searchGmailFor": {
+        "message": "Zoeken in Gmail naar ‘$1’"
+    },
+    "panel_noMatches": {
+        "message": "Geen ongelezen mail die overeenkomt"
+    },
     "panel_assistant": {
         "message": "AI-assistent"
     },

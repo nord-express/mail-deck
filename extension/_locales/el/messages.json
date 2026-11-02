@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "Ορισμός"
     },
+    "panel_searchGmailFor": {
+        "message": "Αναζήτηση «$1» στο Gmail"
+    },
+    "panel_noMatches": {
+        "message": "Κανένα μη αναγνωσμένο μήνυμα δεν ταιριάζει"
+    },
     "panel_assistant": {
         "message": "Βοηθός τεχνητής νοημοσύνης"
     },

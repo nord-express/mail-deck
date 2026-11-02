@@ -2831,6 +2831,54 @@ button.cite:hover {
   animation-delay: .2s;
 }
 
+/* searching as one types: what the list holds now, and the way to all of Gmail */
+.search-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  margin-bottom: 12px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-md);
+  text-align: start;
+  cursor: pointer;
+}
+.search-all:hover {
+  background: var(--hover);
+}
+.search-all:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+.search-all svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+}
+.search-all > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.search-all kbd {
+  color: var(--muted);
+}
+.search-note {
+  margin: 0 0 12px;
+  padding-inline: 14px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
 /* The panel narrower than its popup: the side panel at its narrowest, or a larger text size.
    Last in the file, so that they win over the rules above. */
 /* a narrow side panel keeps the actions and drops what only explains them */

@@ -296,7 +296,9 @@ const checks = {
     'the reader\'s bar: back, the arrows, its place, then the actions, Reply by name, and ⋯ with Open, Spam and the keys': JSON.stringify(r.bar) ===
       '["back","up","down","pos","box","grow","read","archive","trash","clock","sep","star","reply","more"]' && JSON.stringify(r.more) === '["O","!","?"]' && r.moreClosed,
     'remind me later: its times have the keys 1-4; a date and a time of one\'s own': JSON.stringify(r.remindKeys?.slice(0, 3)) === '["1","2","3"]' && r.remindByKey &&
-      r.pickFocused && r.remindPicked
+      r.pickFocused && r.remindPicked,
+    'search as one types: the list\'s mail narrows, nothing is asked; Enter asks Gmail': JSON.stringify(r.typed) === '["a1"]' &&
+      r.searchAll === T('searchGmailFor', 'figma') + '↵' && r.none && r.nothingAsked && r.downToAll && r.enterAsks
   }),
   boot: r => ({
     'after a browser start: lines stand for the mail, never Sign in, until the first list; then the list': r.skeleton && r.tools && r.listed,

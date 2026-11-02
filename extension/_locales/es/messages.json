@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "Programar"
     },
+    "panel_searchGmailFor": {
+        "message": "Buscar «$1» en Gmail"
+    },
+    "panel_noMatches": {
+        "message": "Ningún correo sin leer coincide"
+    },
     "panel_assistant": {
         "message": "Asistente de IA"
     },

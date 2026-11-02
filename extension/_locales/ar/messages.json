@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "تعيين"
     },
+    "panel_searchGmailFor": {
+        "message": "البحث في Gmail عن «$1»"
+    },
+    "panel_noMatches": {
+        "message": "لا يوجد بريد غير مقروء مطابق"
+    },
     "panel_assistant": {
         "message": "مساعد الذكاء الاصطناعي"
     },

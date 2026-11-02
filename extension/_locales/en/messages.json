@@ -1661,6 +1661,12 @@
   "panel_remindSet": {
     "message": "Set"
   },
+  "panel_searchGmailFor": {
+    "message": "Search Gmail for “$1”"
+  },
+  "panel_noMatches": {
+    "message": "No unread mail matches"
+  },
   "panel_assistant": {
     "message": "AI assistant"
   },

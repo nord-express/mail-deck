@@ -1799,6 +1799,12 @@
     "panel_remindSet": {
         "message": "Ayarla"
     },
+    "panel_searchGmailFor": {
+        "message": "Gmail’de “$1” ara"
+    },
+    "panel_noMatches": {
+        "message": "Eşleşen okunmamış posta yok"
+    },
     "panel_assistant": {
         "message": "Yapay zekâ asistanı"
     },

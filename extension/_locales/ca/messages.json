@@ -1803,6 +1803,12 @@
     "panel_remindSet": {
         "message": "Programa"
     },
+    "panel_searchGmailFor": {
+        "message": "Cerca «$1» a Gmail"
+    },
+    "panel_noMatches": {
+        "message": "Cap correu sense llegir hi coincideix"
+    },
     "panel_assistant": {
         "message": "Assistent d'IA"
     },
