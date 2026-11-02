@@ -2549,6 +2549,9 @@
     "opt_diagCopied": {
         "message": "Звіт скопійовано"
     },
+    "opt_welcomeAgain": {
+        "message": "Показати сторінку привітання ще раз"
+    },
     "opt_aiWelcome": {
         "message": "Ви використовуєте свою підписку ChatGPT"
     },

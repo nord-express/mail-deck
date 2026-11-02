@@ -2549,6 +2549,9 @@
     "opt_diagCopied": {
         "message": "Rapor kopyalandı"
     },
+    "opt_welcomeAgain": {
+        "message": "Karşılama sayfasını yeniden göster"
+    },
     "opt_aiWelcome": {
         "message": "ChatGPT planınızı kullanıyorsunuz"
     },

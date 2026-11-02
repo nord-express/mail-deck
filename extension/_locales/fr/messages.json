@@ -2381,6 +2381,9 @@
   "opt_diagCopied": {
     "message": "Rapport copié"
   },
+  "opt_welcomeAgain": {
+    "message": "Afficher à nouveau la page de bienvenue"
+  },
   "opt_aiWelcome": {
     "message": "Vous utilisez votre forfait ChatGPT"
   },

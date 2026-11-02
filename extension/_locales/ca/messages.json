@@ -2553,6 +2553,9 @@
     "opt_diagCopied": {
         "message": "S’ha copiat l’informe"
     },
+    "opt_welcomeAgain": {
+        "message": "Torna a mostrar la pàgina de benvinguda"
+    },
     "opt_aiWelcome": {
         "message": "Estàs fent servir el teu pla de ChatGPT"
     },

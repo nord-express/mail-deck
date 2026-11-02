@@ -2411,6 +2411,9 @@
   "opt_diagCopied": {
     "message": "Report copied"
   },
+  "opt_welcomeAgain": {
+    "message": "Show the welcome page again"
+  },
   "opt_aiWelcome": {
     "message": "You’re using your ChatGPT plan"
   },

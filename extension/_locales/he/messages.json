@@ -2549,6 +2549,9 @@
     "opt_diagCopied": {
         "message": "הדוח הועתק"
     },
+    "opt_welcomeAgain": {
+        "message": "הצגת דף הפתיחה שוב"
+    },
     "opt_aiWelcome": {
         "message": "אתה משתמש בתוכנית ה-ChatGPT שלך"
     },

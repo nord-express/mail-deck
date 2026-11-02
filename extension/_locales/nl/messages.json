@@ -2553,6 +2553,9 @@
     "opt_diagCopied": {
         "message": "Rapport gekopieerd"
     },
+    "opt_welcomeAgain": {
+        "message": "Welkomstpagina opnieuw tonen"
+    },
     "opt_aiWelcome": {
         "message": "Je gebruikt je ChatGPT-abonnement"
     },

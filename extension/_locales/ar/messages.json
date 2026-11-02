@@ -2549,6 +2549,9 @@
     "opt_diagCopied": {
         "message": "تم نسخ التقرير"
     },
+    "opt_welcomeAgain": {
+        "message": "عرض صفحة الترحيب مرة أخرى"
+    },
     "opt_aiWelcome": {
         "message": "أنت تستخدم خطة ChatGPT الخاصة بك"
     },

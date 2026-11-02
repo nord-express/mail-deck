@@ -2369,6 +2369,9 @@
   "opt_diagCopied": {
     "message": "Jelentés kimásolva"
   },
+  "opt_welcomeAgain": {
+    "message": "Az üdvözlőoldal újbóli megjelenítése"
+  },
   "opt_aiWelcome": {
     "message": "A ChatGPT-előfizetésedet használod"
   },

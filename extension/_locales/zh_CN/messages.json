@@ -2553,6 +2553,9 @@
     "opt_diagCopied": {
         "message": "报告已复制"
     },
+    "opt_welcomeAgain": {
+        "message": "再次显示欢迎页面"
+    },
     "opt_aiWelcome": {
         "message": "你正在使用 ChatGPT 套餐"
     },

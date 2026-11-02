@@ -2381,6 +2381,9 @@
   "opt_diagCopied": {
     "message": "レポートをコピーしました"
   },
+  "opt_welcomeAgain": {
+    "message": "ようこそページをもう一度表示"
+  },
   "opt_aiWelcome": {
     "message": "ChatGPT プランを使用しています"
   },

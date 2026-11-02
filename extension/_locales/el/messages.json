@@ -2549,6 +2549,9 @@
     "opt_diagCopied": {
         "message": "Η αναφορά αντιγράφηκε"
     },
+    "opt_welcomeAgain": {
+        "message": "Εμφάνιση ξανά της σελίδας καλωσορίσματος"
+    },
     "opt_aiWelcome": {
         "message": "Χρησιμοποιείτε τη συνδρομή σας ChatGPT"
     },

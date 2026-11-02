@@ -2408,6 +2408,9 @@
   "opt_diagCopied": {
     "message": "Справаздача скапіявана"
   },
+  "opt_welcomeAgain": {
+    "message": "Паказаць старонку прывітання яшчэ раз"
+  },
   "opt_aiWelcome": {
     "message": "Вы выкарыстоўваеце сваю падпіску ChatGPT"
   },

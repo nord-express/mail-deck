@@ -2549,6 +2549,9 @@
     "opt_diagCopied": {
         "message": "Отчетът е копиран"
     },
+    "opt_welcomeAgain": {
+        "message": "Покажи отново страницата за добре дошли"
+    },
     "opt_aiWelcome": {
         "message": "Използвате абонамента си за ChatGPT"
     },

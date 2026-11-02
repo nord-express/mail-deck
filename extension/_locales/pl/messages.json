@@ -2553,6 +2553,9 @@
     "opt_diagCopied": {
         "message": "Skopiowano raport"
     },
+    "opt_welcomeAgain": {
+        "message": "Pokaż ponownie stronę powitalną"
+    },
     "opt_aiWelcome": {
         "message": "Korzystasz ze swojego planu ChatGPT"
     },
