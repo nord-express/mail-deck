@@ -1571,6 +1571,18 @@
   "panel_trackersTip": {
     "message": "Des images cachées qui indiquent à l’expéditeur quand vous ouvrez le message. Mail Deck les empêche de se charger ; le reste du message ne change pas."
   },
+  "panel_warnBrand": {
+    "message": "Le nom indique $1, mais le message vient de $2."
+  },
+  "panel_warnLookalike": {
+    "message": "Le message vient de $1, une adresse faite pour ressembler à $2."
+  },
+  "panel_warnReplyTo": {
+    "message": "Les réponses partent vers $1, et non vers $2."
+  },
+  "panel_warnTip": {
+    "message": "L’expéditeur n’est peut-être pas celui qu’il prétend être. Méfiez-vous des liens, des pièces jointes et des demandes de mot de passe ou de paiement."
+  },
   "panel_keyRead": {
     "message": "lu"
   },

@@ -1739,6 +1739,18 @@
     "panel_trackersTip": {
         "message": "Imatges ocultes que diuen al remitent quan obres el missatge. Mail Deck no les deixa carregar; la resta del missatge no canvia."
     },
+    "panel_warnBrand": {
+        "message": "El nom diu $1, però el missatge ve de $2."
+    },
+    "panel_warnLookalike": {
+        "message": "El missatge ve de $1, una adreça feta perquè sembli $2."
+    },
+    "panel_warnReplyTo": {
+        "message": "Les respostes van a $1, no a $2."
+    },
+    "panel_warnTip": {
+        "message": "Potser el remitent no és qui diu ser. Vés amb compte amb els enllaços, els fitxers adjunts i les peticions de contrasenyes o pagaments."
+    },
     "panel_keyRead": {
         "message": "llegit"
     },

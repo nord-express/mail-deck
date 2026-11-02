@@ -1604,6 +1604,18 @@
   "panel_trackersTip": {
     "message": "Hidden pictures that tell the sender when you open the mail. Mail Deck keeps them from loading; the rest of the mail stays as it is."
   },
+  "panel_warnBrand": {
+    "message": "The name says $1, but the mail comes from $2."
+  },
+  "panel_warnLookalike": {
+    "message": "The mail comes from $1, an address made to look like $2."
+  },
+  "panel_warnReplyTo": {
+    "message": "Replies go to $1, not to $2."
+  },
+  "panel_warnTip": {
+    "message": "The sender may not be who they say. Take care with links, attachments and requests for passwords or payments."
+  },
   "panel_keyRead": {
     "message": "read"
   },

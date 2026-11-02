@@ -2045,8 +2045,10 @@ kbd {
 }
 
 /* the reader's privacy and safety lines */
-/* under the sender: a quiet line for the trackers kept out, which says more in its tooltip */
+/* under the sender: a calm warning when the sender is not who the name says, and a quiet line
+   for the trackers kept out; each says more in its tooltip */
 .reader-notes {
+  --warn: #a35200;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -2099,8 +2101,24 @@ kbd {
 .reader-note.ok > svg {
   color: var(--ok);
 }
-/* with a card of the assistant open the header steps back, and so does this */
-.reader-card:has(> .ai-card:not([hidden])) .reader-notes {
+/* a warning stands apart, without alarm: a warm tint, the sentence in the text's own colour */
+.reader-note.warn {
+  align-self: stretch;
+  padding: 7px 10px;
+  background: color-mix(in srgb, var(--warn) 11%, var(--card));
+  color: var(--soft);
+}
+.reader-note.warn > svg {
+  color: var(--warn);
+}
+@media (prefers-color-scheme: dark) {
+  .reader-notes {
+    --warn: #f0a24b;
+  }
+}
+/* with a card of the assistant open, only the warning stays */
+.reader-card:has(> .ai-card:not([hidden])) .reader-note.ok,
+.reader-card:has(> .ai-card:not([hidden])) .reader-notes:not(:has(.warn)) {
   display: none;
 }
 

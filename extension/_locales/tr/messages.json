@@ -1739,6 +1739,18 @@
     "panel_trackersTip": {
         "message": "İletiyi ne zaman açtığınızı gönderene bildiren gizli resimler. Mail Deck bunları yüklemez; iletinin geri kalanı değişmez."
     },
+    "panel_warnBrand": {
+        "message": "Ad $1 diyor, ancak ileti $2 adresinden geliyor."
+    },
+    "panel_warnLookalike": {
+        "message": "İleti $1 adresinden geliyor; bu adres $2 gibi görünmek için hazırlanmış."
+    },
+    "panel_warnReplyTo": {
+        "message": "Yanıtlar $2 yerine $1 adresine gider."
+    },
+    "panel_warnTip": {
+        "message": "Gönderen, söylediği kişi olmayabilir. Bağlantılara, eklere ve parola ya da ödeme isteklerine dikkat edin."
+    },
     "panel_keyRead": {
         "message": "okundu"
     },

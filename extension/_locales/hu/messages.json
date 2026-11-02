@@ -1553,6 +1553,18 @@
   "panel_trackersTip": {
     "message": "Rejtett képek, amelyek jelzik a feladónak, mikor nyitja meg a levelet. A Mail Deck nem tölti be őket, a levél többi része nem változik."
   },
+  "panel_warnBrand": {
+    "message": "A név szerint $1, de a levél innen jött: $2."
+  },
+  "panel_warnLookalike": {
+    "message": "A levél innen jött: $1. Ez a cím ezt utánozza: $2."
+  },
+  "panel_warnReplyTo": {
+    "message": "A válaszok ide mennek: $1, nem ide: $2."
+  },
+  "panel_warnTip": {
+    "message": "Lehet, hogy a feladó nem az, akinek mondja magát. Legyen óvatos a linkekkel, a mellékletekkel és a jelszót vagy fizetést kérő üzenetekkel."
+  },
   "panel_keyRead": {
     "message": "olvasott"
   },

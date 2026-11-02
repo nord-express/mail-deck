@@ -52,9 +52,13 @@
     ]),
     acc(1, 'work@arbitron.example', [entry(1, 'g6', 'GitHub', 'noreply@github.com', '[GitHub] Sign-in from a new device', 'We noticed a new sign-in.', 5)])
   ];
-  // ?s=privacy: a newsletter with trackers, and an ordinary mail
+  // ?s=privacy: a newsletter with trackers, a brand's name from another domain, a lookalike
+  // domain, replies sent to a lookalike of the reader's own domain, and an ordinary mail
   const privacy = q.get('s') === 'privacy' && [acc(0, 'evgeny@arbitron.app', [
     entry(0, 't1', 'Shop', 'news@shop.example', 'Weekly deals', 'This week only', 2),
+    entry(0, 'w1', 'PayPal', 'service@paypal-billing.net', 'Your account is limited', 'Confirm your details', 5),
+    entry(0, 'w2', 'Support', 'help@arnazon.com', 'Your order', 'Your order has shipped', 8),
+    entry(0, 'w3', 'Boss', 'boss@arbitron.app', 'Wire today', 'Please handle this today', 11),
     entry(0, 'n1', 'GitHub', 'noreply@github.com', 'New sign-in', 'A new sign-in to your account', 14)
   ])];
   const nine = ['bychkovea@gmail.com', 'evgeny@arbitron.app', 'abrahamlincolncrypto@gmail.com', 'georgewashingtoncypto@gmail.com', 'knivesmagician@gmail.com', 'thomasjeffersoncrypto@gmail.com', 'codewithevgeny@gmail.com', 'cryptobychkov@gmail.com', 'eco.toplivo.msk@gmail.com'];
@@ -396,7 +400,10 @@
       `<table background="${k('bg')}" width=40 height=20><tr><td>&nbsp;</td></tr></table>` +
       `<div style="width:20px;height:10px;background-image:url(${k('css')})">&nbsp;</div>` +
       '<div style="background:url(https://emltrk.com/v2/abc?d=x)">&nbsp;</div>'),
-    n1: print('GitHub', 'noreply@github.com', 'A new sign-in to your account.')
+    w1: print('PayPal', 'service@paypal-billing.net', 'Confirm your details.'),
+    w2: print('Support', 'help@arnazon.com', 'Your order has shipped.'),
+    w3: print('Boss', 'boss@arbitron.app', 'Please handle this today.', '<div>Reply-To: Boss &lt;boss@arbltron.app&gt;</div>'),
+    n1: print('GitHub', 'noreply@github.com', 'A new sign-in to your account.', '<div>Reply-To: noreply@github.com</div>')
   } : {};
   const realFetch = window.fetch;
   window.__prints = 0;

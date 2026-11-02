@@ -159,7 +159,11 @@ const checks = {
     'the reader says how many trackers it blocked and whose; the tooltip says what they are and names them all':
       JSON.stringify(r.trackerLine) === JSON.stringify(['ok:' + T('trackersBlocked', 5) + ' · 127.0.0.1, Mailchimp, SendGrid +1']) &&
       r.tip === T('trackersTip') + '\n127.0.0.1, Mailchimp, SendGrid, Litmus' && r.focusable,
-    'a mail without trackers says nothing': JSON.stringify(r.normal) === '[]' && r.notesHidden,
+    'a brand\'s name from another domain: one calm line, with what to take care of': JSON.stringify(r.brand) === JSON.stringify(['warn:' + T('warnBrand', 'PayPal', 'paypal-billing.net')]) &&
+      r.warnTip === T('warnTip'),
+    'a lookalike domain: one line': JSON.stringify(r.lookalike) === JSON.stringify(['warn:' + T('warnLookalike', 'arnazon.com', 'amazon.com')]),
+    'replies sent to a lookalike of the reader\'s own domain, from the print view\'s Reply-To': JSON.stringify(r.replyTo) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@arbltron.app', 'arbitron.app')]),
+    'an ordinary mail says nothing': JSON.stringify(r.normal) === '[]' && r.notesHidden,
     'nothing goes wrong unseen': r.consoleClean === true
   }),
   privacyask: r => ({

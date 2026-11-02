@@ -1571,6 +1571,18 @@
   "panel_trackersTip": {
     "message": "メールを開いたことを送信者に知らせる隠れた画像です。Mail Deck はこれを読み込みません。メールのほかの部分はそのままです。"
   },
+  "panel_warnBrand": {
+    "message": "名前は $1 ですが、メールは $2 から届いています。"
+  },
+  "panel_warnLookalike": {
+    "message": "メールは $1 から届いています。$2 に見せかけたアドレスです。"
+  },
+  "panel_warnReplyTo": {
+    "message": "返信先は $2 ではなく $1 です。"
+  },
+  "panel_warnTip": {
+    "message": "送信者は名乗っている相手ではないかもしれません。リンク、添付ファイル、パスワードや支払いの依頼には注意してください。"
+  },
   "panel_keyRead": {
     "message": "既読"
   },

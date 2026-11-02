@@ -1743,6 +1743,18 @@
     "panel_trackersTip": {
         "message": "会告诉发件人你何时打开邮件的隐藏图片。Mail Deck 不会加载它们，邮件的其余内容保持不变。"
     },
+    "panel_warnBrand": {
+        "message": "名称显示为 $1，但邮件来自 $2。"
+    },
+    "panel_warnLookalike": {
+        "message": "邮件来自 $1，这个地址被做得看起来像 $2。"
+    },
+    "panel_warnReplyTo": {
+        "message": "回复将发送到 $1，而不是 $2。"
+    },
+    "panel_warnTip": {
+        "message": "发件人可能并非其自称的身份。请谨慎对待链接、附件以及索要密码或付款的请求。"
+    },
     "panel_keyRead": {
         "message": "已读"
     },

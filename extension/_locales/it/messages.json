@@ -1571,6 +1571,18 @@
   "panel_trackersTip": {
     "message": "Immagini nascoste che dicono al mittente quando apri il messaggio. Mail Deck non le carica; il resto del messaggio non cambia."
   },
+  "panel_warnBrand": {
+    "message": "Il nome dice $1, ma il messaggio arriva da $2."
+  },
+  "panel_warnLookalike": {
+    "message": "Il messaggio arriva da $1, un indirizzo fatto per sembrare $2."
+  },
+  "panel_warnReplyTo": {
+    "message": "Le risposte vanno a $1, non a $2."
+  },
+  "panel_warnTip": {
+    "message": "Il mittente potrebbe non essere chi dice di essere. Fai attenzione a link, allegati e richieste di password o pagamenti."
+  },
   "panel_keyRead": {
     "message": "letto"
   },

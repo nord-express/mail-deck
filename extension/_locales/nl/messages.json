@@ -1743,6 +1743,18 @@
     "panel_trackersTip": {
         "message": "Verborgen afbeeldingen die de afzender laten weten wanneer je het bericht opent. Mail Deck laadt ze niet; de rest van het bericht blijft zoals het is."
     },
+    "panel_warnBrand": {
+        "message": "De naam zegt $1, maar het bericht komt van $2."
+    },
+    "panel_warnLookalike": {
+        "message": "Het bericht komt van $1, een adres dat op $2 moet lijken."
+    },
+    "panel_warnReplyTo": {
+        "message": "Antwoorden gaan naar $1, niet naar $2."
+    },
+    "panel_warnTip": {
+        "message": "De afzender is misschien niet wie hij zegt te zijn. Wees voorzichtig met links, bijlagen en verzoeken om wachtwoorden of betalingen."
+    },
     "panel_keyRead": {
         "message": "gelezen"
     },

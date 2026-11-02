@@ -347,12 +347,21 @@ gmail.get = {
         email: /<([^<>\s]+@[^<>\s]+)>/.exec(head.cells[0]?.textContent || '')?.[1] || '',
         date: head.cells.length > 1 ? head.cells[head.cells.length - 1].textContent.trim() : '',
         to: lines.join('\n') || recipient?.textContent.trim() || '',
+        replyTo: replyTo(lines),
         files: attachments(body),
         trackers,
         body
       };
     }).filter(Boolean);
   };
+  // Where replies go, when the print view says so: its line under the sender, in the words of
+  // Gmail's language. Only the languages named here are known; in another the line is not read.
+  const REPLY_TO = /^(reply-to|antwort an|répondre à|responder a|rispondi a|antwoord aan|odpowiedź do|ответить|ответ)\s*:/i;
+  const replyTo = lines => {
+    const line = lines.find(l => REPLY_TO.test(l));
+    return line ? (/<([^<>\s]+@[^<>\s]+)>/.exec(line) || /([^\s<>:,;]+@[^\s<>,;]+)/.exec(line.replace(REPLY_TO, '')))?.[1] || '' : '';
+  };
+
   // A Gmail message's pictures, before anything of it loads (Trackers): a tracker becomes a
   // blank of its size, never fetched, and is named; a blank spacer the same, unnamed; a picture
   // of the sender's waits for the reader, which shows it at once unless the settings ask first
@@ -677,10 +686,12 @@ gmail.get = {
   // what waits for Show pictures, and the attribute it goes back to ('' for a style sheet's text)
   const HELD = {held: 'src', heldPoster: 'poster', heldHref: 'href', heldBackground: 'background', heldStyle: 'style', heldCss: ''};
   const HELD_SELECTOR = Object.keys(HELD).map(key => `[data-${key.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}]`).join(', ');
-  // The rendered thread keeps what the reader says over it: the trackers taken out
+  // The rendered thread keeps what the reader says over it: the trackers taken out, and who
+  // each message is from and where its replies go
   const mark = (node, messages) => {
     if (node) {
       node.dataset.trackers = JSON.stringify(messages.flatMap(m => m.trackers || []));
+      node.dataset.senders = JSON.stringify(messages.map(m => ({name: m.name, email: m.email, replyTo: m.replyTo || ''})));
     }
     return node;
   };
@@ -716,9 +727,9 @@ gmail.get = {
       });
       return mark(thread(messages, maker(doc)), messages);
     },
-    // what a rendered thread tells the reader: {trackers: [name]}, by the vendor's name or the
-    // domain they report to ('' when neither is known)
-    about: node => ({trackers: parse(node?.dataset?.trackers)}),
+    // what a rendered thread tells the reader: {trackers: [name], senders: [{name, email, replyTo}]},
+    // the trackers by the vendor's name or the domain they report to ('' when neither is known)
+    about: node => ({trackers: parse(node?.dataset?.trackers), senders: parse(node?.dataset?.senders)}),
     // the files of every message of a print view, the page left as it is: [{name, view, download}]
     fileList(content, href) {
       const doc = new DOMParser().parseFromString(content, 'text/html');

@@ -1,4 +1,4 @@
-/* global Resolved, Remind, gmail, codeOf */
+/* global Resolved, Remind, gmail, codeOf, Sender */
 'use strict';
 
 // One colour per mailbox, in the order Google lists the signed-in accounts
@@ -14,6 +14,7 @@ const ICONS = {
   trash: ['M4 7h16', 'M6.5 7l.9 12a1.5 1.5 0 0 0 1.5 1.4h6.2a1.5 1.5 0 0 0 1.5-1.4l.9-12', 'M9.5 7V4.5h5V7'],
   spam: ['M12 3l8 3.5v5.5c0 4.5-3.4 7.7-8 9-4.6-1.3-8-4.5-8-9V6.5Z', 'M12 8.5v4', 'M12 15.8v.2'],
   shield: ['M12 3l8 3.5v5.5c0 4.5-3.4 7.7-8 9-4.6-1.3-8-4.5-8-9V6.5Z', 'M8.8 12.2l2.2 2.2 4.2-4.4'],
+  alert: ['M10.3 4.6a2 2 0 0 1 3.4 0l7.4 12.9a2 2 0 0 1-1.7 3H4.6a2 2 0 0 1-1.7-3Z', 'M12 10v4', 'M12 17v.1'],
   info: ['M12 20.5a8.5 8.5 0 1 0 0-17a8.5 8.5 0 0 0 0 17Z', 'M12 11v5', 'M12 7.9v.1'],
   back: ['M15 5l-7 7 7 7'],
   up: ['M6 15l6-6 6 6'],
@@ -2447,7 +2448,8 @@ const read = async (e, o, trail) => {
   $('reader-date').textContent = shortDate(e.modified);
   $('reader-date').dateTime = e.modified || '';
   $('reader-date').title = fullDate(e.modified);
-  // the trackers of the mail before go; this one's are known once its body is
+  // what the sender's name and address tell at once; the message may tell more (paintNotes)
+  r.warning = Sender.check({name: e.author_name, email: e.author_email, account: o.xml.title});
   r.trackers = [];
   paintNotes(r);
   // the files the line knew of show at once; the message's own replace them
@@ -2493,6 +2495,7 @@ const read = async (e, o, trail) => {
     }
     const about = gmail.render.about(node);
     r.trackers = about.trackers;
+    r.warning ||= Sender.replyTo(about.senders, o.xml.title);
     paintNotes(r);
     fit(doc);
     shown = true;
@@ -2535,19 +2538,23 @@ const read = async (e, o, trail) => {
     send({cmd: 'rd', links: [e.link]});
   }
 };
-// The reader's quiet line under the sender: the trackers kept from loading (gmail.js). It says
-// more in its tooltip.
+// The reader's quiet lines under the sender: a warning when the sender is not who the name says
+// (sender.js), and the trackers kept from loading (gmail.js). Each says more in its tooltip.
 const NOTE_NAMES = 3;
-// a domain or a name in the line keeps its own direction (Hebrew, Arabic)
+// a domain or a name inside the sentence keeps its own direction (Hebrew, Arabic)
 const isolate = text => '\u2068' + text + '\u2069';
 const readerNote = (kind, name, text, tip) => h('p', {'class': 'reader-note ' + kind, 'tabIndex': 0, 'data-tip': tip},
   icon(name), h('span', {class: 'note-text'}, text), h('span', {class: 'sr'}, tip), h('span', {'class': 'note-info', 'aria-hidden': 'true'}, icon('info')));
 const paintNotes = r => {
+  const w = r.warning;
+  const said = w && (w.rule === 'brand' ? t('warnBrand', isolate(w.brand), isolate(w.domain)) :
+    w.rule === 'lookalike' ? t('warnLookalike', isolate(w.domain), isolate(w.like)) : t('warnReplyTo', isolate(w.replyTo), isolate(w.domain)));
   // the vendors and domains, the first few; the tooltip has them all
   const named = [...new Set(r.trackers.filter(Boolean))];
   const list = named.length ? ' · ' + new Intl.ListFormat(LANG, {type: 'unit', style: 'short'}).format(named.slice(0, NOTE_NAMES).map(isolate)) +
     (named.length > NOTE_NAMES ? ' +' + (named.length - NOTE_NAMES) : '') : '';
   const lines = [
+    said && readerNote('warn', 'alert', said, t('warnTip')),
     r.trackers.length > 0 && readerNote('ok', 'shield', t('trackersBlocked', r.trackers.length) + list,
       t('trackersTip') + (named.length > NOTE_NAMES ? '\n' + named.join(', ') : ''))
   ].filter(Boolean);

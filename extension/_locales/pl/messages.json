@@ -1743,6 +1743,18 @@
     "panel_trackersTip": {
         "message": "Ukryte obrazy, które informują nadawcę, kiedy otwierasz wiadomość. Mail Deck ich nie wczytuje; reszta wiadomości pozostaje bez zmian."
     },
+    "panel_warnBrand": {
+        "message": "Nazwa mówi $1, ale wiadomość przyszła z $2."
+    },
+    "panel_warnLookalike": {
+        "message": "Wiadomość przyszła z $1 – adresu, który ma udawać $2."
+    },
+    "panel_warnReplyTo": {
+        "message": "Odpowiedzi trafią do $1, a nie do $2."
+    },
+    "panel_warnTip": {
+        "message": "Nadawca może nie być tym, za kogo się podaje. Uważaj na linki, załączniki i prośby o hasła lub płatności."
+    },
     "panel_keyRead": {
         "message": "przeczytane"
     },

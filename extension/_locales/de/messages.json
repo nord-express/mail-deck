@@ -1739,6 +1739,18 @@
     "panel_trackersTip": {
         "message": "Versteckte Bilder, die dem Absender verraten, wann Sie die Nachricht öffnen. Mail Deck lädt sie nicht; der Rest der Nachricht bleibt, wie er ist."
     },
+    "panel_warnBrand": {
+        "message": "Der Name lautet $1, die Nachricht kommt aber von $2."
+    },
+    "panel_warnLookalike": {
+        "message": "Die Nachricht kommt von $1, einer Adresse, die wie $2 aussehen soll."
+    },
+    "panel_warnReplyTo": {
+        "message": "Antworten gehen an $1, nicht an $2."
+    },
+    "panel_warnTip": {
+        "message": "Der Absender ist vielleicht nicht, wer er vorgibt zu sein. Seien Sie vorsichtig mit Links, Anhängen und Bitten um Passwörter oder Zahlungen."
+    },
     "panel_keyRead": {
         "message": "gelesen"
     },

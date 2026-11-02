@@ -1199,7 +1199,15 @@
       }
       await wait(300);
       out.after = await mine();
-      // a mail without trackers says nothing
+      // the sender's lines: a brand's name from elsewhere, a lookalike, replies to a lookalike
+      // of the reader's own domain (from the print view), and an ordinary mail
+      await open('w1');
+      out.brand = lines();
+      out.warnTip = document.querySelector('#reader-notes .warn')?.dataset.tip;
+      await open('w2');
+      out.lookalike = lines();
+      await open('w3');
+      out.replyTo = lines();
       await open('n1');
       out.normal = lines();
       out.notesHidden = document.getElementById('reader-notes').hidden;
