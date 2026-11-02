@@ -1415,9 +1415,6 @@
     "panel_doneRemind": {
         "message": "Recordatorio programado para $1"
     },
-    "panel_keyRemind": {
-        "message": "más tarde"
-    },
     "panel_search": {
         "message": "Buscar correo"
     },
@@ -1544,21 +1541,6 @@
     "panel_showPictures": {
         "message": "Mostrar imágenes"
     },
-    "panel_keyRead": {
-        "message": "leído"
-    },
-    "panel_keyArchive": {
-        "message": "archivar"
-    },
-    "panel_keyDelete": {
-        "message": "eliminar"
-    },
-    "panel_keyStar": {
-        "message": "destacar"
-    },
-    "panel_keyBack": {
-        "message": "atrás"
-    },
     "label_15": {
         "message": "Bandejas"
     },
@@ -1576,12 +1558,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "No se pudo copiar el código"
-    },
-    "panel_keyNext": {
-        "message": "siguiente"
-    },
-    "panel_keyPrev": {
-        "message": "anterior"
     },
     "panel_nextMessage": {
         "message": "Mensaje siguiente"
@@ -1702,9 +1678,6 @@
     },
     "panel_summary": {
         "message": "Resumen"
-    },
-    "panel_summaryKey": {
-        "message": "resumen"
     },
     "panel_summarizing": {
         "message": "Resumiendo…"

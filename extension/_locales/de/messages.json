@@ -1415,9 +1415,6 @@
     "panel_doneRemind": {
         "message": "Erinnerung für $1 eingestellt"
     },
-    "panel_keyRemind": {
-        "message": "später"
-    },
     "panel_search": {
         "message": "E-Mails durchsuchen"
     },
@@ -1544,21 +1541,6 @@
     "panel_showPictures": {
         "message": "Bilder anzeigen"
     },
-    "panel_keyRead": {
-        "message": "gelesen"
-    },
-    "panel_keyArchive": {
-        "message": "archivieren"
-    },
-    "panel_keyDelete": {
-        "message": "löschen"
-    },
-    "panel_keyStar": {
-        "message": "markieren"
-    },
-    "panel_keyBack": {
-        "message": "zurück"
-    },
     "label_15": {
         "message": "Postfächer"
     },
@@ -1576,12 +1558,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "Code konnte nicht kopiert werden"
-    },
-    "panel_keyNext": {
-        "message": "nächste"
-    },
-    "panel_keyPrev": {
-        "message": "vorige"
     },
     "panel_nextMessage": {
         "message": "Nächste Nachricht"
@@ -1702,9 +1678,6 @@
     },
     "panel_summary": {
         "message": "Zusammenfassung"
-    },
-    "panel_summaryKey": {
-        "message": "zusammenfassen"
     },
     "panel_summarizing": {
         "message": "Wird zusammengefasst…"

@@ -1247,9 +1247,6 @@
   "panel_doneRemind": {
     "message": "Rappel programmé pour $1"
   },
-  "panel_keyRemind": {
-    "message": "plus tard"
-  },
   "panel_search": {
     "message": "Rechercher dans les messages"
   },
@@ -1376,21 +1373,6 @@
   "panel_showPictures": {
     "message": "Afficher les images"
   },
-  "panel_keyRead": {
-    "message": "lu"
-  },
-  "panel_keyArchive": {
-    "message": "archiver"
-  },
-  "panel_keyDelete": {
-    "message": "supprimer"
-  },
-  "panel_keyStar": {
-    "message": "suivre"
-  },
-  "panel_keyBack": {
-    "message": "retour"
-  },
   "label_15": {
     "message": "Boîtes de réception"
   },
@@ -1408,12 +1390,6 @@
   },
   "panel_copyCodeFailed": {
     "message": "Impossible de copier le code"
-  },
-  "panel_keyNext": {
-    "message": "suivant"
-  },
-  "panel_keyPrev": {
-    "message": "précédent"
   },
   "panel_nextMessage": {
     "message": "Message suivant"
@@ -1534,9 +1510,6 @@
   },
   "panel_summary": {
     "message": "Résumé"
-  },
-  "panel_summaryKey": {
-    "message": "résumé"
   },
   "panel_summarizing": {
     "message": "Résumé en cours…"

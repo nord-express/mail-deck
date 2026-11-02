@@ -1419,9 +1419,6 @@
     "panel_doneRemind": {
         "message": "将在 $1 提醒你"
     },
-    "panel_keyRemind": {
-        "message": "稍后"
-    },
     "panel_search": {
         "message": "搜索邮件"
     },
@@ -1548,21 +1545,6 @@
     "panel_showPictures": {
         "message": "显示图片"
     },
-    "panel_keyRead": {
-        "message": "已读"
-    },
-    "panel_keyArchive": {
-        "message": "归档"
-    },
-    "panel_keyDelete": {
-        "message": "删除"
-    },
-    "panel_keyStar": {
-        "message": "星标"
-    },
-    "panel_keyBack": {
-        "message": "返回"
-    },
     "label_15": {
         "message": "邮箱"
     },
@@ -1580,12 +1562,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "无法复制验证码"
-    },
-    "panel_keyNext": {
-        "message": "下一封"
-    },
-    "panel_keyPrev": {
-        "message": "上一封"
     },
     "panel_nextMessage": {
         "message": "下一封邮件"
@@ -1705,9 +1681,6 @@
         "message": "内置模型会用英语回答。"
     },
     "panel_summary": {
-        "message": "摘要"
-    },
-    "panel_summaryKey": {
         "message": "摘要"
     },
     "panel_summarizing": {

@@ -1229,9 +1229,6 @@
   "panel_doneRemind": {
     "message": "Emlékeztető beállítva: $1"
   },
-  "panel_keyRemind": {
-    "message": "később"
-  },
   "panel_search": {
     "message": "Keresés a levelekben"
   },
@@ -1358,21 +1355,6 @@
   "panel_showPictures": {
     "message": "Képek megjelenítése"
   },
-  "panel_keyRead": {
-    "message": "olvasott"
-  },
-  "panel_keyArchive": {
-    "message": "archiválás"
-  },
-  "panel_keyDelete": {
-    "message": "törlés"
-  },
-  "panel_keyStar": {
-    "message": "csillag"
-  },
-  "panel_keyBack": {
-    "message": "vissza"
-  },
   "settings_open_title": {
     "message": "Beállítások oldal megnyitása"
   },
@@ -1396,12 +1378,6 @@
   },
   "panel_copyCodeFailed": {
     "message": "Nem sikerült másolni a kódot"
-  },
-  "panel_keyNext": {
-    "message": "következő"
-  },
-  "panel_keyPrev": {
-    "message": "előző"
   },
   "panel_nextMessage": {
     "message": "Következő levél"
@@ -1522,9 +1498,6 @@
   },
   "panel_summary": {
     "message": "Összefoglaló"
-  },
-  "panel_summaryKey": {
-    "message": "összefoglaló"
   },
   "panel_summarizing": {
     "message": "Összefoglalás…"

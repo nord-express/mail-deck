@@ -1247,9 +1247,6 @@
   "panel_doneRemind": {
     "message": "Promemoria impostato per $1"
   },
-  "panel_keyRemind": {
-    "message": "più tardi"
-  },
   "panel_search": {
     "message": "Cerca nella posta"
   },
@@ -1376,21 +1373,6 @@
   "panel_showPictures": {
     "message": "Mostra immagini"
   },
-  "panel_keyRead": {
-    "message": "letto"
-  },
-  "panel_keyArchive": {
-    "message": "archivia"
-  },
-  "panel_keyDelete": {
-    "message": "elimina"
-  },
-  "panel_keyStar": {
-    "message": "speciale"
-  },
-  "panel_keyBack": {
-    "message": "indietro"
-  },
   "label_15": {
     "message": "Caselle"
   },
@@ -1408,12 +1390,6 @@
   },
   "panel_copyCodeFailed": {
     "message": "Impossibile copiare il codice"
-  },
-  "panel_keyNext": {
-    "message": "successivo"
-  },
-  "panel_keyPrev": {
-    "message": "precedente"
   },
   "panel_nextMessage": {
     "message": "Messaggio successivo"
@@ -1534,9 +1510,6 @@
   },
   "panel_summary": {
     "message": "Riepilogo"
-  },
-  "panel_summaryKey": {
-    "message": "riepilogo"
   },
   "panel_summarizing": {
     "message": "Riepilogo in corso…"

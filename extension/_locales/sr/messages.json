@@ -1415,9 +1415,6 @@
     "panel_doneRemind": {
         "message": "Подсетник за $1"
     },
-    "panel_keyRemind": {
-        "message": "касније"
-    },
     "panel_search": {
         "message": "Претражи пошту"
     },
@@ -1544,21 +1541,6 @@
     "panel_showPictures": {
         "message": "Прикажи слике"
     },
-    "panel_keyRead": {
-        "message": "прочитано"
-    },
-    "panel_keyArchive": {
-        "message": "архивирај"
-    },
-    "panel_keyDelete": {
-        "message": "избриши"
-    },
-    "panel_keyStar": {
-        "message": "звездица"
-    },
-    "panel_keyBack": {
-        "message": "назад"
-    },
     "gmail": {
         "message": "Mail Deck",
         "description": ""
@@ -1580,12 +1562,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "Копирање кода није успело"
-    },
-    "panel_keyNext": {
-        "message": "следећа"
-    },
-    "panel_keyPrev": {
-        "message": "претходна"
     },
     "panel_nextMessage": {
         "message": "Следећа порука"
@@ -1706,9 +1682,6 @@
     },
     "panel_summary": {
         "message": "Сажетак"
-    },
-    "panel_summaryKey": {
-        "message": "сажетак"
     },
     "panel_summarizing": {
         "message": "Сажимање…"

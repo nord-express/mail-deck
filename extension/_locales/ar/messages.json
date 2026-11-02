@@ -1411,9 +1411,6 @@
     "panel_doneRemind": {
         "message": "تم ضبط تذكير في $1"
     },
-    "panel_keyRemind": {
-        "message": "لاحقًا"
-    },
     "panel_search": {
         "message": "البحث في البريد"
     },
@@ -1540,21 +1537,6 @@
     "panel_showPictures": {
         "message": "إظهار الصور"
     },
-    "panel_keyRead": {
-        "message": "مقروءة"
-    },
-    "panel_keyArchive": {
-        "message": "أرشفة"
-    },
-    "panel_keyDelete": {
-        "message": "حذف"
-    },
-    "panel_keyStar": {
-        "message": "نجمة"
-    },
-    "panel_keyBack": {
-        "message": "رجوع"
-    },
     "gmail": {
         "message": "Mail Deck",
         "description": ""
@@ -1576,12 +1558,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "تعذّر نسخ رمز التحقق"
-    },
-    "panel_keyNext": {
-        "message": "التالية"
-    },
-    "panel_keyPrev": {
-        "message": "السابقة"
     },
     "panel_nextMessage": {
         "message": "الرسالة التالية"
@@ -1701,9 +1677,6 @@
         "message": "يجيب النموذج المدمج بالإنجليزية."
     },
     "panel_summary": {
-        "message": "ملخّص"
-    },
-    "panel_summaryKey": {
         "message": "ملخّص"
     },
     "panel_summarizing": {

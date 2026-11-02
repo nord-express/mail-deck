@@ -1419,9 +1419,6 @@
     "panel_doneRemind": {
         "message": "Напоминание на $1"
     },
-    "panel_keyRemind": {
-        "message": "позже"
-    },
     "panel_search": {
         "message": "Поиск в почте"
     },
@@ -1548,21 +1545,6 @@
     "panel_showPictures": {
         "message": "Показать картинки"
     },
-    "panel_keyRead": {
-        "message": "прочитано"
-    },
-    "panel_keyArchive": {
-        "message": "архив"
-    },
-    "panel_keyDelete": {
-        "message": "удалить"
-    },
-    "panel_keyStar": {
-        "message": "звёздочка"
-    },
-    "panel_keyBack": {
-        "message": "назад"
-    },
     "label_15": {
         "message": "Ящики"
     },
@@ -1580,12 +1562,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "Не удалось скопировать код"
-    },
-    "panel_keyNext": {
-        "message": "следующее"
-    },
-    "panel_keyPrev": {
-        "message": "предыдущее"
     },
     "panel_nextMessage": {
         "message": "Следующее письмо"
@@ -1706,9 +1682,6 @@
     },
     "panel_summary": {
         "message": "Сводка"
-    },
-    "panel_summaryKey": {
-        "message": "сводка"
     },
     "panel_summarizing": {
         "message": "Составляю сводку…"

@@ -1415,9 +1415,6 @@
     "panel_doneRemind": {
         "message": "Recordatori programat per a $1"
     },
-    "panel_keyRemind": {
-        "message": "més tard"
-    },
     "panel_search": {
         "message": "Cerca al correu"
     },
@@ -1544,21 +1541,6 @@
     "panel_showPictures": {
         "message": "Mostra les imatges"
     },
-    "panel_keyRead": {
-        "message": "llegit"
-    },
-    "panel_keyArchive": {
-        "message": "arxiva"
-    },
-    "panel_keyDelete": {
-        "message": "suprimeix"
-    },
-    "panel_keyStar": {
-        "message": "estrella"
-    },
-    "panel_keyBack": {
-        "message": "enrere"
-    },
     "gmail": {
         "message": "Mail Deck",
         "description": ""
@@ -1580,12 +1562,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "No s'ha pogut copiar el codi"
-    },
-    "panel_keyNext": {
-        "message": "següent"
-    },
-    "panel_keyPrev": {
-        "message": "anterior"
     },
     "panel_nextMessage": {
         "message": "Missatge següent"
@@ -1706,9 +1682,6 @@
     },
     "panel_summary": {
         "message": "Resum"
-    },
-    "panel_summaryKey": {
-        "message": "resum"
     },
     "panel_summarizing": {
         "message": "S'està resumint…"

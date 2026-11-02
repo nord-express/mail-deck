@@ -1411,9 +1411,6 @@
     "panel_doneRemind": {
         "message": "Напомняне за $1"
     },
-    "panel_keyRemind": {
-        "message": "по-късно"
-    },
     "panel_search": {
         "message": "Търсене в пощата"
     },
@@ -1540,21 +1537,6 @@
     "panel_showPictures": {
         "message": "Покажи изображенията"
     },
-    "panel_keyRead": {
-        "message": "прочетено"
-    },
-    "panel_keyArchive": {
-        "message": "архив"
-    },
-    "panel_keyDelete": {
-        "message": "изтриване"
-    },
-    "panel_keyStar": {
-        "message": "звезда"
-    },
-    "panel_keyBack": {
-        "message": "назад"
-    },
     "gmail": {
         "message": "Mail Deck",
         "description": ""
@@ -1576,12 +1558,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "Кодът не можа да се копира"
-    },
-    "panel_keyNext": {
-        "message": "следващо"
-    },
-    "panel_keyPrev": {
-        "message": "предишно"
     },
     "panel_nextMessage": {
         "message": "Следващо писмо"
@@ -1702,9 +1678,6 @@
     },
     "panel_summary": {
         "message": "Обобщение"
-    },
-    "panel_summaryKey": {
-        "message": "обобщение"
     },
     "panel_summarizing": {
         "message": "Обобщаване…"

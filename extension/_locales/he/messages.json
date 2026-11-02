@@ -1411,9 +1411,6 @@
     "panel_doneRemind": {
         "message": "תזכורת נקבעה: $1"
     },
-    "panel_keyRemind": {
-        "message": "מאוחר יותר"
-    },
     "panel_search": {
         "message": "חפש בדואר"
     },
@@ -1540,21 +1537,6 @@
     "panel_showPictures": {
         "message": "הצג תמונות"
     },
-    "panel_keyRead": {
-        "message": "נקרא"
-    },
-    "panel_keyArchive": {
-        "message": "ארכיון"
-    },
-    "panel_keyDelete": {
-        "message": "מחק"
-    },
-    "panel_keyStar": {
-        "message": "כוכב"
-    },
-    "panel_keyBack": {
-        "message": "חזרה"
-    },
     "gmail": {
         "message": "Mail Deck",
         "description": ""
@@ -1576,12 +1558,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "לא ניתן היה להעתיק את הקוד"
-    },
-    "panel_keyNext": {
-        "message": "הבאה"
-    },
-    "panel_keyPrev": {
-        "message": "הקודמת"
     },
     "panel_nextMessage": {
         "message": "ההודעה הבאה"
@@ -1701,9 +1677,6 @@
         "message": "המודל המובנה עונה באנגלית."
     },
     "panel_summary": {
-        "message": "סיכום"
-    },
-    "panel_summaryKey": {
         "message": "סיכום"
     },
     "panel_summarizing": {

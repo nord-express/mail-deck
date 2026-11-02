@@ -1415,9 +1415,6 @@
     "panel_doneRemind": {
         "message": "Нагадування на $1"
     },
-    "panel_keyRemind": {
-        "message": "пізніше"
-    },
     "panel_search": {
         "message": "Пошук у пошті"
     },
@@ -1544,21 +1541,6 @@
     "panel_showPictures": {
         "message": "Показати зображення"
     },
-    "panel_keyRead": {
-        "message": "прочитано"
-    },
-    "panel_keyArchive": {
-        "message": "архів"
-    },
-    "panel_keyDelete": {
-        "message": "видалити"
-    },
-    "panel_keyStar": {
-        "message": "зірочка"
-    },
-    "panel_keyBack": {
-        "message": "назад"
-    },
     "label_15": {
         "message": "Скриньки"
     },
@@ -1576,12 +1558,6 @@
     },
     "panel_copyCodeFailed": {
         "message": "Не вдалося скопіювати код"
-    },
-    "panel_keyNext": {
-        "message": "наступний"
-    },
-    "panel_keyPrev": {
-        "message": "попередній"
     },
     "panel_nextMessage": {
         "message": "Наступний лист"
@@ -1702,9 +1678,6 @@
     },
     "panel_summary": {
         "message": "Підсумок"
-    },
-    "panel_summaryKey": {
-        "message": "підсумок"
     },
     "panel_summarizing": {
         "message": "Складаю підсумок…"
