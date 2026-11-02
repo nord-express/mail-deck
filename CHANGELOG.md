@@ -3,6 +3,30 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.6.0
+
+Mail Deck 1.6.0 is a release about trust and finish: trackers kept out of your mail, a new settings page, a sharper assistant, one-click unsubscribe, and dozens of fixes that make it hold up when Gmail, the network or the clock does not.
+
+**New**
+- **Trackers stay out.** Pictures that only report that you opened a mail never load, not even by Show pictures, and the reader says how many it kept out and whose. Gmail's pictures can also wait for Show pictures (Settings → Panel).
+- **Who really sent it.** A calm warning when a sender's name claims a well-known brand its address does not belong to, when its domain imitates another, or when replies would go somewhere else.
+- **Unsubscribe in one click**, the way the sender's header asks, always after you confirm, and archive what that sender left unread. The Newsletters chip lists its senders.
+- **Search as you type**, saved searches as chips, and **Gmail's own categories** (Promotions, Social, Updates) as chips that need no AI, each with Mark all read and Archive all.
+- **Mark as unread** (U). Replies and new mail open in a **small window of their own**.
+- **Notifications** show a sign-in code in their title and can copy it (an optional permission, asked from Settings), have a **Later** button, and can open the panel.
+- **The assistant** remembers the conversation ("only last week", "summarize them"), acts on the mail it found (mark read, archive, with Undo), works out dates exactly in your time zone, searches more broadly when nothing is found, checks its citations, and says when Gmail did not answer. Summaries leave out what you already answered, count dates from the message that says them, and list details to copy. Drafts can be made shorter, longer, more formal, friendlier or corrected. Plans and sorting use a faster, cheaper model, and sorting fills the chips as it goes.
+- **A new settings page**: a rail with search, a header that says what needs a look, More options in each section, inbox pictures, engine cards for the AI, a quiet-hours day bar, and a save state.
+- **A redesigned panel**: one calm type and colour scale, the message kept in view under a summary, tooltips with their keys, a `?` sheet of every key, a cursor on the first mail, skeletons instead of a blank start, and a hint to pin the icon.
+- **A welcome page** on install that finds your inboxes, shows how to pin the icon, and sends a test notification.
+- One line, once, after two weeks of use, asking for a rating.
+
+**Fixed**
+- One Google account that needs its password again no longer hides every account after it; a Google outage no longer looks like being signed out of everything; a clock that is off no longer stops notifications or brings archived mail back; a feed that fails once keeps its mail for a while instead of dropping it.
+- An action's Undo window survives a browser restart; an action over several accounts that one refuses brings back only that one's mail; mail acted on from search or the assistant leaves the list at once.
+- Gmail labels now follow their account's address, not its place in the browser.
+- The panel's message cache stays within a budget, never keeps a sign-in page, and no request to Gmail waits forever.
+- A mail opens even with no browser window open; reminders open in their own account.
+
 ## 1.5.0
 
 Mail Deck 1.5.0 turns the AI assistant into one you can ask anything, adds your ChatGPT plan and Z.ai's GLM as ways to run it, and puts attachments in plain sight. It includes everything of 1.4.0, which did not reach the store on its own.
