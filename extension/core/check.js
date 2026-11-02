@@ -347,21 +347,54 @@ if (typeof importScripts !== 'undefined') {
     }
   });
 
-  // Each of the 10 accounts Google lets a profile sign in to is checked: the
-  // labels set for it, or its inbox when none are set
-  const buildFeeds = prefs => {
+  /*
+   * The labels an account watches are kept by its address ('labels': address -> 'inbox, work'),
+   * since its place in the browser (/mail/u/<n>) moves when an account before it signs out.
+   * Up to 1.5 they were kept by that place ('feeds_<n>'); such a setting still applies to the
+   * account at its place until a check has seen who is there, and then moves to its address.
+   */
+  const LEGACY = [...Array(10).keys()].map(n => 'feeds_' + n);
+  const labelsOf = (prefs, address, n) => address !== undefined && typeof prefs.labels?.[address] === 'string' ?
+    prefs.labels[address] : prefs['feeds_' + n] || '';
+  // the feeds of the account at /u/<n>: the labels it watches, or its inbox when none are set
+  const feedsAt = (n, labels) => {
+    const base = `https://mail.google.com/mail/u/${n}/feed/atom`;
+    const list = labels.split(/\s*,\s*/).filter(Boolean);
+    // only feeds without '/inbox' show the right full-count
+    return list.length ? list.map(l => l === 'inbox' ? base : base + '/' + encodeURIComponent(l)) : [base];
+  };
+  // Each of the 10 accounts Google lets a profile sign in to is checked, with the labels of the
+  // account the last check found at its place (planned: n -> those labels)
+  const buildFeeds = (prefs, slots, planned) => {
     const feeds = [];
     for (let i = 0; i < 10; i += 1) {
-      const base = `https://mail.google.com/mail/u/${i}/feed/atom`;
-      const labels = (prefs['feeds_' + i] || '').split(/\s*,\s*/).filter(Boolean);
-      // only feeds without '/inbox' show the right full-count
-      feeds.push(...(labels.length ? labels.map(l => l === 'inbox' ? base : base + '/' + encodeURIComponent(l)) : [base]));
+      planned[i] = labelsOf(prefs, slots[i], i);
+      feeds.push(...feedsAt(i, planned[i]));
     }
     if (prefs.feeds_custom) {
       feeds.push(...prefs.feeds_custom.split(/\s*,\s*/g));
     }
     return feeds.filter((feed, index) => feed && feeds.indexOf(feed) === index).sort();
   };
+  // the address of the Gmail account at each place, as the given accounts tell it
+  const slotsOf = objs => {
+    const slots = {};
+    for (const o of objs || []) {
+      const n = o.xml?.service ? undefined : helper.id(o.xml?.rootLink || '');
+      if (n !== undefined && o.xml.title) {
+        slots[n] = o.xml.title;
+      }
+    }
+    return slots;
+  };
+  // the labels as the check moved them from the places to the addresses: that write asks for no
+  // check of its own, the settings page's does
+  let moved = '';
+  chrome.storage.onChanged.addListener((ps, area) => {
+    if (area === 'local' && ps.labels && JSON.stringify(ps.labels.newValue || {}) !== moved) {
+      repeater.reset('change.of.feeds');
+    }
+  });
 
   /*
    * The accounts of the last check as the feeds told them, resolved and reminded mail
@@ -525,16 +558,8 @@ if (typeof importScripts !== 'undefined') {
     }
     const prefs = await read({
       'url': 'https://mail.google.com/mail/u/0',
-      'feeds_0': '',
-      'feeds_1': '',
-      'feeds_2': '',
-      'feeds_3': '',
-      'feeds_4': '',
-      'feeds_5': '',
-      'feeds_6': '',
-      'feeds_7': '',
-      'feeds_8': '',
-      'feeds_9': '',
+      'labels': {},
+      ...Object.fromEntries(LEGACY.map(k => [k, ''])),
       'feeds_custom': '',
       'timeout': 9000,
       'alphabetic': false,
@@ -566,7 +591,12 @@ if (typeof importScripts !== 'undefined') {
       return [];
     });
 
-    const fdsr = buildFeeds(prefs); // requested feeds
+    // the labels of each place, as the feeds are planned
+    const planned = {};
+    const fdsr = buildFeeds(prefs, slotsOf(await self.checkEmails.getCached()), planned); // requested feeds
+    if (signal.aborted) {
+      return log('[feed]', 'skipped');
+    }
     // do not reduce the feed list from cookies. It is not reliable
     const feeds = fdsr.map(feed => new Feed(feed, prefs.timeout, isPrivate));
 
@@ -674,6 +704,50 @@ if (typeof importScripts !== 'undefined') {
         return keep(forced);
       }
       retries = 0;
+      // An account found at another place than the last check thought (one before it signed out,
+      // the browser has just started) is asked again for its own labels.
+      const found = slotsOf(objs);
+      const again = Object.entries(found).filter(([n, address]) => labelsOf(prefs, address, n) !== planned[n]);
+      if (again.length) {
+        const answers = await Promise.all(again.map(([n, address]) => Promise.all(feedsAt(n, labelsOf(prefs, address, n)).map(href => {
+          const feed = new Feed(href, prefs.timeout, isPrivate);
+          return feed.execute(signal).then(r => [feed, r], e => {
+            if (!signal.aborted) {
+              log('[feed]', 'error', e);
+            }
+            return [feed];
+          });
+        }))));
+        if (signal.aborted) {
+          return log('[feed]', 'skipped');
+        }
+        for (const [i, [n]] of again.entries()) {
+          const here = o => helper.id(o.href || '') === Number(n);
+          objs.splice(0, objs.length, ...objs.filter(o => !here(o)));
+          failed.splice(0, failed.length, ...failed.filter(feed => !here(feed)));
+          for (const [feed, r] of answers[i]) {
+            if (r?.xml && r.network && !r.notAuthorized && r.xml.entries) {
+              meta(r);
+              objs.push(r);
+            }
+            else if (!r) {
+              failed.push(feed);
+            }
+          }
+        }
+      }
+      // a label setting of a place goes to the address of the account found there
+      const legacy = LEGACY.filter((k, n) => prefs[k] && found[n] !== undefined);
+      if (legacy.length) {
+        for (const k of legacy) {
+          const address = found[LEGACY.indexOf(k)];
+          if (typeof prefs.labels[address] !== 'string') {
+            prefs.labels[address] = prefs[k];
+          }
+        }
+        moved = JSON.stringify(prefs.labels);
+        chrome.storage.local.set({labels: prefs.labels}).then(() => chrome.storage.local.remove(legacy));
+      }
       // Gmail's clock against this one, from the feed that came the quickest: the time a feed
       // took to come only makes the difference look smaller
       const skews = objs.map(r => helper.time(r.xml.modified) - r.at).filter(Number.isFinite);

@@ -275,25 +275,46 @@ check('an export holds the panel order and the labels under each address', async
   assert.deepStrictEqual({...out.labels}, {'a@gmail.com': 'inbox, a-work', 'b@gmail.com': '^smartlabel_personal'});
   assert.strictEqual('notification.sound.media.default.file' in out, false);
   assert.strictEqual('notification.sound.media.default.file' in await page('collect(true)'), true);
+  // the labels kept by address (1.6) win over a slot's, and an account signed out keeps its own
+  local.labels = {'b@gmail.com': 'b-work', 'gone@gmail.com': 'old-work'};
+  const now = await page('collect(false)');
+  assert.deepStrictEqual({...now.labels}, {'a@gmail.com': 'inbox, a-work', 'b@gmail.com': 'b-work', 'gone@gmail.com': 'old-work'});
+  for (const k of ['feeds_0', 'feeds_1', 'labels', 'accountOrder']) {
+    delete local[k];
+  }
 });
-check('restored labels follow their account to its slot here', async () => {
+check('restored labels go by address, joining the ones kept here; the other computer\'s slots are not used', async () => {
   const backup = {feeds_0: 'a-labels', feeds_1: 'b-labels', feeds_5: 'old', labels: {'a@gmail.com': 'a-labels', 'b@gmail.com': 'b-labels'}};
   // here b signed in first, a second, and c, unknown to the backup, third
   session = {'cached-objects': [gmail(0, 'b@gmail.com'), gmail(1, 'a@gmail.com'), gmail(2, 'c@gmail.com')]};
+  local.labels = {'c@gmail.com': 'c-labels', 'a@gmail.com': 'mine'};
   const out = await page('restorable')(backup);
-  assert.strictEqual(out.feeds_0, 'b-labels');
-  assert.strictEqual(out.feeds_1, 'a-labels');
-  assert.strictEqual('feeds_2' in out, false, 'c keeps its own labels');
-  assert.strictEqual(out.feeds_5, 'old', 'a slot no account here has comes as it was');
-  // a fresh install before its first check knows no account: the slots come as they were
+  assert.deepStrictEqual({...out.labels}, {'c@gmail.com': 'c-labels', 'a@gmail.com': 'a-labels', 'b@gmail.com': 'b-labels'});
+  assert.deepStrictEqual(Object.keys(out).filter(k => k.startsWith('feeds_')), []);
+  // a fresh install before its first check knows no account: the addresses are enough
   session = {'cached-objects': []};
+  delete local.labels;
   const fresh = await page('restorable')(backup);
-  assert.strictEqual(fresh.feeds_0, 'a-labels');
-  assert.strictEqual(fresh.feeds_1, 'b-labels');
-  // a labels entry that is not a string, or too long, is not used
-  session = {'cached-objects': [gmail(0, 'a@gmail.com')]};
-  const odd = await page('restorable')({feeds_0: 'x', labels: {'a@gmail.com': 5}});
+  assert.deepStrictEqual({...fresh.labels}, {'a@gmail.com': 'a-labels', 'b@gmail.com': 'b-labels'});
+  // a labels entry that is not a string, or too long, or not under an address, is not used
+  const odd = await page('restorable')({feeds_0: 'x', labels: {'a@gmail.com': 5, 'b@gmail.com': 'x'.repeat(2001), 'feeds_3': 'y', 'c@gmail.com': 'ok'}});
+  assert.deepStrictEqual({...odd.labels}, {'c@gmail.com': 'ok'});
   assert.strictEqual('feeds_0' in odd, false);
+  // a backup older than the labels by address brings its slots, for the background to move
+  const old = await page('restorable')({feeds_0: 'a-labels'});
+  assert.deepStrictEqual([old.feeds_0, 'labels' in old], ['a-labels', false]);
+});
+check('a label typed for an account is kept under its address, never its slot', async () => {
+  set.length = 0;
+  local.labels = {'x@gmail.com': 'x-work'};
+  await page('saveLabels')('a@gmail.com', 'inbox, a-work');
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(set.at(-1))), {labels: {'x@gmail.com': 'x-work', 'a@gmail.com': 'inbox, a-work'}});
+  // shown: the address's labels, or a slot's from before 1.6 until the background moves it
+  page('prefs.feeds_2 = "legacy"');
+  assert.deepStrictEqual([page('labelsOf')(local.labels, 'a@gmail.com', 2), page('labelsOf')({}, 'a@gmail.com', 2), page('labelsOf')({}, 'a@gmail.com', 3)],
+    ['inbox, a-work', 'legacy', '']);
+  page('prefs.feeds_2 = ""');
+  delete local.labels;
 });
 check('a restore gives back the sites of the services it leaves off', async () => {
   removed.length = 0;

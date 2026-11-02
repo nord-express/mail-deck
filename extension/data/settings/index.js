@@ -154,7 +154,7 @@ const store = chrome.storage.local;
 // what the background last read: one object per inbox, label and mailbox
 const sessionObjects = () => chrome.storage.session.get({'cached-objects': []}).then(r => r['cached-objects'] || []);
 // Gmail's accounts by address, each with its slot in the browser, /mail/u/<n>, where its labels
-// belong (feeds_<n>). A mailbox of another service is not one: Proton's links have a /u/<n> too.
+// belonged up to 1.5 (feeds_<n>). A mailbox of another service is not one: Proton's links have a /u/<n> too.
 const gmailSlots = objs => {
   const slot = {};
   for (const o of objs) {
@@ -394,9 +394,13 @@ const followAccounts = accounts => {
     row.paintShown();
   }
 };
+// A Gmail account's labels go by its address ('labels'), since its slot moves when an account
+// before it signs out; one set by the slot before 1.6 shows until the background moves it there.
+const labelsOf = (byAddress, name, n) => typeof byAddress[name] === 'string' ? byAddress[name] : prefs['feeds_' + n] || '';
+const saveLabels = (name, value) => store.get({labels: {}}).then(p => save({labels: {...p.labels, [name]: value}}));
 const paintAccounts = async () => {
-  const {accounts} = await store.get({accounts: {}});
-  // labels belong to a Gmail account's slot in the browser
+  const {accounts, labels: byAddress} = await store.get({accounts: {}, labels: {}});
+  // labels belong to a Gmail account, found by its slot in the browser
   const slot = gmailSlots(await sessionObjects());
   accountRows.clear();
   shownShape = accountsShape(accounts);
@@ -425,16 +429,16 @@ const paintAccounts = async () => {
     let primary = null;
     let labels = null;
     if (n !== undefined && !accounts[name].service) {
-      labels = h('input', {type: 'text', className: 'labels', value: prefs['feeds_' + n], placeholder: t('labelsPlaceholder'), spellcheck: false});
+      labels = h('input', {type: 'text', className: 'labels', value: labelsOf(byAddress, name, n), placeholder: t('labelsPlaceholder'), spellcheck: false});
       labels.setAttribute('aria-label', t('labelsFor', name));
       labels.onchange = () => {
         labels.value = cleanLabels(labels.value);
         primary.firstChild.checked = hasPrimary(labels.value);
-        save({['feeds_' + n]: labels.value});
+        saveLabels(name, labels.value);
       };
       primary = chip(t('primaryChip'), hasPrimary(labels.value), ev => {
         labels.value = cleanLabels(withPrimary(labels.value, ev.target.checked).join(', '));
-        save({['feeds_' + n]: labels.value});
+        saveLabels(name, labels.value);
       }, 'adv');
       labels.classList.add('adv');
     }
@@ -1232,7 +1236,8 @@ const collect = async files => {
     ...(files ? Object.fromEntries(SOUND_FILES.map(k => [k, null])) : {})
   });
   const slot = gmailSlots(await sessionObjects());
-  settings.labels = Object.fromEntries(Object.entries(slot).map(([email, n]) => [email, settings['feeds_' + n]]));
+  const {labels} = await store.get({labels: {}});
+  settings.labels = {...Object.fromEntries(Object.entries(slot).map(([email, n]) => [email, settings['feeds_' + n]])), ...labels};
   // an AI key is never in DEFAULTS, so never asked for above; and should one ever be, it stays here
   for (const k of AI_SECRETS) {
     delete settings[k];
@@ -1281,27 +1286,19 @@ const sanitize = data => {
   }
   return out;
 };
-// A Gmail account signed in here gets the labels the backup keeps under its address, or keeps
-// its own: never those of whichever account had its slot on the other computer. With no
-// account known here yet (a fresh install before its first check) the slots stay as they came.
-const placeLabels = (out, labels, slot) => {
-  for (const n of new Set(Object.values(slot))) {
-    delete out['feeds_' + n];
-  }
-  for (const [email, value] of Object.entries(labels)) {
-    const n = slot[email];
-    if (n !== undefined && typeof value === 'string' && VALID['feeds_' + n](value)) {
-      out['feeds_' + n] = value;
-    }
-  }
-  return out;
-};
-// a backup as this computer keeps it
+// A backup keeps each Gmail account's labels under its address: they join the ones kept here,
+// and never those of whichever account had a slot on the other computer. A backup older than
+// that brings its slots, which the background then gives to the account it finds there.
 const restorable = async settings => {
   const out = sanitize(settings);
   const labels = settings?.labels;
   if (labels && typeof labels === 'object' && !Array.isArray(labels)) {
-    placeLabels(out, labels, gmailSlots(await sessionObjects()));
+    for (let i = 0; i < 10; i += 1) {
+      delete out['feeds_' + i];
+    }
+    const {labels: here} = await store.get({labels: {}});
+    out.labels = {...here, ...Object.fromEntries(Object.entries(labels).filter(([email, value]) =>
+      email.includes('@') && email.length <= 320 && typeof value === 'string' && VALID.feeds_0(value)))};
   }
   return out;
 };

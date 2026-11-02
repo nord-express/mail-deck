@@ -279,17 +279,22 @@ class Feed {
         }
       };
       // The mail already told, one list per feed: the label feeds of one account each list
-      // their own mail, and a list shared by them lost what the other feed had told. The
-      // account's list of earlier versions is read until the feed has one of its own.
-      const key = 'ids.feed.' + this.href;
+      // their own mail, and a list shared by them lost what the other feed had told. A Gmail
+      // feed's list goes by the account's address and the label, not its place in the browser
+      // (/u/<n>), which moves when an account before it signs out. The lists of earlier
+      // versions, by the feed's address and by the account, are read until it has its own.
+      const box = /\/mail\/u\/\d+\/feed\/atom(.*)$/.exec(this.href);
+      const key = box && xml.title ? 'ids.box.' + xml.title + box[1] : 'ids.feed.' + this.href;
+      const older = 'ids.feed.' + this.href;
       const legacy = 'ids.account.' + xml.title;
       return new Promise(resolve => {
         chrome.storage.local.get({
           [key]: null,
+          [older]: null,
           [legacy]: [],
           'threatAsNew': 10 // minutes
         }, prefs => {
-          const seen = Array.isArray(prefs[key]) ? prefs[key] : (Array.isArray(prefs[legacy]) ? prefs[legacy] : []);
+          const seen = [key, older, legacy].map(k => prefs[k]).find(Array.isArray) || [];
           const own = Array.isArray(prefs[key]);
           const newIDs = [];
           const oldIDs = [];
@@ -327,6 +332,9 @@ class Feed {
                     ...newIDs
                   ]
                 });
+                if (own === false && older !== key && Array.isArray(prefs[older])) {
+                  chrome.storage.local.remove(older);
+                }
               }
             }
           });

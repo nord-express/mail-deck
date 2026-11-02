@@ -208,20 +208,25 @@ const boot = ({mail = {}, local = {}, session = {}, online} = {}) => {
     return deep();
   }});
   const iso = age => new Date(Date.now() - age * 60000).toISOString();
-  const xml = (n, label, entries) => `<?xml version="1.0" encoding="UTF-8"?><feed version="0.3" xmlns="http://purl.org/atom/ns#"><title>Gmail - ${label ? `Label '${label}'` : 'Inbox'} for user${n}@gmail.com</title><tagline>New messages in your Gmail ${label ? `'${label}' label` : 'Inbox'}</tagline><fullcount>${entries.length}</fullcount><link rel="alternate" href="https://mail.google.com/mail/u/${n}" type="text/html"/><modified>${iso(0)}</modified>` +
-    entries.map(({id, age = 1}) => `<entry><title>Mail ${id}</title><summary>s</summary><link rel="alternate" href="https://mail.google.com/mail?account_id=user${n}@gmail.com&amp;message_id=${id}&amp;view=conv&amp;extsrc=atom" type="text/html"/><modified>${iso(age)}</modified><issued>${iso(age)}</issued><id>tag:gmail.google.com,2004:${id}</id><author><name>A</name><email>a@x.com</email></author></entry>`).join('') + '</feed>';
+  // the feed of user<who> signed in at /u/<n>
+  const xml = (n, label, entries, who = n) => `<?xml version="1.0" encoding="UTF-8"?><feed version="0.3" xmlns="http://purl.org/atom/ns#"><title>Gmail - ${label ? `Label '${label}'` : 'Inbox'} for user${who}@gmail.com</title><tagline>New messages in your Gmail ${label ? `'${label}' label` : 'Inbox'}</tagline><fullcount>${entries.length}</fullcount><link rel="alternate" href="https://mail.google.com/mail/u/${n}" type="text/html"/><modified>${iso(0)}</modified>` +
+    entries.map(({id, age = 1}) => `<entry><title>Mail ${id}</title><summary>s</summary><link rel="alternate" href="https://mail.google.com/mail?account_id=user${who}@gmail.com&amp;message_id=${id}&amp;view=conv&amp;extsrc=atom" type="text/html"/><modified>${iso(age)}</modified><issued>${iso(age)}</issued><id>tag:gmail.google.com,2004:${id}</id><author><name>A</name><email>a@x.com</email></author></entry>`).join('') + '</feed>';
+  // out.places, when set, says who is signed in at each place: [1, 2] is user1 at /u/0 and
+  // user2 at /u/1, as after user0 signed out; mail is kept by user. Otherwise user<n> is at /u/<n>.
   const fetch = href => {
     out.requests += 1;
     if (out.offline) {
       return Promise.reject(new TypeError('Failed to fetch'));
     }
     const [, n, label] = /u\/(\d+)\/feed\/atom(?:\/([^?]+))?/.exec(href);
-    const box = n + (label ? '/' + decodeURIComponent(label) : '');
+    const who = out.places ? out.places[n] : Object.keys(mail).some(k => k.split('/')[0] === n) ? n : undefined;
+    const box = who + (label ? '/' + decodeURIComponent(label) : '');
     // an account nobody signed in to: Gmail answers with the first account's feed
-    if (!Object.keys(mail).some(k => k.split('/')[0] === n)) {
-      return Promise.resolve({ok: true, status: 200, url: 'https://mail.google.com/mail/u/0/feed/atom', text: async () => xml(0, '', mail['0'] || [])});
+    if (who === undefined) {
+      const first = out.places ? out.places[0] : 0;
+      return Promise.resolve({ok: true, status: 200, url: 'https://mail.google.com/mail/u/0/feed/atom', text: async () => xml(0, '', mail[first] || [], first)});
     }
-    return Promise.resolve({ok: true, status: 200, url: href, text: async () => xml(n, label && decodeURIComponent(label), mail[box] || [])});
+    return Promise.resolve({ok: true, status: 200, url: href, text: async () => xml(n, label && decodeURIComponent(label), mail[box] || [], who)});
   };
   const quiet = {log() {}, info() {}, warn() {}, error() {}};
   const ctx = {chrome, fetch, console: quiet, setTimeout, clearTimeout, AbortController, URL, Intl, Date, Promise, Map, Set,
@@ -381,7 +386,14 @@ tests.push(
     await b.run();
     await b.run();
     assert.strictEqual(b.told.length, 0);
-    assert.ok(Array.isArray(b.local['ids.feed.https://mail.google.com/mail/u/0/feed/atom']));
+    assert.ok(Array.isArray(b.local['ids.box.user0@gmail.com']));
+  }],
+  ['the list of an earlier version\'s feed is read once, then the account keeps its own', async () => {
+    const b = boot({mail: {'0': [{id: 'i1'}]}, local: {'ids.feed.https://mail.google.com/mail/u/0/feed/atom': ['tag:gmail.google.com,2004:i1']}});
+    await b.run();
+    assert.strictEqual(b.told.length, 0);
+    assert.ok(Array.isArray(b.local['ids.box.user0@gmail.com']));
+    assert.ok(!('ids.feed.https://mail.google.com/mail/u/0/feed/atom' in b.local));
   }],
   ['a mail in two watched labels is told once', async () => {
     const b = boot({mail: {'0': [{id: 'x'}], '0/work': [{id: 'x'}]}, local: {feeds_0: 'inbox, work'}});
@@ -412,7 +424,57 @@ tests.push(
   }]
 );
 
+const where = b => b.session['cached-objects'].map(o => o.xml.title.replace('@gmail.com', '') + (o.xml.label ? '/' + o.xml.label : '') +
+  '@' + /u\/(\d)/.exec(o.xml.rootLink)[1]);
 tests.push(
+  // the labels an account watches go with its address
+  ['the labels an account watches follow it to another place in the browser', async () => {
+    const mail = {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}], '1/work': [{id: 'w', age: 60}], '2': [{id: 'c', age: 60}]};
+    const b = boot({mail, local: {labels: {'user1@gmail.com': 'inbox, work'}}});
+    await b.run();
+    assert.deepStrictEqual(where(b), ['user0@0', 'user1@1', 'user1/work@1', 'user2@2']);
+    // user0 signs out: user1 is at /u/0, user2 at /u/1; the check that finds it asks again
+    b.places = [1, 2];
+    await b.run();
+    assert.deepStrictEqual(where(b), ['user1@0', 'user1/work@0', 'user2@1']);
+    // and the next one asks for each feed once
+    const before = b.requests;
+    await b.run();
+    assert.deepStrictEqual(where(b), ['user1@0', 'user1/work@0', 'user2@1']);
+    assert.strictEqual(b.requests - before, 4);
+  }],
+  ['a browser just started finds the labels of each account in its first check', async () => {
+    const b = boot({mail: {'0': [{id: 'a', age: 60}], '1/work': [{id: 'w', age: 60}], '1': [{id: 'b', age: 60}]},
+      local: {labels: {'user1@gmail.com': 'work'}}});
+    await b.run();
+    assert.deepStrictEqual(where(b), ['user0@0', 'user1/work@1']);
+  }],
+  ['an account that moves to another place does not tell its mail again', async () => {
+    const mail = {'0': [{id: 'a'}], '1': [{id: 'b'}]};
+    const b = boot({mail});
+    await b.run();
+    assert.strictEqual(b.told.length, 1);
+    b.places = [1];
+    await b.run();
+    assert.strictEqual(b.told.length, 1);
+  }],
+  ['a label setting of a place (1.5 and before) moves to the address of the account there, once', async () => {
+    const mail = {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}], '1/work': [{id: 'w', age: 60}], '2': [{id: 'c', age: 60}]};
+    const b = boot({mail, local: {feeds_1: 'inbox, work', feeds_4: 'news'}});
+    await b.run();
+    assert.deepStrictEqual(where(b), ['user0@0', 'user1@1', 'user1/work@1', 'user2@2']);
+    assert.deepStrictEqual(b.local.labels, {'user1@gmail.com': 'inbox, work'});
+    assert.ok(!('feeds_1' in b.local), 'the place\'s setting goes');
+    assert.strictEqual(b.local.feeds_4, 'news', 'a place nobody is at keeps its setting for whoever signs in there');
+    // the check's own move asks for no check; a change in the settings does
+    await b.change({labels: {newValue: b.local.labels}});
+    assert.deepStrictEqual(b.resets, []);
+    await b.change({labels: {newValue: {'user1@gmail.com': 'work'}}});
+    assert.deepStrictEqual(b.resets.map(([r]) => r), ['change.of.feeds']);
+    b.places = [1, 2];
+    await b.run();
+    assert.deepStrictEqual(where(b), ['user1@0', 'user1/work@0', 'user2@1']);
+  }],
   // a feed that does not answer this once
   ['a feed that does not answer shows its last answer: the account, its count and its resolved mail stay', async () => {
     const mail = {'0': [{id: 'a', age: 60}], '1': [{id: 'b', age: 60}, {id: 'c', age: 60}]};
@@ -685,6 +747,15 @@ tests.push(
     await off.listeners.idle[0]('active');
     await wait(300);
     assert.deepStrictEqual(off.checks, []);
+  }],
+  ['a label setting changed asks for a check; one the background moved to an address does not', async () => {
+    const t = timers({file: '/core/repeater.js'});
+    t.listeners.storage[0]({feeds_1: {oldValue: 'work'}});
+    await wait(50);
+    assert.ok(!t.alarms.repeater);
+    t.listeners.storage[0]({feeds_custom: {newValue: 'https://mail.google.com/a/x.com/feed/atom'}});
+    await wait(50);
+    assert.ok(t.alarms.repeater);
   }],
   // #8, #6
   ['a Gmail tab asks for a check, the extension\'s own requests do not', async () => {

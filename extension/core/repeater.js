@@ -140,8 +140,10 @@ chrome.alarms.onAlarm.addListener(o => {
 
 /* pref changes */
 chrome.storage.onChanged.addListener(prefs => {
+  // a label setting of a place (feeds_<n>) the check has moved to its account's address goes
+  // without a check of its own; the address's labels ask for one (core/check.js)
   if (prefs.minimal || prefs.services ||
-    Object.keys(prefs).some(key => key.startsWith('feeds_'))
+    Object.keys(prefs).some(key => key.startsWith('feeds_') && prefs[key].newValue !== undefined)
   ) {
     repeater.reset('change.of.feeds');
   }
