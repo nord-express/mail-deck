@@ -255,8 +255,11 @@ const failsWith = async (p, code) => {
   }
   assert.fail('no error, expected ' + code);
 };
+// the mail of a check dated from one moment: mail of the same age keeps the order it is listed in,
+// whatever millisecond each line is made in
+const MADE = Date.now();
 const person = (id, email, days = 1, extra = {}) => ({id, from: email.split('@')[0], email, subject: 'Question ' + id,
-  snippet: 'Could you send me the file?', date: new Date(Date.now() - days * DAY).toISOString(), ...extra});
+  snippet: 'Could you send me the file?', date: new Date(MADE - days * DAY).toISOString(), ...extra});
 const listed = req => {
   const text = req.body.messages.at(-1).content;
   return text.split('\n').filter(l => l.startsWith('{"i":')).map(l => JSON.parse(l));
