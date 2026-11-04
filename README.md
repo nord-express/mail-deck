@@ -196,6 +196,8 @@ None of these services has a public interface for this, so Mail Deck follows the
 | <kbd>Enter</kbd> | | Open the message |
 | <kbd>R</kbd> | <kbd>R</kbd> | Mark as read |
 | <kbd>U</kbd> | <kbd>U</kbd> | Mark as unread (Gmail) |
+| <kbd>L</kbd> | <kbd>L</kbd> | Label as (Gmail): your labels, or a new one |
+| <kbd>V</kbd> | <kbd>V</kbd> | Move to a label (Gmail): labelled and out of the inbox |
 | <kbd>E</kbd> | <kbd>E</kbd> | Archive |
 | <kbd>Delete</kbd> or <kbd>Backspace</kbd> | <kbd>Delete</kbd> or <kbd>Backspace</kbd> | Delete |
 | <kbd>!</kbd> | <kbd>!</kbd> | Report spam |

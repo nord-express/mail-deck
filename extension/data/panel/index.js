@@ -929,10 +929,9 @@ const markUnread = (e, o) => {
 };
 
 /* labels: Gmail's L (label as) and V (move to), a menu of the account's labels with a field to narrow it */
-// The label actions ask Gmail the way its web app did before its internal call had them, and
-// count as done only once Gmail's search shows the label (core/offscreen/gmail/core.js). That
-// call is not proven against Gmail yet, so they stay out of the panel unless 'labels.beta' is set
-let LABELS = false;
+// The label actions go by Gmail's labels call (core/offscreen/gmail/core.js); 'labels.beta' set
+// to false keeps them out of the panel
+let LABELS = true;
 // the labels Gmail's search showed on an account's mail this panel: address -> Set. Gmail's own
 // ones (^i, ^u...) and IDs that are no names stay out
 const labelsSeen = new Map();
@@ -4748,7 +4747,7 @@ const prefsChanged = prefs => {
     state.ai.engine = ENGINES.includes(prefs['ai.engine']) ? prefs['ai.engine'] : 'off';
   }
   if ('labels.beta' in prefs) {
-    LABELS = prefs['labels.beta'] === true;
+    LABELS = prefs['labels.beta'] !== false;
   }
   if ('ai.buttons' in prefs) {
     state.ai.buttons = prefs['ai.buttons'] !== false;
@@ -4828,7 +4827,7 @@ const endBoot = () => {
   }
 };
 Promise.all([
-  chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, askPictures: false, avatars: {}, 'labels.beta': false,
+  chrome.storage.local.get({panelScale: 1, readOnOpen: false, accounts: {}, accountOrder: [], senderLogos: true, askPictures: false, avatars: {}, 'labels.beta': true,
     autoAdvance: false, 'badge.count': 'all', [Remind.KEY]: [], ...AI_PREFS, gmailCategories: true, savedSearches: [], [RATE]: null}),
   // no default for the accounts: none at all is not the same as none read yet
   chrome.storage.session.get(['cached-objects', 'accounts.count', Resolved.KEY, 'logos', SAVED]),

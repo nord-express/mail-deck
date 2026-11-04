@@ -27,9 +27,6 @@ const stream = chunks => {
   }, {highWaterMark: 0});
   return out;
 };
-// Gmail's search answer: its parts, the threads (subject, thread) in the third
-const searchAnswer = threads => '4&[[]]9&' + JSON.stringify([null, [[null, null, [null, null, null, null, null,
-  threads.map(([subject, thread]) => [null, null, null, subject, '', 'x@y.z', null, Date.now(), ['^u'], null, [null, null, 0], thread])]]]]);
 
 // answer(url, options) gives a Response (or a {stream} of one) for each request; requests lists them
 const start = answer => {
@@ -145,37 +142,23 @@ const tests = [
     assert.deepStrictEqual(sent[1][0][3].slice(1, 5), [4, 't1', 't1', 'l:all']);
     assert.ok(g.requests.at(-1).url.startsWith('https://mail.google.com/mail/u/2/s/?v=or&ik=IK&at=AT&'));
   }],
-  ['a label is added, and counts as added once Gmail\'s search finds the mail with it', async () => {
-    const g = start((url, o) => url.includes('act=ac_') ? ok(')]}\'\n[]') :
-      url.includes('view=att') ? ok(head(['Message-ID: <m1@x.com>'])) :
-        url.includes('/s/?v=or') ? ok(searchAnswer([['Hi', 't9']])) : new Response('', {status: 404}));
+  ['a label is Gmail\'s labels call (13), its name in the field of those to add', async () => {
+    const g = start(() => ok(')]}\'\n104&[null,[[null,null,null,null,[],null]],2,0,"IK"]'));
     await g.gmail.action({links: [link(0, 't1')], cmd: 'ac_Work/Projects', prefs: {}});
-    const label = g.requests.find(q => q.url.includes('act='));
-    assert.ok(label.url.includes('ui=2&ik=IK&at=AT&view=up&act=' + encodeURIComponent('ac_Work/Projects')) && label.method === 'POST');
-    assert.deepStrictEqual([...label.body.getAll('t')], ['t1']);
-    const search = JSON.parse(g.requests.find(q => q.url.includes('/s/?v=or')).body.get('s_jr'));
-    assert.strictEqual(search[1][1][1][1], 'rfc822msgid:m1@x.com label:work-projects');
-    // no internal action call was made for it
-    assert.ok(!g.requests.some(q => q.body instanceof FormData));
-  }],
-  ['a label Gmail\'s search does not show is a failure; without a Message-ID the thread is looked for by its ID', async () => {
-    const g = start(url => url.includes('act=ac_') ? ok('') : url.includes('/s/?v=or') ? ok(searchAnswer([['Other', 't8']])) : new Response('', {status: 404}));
-    await assert.rejects(g.gmail.action({links: [link(0, 't1')], cmd: 'ac_Work', prefs: {}}), /not confirmed/);
-    const searches = g.requests.filter(q => q.url.includes('/s/?v=or')).map(q => JSON.parse(q.body.get('s_jr'))[1][1][1][1]);
-    assert.deepStrictEqual(searches, ['label:work', 'label:work']);
-    // found by its ID
-    const h = start(url => url.includes('act=ac_') ? ok('') : url.includes('/s/?v=or') ? ok(searchAnswer([['Mine', 't1']])) : new Response('', {status: 404}));
-    await h.gmail.action({links: [link(0, 't1')], cmd: 'ac_Work', prefs: {}});
+    assert.strictEqual(g.requests.length, 1);
+    const sent = JSON.parse(g.requests[0].body.get('s_jr'));
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(sent[1][0][3].slice(1, 7))), [13, 't1', 't1', 'l:all', ['Work/Projects'], []]);
+    // the old web app's call is not made
+    assert.ok(!g.requests.some(q => q.url.includes('act=')));
   }],
   ['a move adds the label, then archives; Gmail refusing the label archives nothing; another label\'s removal is not sent', async () => {
-    const g = start(url => url.includes('act=ac_') ? ok('') : url.includes('view=att') ? ok(head(['Message-ID: <m@x>'])) :
-      url.includes('/s/?v=or') ? ok(searchAnswer([['Hi', 't1']])) : new Response('', {status: 404}));
+    const g = start(() => ok('ok'));
     await g.gmail.action({links: [link(0, 't1')], cmd: 'mv_Work', prefs: {doReadOnArchive: false}});
-    const actions = g.requests.filter(q => q.body instanceof FormData).map(q => JSON.parse(q.body.get('s_jr'))[1][0][3]?.[1]);
-    assert.deepStrictEqual(actions, [1]);
-    const refused = start(url => url.includes('act=ac_') ? new Response('', {status: 400}) : ok(''));
-    await assert.rejects(refused.gmail.action({links: [link(0, 't1')], cmd: 'mv_Work', prefs: {}}), /label -> 400/);
-    assert.ok(!refused.requests.some(q => q.body instanceof FormData));
+    const actions = g.requests.map(q => JSON.parse(q.body.get('s_jr'))[1][0][3]?.[1]);
+    assert.deepStrictEqual(actions, [13, 1]);
+    const refused = start(() => ok(')]}\'\n146&[null,[[null,[null,"Unexpected action: X",8],null]],2,'));
+    await assert.rejects(refused.gmail.action({links: [link(0, 't1')], cmd: 'mv_Work', prefs: {}}), /action -> Unexpected action: X/);
+    assert.strictEqual(refused.requests.length, 1);
     const none = start(() => ok(''));
     await assert.rejects(none.gmail.action({links: [link(0, 't1')], cmd: 'rc_Work', prefs: {}}), /action_not_supported/);
     assert.ok(!none.requests.some(q => q.method === 'POST'));
