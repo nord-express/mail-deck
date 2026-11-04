@@ -2076,6 +2076,9 @@
     "panel_checkAddress": {
         "message": "Проверите адресу."
     },
+    "panel_replyPlaceholder": {
+        "message": "Напишите одговор"
+    },
     "panel_stop": {
         "message": "Заустави"
     },

@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "Adresi kontrol edin."
     },
+    "panel_replyPlaceholder": {
+        "message": "Yanıtınızı yazın"
+    },
     "panel_stop": {
         "message": "Durdur"
     },

@@ -1931,6 +1931,9 @@
   "panel_checkAddress": {
     "message": "Праверце адрас."
   },
+  "panel_replyPlaceholder": {
+    "message": "Напішыце адказ"
+  },
   "panel_stop": {
     "message": "Спыніць"
   },

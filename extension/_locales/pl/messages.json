@@ -2076,6 +2076,9 @@
     "panel_checkAddress": {
         "message": "Sprawdź adres."
     },
+    "panel_replyPlaceholder": {
+        "message": "Napisz odpowiedź"
+    },
     "panel_stop": {
         "message": "Zatrzymaj"
     },

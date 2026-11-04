@@ -1904,6 +1904,9 @@
   "panel_checkAddress": {
     "message": "アドレスを確認してください。"
   },
+  "panel_replyPlaceholder": {
+    "message": "返信を入力"
+  },
   "panel_stop": {
     "message": "停止"
   },

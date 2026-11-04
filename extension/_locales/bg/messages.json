@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "Проверете адреса."
     },
+    "panel_replyPlaceholder": {
+        "message": "Напишете отговора си"
+    },
     "panel_stop": {
         "message": "Спиране"
     },

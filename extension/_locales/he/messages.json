@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "בדוק את הכתובת."
     },
+    "panel_replyPlaceholder": {
+        "message": "כתוב את התשובה שלך"
+    },
     "panel_stop": {
         "message": "עצור"
     },

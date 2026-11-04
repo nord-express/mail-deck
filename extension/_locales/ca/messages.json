@@ -2076,6 +2076,9 @@
     "panel_checkAddress": {
         "message": "Comprova l'adreça."
     },
+    "panel_replyPlaceholder": {
+        "message": "Escriu la resposta"
+    },
     "panel_stop": {
         "message": "Atura"
     },

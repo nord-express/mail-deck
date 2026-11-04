@@ -37,7 +37,8 @@ Gmail, Yahoo Mail, AOL Mail, Proton Mail, Yandex Mail and Mail.ru. Read, archive
 - **Search as you type.** The list narrows at once while you type; <kbd>Enter</kbd> searches all your Google accounts. Save searches you run often ("Invoices": `has:attachment invoice newer_than:30d`) as chips.
 - **Gmail's categories as chips.** Promotions, Social and Updates, each with its count, narrow the list, with **Mark all read** and **Archive all** over it; no AI needed.
 - **Later.** Put a message away until this evening, tomorrow or next week; it comes back with a notification.
-- **One key per action.** Mark as read or unread, archive, delete or report spam from the list, from the open message or from a notification. <kbd>?</kbd> shows every key. If you like, the next message opens by itself after an action, and replies open in a small window of their own.
+- **Reply from the panel.** In an open Gmail message, **Reply** opens a field for your answer: <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (<kbd>⌘</kbd>+<kbd>Enter</kbd>) or **Send** sends it to the sender, in its thread, with five seconds to undo. **Open in Gmail** takes it to the compose window instead; another service's reply opens there.
+- **One key per action.** Mark as read or unread, archive, delete, label or report spam from the list, from the open message or from a notification. <kbd>?</kbd> shows every key. If you like, the next message opens by itself after an action, and replies open in a small window of their own.
 - **Labels.** Watch chosen Gmail labels instead of the inbox, set per account, or only Gmail's Primary tab.
 - **Your order.** Drag the inboxes into the order you want. Accounts you signed out of stay listed, one click from signing back in.
 - **Meet in one click.** Each Gmail mailbox has a button that starts a Google Meet from its account.

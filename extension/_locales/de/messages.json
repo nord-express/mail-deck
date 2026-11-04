@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "Prüfen Sie die Adresse."
     },
+    "panel_replyPlaceholder": {
+        "message": "Schreiben Sie Ihre Antwort"
+    },
     "panel_stop": {
         "message": "Stoppen"
     },

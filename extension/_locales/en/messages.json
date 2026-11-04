@@ -1934,6 +1934,9 @@
   "panel_checkAddress": {
     "message": "Check the address."
   },
+  "panel_replyPlaceholder": {
+    "message": "Write your reply"
+  },
   "panel_stop": {
     "message": "Stop"
   },

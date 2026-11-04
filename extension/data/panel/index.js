@@ -2427,8 +2427,9 @@ const read = async (e, o, trail) => {
     remindBtn([e.link]),
     h('span', {class: 'sep'}),
     !serviceOf(o) && btn('star', t('star'), () => star(e), 'star', 'S'),
+    // Gmail's reply is written and sent here; another service's opens in its compose window
     h('button', {'class': 'text-btn reply-btn', 'type': 'button', 'aria-label': t('reply'), 'data-tip': t('reply'), 'data-focus': 'reply',
-      'onclick': () => openUrl(replyUrl(e, o))}, icon('reply'), h('span', {'aria-hidden': 'true'}, t('reply'))),
+      'onclick': () => serviceOf(o) ? openUrl(replyUrl(e, o)) : openTool(r, 'write')}, icon('reply'), h('span', {'aria-hidden': 'true'}, t('reply'))),
     moreBtn(e, o)
   ].filter(Boolean));
   $('reader-bar').querySelector('.prev').disabled = !besideOpen(e.link, -1);
@@ -2934,7 +2935,7 @@ const openTool = (r, mode) => {
     return;
   }
   r.tool.ctl?.abort();
-  Object.assign(r.tool, {mode: aiOn() || mode === 'offer' ? mode : 'offer', ctl: null, text: '', chosen: '', change: '', how: '', before: '', notes: [],
+  Object.assign(r.tool, {mode: aiOn() || mode === 'offer' || mode === 'write' ? mode : 'offer', ctl: null, text: '', chosen: '', change: '', how: '', before: '', notes: [],
     doubtful: [], error: null, busy: false, to: null, sending: false});
   paintTool(r);
   $('ai-tool').querySelector('textarea, input')?.focus();
@@ -2945,7 +2946,7 @@ const closeTool = r => {
   $('ai-tool').hidden = true;
   $('reader-ai').querySelector('.ai-act')?.focus();
 };
-const TOOLS = {offer: 'sparkle', reply: 'reply', ask: 'ask', translate: 'translate'};
+const TOOLS = {offer: 'sparkle', reply: 'reply', ask: 'ask', translate: 'translate', write: 'reply'};
 // what a draft can be made, by its button: the engine keeps its facts and its "…" blanks
 const REWRITES = [['shorter', 'rewriteShorter'], ['longer', 'rewriteLonger'], ['formal', 'rewriteFormal'], ['friendly', 'rewriteFriendly'],
   ['grammar', 'rewriteGrammar']];
@@ -2966,7 +2967,7 @@ const paintTool = r => {
   const typing = card.contains(document.activeElement) ? document.activeElement.dataset.role : '';
   card.hidden = false;
   card.setAttribute('aria-busy', String(busy));
-  const title = {offer: t('assistant'), reply: t('replyWithAI'), ask: t('askAboutMail'), translate: t('translation')}[mode];
+  const title = {offer: t('assistant'), reply: t('replyWithAI'), ask: t('askAboutMail'), translate: t('translation'), write: t('reply')}[mode];
   const head = h('header', {class: 'ai-head'},
     h('span', {class: 'ai-mark'}, icon(TOOLS[mode])),
     h('h3', {}, title),
@@ -2983,6 +2984,47 @@ const paintTool = r => {
   }
   if (mode === 'translate') {
     card.replaceChildren(...[head, text ? h('div', {class: 'answer translation'}, text) : busy && waitDots(), notes, fail].filter(Boolean));
+    return;
+  }
+  // a reply of one's own words, sent from here: Ctrl+Enter (⌘+Enter) sends, Esc closes the card
+  if (mode === 'write') {
+    if (!r.tool.to) {
+      peopleOf(r);
+    }
+    const draft = h('textarea', {
+      'class': 'draft',
+      'rows': 6,
+      'value': text,
+      'placeholder': t('replyPlaceholder'),
+      'aria-label': t('reply'),
+      'data-role': 'draft',
+      'readOnly': r.tool.sending,
+      'oninput': () => {
+        r.tool.text = draft.value;
+      },
+      'onkeydown': ev => {
+        if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey) && !ev.isComposing) {
+          ev.preventDefault();
+          sendReply(r);
+        }
+        else if (ev.key === 'Escape') {
+          ev.preventDefault();
+          ev.stopPropagation();
+          closeTool(r);
+        }
+      }
+    });
+    card.replaceChildren(head, toLine(r), draft, h('div', {class: 'row-btns'},
+      h('button', {'class': 'primary-btn', 'type': 'button', 'disabled': r.tool.sending || !r.tool.to?.list.length, 'data-focus': 'send',
+        'data-tip': t('send'), 'data-key': SEND_KEY, 'aria-keyshortcuts': SEND_KEY.replace('⌘', 'Meta').replace('Ctrl', 'Control'),
+        'onclick': () => sendReply(r)}, icon('send'), r.tool.sending ? t('sendingMail') : t('send')),
+      h('button', {class: 'text-btn', type: 'button', onclick: () => replyWith(r)}, icon('open'), t('openInGmail'))));
+    if (!typing && !r.tool.sending) {
+      draft.focus();
+    }
+    else if (typing) {
+      card.querySelector(`[data-role="${typing}"]`)?.focus();
+    }
     return;
   }
   const drafted = mode === 'reply' && Boolean(text);
@@ -3049,7 +3091,7 @@ const paintTool = r => {
       oninput: () => {
         r.tool.text = draft.value;
       }});
-    parts.push(sends && h('p', {class: 'send-to'}, h('span', {}, t('toLabel')), h('bdi', {}, (r.tool.to?.list || [r.e.author_email]).join(', '))),
+    parts.push(sends && toLine(r),
       draft,
       h('div', {class: 'rewrites', role: 'group', 'aria-label': t('rewrite')}, REWRITES.map(([how, k]) => chip(t(k), r.tool.how === how, () => runTool(r, how)))),
       field,
@@ -3115,10 +3157,16 @@ const peopleOf = r => {
     const list = (mine ? p.to || [] : sender).filter(a => a.toLowerCase() !== me);
     if (list.length) {
       tool.to = {list, read: true};
-      paintTool(r);
+      const line = state.reading === r && $('ai-tool').querySelector('.send-to bdi');
+      if (line) {
+        line.textContent = list.join(', ');
+      }
     }
   }).catch(() => {});
 };
+const toLine = r => h('p', {class: 'send-to'}, h('span', {}, t('toLabel')), h('bdi', {}, (r.tool.to?.list || [r.e.author_email]).join(', ')));
+// the key that sends what is written, as this computer writes it
+const SEND_KEY = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘+Enter' : 'Ctrl+Enter';
 // the addresses typed in a field, between commas, semicolons or spaces
 const typedAddresses = value => String(value || '').split(/[\s,;]+/).map(a => a.replace(/^<|>$/g, '')).filter(Boolean);
 const ADDRESS = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]+$/;
@@ -3157,7 +3205,11 @@ const sendReply = r => {
   const tool = r.tool;
   const to = tool.to?.list || [];
   const text = String(tool.text || '');
-  if (tool.sending || !to.length || !to.every(a => ADDRESS.test(a)) || !text.trim()) {
+  if (!text.trim()) {
+    $('ai-tool').querySelector('.draft')?.focus();
+    return;
+  }
+  if (tool.sending || !to.length || !to.every(a => ADDRESS.test(a))) {
     return;
   }
   tool.sending = true;
@@ -3172,7 +3224,7 @@ const sendReply = r => {
   sendMail({o: r.o, link: r.e.link, to, subject, text, reply: /^[\da-f]{1,16}$/i.test(thread(r.e.link)) ? thread(r.e.link) : ''}, {
     sent: () => {
       done();
-      if (tool === r.tool && tool.mode === 'reply') {
+      if (tool === r.tool && (tool.mode === 'reply' || tool.mode === 'write')) {
         closeTool(r);
       }
     },

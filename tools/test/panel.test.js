@@ -314,7 +314,10 @@ const checks = {
   }),
   aioff: r => ({
     'the assistant off: its buttons offer it, I too (the keys\' sheet says so), with no ai.js, no summary, no sorting and not one call': JSON.stringify(r.off) ===
-      '{"calls":0,"button":true,"card":false,"offerCard":true,"chip":false,"offer":true,"header":true,"script":false,"hint":true}'
+      '{"calls":0,"button":true,"card":false,"offerCard":true,"chip":false,"offer":true,"header":true,"script":false,"hint":true}',
+    'Reply writes one\'s own words and sends them from here, no assistant needed: Ctrl+Enter, to the sender, in the thread; nothing empty goes':
+      JSON.stringify(r.write) === JSON.stringify({open: true, title: T('reply'), to: 'anna@figma.com', focused: true, placeholder: T('replyPlaceholder'), opened: 0,
+        empty: true, sent: {to: ['anna@figma.com'], text: 'Thanks, Anna! Friday works.', subject: true, reply: true, calls: 0}})
   }),
   ainone: r => ({
     'the assistant off and its buttons too: nothing of it shows, and nothing is loaded or asked': JSON.stringify(r.off) ===

@@ -2076,6 +2076,9 @@
     "panel_checkAddress": {
         "message": "请检查地址。"
     },
+    "panel_replyPlaceholder": {
+        "message": "输入回复"
+    },
     "panel_stop": {
         "message": "停止"
     },

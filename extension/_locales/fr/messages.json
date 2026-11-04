@@ -1904,6 +1904,9 @@
   "panel_checkAddress": {
     "message": "Vérifiez l’adresse."
   },
+  "panel_replyPlaceholder": {
+    "message": "Écrivez votre réponse"
+  },
   "panel_stop": {
     "message": "Arrêter"
   },

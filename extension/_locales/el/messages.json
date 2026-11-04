@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "Ελέγξτε τη διεύθυνση."
     },
+    "panel_replyPlaceholder": {
+        "message": "Γράψτε την απάντησή σας"
+    },
     "panel_stop": {
         "message": "Διακοπή"
     },

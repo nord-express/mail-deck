@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "Revisa la dirección."
     },
+    "panel_replyPlaceholder": {
+        "message": "Escribe tu respuesta"
+    },
     "panel_stop": {
         "message": "Detener"
     },

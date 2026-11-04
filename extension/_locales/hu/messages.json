@@ -1892,6 +1892,9 @@
   "panel_checkAddress": {
     "message": "Ellenőrizze a címet."
   },
+  "panel_replyPlaceholder": {
+    "message": "Írja meg a válaszát"
+  },
   "panel_stop": {
     "message": "Leállítás"
   },

@@ -1179,6 +1179,21 @@
           chip: Boolean($('chips').querySelector('.reply-chip')), offer, header, script: Boolean(document.querySelector('script[src*="/ai/ai.js"]')),
           hint: (await sheet()).some(([, k]) => k === 'I')};
         out.firstRow = window.__firstRow;
+        // Reply: one's own words, written and sent here with no assistant at all
+        $('reader-bar').querySelector('.reply-btn').click();
+        await wait(30);
+        const draft = $('ai-tool').querySelector('.draft');
+        out.write = {open: shown($('ai-tool')), title: $('ai-tool').querySelector('h3')?.textContent, to: $('ai-tool').querySelector('.send-to bdi')?.textContent,
+          focused: document.activeElement === draft, placeholder: draft?.placeholder, opened: sent('open').length};
+        draft.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', ctrlKey: true, bubbles: true, cancelable: true}));
+        await wait(30);
+        out.write.empty = sent('gmail.send').length === 0 && document.activeElement === draft;
+        draft.value = 'Thanks, Anna! Friday works.';
+        draft.dispatchEvent(new Event('input'));
+        draft.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', ctrlKey: true, bubbles: true, cancelable: true}));
+        await until(() => $('ai-tool').hidden, 1000);
+        const mail = sent('gmail.send').at(-1)?.mail;
+        out.write.sent = mail && {to: mail.to, text: mail.text, subject: mail.subject.startsWith('Re: '), reply: mail.reply === id(state.reading.e.link), calls: ai.calls.length};
       }
 
       if (scenario === 'aisetup') {

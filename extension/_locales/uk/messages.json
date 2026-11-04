@@ -2072,6 +2072,9 @@
     "panel_checkAddress": {
         "message": "Перевірте адресу."
     },
+    "panel_replyPlaceholder": {
+        "message": "Напишіть відповідь"
+    },
     "panel_stop": {
         "message": "Зупинити"
     },
