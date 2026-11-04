@@ -3,6 +3,20 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.8.0
+
+Mail Deck 1.8.0 sends your reply from the panel: the AI drafts it, Send sends it, with five seconds to change your mind. It includes everything of 1.7.1, which did not reach the store on its own.
+
+**New**
+- **Send from the panel** (Gmail): Reply with AI and the assistant's new mail have a Send button. A reply goes to the sender (their Reply-To, if they set one), shown above the draft, and stays in its conversation for you and for them. For five seconds Undo (or Z) keeps it back, with the draft as it was; it goes even if you close the panel meanwhile, and if Gmail does not take it, nothing is lost: the draft stays, or opens in Gmail when the panel is closed. Open in Gmail is still there, and other mail services keep it as before.
+- **Labels** (Gmail): L labels a mail, V moves it to a label, with your labels in a menu or a new one typed in.
+
+**Changed**
+- With no unread mail, the panel says "All caught up" in the line under its title instead of a large card over your inboxes.
+
+**Fixed**
+- Mark as unread is checked against Gmail itself, and an action Gmail refuses is now shown as failed instead of done.
+
 ## 1.7.1
 
 Mail Deck 1.7.1 puts each inbox's picture back in its place on the settings page. It includes everything of 1.7.0, which did not reach the store on its own.
