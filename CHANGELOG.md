@@ -3,9 +3,16 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.8.1
+
+Mail Deck 1.8.1 lets you answer a Gmail message in your own words and send it from the panel, no AI needed. It includes everything of 1.8.0, which did not reach the store on its own.
+
+**New**
+- **Reply from the panel** (Gmail): Reply in an open message opens a field for your answer right there, addressed to the sender (their Reply-To, if they set one); Ctrl+Enter (⌘+Enter) or Send sends it in its thread, with five seconds to undo. Open in Gmail takes it to the compose window instead; other mail services' Reply opens theirs, as before.
+
 ## 1.8.0
 
-Mail Deck 1.8.0 sends your reply from the panel: the AI drafts it, Send sends it, with five seconds to change your mind. It includes everything of 1.7.1, which did not reach the store on its own.
+Mail Deck 1.8.0 sends your reply from the panel: the AI drafts it, Send sends it, with five seconds to change your mind.
 
 **New**
 - **Send from the panel** (Gmail): Reply with AI and the assistant's new mail have a Send button. A reply goes to the sender (their Reply-To, if they set one), shown above the draft, and stays in its conversation for you and for them. For five seconds Undo (or Z) keeps it back, with the draft as it was; it goes even if you close the panel meanwhile, and if Gmail does not take it, nothing is lost: the draft stays, or opens in Gmail when the panel is closed. Open in Gmail is still there, and other mail services keep it as before.
