@@ -1362,9 +1362,9 @@ const renderBar = objs => {
   const total = objs.reduce((p, o) => p + o.xml.fullcount, 0);
   const busy = objs.filter(o => o.xml.fullcount).length;
   const mail = objs.length > 0 || state.booting;
-  // all caught up: the list says it (caughtUp), the bar only over a search
+  // all caught up: the bar says it in its one line, the list keeps its room for the mailboxes
   $('sub').replaceChildren(!objs.length ? '' :
-    total ? (busy === 1 ? t('summaryOne', total) : t('summaryMany', total, busy)) : state.search ? h('span', {class: 'ok'}, icon('done'), t('caughtUp')) : '');
+    total ? (busy === 1 ? t('summaryOne', total) : t('summaryMany', total, busy)) : h('span', {class: 'ok'}, icon('done'), t('caughtUp')));
   $('tools').replaceChildren(...[
     mail && showAI() && btn('sparkle', t('assistant'), () => openAssist(), 'assist-btn', 'A'),
     btn('refresh', t('checkMail'), ev => {
@@ -1884,12 +1884,8 @@ const openServices = () => {
     window.close();
   }
 };
-// every mailbox is empty: said once, over a way into each of them
+// every mailbox is empty: a way into each of them (the bar above says there is no unread mail)
 const caughtUp = objs => h('div', {class: 'caught-up'},
-  h('div', {class: 'empty'},
-    h('span', {class: 'badge'}, icon('done')),
-    h('h3', {}, t('caughtUp')),
-    h('p', {}, objs.length === 1 ? t('caughtUpOne') : t('caughtUpMany', objs.length))),
   h('div', {class: 'accounts'}, objs.map(o => h('div', {
     'class': 'acc',
     'style': `--c:${o.color}`,

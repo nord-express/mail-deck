@@ -1686,12 +1686,6 @@
     "panel_caughtUp": {
         "message": "已全部读完"
     },
-    "panel_caughtUpOne": {
-        "message": "收件箱中没有未读邮件。"
-    },
-    "panel_caughtUpMany": {
-        "message": "$1 个邮箱中都没有未读邮件。"
-    },
     "panel_noSubject": {
         "message": "（无主题）"
     },

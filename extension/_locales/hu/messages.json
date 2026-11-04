@@ -1496,12 +1496,6 @@
   "panel_caughtUp": {
     "message": "Minden elolvasva"
   },
-  "panel_caughtUpOne": {
-    "message": "Nincs olvasatlan levél a beérkező levelek között."
-  },
-  "panel_caughtUpMany": {
-    "message": "Nincs olvasatlan levél a postafiókjaiban ($1)."
-  },
   "panel_noSubject": {
     "message": "(nincs tárgy)"
   },

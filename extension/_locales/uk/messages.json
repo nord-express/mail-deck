@@ -1682,12 +1682,6 @@
     "panel_caughtUp": {
         "message": "Усе прочитано"
     },
-    "panel_caughtUpOne": {
-        "message": "У вхідних немає непрочитаних листів."
-    },
-    "panel_caughtUpMany": {
-        "message": "У жодній зі скриньок ($1) немає непрочитаних листів."
-    },
     "panel_noSubject": {
         "message": "(без теми)"
     },

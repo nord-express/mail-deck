@@ -1686,12 +1686,6 @@
     "panel_caughtUp": {
         "message": "Alles gelezen"
     },
-    "panel_caughtUpOne": {
-        "message": "Geen ongelezen mail in je inbox."
-    },
-    "panel_caughtUpMany": {
-        "message": "Geen ongelezen mail in je $1 postvakken."
-    },
     "panel_noSubject": {
         "message": "(geen onderwerp)"
     },

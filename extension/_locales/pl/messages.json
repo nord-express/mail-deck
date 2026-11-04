@@ -1686,12 +1686,6 @@
     "panel_caughtUp": {
         "message": "Wszystko przeczytane"
     },
-    "panel_caughtUpOne": {
-        "message": "Brak nieprzeczytanej poczty w skrzynce."
-    },
-    "panel_caughtUpMany": {
-        "message": "Brak nieprzeczytanej poczty w skrzynkach ($1)."
-    },
     "panel_noSubject": {
         "message": "(bez tematu)"
     },

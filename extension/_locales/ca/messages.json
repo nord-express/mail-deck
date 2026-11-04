@@ -1682,12 +1682,6 @@
     "panel_caughtUp": {
         "message": "Tot al dia"
     },
-    "panel_caughtUpOne": {
-        "message": "No hi ha correu sense llegir a la safata d'entrada."
-    },
-    "panel_caughtUpMany": {
-        "message": "No hi ha correu sense llegir a les teves $1 bústies."
-    },
     "panel_noSubject": {
         "message": "(sense títol)"
     },

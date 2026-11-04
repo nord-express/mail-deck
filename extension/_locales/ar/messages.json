@@ -1678,12 +1678,6 @@
     "panel_caughtUp": {
         "message": "تمت قراءة كل شيء"
     },
-    "panel_caughtUpOne": {
-        "message": "لا يوجد بريد غير مقروء في بريدك الوارد."
-    },
-    "panel_caughtUpMany": {
-        "message": "لا يوجد بريد غير مقروء في صناديق البريد الوارد ($1)."
-    },
     "panel_noSubject": {
         "message": "(بدون موضوع)"
     },

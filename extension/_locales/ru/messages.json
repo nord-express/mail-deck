@@ -1686,12 +1686,6 @@
     "panel_caughtUp": {
         "message": "Всё прочитано"
     },
-    "panel_caughtUpOne": {
-        "message": "Во входящих нет непрочитанных писем."
-    },
-    "panel_caughtUpMany": {
-        "message": "Во всех ящиках ($1) нет непрочитанных писем."
-    },
     "panel_noSubject": {
         "message": "(без темы)"
     },

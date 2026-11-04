@@ -1682,12 +1682,6 @@
     "panel_caughtUp": {
         "message": "Све је прочитано"
     },
-    "panel_caughtUpOne": {
-        "message": "У пријемном сандучету нема непрочитане поште."
-    },
-    "panel_caughtUpMany": {
-        "message": "Ни у једном сандучету ($1) нема непрочитане поште."
-    },
     "panel_noSubject": {
         "message": "(без наслова)"
     },

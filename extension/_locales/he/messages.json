@@ -1678,12 +1678,6 @@
     "panel_caughtUp": {
         "message": "הכל נקרא"
     },
-    "panel_caughtUpOne": {
-        "message": "אין דואר שלא נקרא בתיבת הדואר הנכנס."
-    },
-    "panel_caughtUpMany": {
-        "message": "אין דואר שלא נקרא באף אחת מתיבות הדואר ($1)."
-    },
     "panel_noSubject": {
         "message": "(אין נושא)"
     },

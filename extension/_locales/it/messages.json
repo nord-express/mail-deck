@@ -1514,12 +1514,6 @@
   "panel_caughtUp": {
     "message": "Tutto letto"
   },
-  "panel_caughtUpOne": {
-    "message": "Nessuna email da leggere nella casella."
-  },
-  "panel_caughtUpMany": {
-    "message": "Nessuna email da leggere nelle tue $1 caselle."
-  },
   "panel_noSubject": {
     "message": "(nessun oggetto)"
   },

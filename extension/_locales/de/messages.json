@@ -1682,12 +1682,6 @@
     "panel_caughtUp": {
         "message": "Alles erledigt"
     },
-    "panel_caughtUpOne": {
-        "message": "Keine ungelesenen E-Mails im Posteingang."
-    },
-    "panel_caughtUpMany": {
-        "message": "Keine ungelesenen E-Mails in Ihren $1 Postfächern."
-    },
     "panel_noSubject": {
         "message": "(kein Betreff)"
     },

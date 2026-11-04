@@ -1514,12 +1514,6 @@
   "panel_caughtUp": {
     "message": "すべて既読です"
   },
-  "panel_caughtUpOne": {
-    "message": "受信トレイに未読メールはありません。"
-  },
-  "panel_caughtUpMany": {
-    "message": "$1 個の受信トレイに未読メールはありません。"
-  },
   "panel_noSubject": {
     "message": "（件名なし）"
   },

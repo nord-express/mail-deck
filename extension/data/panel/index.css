@@ -700,21 +700,6 @@ h1 {
 .text-btn.quiet:hover {
   color: var(--ink);
 }
-/* every mailbox empty: said once, above the ways into them */
-.caught-up .empty {
-  padding: 18px 40px 22px;
-}
-.caught-up .badge {
-  width: 44px;
-  height: 44px;
-  margin-bottom: 12px;
-  border-radius: var(--r-lg);
-}
-.caught-up .badge svg {
-  width: 22px;
-  height: 22px;
-  stroke-width: 2.2;
-}
 .accounts {
   border-radius: var(--r-lg);
   background: var(--card);

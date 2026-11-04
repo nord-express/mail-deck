@@ -1538,12 +1538,6 @@
   "panel_caughtUp": {
     "message": "Усё прачытана"
   },
-  "panel_caughtUpOne": {
-    "message": "У скрыні няма непрачытаных паведамленняў."
-  },
-  "panel_caughtUpMany": {
-    "message": "Ні ў адной са скрынь ($1) няма непрачытаных паведамленняў."
-  },
   "panel_noSubject": {
     "message": "(без тэмы)"
   },

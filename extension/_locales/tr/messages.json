@@ -1682,12 +1682,6 @@
     "panel_caughtUp": {
         "message": "Hepsi okundu"
     },
-    "panel_caughtUpOne": {
-        "message": "Gelen kutunuzda okunmamış posta yok."
-    },
-    "panel_caughtUpMany": {
-        "message": "$1 kutunuzda okunmamış posta yok."
-    },
     "panel_noSubject": {
         "message": "(konu yok)"
     },

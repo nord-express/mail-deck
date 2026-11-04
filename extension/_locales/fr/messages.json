@@ -1514,12 +1514,6 @@
   "panel_caughtUp": {
     "message": "Tout est lu"
   },
-  "panel_caughtUpOne": {
-    "message": "Aucun message non lu dans votre boîte."
-  },
-  "panel_caughtUpMany": {
-    "message": "Aucun message non lu dans vos $1 boîtes."
-  },
   "panel_noSubject": {
     "message": "(sans objet)"
   },

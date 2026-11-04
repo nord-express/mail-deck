@@ -1682,12 +1682,6 @@
     "panel_caughtUp": {
         "message": "Todo al día"
     },
-    "panel_caughtUpOne": {
-        "message": "No hay correo sin leer en tu buzón."
-    },
-    "panel_caughtUpMany": {
-        "message": "No hay correo sin leer en tus $1 buzones."
-    },
     "panel_noSubject": {
         "message": "(sin asunto)"
     },

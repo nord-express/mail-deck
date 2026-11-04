@@ -1678,12 +1678,6 @@
     "panel_caughtUp": {
         "message": "Всичко е прочетено"
     },
-    "panel_caughtUpOne": {
-        "message": "Няма непрочетени писма във входящата кутия."
-    },
-    "panel_caughtUpMany": {
-        "message": "Няма непрочетени писма във входящите кутии ($1)."
-    },
     "panel_noSubject": {
         "message": "(няма тема)"
     },

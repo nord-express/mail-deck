@@ -1547,12 +1547,6 @@
   "panel_caughtUp": {
     "message": "All caught up"
   },
-  "panel_caughtUpOne": {
-    "message": "No unread mail in your inbox."
-  },
-  "panel_caughtUpMany": {
-    "message": "No unread mail in your $1 inboxes."
-  },
   "panel_noSubject": {
     "message": "(no subject)"
   },
