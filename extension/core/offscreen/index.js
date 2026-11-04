@@ -114,8 +114,8 @@ chrome.runtime.onMessage.addListener(({request, method}, sender, response) => {
       });
       return true;
     }
-    else if (request.cmd === 'gmail.search' || request.cmd === 'gmail.headers') {
-      (request.cmd === 'gmail.search' ? gmail.search : gmail.headers)(request.request).then(response).catch(e => {
+    else if (request.cmd === 'gmail.search' || request.cmd === 'gmail.headers' || request.cmd === 'gmail.send') {
+      ({'gmail.search': gmail.search, 'gmail.headers': gmail.headers, 'gmail.send': gmail.send})[request.cmd](request.request).then(response).catch(e => {
         console.error(e);
         response({
           message: e.message,

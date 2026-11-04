@@ -1889,6 +1889,21 @@
   "panel_send": {
     "message": "Envoyer"
   },
+  "panel_sendingMail": {
+    "message": "Envoi…"
+  },
+  "panel_mailSent": {
+    "message": "Envoyé"
+  },
+  "panel_sendFailed": {
+    "message": "Le message n’a pas été envoyé. Réessayez ou ouvrez-le dans Gmail."
+  },
+  "panel_sendFailedOpened": {
+    "message": "Mail Deck n’a pas pu envoyer votre message. Il s’ouvre dans Gmail pour que vous l’envoyiez de là."
+  },
+  "panel_checkAddress": {
+    "message": "Vérifiez l’adresse."
+  },
   "panel_stop": {
     "message": "Arrêter"
   },

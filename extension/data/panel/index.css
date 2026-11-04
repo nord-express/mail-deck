@@ -2778,6 +2778,31 @@ button.cite:hover {
 .email.busy textarea {
   color: var(--soft);
 }
+/* whom a reply sent from here goes to, over its draft */
+.send-to {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+.send-to > span {
+  flex: none;
+  color: var(--muted);
+}
+/* the assistant's mail, once sent */
+.sent-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  color: var(--ok);
+  font-size: var(--fs-sm);
+}
+.sent-note svg {
+  width: 16px;
+  height: 16px;
+}
 
 /* the open mail's assistant: its buttons under the sender, its cards over the message */
 .reader-ai {

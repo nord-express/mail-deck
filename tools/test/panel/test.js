@@ -1008,9 +1008,23 @@
         const subject = email.querySelector('input[type=text]');
         subject.value = 'Встреча: пятница';
         subject.dispatchEvent(new Event('input'));
-        email.querySelector('.primary-btn').click();
+        [...email.querySelectorAll('.row-btns button')].find(b => b.textContent === t('openInGmail')).click();
         await wait(30);
         out.compose = sent('open').at(-1)?.url || '';
+        // or sent from here, first in line: an address that is none is asked again, nothing goes
+        const to = email.querySelector('input[type=email]');
+        to.value = 'anna';
+        to.dispatchEvent(new Event('input'));
+        email.querySelector('.row-btns .primary-btn').click();
+        await wait(30);
+        out.badAddress = sent('gmail.send').length === 0 && $('toast').textContent === t('checkAddress') && document.activeElement === to;
+        to.value = 'anna@figma.com';
+        to.dispatchEvent(new Event('input'));
+        last().querySelector('.email .row-btns .primary-btn').click();
+        await until(() => last().querySelector('.sent-note'), 1000);
+        const mail = sent('gmail.send').at(-1);
+        out.newSent = mail && {delay: mail.delay, from: mail.mail.from, to: mail.mail.to, subject: mail.mail.subject, text: mail.mail.text.slice(0, 12), reply: mail.mail.reply,
+          note: last().querySelector('.sent-note')?.textContent, buttons: last().querySelectorAll('.email .row-btns').length};
         // what is important: the unread mail read by its preview
         input.value = 'what is important?';
         enter();
@@ -1078,9 +1092,23 @@
         // with a draft, the intents and their field fold into one Rewrite… field with its buttons
         out.folded = !$('ai-tool').querySelector('.intents') && $('ai-tool').querySelectorAll('.rewrites .suggestion').length === 5 &&
           $('ai-tool').querySelector('.tool-input').placeholder === t('rewritePlaceholder');
-        $('ai-tool').querySelector('.row-btns .primary-btn').click();
+        [...$('ai-tool').querySelectorAll('.row-btns button')].find(b => b.textContent === t('openInGmail')).click();
         await wait(30);
         out.replyUrl = sent('open').at(-1)?.url || '';
+        // Send comes first, to the sender: an Undo takes it back while it waits, the draft as it was
+        const sendBtn = $('ai-tool').querySelector('.row-btns .primary-btn');
+        out.sendFirst = sendBtn?.textContent === t('send') && $('ai-tool').querySelector('.send-to bdi')?.textContent === 'anna@figma.com';
+        window.__sendHold = true;
+        sendBtn.click();
+        await until(() => sent('gmail.send').length > (out.newSent ? 1 : 0), 1000);
+        const held = sent('gmail.send').at(-1);
+        out.replySend = {delay: held.delay, to: held.mail.to, subject: held.mail.subject.startsWith('Re: '), text: held.mail.text === out.draft, reply: held.mail.reply,
+          link: held.mail.link === state.reading.e.link, waiting: $('ai-tool').querySelector('.row-btns .primary-btn')?.disabled};
+        document.querySelector('#toast .undo').click();
+        await wait(30);
+        window.__sendHold = false;
+        out.sendUndone = sent('gmail.send.cancel').length === 1 && !$('ai-tool').hidden && $('ai-tool').querySelector('.draft').value === out.draft &&
+          !$('ai-tool').querySelector('.row-btns .primary-btn').disabled;
         // the reader's own change, rewritten Shorter: it streams into the same field, Undo brings the change back
         const draft = $('ai-tool').querySelector('.draft');
         draft.value = 'Привет, Аня! Спасибо большое, посмотрю всё до пятницы.';
@@ -1102,6 +1130,15 @@
         field.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}));
         await until(() => calls('rewrite').length === 2 && $('ai-tool').getAttribute('aria-busy') === 'false', 2000);
         out.ownWords = calls('rewrite').at(-1).how === 'теплее';
+        // sent: said so, and the card closes; Gmail refusing it keeps the card and the draft
+        window.__sendFails = true;
+        $('ai-tool').querySelector('.row-btns .primary-btn').click();
+        await until(() => $('toast').classList.contains('error'), 1000);
+        out.sendFailed = $('toast').textContent === t('sendFailed') && !$('ai-tool').hidden && Boolean($('ai-tool').querySelector('.draft')?.value);
+        window.__sendFails = false;
+        $('ai-tool').querySelector('.row-btns .primary-btn').click();
+        await until(() => $('ai-tool').hidden, 1000);
+        out.replySent = $('toast').textContent === t('mailSent') && sent('gmail.send').at(-1).mail.text === $('ai-tool').querySelector('.draft')?.value;
         // a question about the mail: its messages, an answer
         $('reader-ai').querySelector('.ai-ask').click();
         const q = $('ai-tool').querySelector('.tool-input');

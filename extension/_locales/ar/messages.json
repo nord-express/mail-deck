@@ -2057,6 +2057,21 @@
     "panel_send": {
         "message": "إرسال"
     },
+    "panel_sendingMail": {
+        "message": "جارٍ الإرسال…"
+    },
+    "panel_mailSent": {
+        "message": "تم الإرسال"
+    },
+    "panel_sendFailed": {
+        "message": "لم تُرسَل الرسالة. حاول مرة أخرى أو افتحها في Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "تعذّر على Mail Deck إرسال رسالتك. ستُفتح في Gmail لترسلها من هناك."
+    },
+    "panel_checkAddress": {
+        "message": "تحقّق من العنوان."
+    },
     "panel_stop": {
         "message": "إيقاف"
     },

@@ -2061,6 +2061,21 @@
     "panel_send": {
         "message": "Versturen"
     },
+    "panel_sendingMail": {
+        "message": "Verzenden…"
+    },
+    "panel_mailSent": {
+        "message": "Verzonden"
+    },
+    "panel_sendFailed": {
+        "message": "De mail is niet verzonden. Probeer het opnieuw of open hem in Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck kon je mail niet verzenden. Hij opent in Gmail, zodat je hem daar verstuurt."
+    },
+    "panel_checkAddress": {
+        "message": "Controleer het adres."
+    },
     "panel_stop": {
         "message": "Stoppen"
     },

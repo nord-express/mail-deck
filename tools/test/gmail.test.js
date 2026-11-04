@@ -1,6 +1,6 @@
 // core/offscreen/gmail/core.js against a fake Gmail: a mail's header read from its raw message
-// and no further, how List-Unsubscribe says to unsubscribe (RFC 2369, RFC 8058), and the action
-// calls for unread and labels (time runs a hundred times faster there).
+// and no further, how List-Unsubscribe says to unsubscribe (RFC 2369, RFC 8058), the action
+// calls for unread and labels, and mail sent (time runs a hundred times faster there).
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -46,7 +46,7 @@ const start = answer => {
   };
   const kept = new Map();
   const localStorage = {getItem: k => kept.get(k) ?? null, setItem: (k, v) => kept.set(k, String(v))};
-  const ctx = {chrome, fetch, localStorage, console, URL, URLSearchParams, FormData, TextDecoder, TextEncoder, AbortSignal, Promise, JSON, BigInt, Error,
+  const ctx = {chrome, fetch, localStorage, console, URL, URLSearchParams, FormData, TextDecoder, TextEncoder, AbortSignal, Promise, JSON, BigInt, Error, crypto,
     setTimeout: (fn, ms, ...args) => setTimeout(fn, ms / 100, ...args)};
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(EXT + '/core/offscreen/gmail/core.js', 'utf8') + ';this.gmail = gmail;', ctx, {filename: 'core.js'});
@@ -162,6 +162,41 @@ const tests = [
     const none = start(() => ok(''));
     await assert.rejects(none.gmail.action({links: [link(0, 't1')], cmd: 'rc_Work', prefs: {}}), /action_not_supported/);
     assert.ok(!none.requests.some(q => q.method === 'POST'));
+  }],
+  ['a mail is sent as Gmail\'s mobile site sends it: a reply names the message it answers, the text goes as escaped HTML', async () => {
+    const g = start(() => ok(')]}\'\n104&[null,[[null,null,null,null,null,null,null,null,[],null]],2,0,"IK"]'));
+    assert.strictEqual(await g.gmail.send({link: link(3, '1a1a65545398a21f'), from: 'me@gmail.com', to: ['anna@example.com'], subject: 'Re: Budget',
+      text: 'Hi Anna,\n\n<b>Friday</b> & "Monday" work.\r\nBest', reply: '1a1a65545398a21f'}), true);
+    const q = g.requests.at(-1);
+    assert.ok(q.url.startsWith('https://mail.google.com/mail/u/3/s/?v=or&ik=IK&at=AT&subui=chrome&suim=true&') && q.method === 'POST');
+    const m = JSON.parse(q.body.get('s_jr'))[1][0][7][1];
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(m.slice(1, 10))), [[[null, 'anna@example.com', '', null]], [], [], [null, 'me@gmail.com', null, null], [],
+      'Re: Budget', 'Hi Anna,<br><br>&lt;b&gt;Friday&lt;/b&gt; &amp; &quot;Monday&quot; work.<br>Best', 4, '1a1a65545398a21f']);
+    assert.match(m[14], /^[a-z0-9]{12}$/);
+    // a new mail: mode 1, no message answered, every address
+    await g.gmail.send({link: 'https://mail.google.com/mail/u/0', from: 'me@gmail.com', to: ['a@x.com', 'b@y.org'], cc: ['c@z.net'], subject: 'Hi', text: 'Hello'});
+    const n = JSON.parse(g.requests.at(-1).body.get('s_jr'))[1][0][7][1];
+    assert.deepStrictEqual(JSON.parse(JSON.stringify([n[1].map(p => p[1]), n[2].map(p => p[1]), n[8], n[9]])), [['a@x.com', 'b@y.org'], ['c@z.net'], 1, null]);
+  }],
+  ['what is not an address, or no address at all, sends nothing; a refusal, a sign-in to confirm and an error status are failures', async () => {
+    const g = start(() => ok('ok'));
+    for (const to of [[], ['nobody'], ['a@b.com', 'x y@z.com'], ['<a@b.com>']]) {
+      await assert.rejects(g.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to, text: 'x'}), /address/);
+    }
+    await assert.rejects(g.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x', reply: '../x'}), /reply/);
+    assert.strictEqual(g.requests.length, 0);
+    const refused = start(() => ok(')]}\'\n60&[null,[[null,[null,"Unexpected action: SEND",8],null]],2,'));
+    await assert.rejects(refused.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), /send -> Unexpected action: SEND/);
+    const confirm = start(() => ok('<a href="https://accounts.google.com/spreauth?x=1">'));
+    await assert.rejects(confirm.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), /permission_error/);
+    const status = start(() => new Response('', {status: 500}));
+    await assert.rejects(status.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), /send -> 500/);
+  }],
+  ['the header gives the addresses a reply goes to: From, Reply-To, To and Cc, names and comments left out', async () => {
+    const g = start(url => url.includes('view=att') ? ok(head(['From: "Doe, Jane" <jane@x.com>', 'Reply-To: list@x.com (the list)',
+      'To: me@gmail.com,', ' "Bob @ home" <bob@y.org>', 'Cc: undisclosed-recipients:;', 'Message-ID: <m@x.com>'])) : new Response('', {status: 404}));
+    const r = await g.gmail.headers({link: link(0, 'abc')});
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(r.people)), {'from': ['jane@x.com'], 'reply-to': ['list@x.com'], 'to': ['me@gmail.com', 'bob@y.org'], 'cc': []});
   }]
 ];
 

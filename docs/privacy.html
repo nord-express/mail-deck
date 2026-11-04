@@ -30,7 +30,7 @@
 
   <main class="doc wrap">
     <h1>Privacy policy</h1>
-    <p class="date">Last updated: 2026-11-03</p>
+    <p class="date">Last updated: 2026-11-04</p>
 
     <p>Mail Deck has no servers, no analytics and no tracking. Nothing it reads leaves your browser except the requests it sends to the mail services themselves: to Google for Gmail, and to each other mail service you turn on. If you turn on the AI assistant with your ChatGPT plan or your own key from an AI provider, the mail it works on also goes to that provider, as described below; with a model on your own computer, it stays there.</p>
 
@@ -41,7 +41,8 @@
       <li><strong>Attachments.</strong> To show a message’s files on its line in the list before you open it, Mail Deck loads the print view of each Gmail conversation the list shows, two at a time, and reads only the names and links of its attachments. Loading it does not mark the mail as read, and its pictures are not loaded. The names and links are kept in session storage until the browser closes.</li>
       <li><strong>Gmail search.</strong> When the panel opens, Mail Deck asks Gmail’s own search on <code>mail.google.com</code> for the unread mail of each inbox, to show which mail is starred and the mail past the 20 the feed lists. When you type in the panel’s search field, that query goes to the same search of each of your inboxes.</li>
       <li><strong>Account pictures.</strong> About once a week Mail Deck loads each signed-in account’s Gmail page from <code>mail.google.com</code> to find that account’s own picture, which the panel then shows from Google’s image server (<code>lh3.googleusercontent.com</code>).</li>
-      <li><strong>Gmail’s action token.</strong> To mark mail as read, archive, delete or report spam, Mail Deck reads the <code>GMAIL_AT</code> cookie that Gmail sets for <code>mail.google.com</code> and sends it back to <code>mail.google.com</code> with the action, the same way the Gmail web page does.</li>
+      <li><strong>Gmail’s action token.</strong> To mark mail as read or unread, archive, delete, star, label or report spam, and to send the mail you send from the panel, Mail Deck reads the <code>GMAIL_AT</code> cookie that Gmail sets for <code>mail.google.com</code> and sends it back to <code>mail.google.com</code> with the action, the same way Gmail’s own pages do.</li>
+      <li><strong>Mail you send.</strong> Mail Deck sends mail only when you press <strong>Send</strong> under a reply or a new mail in the panel, and only from a Gmail account, to <code>mail.google.com</code>, as Gmail’s mobile site sends it. It waits five seconds first, while <strong>Undo</strong> keeps it back; for those seconds the mail (its addresses, subject and text) is kept in this browser’s extension storage, so it still goes if the browser closes, and is deleted once it has gone or been taken back. A reply goes to the addresses in the message’s own header (Reply-To, else From), which Mail Deck reads from <code>mail.google.com</code> when the reply is drafted; the panel shows them before you send.</li>
       <li><strong>Gmail tab requests.</strong> If “Check when Gmail tabs or the network change” is on in settings (it is by default), Mail Deck notices when a Gmail tab sends a request to <code>mail.google.com</code> so it can refresh the unread count. It does not read, block or change those requests.</li>
     </ul>
 
@@ -69,7 +70,7 @@
       <li>take a request in your own words in the assistant (“when is my flight?”, “invoices from October”, “write to Anna that…”): find the mail with Gmail’s search in your accounts and among the other services’ unread mail, answer from what it found, sum up your unread mail, or draft a new mail;</li>
       <li>sort unread mail into mail waiting for your reply, important mail, and newsletters you can clear without reading.</li>
     </ul>
-    <p>A draft only ever opens in your mail service’s compose window, or is copied: the assistant never sends mail for you.</p>
+    <p>The assistant never sends mail on its own. A draft goes only when you press <strong>Send</strong> (Gmail, with five seconds to undo, as described above); otherwise it opens in your mail service’s compose window, or is copied.</p>
     <p>You choose where it runs:</p>
     <ul>
       <li><strong>On this computer.</strong> Chrome’s built-in model runs on your device, and nothing is sent anywhere. Chrome downloads the model from Google once, from your click.</li>
@@ -114,7 +115,7 @@
     </ul>
     <p><strong>Pictures and trackers.</strong> A Gmail message you open in the panel shows its pictures through Google’s image proxy, as Gmail does, unless you turn on “Ask before showing pictures in Gmail mail” (Settings → Panel → More options); then they wait for Show pictures. In a message of another service, pictures from the internet always wait for Show pictures. Before anything of a message loads, Mail Deck checks each of its pictures inside the extension: a picture that only reports that you opened the message (a known open-tracking pixel, or a hidden or one-pixel picture whose address could identify you) is never loaded, not even by Show pictures, and the panel says how many it kept out and whose. The list is built into Mail Deck: nothing is downloaded or sent to check a picture.</p>
     <p><strong>Sender warnings.</strong> For the message you open, the panel compares the sender’s name and address, and its Reply-To when Gmail shows one, with a list of well-known brands and domains built into Mail Deck, and says so when they do not match. This happens inside the panel; nothing is sent anywhere.</p>
-    <p><strong>Unsubscribe.</strong> When you open a Gmail message, Mail Deck reads its header from <code>mail.google.com</code> (only the lines that say how to unsubscribe, the message id and Gmail’s own check of the sender’s signature) to offer Unsubscribe. Nothing is sent until you choose Unsubscribe and confirm: then, as the sender’s header asks, Mail Deck either sends one request to the sender’s unsubscribe address, with no cookies and nothing about you but what that address already holds, or opens a pre-filled email in Gmail for you to send, or opens the sender’s page in a tab.</p>
+    <p><strong>Unsubscribe.</strong> When you open a Gmail message, Mail Deck reads its header from <code>mail.google.com</code> (only the lines that say how to unsubscribe, the message id, Gmail’s own check of the sender’s signature and the addresses a reply would go to) to offer Unsubscribe. Nothing is sent until you choose Unsubscribe and confirm: then, as the sender’s header asks, Mail Deck either sends one request to the sender’s unsubscribe address, with no cookies and nothing about you but what that address already holds, or opens a pre-filled email in Gmail for you to send, or opens the sender’s page in a tab.</p>
     <p>Mail Deck does not send your mail, addresses, cookies or settings to its author, or to anyone other than the services named above. It does not sell or share data, and it does not use your data for advertising or credit decisions.</p>
 
     <h2>What it stores</h2>

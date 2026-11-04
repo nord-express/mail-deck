@@ -2057,6 +2057,21 @@
     "panel_send": {
         "message": "Надіслати"
     },
+    "panel_sendingMail": {
+        "message": "Надсилання…"
+    },
+    "panel_mailSent": {
+        "message": "Надіслано"
+    },
+    "panel_sendFailed": {
+        "message": "Лист не надіслано. Спробуйте ще раз або відкрийте його в Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck не зміг надіслати лист. Він відкриється в Gmail, щоб ви надіслали його звідти."
+    },
+    "panel_checkAddress": {
+        "message": "Перевірте адресу."
+    },
     "panel_stop": {
         "message": "Зупинити"
     },

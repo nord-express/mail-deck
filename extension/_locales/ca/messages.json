@@ -2061,6 +2061,21 @@
     "panel_send": {
         "message": "Envia"
     },
+    "panel_sendingMail": {
+        "message": "S'està enviant…"
+    },
+    "panel_mailSent": {
+        "message": "Enviat"
+    },
+    "panel_sendFailed": {
+        "message": "El correu no s'ha enviat. Torna-ho a provar o obre'l a Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck no ha pogut enviar el correu. S'obre a Gmail perquè l'enviïs des d'allà."
+    },
+    "panel_checkAddress": {
+        "message": "Comprova l'adreça."
+    },
     "panel_stop": {
         "message": "Atura"
     },

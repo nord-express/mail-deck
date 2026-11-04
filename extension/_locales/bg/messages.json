@@ -2057,6 +2057,21 @@
     "panel_send": {
         "message": "Изпращане"
     },
+    "panel_sendingMail": {
+        "message": "Изпращане…"
+    },
+    "panel_mailSent": {
+        "message": "Изпратено"
+    },
+    "panel_sendFailed": {
+        "message": "Писмото не е изпратено. Опитайте отново или го отворете в Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck не успя да изпрати писмото. То се отваря в Gmail, за да го изпратите оттам."
+    },
+    "panel_checkAddress": {
+        "message": "Проверете адреса."
+    },
     "panel_stop": {
         "message": "Спиране"
     },

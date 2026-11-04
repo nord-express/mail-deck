@@ -2061,6 +2061,21 @@
     "panel_send": {
         "message": "Отправить"
     },
+    "panel_sendingMail": {
+        "message": "Отправка…"
+    },
+    "panel_mailSent": {
+        "message": "Отправлено"
+    },
+    "panel_sendFailed": {
+        "message": "Письмо не отправлено. Попробуйте ещё раз или откройте его в Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck не смог отправить письмо. Оно откроется в Gmail, чтобы вы отправили его оттуда."
+    },
+    "panel_checkAddress": {
+        "message": "Проверьте адрес."
+    },
     "panel_stop": {
         "message": "Остановить"
     },

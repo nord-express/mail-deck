@@ -696,6 +696,13 @@ const undo = () => {
   state.pending = null;
   clearTimeout(p.timer);
   hideToast();
+  // mail not sent yet: the background keeps it back, the draft is there to change
+  if (p.cmd === 'send') {
+    p.cancelled = true;
+    chrome.runtime.sendMessage({method: 'gmail.send.cancel', id: p.id}).catch(() => {});
+    p.back(false);
+    return;
+  }
   if (p.cmd === 'remind') {
     // the background writes the list, one change after the other
     chrome.runtime.sendMessage({method: 'remind.remove', links: p.links}).catch(() => Remind.remove(p.links));
@@ -2928,7 +2935,7 @@ const openTool = (r, mode) => {
   }
   r.tool.ctl?.abort();
   Object.assign(r.tool, {mode: aiOn() || mode === 'offer' ? mode : 'offer', ctl: null, text: '', chosen: '', change: '', how: '', before: '', notes: [],
-    doubtful: [], error: null, busy: false});
+    doubtful: [], error: null, busy: false, to: null, sending: false});
   paintTool(r);
   $('ai-tool').querySelector('textarea, input')?.focus();
 };
@@ -3033,14 +3040,23 @@ const paintTool = r => {
     }))), field, busy && waitDots());
   }
   else if (drafted) {
-    const draft = h('textarea', {class: 'draft', rows: 8, value: text, 'aria-label': t('draft'), 'data-role': 'draft', readOnly: busy, oninput: () => {
-      r.tool.text = draft.value;
-    }});
-    parts.push(draft,
+    // Gmail's reply goes from here; another service's opens in its compose window
+    const sends = !serviceOf(r.o);
+    if (sends && !r.tool.to) {
+      peopleOf(r);
+    }
+    const draft = h('textarea', {class: 'draft', rows: 8, value: text, 'aria-label': t('draft'), 'data-role': 'draft', readOnly: busy || r.tool.sending,
+      oninput: () => {
+        r.tool.text = draft.value;
+      }});
+    parts.push(sends && h('p', {class: 'send-to'}, h('span', {}, t('toLabel')), h('bdi', {}, (r.tool.to?.list || [r.e.author_email]).join(', '))),
+      draft,
       h('div', {class: 'rewrites', role: 'group', 'aria-label': t('rewrite')}, REWRITES.map(([how, k]) => chip(t(k), r.tool.how === how, () => runTool(r, how)))),
       field,
       !busy && h('div', {class: 'row-btns'},
-        h('button', {class: 'primary-btn', type: 'button', onclick: () => replyWith(r)}, icon('open'), serviceOf(r.o) ? t('openIn', serviceOf(r.o).name) : t('openInGmail')),
+        sends && h('button', {'class': 'primary-btn', 'type': 'button', 'disabled': r.tool.sending || !r.tool.to?.list.length,
+          'data-focus': 'send', 'onclick': () => sendReply(r)}, icon('send'), r.tool.sending ? t('sendingMail') : t('send')),
+        h('button', {class: sends ? 'text-btn' : 'primary-btn', type: 'button', onclick: () => replyWith(r)}, icon('open'), serviceOf(r.o) ? t('openIn', serviceOf(r.o).name) : t('openInGmail')),
         h('button', {class: 'text-btn', type: 'button', onclick: ev => copyText(r.tool.text, ev.currentTarget)}, icon('copy'), t('copyText')),
         r.tool.before && h('button', {class: 'text-btn', type: 'button', onclick: () => {
           Object.assign(r.tool, {text: r.tool.before, before: ''});
@@ -3078,6 +3094,91 @@ const streamTool = (r, text) => {
   }
 };
 const waitDots = () => h('div', {class: 'ai-wait', 'aria-hidden': 'true'}, h('span', {}), h('span', {}), h('span', {}));
+/*
+ * Sending: Gmail's mail goes from the panel. The background waits out the Undo window (and sends
+ * it whether the panel is still open or not); Gmail is asked by its own mobile site's call, so a
+ * reply stays in its thread. Another service's mail opens in its compose window instead.
+ */
+// whom a reply goes to, as Gmail's Reply has it: Reply-To, else From; for mail of one's own, its
+// To. The feed's sender until the mail's header is read, and when it cannot be.
+const peopleOf = r => {
+  const tool = r.tool;
+  tool.to = {list: [r.e.author_email].filter(Boolean), read: false};
+  const me = r.o.xml.title.toLowerCase();
+  chrome.runtime.sendMessage({method: 'gmail.headers', link: r.e.link}).then(h => {
+    const p = h?.people;
+    if (!p || tool !== r.tool) {
+      return;
+    }
+    const sender = p['reply-to']?.length ? p['reply-to'] : p.from || [];
+    const mine = sender.length > 0 && sender.every(a => a.toLowerCase() === me);
+    const list = (mine ? p.to || [] : sender).filter(a => a.toLowerCase() !== me);
+    if (list.length) {
+      tool.to = {list, read: true};
+      paintTool(r);
+    }
+  }).catch(() => {});
+};
+// the addresses typed in a field, between commas, semicolons or spaces
+const typedAddresses = value => String(value || '').split(/[\s,;]+/).map(a => a.replace(/^<|>$/g, '')).filter(Boolean);
+const ADDRESS = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]+$/;
+// sent(): Gmail took it; back(failed): it did not go, taken back with Undo or refused
+const sendMail = ({o, link, to, subject, text, reply = ''}, {sent, back}) => {
+  if (state.pending) {
+    commit(state.pending);
+  }
+  const p = {cmd: 'send', links: [], id: 'send:' + Math.random().toString(36).slice(2), back};
+  state.pending = p;
+  p.timer = setTimeout(() => commit(p), UNDO_MS);
+  toast(t('sendingMail'), false, undo);
+  // with the panel gone, mail that does not go opens in Gmail's compose window, with its text
+  const fallback = composeWith(o, {to: to.join(','), subject, body: text});
+  // Gmail's token comes with a mail's print view: a new mail takes it from the account's newest one
+  const primer = reply ? link : state.objs.filter(x => x.xml.title === o.xml.title && !serviceOf(x)).flatMap(x => x.xml.entries)[0]?.link || link;
+  ensureAt(primer).then(() => {
+    if (p.cancelled) {
+      return;
+    }
+    chrome.runtime.sendMessage({method: 'gmail.send', id: p.id, delay: UNDO_MS, fallback,
+      mail: {link, from: o.xml.title, to, subject, text, reply}}, answer => {
+      if (chrome.runtime.lastError || !answer || answer.message) {
+        commit(p);
+        toast(t('sendFailed'), true);
+        back(true);
+      }
+      else if (answer.sent) {
+        toast(t('mailSent'));
+        sent();
+      }
+    });
+  });
+};
+const sendReply = r => {
+  const tool = r.tool;
+  const to = tool.to?.list || [];
+  const text = String(tool.text || '');
+  if (tool.sending || !to.length || !to.every(a => ADDRESS.test(a)) || !text.trim()) {
+    return;
+  }
+  tool.sending = true;
+  paintTool(r);
+  const subject = /^re:/i.test(r.e.title || '') ? r.e.title : 'Re: ' + (r.e.title || '');
+  const done = () => {
+    tool.sending = false;
+    if (tool === r.tool) {
+      paintTool(r);
+    }
+  };
+  sendMail({o: r.o, link: r.e.link, to, subject, text, reply: /^[\da-f]{1,16}$/i.test(thread(r.e.link)) ? thread(r.e.link) : ''}, {
+    sent: () => {
+      done();
+      if (tool === r.tool && tool.mode === 'reply') {
+        closeTool(r);
+      }
+    },
+    back: done
+  });
+};
 // the reply opens in the mail service with the text in place: Gmail's compose window takes it;
 // another service's opens with the text in the clipboard
 const replyWith = r => {
@@ -4084,8 +4185,11 @@ const emailEl = turn => {
     h('label', {class: 'field'}, h('span', {}, t('toLabel')), to),
     h('label', {class: 'field'}, h('span', {}, t('subject')), subject),
     text,
-    !busy && h('div', {class: 'row-btns'},
-      h('button', {class: 'primary-btn', type: 'button', onclick: () => sendEmail(e, from)}, icon('open'), serviceOf(from) ? t('openIn', serviceOf(from).name) : t('openInGmail')),
+    e.sent && h('p', {class: 'sent-note', role: 'status'}, icon('done'), t('mailSent')),
+    !busy && !e.sent && h('div', {class: 'row-btns'},
+      !serviceOf(from) && h('button', {'class': 'primary-btn', 'type': 'button', 'disabled': sendingTurns.has(turn.id), 'data-focus': 'send:' + turn.id,
+        'onclick': () => sendNew(turn, gmails.find(o => o.xml.title === e.from) || from, to)}, icon('send'), sendingTurns.has(turn.id) ? t('sendingMail') : t('send')),
+      h('button', {class: serviceOf(from) ? 'primary-btn' : 'text-btn', type: 'button', onclick: () => sendEmail(e, from)}, icon('open'), serviceOf(from) ? t('openIn', serviceOf(from).name) : t('openInGmail')),
       h('button', {class: 'text-btn', type: 'button', onclick: ev => copyText(e.body, ev.currentTarget)}, icon('copy'), t('copyText')),
       h('button', {class: 'text-btn', type: 'button', onclick: () => run(turn)}, icon('refresh'), t('regenerate'))));
 };
@@ -4097,6 +4201,35 @@ const composeWith = (o, {to = '', subject = '', body = ''}) => {
     return s.compose(to, subject) || composeUrl(o);
   }
   return `https://mail.google.com/mail/u/${userOf(o.xml.link)}/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+};
+// the assistant's new mail, from the Gmail account chosen; an address that is none is asked again.
+// What is being sent is this panel's to know, not the conversation's to keep.
+const sendingTurns = new Set();
+const sendNew = (turn, o, field) => {
+  const e = turn.email;
+  const to = typedAddresses(e.to);
+  if (sendingTurns.has(turn.id)) {
+    return;
+  }
+  if (!to.length || !to.every(a => ADDRESS.test(a))) {
+    toast(t('checkAddress'), true);
+    field?.focus();
+    return;
+  }
+  sendingTurns.add(turn.id);
+  paintTurn(turn, true);
+  sendMail({o, link: o.xml.link, to, subject: e.subject || '', text: e.body || ''}, {
+    sent: () => {
+      sendingTurns.delete(turn.id);
+      e.sent = true;
+      saveTurns();
+      paintTurn(turn, true);
+    },
+    back: () => {
+      sendingTurns.delete(turn.id);
+      paintTurn(turn, true);
+    }
+  });
 };
 const sendEmail = (e, o) => {
   if (serviceOf(o)) {
@@ -4207,14 +4340,15 @@ const flagsOf = (e, o) => {
     .filter(Boolean).join(' | ') : '';
 };
 
-const paintTurn = turn => {
+// force: drawn even over a field being typed in, for a change the turn must show (mail sent)
+const paintTurn = (turn, force = false) => {
   const el = $('assist-body').querySelector(`.turn[data-id="${CSS.escape(turn.id)}"]`);
   if (!el) {
     paintAssist();
     return;
   }
   // a field being typed in keeps its caret
-  if (el.contains(document.activeElement) && document.activeElement.matches('input, textarea, select')) {
+  if (!force && el.contains(document.activeElement) && document.activeElement.matches('input, textarea, select')) {
     return;
   }
   const body = $('assist-body');

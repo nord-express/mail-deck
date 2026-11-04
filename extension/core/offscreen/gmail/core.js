@@ -159,15 +159,15 @@ gmail.search = async ({url, query}) => {
 
 /*
  * The raw message, read as far as its header ends: what a mail's List-Unsubscribe says (RFC
- * 2369, RFC 8058) and its Message-ID. Gmail's own "Download original" (view=att, disp=comp) gives
- * the message as it came; "Show original" (view=om) shows it in a page. Either is read only up to
- * the empty line after the header, and never past HEAD_MAX: the body, its pictures and files are
- * not fetched. Only the few fields below leave this document.
+ * 2369, RFC 8058), its Message-ID, and the addresses a reply goes to. Gmail's own "Download
+ * original" (view=att, disp=comp) gives the message as it came; "Show original" (view=om) shows it
+ * in a page. Either is read only up to the empty line after the header, and never past HEAD_MAX:
+ * the body, its pictures and files are not fetched. Only the few fields below leave this document.
  */
 const HEAD_MAX = 256 * 1024;
 // a URL waits for its message this long; a message that never comes is given up
 const HEAD_WAIT = 10000;
-const FIELDS = ['list-unsubscribe', 'list-unsubscribe-post', 'message-id', 'authentication-results', 'dkim-signature'];
+const FIELDS = ['list-unsubscribe', 'list-unsubscribe-post', 'message-id', 'authentication-results', 'dkim-signature', 'from', 'reply-to', 'to', 'cc'];
 // the few entities a page's <pre> writes the header with
 const unescape = s => s.replace(/&(#x[\da-f]+|#\d+|lt|gt|amp|quot|apos|#39);/gi, (all, e) => {
   const k = e.toLowerCase();
@@ -236,6 +236,20 @@ const readHeader = async (r, page) => {
     reader.cancel().catch(() => {});
   }
 };
+// The addresses of a field such as To (RFC 5322 3.4), in order and each once: the one in angle
+// brackets, or one standing alone. Quoted names and comments are left out first, so an @ in a
+// name is no address; the names themselves are not kept.
+gmail.addresses = value => {
+  const plain = String(value || '').replace(/"(?:[^"\\]|\\.)*"/g, '""').replace(/\((?:[^()\\]|\\.)*\)/g, ' ');
+  const out = [];
+  for (const m of plain.matchAll(/<\s*([^<>\s@]+@[^<>\s@]+?)\s*>|([^\s<>,;:"()@]+@[^\s<>,;:"()@]+)/g)) {
+    const address = (m[1] || m[2]).replace(/\.$/, '');
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address) && !out.some(a => a.toLowerCase() === address.toLowerCase())) {
+      out.push(address);
+    }
+  }
+  return out;
+};
 // Gmail's ID of a message, in the old hexadecimal form of its links and in the msg-f: form its
 // pages use now
 const permOf = id => /^[\da-f]{1,16}$/i.test(id) ? 'msg-f:' + BigInt('0x' + id).toString() : '';
@@ -273,7 +287,8 @@ gmail.headers = async ({link}) => {
         const fields = gmail.fields(head);
         return {
           messageId: (fields['message-id']?.[0] || '').replace(/^\s*<|>\s*$/g, ''),
-          unsubscribe: gmail.unsubscribe(fields)
+          unsubscribe: gmail.unsubscribe(fields),
+          people: Object.fromEntries(['from', 'reply-to', 'to', 'cc'].map(k => [k, gmail.addresses((fields[k] || []).join(', '))]))
         };
       }
     }
@@ -480,4 +495,61 @@ gmail.action = async ({links, cmd, prefs}) => {
     return r;
   }
   throw Error('core.js -> no_links');
+};
+
+/*
+ * Mail sent from the panel, the way Gmail's mobile site sends it: its internal call, with the
+ * account's key and token. A reply names the message it answers (its ID, as the feed gives it):
+ * Gmail then writes its In-Reply-To and References and keeps it in that thread. The text is plain:
+ * it goes as HTML, escaped, a line break a <br>, and Gmail adds the plain part. Only an answer
+ * without a refusal is "sent".
+ */
+const ADDRESS = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]+$/;
+gmail.send = async ({link, from, to = [], cc = [], subject = '', text = '', reply = ''}) => {
+  const m = /u\/(?<n>\d+)/.exec(link || '');
+  if (!m) {
+    throw Error('core.js -> send -> no account');
+  }
+  if (!to.length || ![...to, ...cc, from].every(a => typeof a === 'string' && ADDRESS.test(a))) {
+    throw Error('core.js -> send -> address');
+  }
+  if (reply && !/^[\da-f]{1,16}$/i.test(reply)) {
+    throw Error('core.js -> send -> reply');
+  }
+  const {n} = m.groups;
+  const at = await gmail.at(n, reply);
+  const {ik} = await gmail.page(n);
+  if (!at || !ik) {
+    throw Error('core.js -> send -> at');
+  }
+  const person = address => [null, address, '', null];
+  const html = String(text).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]).replace(/\r?\n/g, '<br>');
+  // the client's own random ID of the message, twelve letters and digits as Gmail's site makes it
+  const own = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => (b % 36).toString(36)).join('');
+  const body = new URLSearchParams();
+  body.append('s_jr', JSON.stringify([null, [[null, null, null, null, null, null, null, [null, [null,
+    to.map(person), cc.map(person), [], [null, from, null, null], [], String(subject), html, reply ? 4 : 1, reply || null,
+    null, null, true, null, own, false, []], null]]], 2, null, null, null, ik]));
+  const href = `https://mail.google.com/mail/u/${n}/s/?v=or&ik=${ik}&at=${at}&subui=chrome&suim=true&hl=en&ts=` + Date.now();
+  const r = await fetch(href, {
+    method: 'POST',
+    credentials: 'include',
+    body,
+    signal: wait()
+  });
+  if (!r.ok) {
+    forget(n, r.status);
+    throw Error('core.js -> send -> ' + r.status);
+  }
+  const content = await r.text();
+  if (!content || content.includes('/spreauth')) {
+    const e = new Error('core.js -> permission_error');
+    e.details = {links: content.match(/\bhttps?:\/\/[^\s<>"'()]+/gi) || []};
+    throw e;
+  }
+  const no = refusal(content);
+  if (no) {
+    throw Error('core.js -> send -> ' + no);
+  }
+  return true;
 };

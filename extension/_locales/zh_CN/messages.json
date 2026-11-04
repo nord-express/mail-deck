@@ -2061,6 +2061,21 @@
     "panel_send": {
         "message": "发送"
     },
+    "panel_sendingMail": {
+        "message": "正在发送…"
+    },
+    "panel_mailSent": {
+        "message": "已发送"
+    },
+    "panel_sendFailed": {
+        "message": "邮件未发送。请重试，或在 Gmail 中打开。"
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck 无法发送这封邮件。它将在 Gmail 中打开，请从那里发送。"
+    },
+    "panel_checkAddress": {
+        "message": "请检查地址。"
+    },
     "panel_stop": {
         "message": "停止"
     },

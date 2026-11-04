@@ -91,7 +91,7 @@ In the dashboard, remove the five screenshots of 1.4 (inbox, summary, site, late
 **Single purpose:**
 
 ```
-Show the unread mail of the webmail accounts the user is signed in to in this browser (Gmail, and Yahoo Mail, AOL Mail, Proton Mail, Yandex Mail or Mail.ru once the user turns them on) in a toolbar panel or Chrome's side panel, and let the user read, search, archive, delete, star or mark it as read, or set a reminder for it, from there. Optionally, and only once the user turns it on, an AI model the user chooses (Chrome's built-in model, a model server on the user's own computer, the user's ChatGPT plan, or the user's own API key from a supported AI provider) helps with that mail: it summarizes, translates, answers questions about it, finds it from a request in plain words, drafts replies and new mail for the user to send, and sorts unread mail.
+Show the unread mail of the webmail accounts the user is signed in to in this browser (Gmail, and Yahoo Mail, AOL Mail, Proton Mail, Yandex Mail or Mail.ru once the user turns them on) in a toolbar panel or Chrome's side panel, and let the user read, search, archive, delete, star, label or mark it as read or unread, reply to it, write new mail, or set a reminder for it, from there. Optionally, and only once the user turns it on, an AI model the user chooses (Chrome's built-in model, a model server on the user's own computer, the user's ChatGPT plan, or the user's own API key from a supported AI provider) helps with that mail: it summarizes, translates, answers questions about it, finds it from a request in plain words, drafts replies and new mail, which the user sends from the panel with a Send button or opens in the mail service, and sorts unread mail.
 ```
 
 **Permission justifications:**

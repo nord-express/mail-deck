@@ -2057,6 +2057,21 @@
     "panel_send": {
         "message": "Gönder"
     },
+    "panel_sendingMail": {
+        "message": "Gönderiliyor…"
+    },
+    "panel_mailSent": {
+        "message": "Gönderildi"
+    },
+    "panel_sendFailed": {
+        "message": "E-posta gönderilmedi. Yeniden deneyin ya da Gmail’de açın."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck e-postanızı gönderemedi. Oradan göndermeniz için Gmail’de açılıyor."
+    },
+    "panel_checkAddress": {
+        "message": "Adresi kontrol edin."
+    },
     "panel_stop": {
         "message": "Durdur"
     },

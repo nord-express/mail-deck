@@ -2061,6 +2061,21 @@
     "panel_send": {
         "message": "Wyślij"
     },
+    "panel_sendingMail": {
+        "message": "Wysyłanie…"
+    },
+    "panel_mailSent": {
+        "message": "Wysłano"
+    },
+    "panel_sendFailed": {
+        "message": "Wiadomość nie została wysłana. Spróbuj ponownie lub otwórz ją w Gmailu."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck nie mógł wysłać wiadomości. Otworzy się w Gmailu, aby wysłać ją stamtąd."
+    },
+    "panel_checkAddress": {
+        "message": "Sprawdź adres."
+    },
     "panel_stop": {
         "message": "Zatrzymaj"
     },

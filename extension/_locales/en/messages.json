@@ -1919,6 +1919,21 @@
   "panel_send": {
     "message": "Send"
   },
+  "panel_sendingMail": {
+    "message": "Sending…"
+  },
+  "panel_mailSent": {
+    "message": "Sent"
+  },
+  "panel_sendFailed": {
+    "message": "The mail wasn’t sent. Try again, or open it in Gmail."
+  },
+  "panel_sendFailedOpened": {
+    "message": "Mail Deck couldn’t send your mail. It opens in Gmail to send from there."
+  },
+  "panel_checkAddress": {
+    "message": "Check the address."
+  },
   "panel_stop": {
     "message": "Stop"
   },

@@ -18,7 +18,8 @@ const searchLink = (n, id) => `https://mail.google.com/mail/u/${n}?message_id=${
 // local: what the local storage holds when the worker starts; fails: the links Gmail refuses;
 // heads: a mail's header as the offscreen document reads it, by link; posts: the requests sent
 // to a sender, which fail with postFails
-const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = false} = {}) => {
+// sent: what Gmail answers mail sent (true, or {message}); panels: the documents still open
+const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = false, sent = true, panels = []} = {}) => {
   const copy = o => o === undefined ? o : JSON.parse(JSON.stringify(o));
   const area = store => ({
     get: async d => {
@@ -37,10 +38,11 @@ const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = fa
     set: async o => Object.assign(store, copy(o)),
     remove: async k => [].concat(k).forEach(k => delete store[k])
   });
-  const out = {local, session, dispatched: [], toasts: [], alarms: {}, listeners: [], refreshed: 0, posts: [], asked: []};
+  const out = {local, session, dispatched: [], toasts: [], alarms: {}, listeners: [], refreshed: 0, posts: [], asked: [], mails: [], opened: []};
   const chrome = {
     i18n: {getMessage: () => 'x', getUILanguage: () => 'en'},
-    runtime: {onMessage: {addListener: fn => out.listeners.push(fn)}, onInstalled: {addListener() {}}, getManifest: () => ({})},
+    runtime: {onMessage: {addListener: fn => out.listeners.push(fn)}, onInstalled: {addListener() {}}, getManifest: () => ({}),
+      getContexts: async ({documentIds}) => documentIds.filter(id => panels.includes(id)).map(documentId => ({documentId}))},
     action: {onClicked: {addListener() {}}},
     notifications: {create: (o, cb) => out.toasts.push(o.message)},
     storage: {local: area(local), session: area(session)},
@@ -71,17 +73,21 @@ const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = fa
     const failed = request.links.filter(link => fails.includes(link));
     return failed.length ? {message: 'refused', failed} : true;
   }};
-  vm.runInContext('var repeater = {reset() {}}; var sound = {}; var offscreen = {}; self.openLink = () => {};', ctx);
+  vm.runInContext('var repeater = {reset() {}}; var sound = {}; var offscreen = {}; self.openLink = url => out.opened.push(url);', ctx);
   vm.runInContext('offscreen', ctx).command = async ({cmd, request}) => {
     out.asked.push(cmd);
+    if (cmd === 'gmail.send') {
+      out.mails.push(copy(request));
+      return sent;
+    }
     return cmd === 'gmail.headers' ? copy(heads[request.link]) || {message: 'core.js -> headers -> not read'} : {};
   };
   vm.runInContext(fs.readFileSync(EXT + '/worker.js', 'utf8'), ctx, {filename: 'worker.js'});
   // a message from the panel; its answer, once the worker gives one
-  out.send = request => new Promise(resolve => {
+  out.send = (request, sender = {}) => new Promise(resolve => {
     let kept = false;
     for (const fn of out.listeners) {
-      kept = fn(copy(request), {}, value => resolve({value: copy(value)})) === true || kept;
+      kept = fn(copy(request), sender, value => resolve({value: copy(value)})) === true || kept;
     }
     if (!kept) {
       resolve({none: true});
@@ -129,6 +135,50 @@ const tests = [
     await w.send({method: 'gmail.action.cancel', id: 'd'});
     await wait(80);
     assert.deepStrictEqual([w.dispatched, w.local['actions.pending'], w.hidden()], [[], [], []]);
+  }],
+  ['mail from the panel waits out its Undo window here, then goes, and the panel is told it went', async () => {
+    const w = start({panels: ['doc1']});
+    const mail = {link: feedLink(0, 'm1'), from: 'me@gmail.com', to: ['anna@example.com'], subject: 'Re: Hi', text: 'Yes', reply: 'm1'};
+    const answer = w.send({method: 'gmail.send', id: 's1', delay: 5000, mail, fallback: 'https://mail.google.com/mail/u/0/?view=cm&fs=1'}, {documentId: 'doc1'});
+    await wait(5);
+    assert.deepStrictEqual(w.local['actions.pending'].map(o => o.id), ['s1']);
+    assert.deepStrictEqual(w.mails, []);
+    assert.deepStrictEqual(await answer, {value: {sent: true}});
+    assert.deepStrictEqual(w.mails, [mail]);
+    assert.deepStrictEqual([w.local['actions.pending'], w.toasts, w.opened, w.dispatched], [[], [], [], []]);
+  }],
+  ['an Undo keeps the mail back; one that comes after it went says so', async () => {
+    const w = start();
+    const answer = w.send({method: 'gmail.send', id: 's2', delay: 5000, mail: {to: ['a@b.com']}}, {documentId: 'doc1'});
+    await wait(5);
+    assert.deepStrictEqual(await w.send({method: 'gmail.send.cancel', id: 's2'}), {value: {cancelled: true}});
+    assert.deepStrictEqual(await answer, {value: {cancelled: true}});
+    await wait(80);
+    assert.deepStrictEqual([w.mails, w.local['actions.pending']], [[], []]);
+    const late = start();
+    await late.send({method: 'gmail.send', id: 's3', delay: 0, mail: {to: ['a@b.com']}});
+    assert.deepStrictEqual(await late.send({method: 'gmail.send.cancel', id: 's3'}), {value: {cancelled: false}});
+    assert.strictEqual(late.mails.length, 1);
+  }],
+  ['mail Gmail does not take: an open panel is told and keeps the draft; with the panel gone it opens in Gmail\'s compose window', async () => {
+    const fallback = 'https://mail.google.com/mail/u/0/?view=cm&fs=1&to=a%40b.com&body=Yes';
+    const open = start({sent: {message: 'core.js -> send -> 500'}, panels: ['doc1']});
+    assert.deepStrictEqual(await open.send({method: 'gmail.send', id: 's4', delay: 0, mail: {to: ['a@b.com']}, fallback}, {documentId: 'doc1'}),
+      {value: {message: 'core.js -> send -> 500'}});
+    assert.deepStrictEqual([open.toasts, open.opened], [[], []]);
+    const gone = start({sent: {message: 'core.js -> send -> 500'}});
+    await gone.send({method: 'gmail.send', id: 's5', delay: 0, mail: {to: ['a@b.com']}, fallback}, {documentId: 'doc1'});
+    assert.deepStrictEqual([gone.toasts.length, gone.opened], [1, [fallback]]);
+    // a fallback that is not Gmail's compose window is not opened
+    const odd = start({sent: {message: 'x'}});
+    await odd.send({method: 'gmail.send', id: 's6', delay: 0, mail: {to: ['a@b.com']}, fallback: 'https://example.com/'});
+    assert.deepStrictEqual([odd.toasts.length, odd.opened], [1, []]);
+  }],
+  ['mail the browser quit in the middle of still goes once the worker starts again', async () => {
+    const mail = {link: feedLink(0, 'm7'), from: 'me@gmail.com', to: ['a@b.com'], subject: 'Hi', text: 'Yes'};
+    const w = start({local: {'actions.pending': [{id: 's7', mail, due: Date.now() - 1000}]}});
+    await wait(60);
+    assert.deepStrictEqual([w.mails, w.local['actions.pending'], w.dispatched, w.hidden()], [[mail], [], [], []]);
   }],
   ['an action done in one account and refused in another: only the refused mail shows again, and the panel is told which', async () => {
     const a = feedLink(0, 'a1');

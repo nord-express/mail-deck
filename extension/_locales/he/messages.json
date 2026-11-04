@@ -2057,6 +2057,21 @@
     "panel_send": {
         "message": "שלח"
     },
+    "panel_sendingMail": {
+        "message": "שולח…"
+    },
+    "panel_mailSent": {
+        "message": "נשלח"
+    },
+    "panel_sendFailed": {
+        "message": "ההודעה לא נשלחה. נסה שוב או פתח אותה ב-Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck לא הצליח לשלוח את ההודעה. היא נפתחת ב-Gmail כדי שתשלח אותה משם."
+    },
+    "panel_checkAddress": {
+        "message": "בדוק את הכתובת."
+    },
     "panel_stop": {
         "message": "עצור"
     },

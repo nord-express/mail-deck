@@ -114,11 +114,15 @@ chrome.action.onClicked.addListener(() => onClicked());
 // messaging
 // a closed panel has closed its port too; answering it then throws, and what
 // comes after the answer would never run
+// false: nobody heard it
 const reply = (response, value) => {
   try {
     response(value);
+    return true;
   }
-  catch (e) {}
+  catch (e) {
+    return false;
+  }
 };
 /* actions */
 // the links an action takes out of the badge and the panel: its own, and the feed's of the same
@@ -207,7 +211,8 @@ const go = async id => {
   const kept = await waiting.take(id);
   // one known from the storage alone runs only while the storage has it: an Undo may have come first
   if (kept || (o && !o.stored)) {
-    perform(kept || o.request, o?.response);
+    const request = kept || o.request;
+    (request.mail ? deliver : perform)(request, o?.response);
   }
 };
 const schedule = (o, response, stored = false) => later.set(o.id, {
@@ -216,12 +221,39 @@ const schedule = (o, response, stored = false) => later.set(o.id, {
   stored,
   timer: setTimeout(go, Math.max(0, o.due - Date.now()), o.id)
 });
+/*
+ * Mail the panel sends (gmail.send) waits out its Undo window here as an action does, kept in
+ * the storage for those seconds, so it goes whether the panel is still open or not. The panel
+ * that sent it (doc) is told whether it went; with that panel gone, mail that did not go opens
+ * in Gmail's compose window with its text (fallback), so what was written is not lost.
+ */
+const deliver = async ({mail, fallback, doc}, response) => {
+  const r = await offscreen.command({cmd: 'gmail.send', request: mail}).catch(e => ({message: e?.message || String(e)}));
+  if (r === true) {
+    reply(response, {sent: true});
+    return;
+  }
+  console.error(r);
+  // Gmail asks to confirm the sign-in first: its page opens in a tab
+  if (r?.details?.links?.length) {
+    self.openLink(r.details.links[0]);
+  }
+  const open = doc ? await chrome.runtime.getContexts({documentIds: [doc]}).then(list => list.length > 0, () => false) : false;
+  if (!reply(response, {message: r?.message || 'Unknown Error - 1'}) || !open) {
+    toast(chrome.i18n.getMessage('panel_sendFailedOpened'));
+    if (typeof fallback === 'string' && fallback.startsWith('https://mail.google.com/')) {
+      self.openLink(fallback);
+    }
+  }
+};
 // a worker that starts finds what an earlier one left waiting; what is overdue goes after a
 // moment, for the network of a browser just started
 waiting.change(list => [null, list]).then(list => {
   for (const o of list || []) {
-    if (!later.has(o.id) && o.id && Array.isArray(o.links)) {
-      Resolved.record(o.links, Math.max(0, o.due - Date.now()) + 10000);
+    if (!later.has(o.id) && o.id && (Array.isArray(o.links) || o.mail)) {
+      if (o.links) {
+        Resolved.record(o.links, Math.max(0, o.due - Date.now()) + 10000);
+      }
       schedule({...o, due: Math.max(o.due, Date.now() + 3000)}, undefined, true);
     }
   }
@@ -336,6 +368,28 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     else {
       perform({cmd, links}, response);
     }
+    return true;
+  }
+  // mail from the panel, sent once its Undo window (delay) is over: {sent: true}, {message} or,
+  // taken back, {cancelled: true}
+  else if (method === 'gmail.send') {
+    const o = {id: String(request.id || Math.random()), mail: request.mail, fallback: request.fallback, doc: sender.documentId,
+      due: Date.now() + Math.max(0, Number(request.delay) || 0)};
+    waiting.add(o);
+    schedule(o, response);
+    return true;
+  }
+  // the Undo of a send: {cancelled: false} once it has gone already
+  else if (method === 'gmail.send.cancel') {
+    const o = later.get(request.id);
+    if (o) {
+      clearTimeout(o.timer);
+      later.delete(request.id);
+    }
+    waiting.take(request.id).then(kept => {
+      reply(o?.response, {cancelled: true});
+      reply(response, {cancelled: Boolean(o || kept)});
+    });
     return true;
   }
   else if (method === 'gmail.search') {

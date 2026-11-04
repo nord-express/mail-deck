@@ -1889,6 +1889,21 @@
   "panel_send": {
     "message": "送信"
   },
+  "panel_sendingMail": {
+    "message": "送信中…"
+  },
+  "panel_mailSent": {
+    "message": "送信しました"
+  },
+  "panel_sendFailed": {
+    "message": "メールは送信されませんでした。もう一度試すか、Gmail で開いてください。"
+  },
+  "panel_sendFailedOpened": {
+    "message": "Mail Deck はメールを送信できませんでした。Gmail で開くので、そこから送信してください。"
+  },
+  "panel_checkAddress": {
+    "message": "アドレスを確認してください。"
+  },
   "panel_stop": {
     "message": "停止"
   },

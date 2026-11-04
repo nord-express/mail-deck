@@ -1877,6 +1877,21 @@
   "panel_send": {
     "message": "Küldés"
   },
+  "panel_sendingMail": {
+    "message": "Küldés…"
+  },
+  "panel_mailSent": {
+    "message": "Elküldve"
+  },
+  "panel_sendFailed": {
+    "message": "A levél nem ment el. Próbálja újra, vagy nyissa meg a Gmailben."
+  },
+  "panel_sendFailedOpened": {
+    "message": "A Mail Deck nem tudta elküldeni a levelet. Megnyílik a Gmailben, onnan elküldheti."
+  },
+  "panel_checkAddress": {
+    "message": "Ellenőrizze a címet."
+  },
   "panel_stop": {
     "message": "Leállítás"
   },

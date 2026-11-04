@@ -284,6 +284,9 @@ const checks = {
     'a citation opens its mail in the reader, and Esc comes back to the assistant': r.citeOpens && r.backToAssist,
     'a new mail: its fields filled and changed, then Gmail\'s compose window with them': JSON.stringify(r.email) === '["anna@figma.com","Встреча в пятницу"]' &&
       r.compose.includes('view=cm') && r.compose.includes('to=anna%40figma.com') && r.compose.includes('su=' + encodeURIComponent('Встреча: пятница')) && r.compose.includes('body=' + encodeURIComponent('Анна, привет!')),
+    'a new mail sent from here after its Undo window, from the account chosen; an address that is none sends nothing': r.badAddress &&
+      JSON.stringify(r.newSent) === JSON.stringify({delay: 5000, from: 'evgeny@example.com', to: ['anna@figma.com'], subject: 'Встреча: пятница', text: 'Анна, привет',
+        reply: '', note: T('mailSent'), buttons: 0}),
     'what is important: the unread mail read by its preview, with how it was sorted; the conversation kept for the session': r.brief >= 5 && r.flags && r.kept === 8,
     'the emails do not say: said so, what was found still listed': r.notFound,
     'stop ends an answer underway, with Ask again': r.stopped,
@@ -299,6 +302,9 @@ const checks = {
       r.replyUrl.includes('su=Re%3A') && r.replyUrl.includes('body=' + encodeURIComponent('Привет, Аня!')) &&
       JSON.stringify(r.intents) === JSON.stringify(['intentYes', 'intentNo', 'intentMore', 'intentTimes', 'intentAccept', 'intentThanks'].map(k => T(k))),
     'with a draft, the intents fold into one Rewrite… field with its buttons': r.folded,
+    'a Gmail reply is sent from the card, to its sender, in its thread; Undo keeps it back; a refusal keeps the draft; sent closes the card':
+      r.sendFirst && r.replySend.delay === 5000 && JSON.stringify(r.replySend.to) === '["anna@figma.com"]' && r.replySend.subject && r.replySend.text &&
+      /^[\da-f]{1,16}$/.test(r.replySend.reply) && r.replySend.link && r.replySend.waiting && r.sendUndone && r.sendFailed && r.replySent,
     'a rewrite of the reader\'s own change streams into the same field; Undo brings the change back; the reader\'s words rewrite too':
       r.inPlace && r.rewrite.call === 'shorter:Привет, Аня! Спасибо большое, посмотрю всё до пятницы.' && r.rewrite.text === 'Аня, спасибо, посмотрю.' &&
       r.undo && r.ownWords,

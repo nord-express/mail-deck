@@ -314,6 +314,17 @@
     // how a mail is unsubscribed from, by its thread (__heads); __unsubscribeFails: the one-click request does not go
     if (m.method === 'gmail.headers') r = window.__heads?.[(m.link.match(/message_id=([^&]+)/) || [])[1]] || {messageId: '', unsubscribe: null};
     if (m.method === 'gmail.unsubscribe') r = window.__unsubscribeFails ? {message: 'Failed to fetch'} : {sent: true};
+    // mail sent: Gmail takes it, refuses it (__sendFails), or it waits for its Undo (__sendHold)
+    if (m.method === 'gmail.send' && window.__sendHold) {
+      window.__held = cb;
+      return;
+    }
+    if (m.method === 'gmail.send') r = window.__sendFails ? {message: 'core.js -> send -> 500'} : {sent: true};
+    if (m.method === 'gmail.send.cancel') {
+      window.__held?.({cancelled: true});
+      window.__held = null;
+      r = {cancelled: true};
+    }
     // what a service answers: markup that must not run in the reader
     // and markup that must not load before Show pictures, nor open a link over the panel
     const px = k => `${location.origin}/__pixel?k=services-svc-${k}`;

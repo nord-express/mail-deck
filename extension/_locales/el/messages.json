@@ -2057,6 +2057,21 @@
     "panel_send": {
         "message": "Αποστολή"
     },
+    "panel_sendingMail": {
+        "message": "Αποστολή…"
+    },
+    "panel_mailSent": {
+        "message": "Στάλθηκε"
+    },
+    "panel_sendFailed": {
+        "message": "Το μήνυμα δεν στάλθηκε. Δοκιμάστε ξανά ή ανοίξτε το στο Gmail."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Το Mail Deck δεν μπόρεσε να στείλει το μήνυμα. Ανοίγει στο Gmail για να το στείλετε από εκεί."
+    },
+    "panel_checkAddress": {
+        "message": "Ελέγξτε τη διεύθυνση."
+    },
     "panel_stop": {
         "message": "Διακοπή"
     },

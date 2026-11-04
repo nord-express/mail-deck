@@ -2061,6 +2061,21 @@
     "panel_send": {
         "message": "Пошаљи"
     },
+    "panel_sendingMail": {
+        "message": "Слање…"
+    },
+    "panel_mailSent": {
+        "message": "Послато"
+    },
+    "panel_sendFailed": {
+        "message": "Порука није послата. Покушајте поново или је отворите у Gmail-у."
+    },
+    "panel_sendFailedOpened": {
+        "message": "Mail Deck није успео да пошаље поруку. Отвара се у Gmail-у да бисте је послали одатле."
+    },
+    "panel_checkAddress": {
+        "message": "Проверите адресу."
+    },
     "panel_stop": {
         "message": "Заустави"
     },
