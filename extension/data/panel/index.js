@@ -260,16 +260,35 @@ const later = ms => {
     days < 6 ? {weekday: 'short', hour: 'numeric', minute: '2-digit'} : {day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit'});
 };
 
+// Chrome opens the toolbar's panel only once its page has stopped loading, pictures included: a
+// picture of the network asked for before that (a sender's logo from Google's icon service, which
+// takes seconds for a domain it has not seen lately, or an account's photo) would keep the window
+// shut until the slowest one came. Such a picture is asked for once the page has loaded, a task
+// after its load event; one in the cache then shows at once.
+let pageLoaded = false;
+const loading = new Promise(resolve => addEventListener('load', () => setTimeout(() => {
+  pageLoaded = true;
+  resolve();
+}), {once: true}));
+const afterLoad = (img, src) => {
+  if (pageLoaded) {
+    img.src = src;
+  }
+  else {
+    loading.then(() => img.src = src);
+  }
+  return img;
+};
+
 // the account's own picture when Google has one (core/avatars.js finds it), the coloured dot otherwise
 const mark = email => {
   const url = state.avatars[email]?.url;
-  return url ? h('img', {
+  return url ? afterLoad(h('img', {
     class: 'me',
-    src: url,
     alt: '',
     referrerPolicy: 'no-referrer',
     onerror: ev => ev.target.replaceWith(h('span', {class: 'dot'}))
-  }) : h('span', {class: 'dot'});
+  }), url) : h('span', {class: 'dot'});
 };
 // The registrable part of a host, what its owner bought: news.binance.com -> binance.com,
 // mail.example.co.uk -> example.co.uk, www.bmw.de -> bmw.de. A two-part public suffix is a
@@ -304,7 +323,7 @@ const avatar = (e, o) => {
         chrome.storage.session.set({logos: Object.fromEntries(logos)});
       }
     };
-    img.src = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(root)}&sz=64`;
+    afterLoad(img, `https://www.google.com/s2/favicons?domain=${encodeURIComponent(root)}&sz=64`);
     // a logo seen before shows from the first frame instead of after the letter
     el.classList.toggle('logo', logos.get(root) === true);
     el.append(img);
@@ -2026,7 +2045,8 @@ const siteBlock = (site, found) => {
   const logo = state.senderLogos && logos.get(site.domain) === true;
   return h('section', {'class': 'site', 'aria-label': t('fromSite', site.domain)},
     h('p', {class: 'site-head'},
-      logo && h('img', {class: 'site-logo', alt: '', referrerPolicy: 'no-referrer', src: `https://www.google.com/s2/favicons?domain=${encodeURIComponent(site.domain)}&sz=64`}),
+      logo && afterLoad(h('img', {class: 'site-logo', alt: '', referrerPolicy: 'no-referrer'}),
+        `https://www.google.com/s2/favicons?domain=${encodeURIComponent(site.domain)}&sz=64`),
       t('fromSite', site.domain)),
     code && h('button', {
       'class': 'site-code',

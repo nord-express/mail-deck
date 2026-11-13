@@ -31,5 +31,6 @@ run 'AI assistant: providers, streaming, summaries, waiting for reply' node tool
 run 'ChatGPT and OpenRouter sign-ins coming back to the extension in a real Chrome' node tools/test/callback.test.js
 run 'the settings page in a real Chrome: its type, inbox pictures, provider tiles' node tools/test/settings-chrome.test.js
 run 'panel in headless Chrome' node tools/test/panel.test.js
+run 'the toolbar panel opens without waiting for Google'"'"'s pictures, in a real Chrome' node tools/test/panel-open.test.js
 run 'welcome page: opened on install only; inboxes, pin and panel steps in headless Chrome' node tools/test/welcome.test.js
 exit $status
