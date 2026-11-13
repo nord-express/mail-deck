@@ -3,6 +3,13 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.8.2
+
+Mail Deck 1.8.2 opens its panel at once, however many inboxes you have.
+
+**Fixed**
+- The panel no longer waits for senders' logos and your accounts' pictures before it opens. Chrome shows the panel only once everything on it has loaded, and Google can take several seconds for a logo it has not seen lately, so with many inboxes and unread mail a click on the toolbar button could take seconds to answer. The list now shows at once, and the pictures come in right after.
+
 ## 1.8.1
 
 Mail Deck 1.8.1 lets you answer a Gmail message in your own words and send it from the panel, no AI needed. It includes everything of 1.8.0, which did not reach the store on its own.
