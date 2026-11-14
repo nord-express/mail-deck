@@ -57,7 +57,9 @@
         <section class="ai-card ai-tool" id="ai-tool" aria-live="polite" hidden></section>
         <div class="reader-body">
           <div class="progress"></div>
-          <iframe id="body" src="body/index.html" title="Message body" data-i18n-label="messageBody"></iframe>
+          <!-- the mail's own page: it runs no script, sends no form and opens nothing by itself
+               (the sandbox); this page listens in it for its links and its keys (index.js) -->
+          <iframe id="body" sandbox="allow-same-origin" src="body/index.html" title="Message body" data-i18n-label="messageBody"></iframe>
         </div>
         </div>
       </section>

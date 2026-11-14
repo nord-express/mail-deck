@@ -108,6 +108,41 @@
           .every(a => a.getAttribute('target') === '_blank' && a.getAttribute('rel') === 'noopener noreferrer' && !a.hasAttribute('ping'))
       };
       out.reading = document.getElementById('app').classList.contains('reading');
+      // the mail's frame runs nothing of the mail's: a handler written into it, a script: link
+      {
+        const probe = doc.createElement('div');
+        probe.innerHTML = '<img src="/__no-such-picture" onerror="parent.__mailRan = \'handler\'">' +
+          '<a id="probe-js" href="javascript:parent.__mailRan = \'link\'">x</a><a id="probe-mail" href="mailto:anna@figma.com">m</a>';
+        doc.body.append(probe);
+        const click = (a, init = {}) => a.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, view: doc.defaultView, button: 0, ...init}));
+        const opened = () => (window.__tabsOpened || []).length;
+        // a link opens a tab from the panel, in front; Ctrl+click and the middle button behind
+        const link = [...doc.querySelectorAll('a')].find(a => a.getAttribute('href') === 'https://figma.com/file/x');
+        const before = opened();
+        const kept = !click(link);
+        await wait(50);
+        click(link, {ctrlKey: true});
+        await wait(50);
+        link.dispatchEvent(new MouseEvent('auxclick', {bubbles: true, cancelable: true, view: doc.defaultView, button: 1}));
+        await wait(50);
+        const tabs = (window.__tabsOpened || []).slice(before);
+        const n = opened();
+        click(doc.getElementById('probe-js'));
+        await wait(50);
+        const jsOpened = opened() - n;
+        click(doc.getElementById('probe-mail'));
+        await wait(150);
+        out.frame = {
+          sandbox: document.getElementById('body').getAttribute('sandbox'),
+          ran: window.__mailRan || '',
+          kept,
+          tabs: tabs.map(o => [o.url, o.active, o.index]),
+          jsOpened,
+          mailto: (window.__tabsOpened || []).at(-1)?.url,
+          stayed: doc === document.getElementById('body').contentDocument && doc.location.pathname.endsWith('/body/index.html')
+        };
+        probe.remove();
+      }
       // the keys work from inside the message too
       key(doc.body, 'Escape');
       await wait(100);
@@ -212,13 +247,10 @@
       out.pixelsAfter = await pixels('services-svc-');
       out.serviceTrackers = document.querySelector('#reader-notes .ok .note-text')?.textContent.replace(/[\u2068\u2069]/g, '');
 
-      // a link of the mail opens through chrome.tabs, never over the panel or in the reader
-      const created = [];
-      const windows = [];
-      doc.defaultView.chrome = {
-        tabs: {create: o => created.push(o), query: (q, cb) => cb([{index: 2}])},
-        windows: {create: o => windows.push(o)}
-      };
+      // a link of the mail opens through the panel's chrome.tabs (the frame has no script of its
+      // own), never over the panel or in the reader
+      const tabsBefore = (window.__tabsOpened || []).length;
+      const windowsBefore = (window.__windowsCreated || []).length;
       const click = (el, o = {}) => el.dispatchEvent(new MouseEvent(o.type || 'click', {bubbles: true, cancelable: true, button: 0, ...o}));
       top?.click();
       click(top, {ctrlKey: true});
@@ -227,8 +259,8 @@
       doc.getElementById('hash')?.click();
       doc.getElementById('data')?.click();
       await wait(300);
-      out.opened = created.map(o => [o.url, o.active, o.index]);
-      out.windowOpened = windows.map(o => o.url);
+      out.opened = (window.__tabsOpened || []).slice(tabsBefore).map(o => [o.url, o.active, o.index]);
+      out.windowOpened = (window.__windowsCreated || []).slice(windowsBefore);
       out.panelStayed = location.pathname.endsWith('/__panel.html');
       out.pingAfterClicks = (await pixels('services-svc-ping'))['services-svc-ping'] || 0;
       out.star = Boolean(document.querySelector('#reader-bar .star'));

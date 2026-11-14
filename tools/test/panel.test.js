@@ -114,6 +114,10 @@ const checks = {
     'an attachment becomes a chip, Gmail\'s table goes': r.thread?.chips >= 1 && r.thread.attTableGone,
     'Google\'s redirect is taken off links': r.thread?.redirectUnwrapped,
     'a Gmail mail\'s links and chips open in a tab of their own, without a ping': r.thread?.linksExternal,
+    'the mail\'s frame is sandboxed: nothing written in a mail runs': r.frame?.sandbox === 'allow-same-origin' && r.frame.ran === '',
+    'a click on a mail\'s link opens it in a tab next to this one; Ctrl+click and the middle button behind it': r.frame?.kept &&
+      JSON.stringify(r.frame.tabs) === JSON.stringify([['https://figma.com/file/x', true, 3], ['https://figma.com/file/x', false, 3], ['https://figma.com/file/x', false, 3]]),
+    'a script: link opens nothing, a mail address does, and the frame stays where it is': r.frame?.jsOpened === 0 && r.frame.mailto === 'mailto:anna@figma.com' && r.frame.stayed,
     'Esc inside the message goes back': r.reading && r.escInFrameBack,
     'search every mailbox': r.searchFocused && r.searchCalls >= 2 && r.searchSections >= 1 && r.searchSeen >= 1,
     'with the count at all unread mail, opening the panel marks no time': r.noSeen

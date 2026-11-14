@@ -2347,6 +2347,60 @@ frameReady.then(doc => {
   paint();
   dark.addEventListener('change', paint);
 });
+/*
+ * The frame is sandboxed (index.html): the mail in it runs no script, sends no form and opens
+ * nothing by itself, so this page listens in it. A link of the mail opens in a tab of its own,
+ * never in the frame or over the panel, and only to a web page or a mail address: a click in
+ * front, next to the current tab; Ctrl/Cmd+click or the middle button behind it, so several
+ * open in a row; Shift+click in a new window. A jump inside the mail scrolls to its place.
+ */
+frameReady.then(doc => {
+  const OPEN = /^(https?|mailto):/i;
+  const XLINK = 'http://www.w3.org/1999/xlink';
+  const open = (e, background) => {
+    const a = e.target.closest?.('a, area');
+    if (!a) {
+      return;
+    }
+    // whatever the link says, the frame itself goes nowhere
+    e.preventDefault();
+    e.stopPropagation();
+    const raw = (a.getAttribute('href') ?? a.getAttributeNS(XLINK, 'href') ?? '').trim();
+    if (raw.startsWith('#')) {
+      let id = raw.slice(1);
+      try {
+        id = decodeURIComponent(id);
+      }
+      catch (err) {}
+      (id && (doc.getElementById(id) || doc.getElementsByName(id)[0]))?.scrollIntoView();
+      return;
+    }
+    let url = '';
+    try {
+      url = raw && new URL(raw, doc.baseURI).href;
+    }
+    catch (err) {}
+    if (!OPEN.test(url)) {
+      return;
+    }
+    if (e.shiftKey && !background) {
+      chrome.windows.create({url});
+      return;
+    }
+    const tab = index => chrome.tabs.create({
+      url,
+      active: !background, // behind: several links open in a row
+      ...(index === undefined ? {} : {index})
+    });
+    chrome.tabs.query({active: true, lastFocusedWindow: true}).then(tabs => tab(tabs?.[0] ? tabs[0].index + 1 : undefined), () => tab());
+  };
+  doc.defaultView.addEventListener('click', e => e.button === 0 && open(e, e.ctrlKey || e.metaKey), true);
+  doc.defaultView.addEventListener('auxclick', e => e.button === 1 && open(e, true), true);
+  // a style sheet of the reader's own, for those who set one in an earlier version
+  chrome.storage.local.get({'styling_body': ''}).then(prefs => {
+    doc.getElementById('styling_body').textContent = prefs['styling_body'] || '';
+  }).catch(() => {});
+});
 // A message laid out wider than the panel, a newsletter of 600-700px say, is
 // scaled down to fit, as Gmail does on a phone. Its width settles only once
 // its images load, an older message opens or the side panel is resized.

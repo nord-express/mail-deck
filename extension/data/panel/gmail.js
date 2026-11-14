@@ -293,7 +293,7 @@ gmail.get = {
     e.append(...kids);
     return e;
   };
-  // A link of the mail opens in a tab of its own (body/index.js), never in the reader or over
+  // A link of the mail opens in a tab of its own (index.js), never in the reader or over
   // the panel, and tells the site nothing of the page it came from
   const external = a => {
     a.setAttribute('target', '_blank');
@@ -571,7 +571,7 @@ gmail.get = {
         }
       }
     }
-    // links open in a tab (body/index.js); a jump inside the mail stays one
+    // links open in a tab (index.js); a jump inside the mail stays one
     for (const a of doc.querySelectorAll('a, area')) {
       let raw = a.getAttribute('href');
       if (a.namespaceURI === SVG) {

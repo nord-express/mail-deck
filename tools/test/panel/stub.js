@@ -366,12 +366,13 @@
     sidePanel: {open: () => Promise.resolve()},
     // ?pinned=0: the toolbar button is not pinned; __pinChanged(settings) is Chrome saying it changed
     action: {getUserSettings: async () => ({isOnToolbar: window.__pinnedNow ?? q.get('pinned') !== '0'}), onUserSettingsChanged: {addListener: f => { window.__pinChanged = f; }}},
-    windows: {getCurrent: () => Promise.resolve({id: 1})},
+    windows: {getCurrent: () => Promise.resolve({id: 1}), create: o => { (window.__windowsCreated ||= []).push(o.url); }},
     // the active tab: its address is ?url= (none: a tab the panel may not read); a test changes
     // __tabUrl and calls __tabEvents.updated or .activated as Chrome would
     tabs: {
-      query: () => Promise.resolve([{id: 7, active: true, windowId: 1, ...(window.__tabUrl ? {url: window.__tabUrl} : {})}]),
-      create: o => { (window.__tabsCreated ||= []).push(o.url); },
+      query: () => Promise.resolve([{id: 7, index: 2, active: true, windowId: 1, ...(window.__tabUrl ? {url: window.__tabUrl} : {})}]),
+      // __tabsOpened: each tab as it was asked for
+      create: o => { (window.__tabsCreated ||= []).push(o.url); (window.__tabsOpened ||= []).push(o); },
       onActivated: {addListener: f => { window.__tabEvents.activated = f; }},
       onUpdated: {addListener: f => { window.__tabEvents.updated = f; }}
     }
