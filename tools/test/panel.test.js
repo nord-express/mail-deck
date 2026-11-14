@@ -169,6 +169,7 @@ const checks = {
       r.warnTip === T('warnTip'),
     'a lookalike domain: one line': JSON.stringify(r.lookalike) === JSON.stringify(['warn:' + T('warnLookalike', 'arnazon.com', 'amazon.com')]),
     'replies sent to a lookalike of the reader\'s own domain, from the print view\'s Reply-To': JSON.stringify(r.replyTo) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@arbltron.app', 'arbitron.app')]),
+    'and from the mail\'s own header, whatever language Gmail speaks': JSON.stringify(r.replyToHeader) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@arbltron.app', 'arbitron.app')]),
     'an ordinary mail says nothing': JSON.stringify(r.normal) === '[]' && r.notesHidden,
     'nothing goes wrong unseen': r.consoleClean === true
   }),

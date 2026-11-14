@@ -2539,9 +2539,19 @@ const read = async (e, o, trail) => {
   // the keys and a screen reader follow the reader
   $('reader').focus({preventScroll: true});
 
-  // the mail's header, for Unsubscribe under ⋯
+  // the mail's header, for Unsubscribe under ⋯, and for where its replies go: the message says
+  // that in the words of Gmail's language, of which the reader knows a few (gmail.js)
   if (!serviceOf(o)) {
-    headsOf(e.link);
+    headsOf(e.link).then(head => {
+      const p = head?.people;
+      if (state.reading !== r || r.warning || !p?.['reply-to']?.length) {
+        return;
+      }
+      r.warning = Sender.replyTo([{name: e.author_name, email: p.from?.[0] || e.author_email, replyTo: p['reply-to'][0]}], o.xml.title);
+      if (r.warning) {
+        paintNotes(r);
+      }
+    });
   }
   const doc = await frameReady;
   doc.querySelector('base').href = e.link;

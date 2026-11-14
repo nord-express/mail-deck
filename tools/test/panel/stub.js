@@ -59,6 +59,7 @@
     entry(0, 'w1', 'PayPal', 'service@paypal-billing.net', 'Your account is limited', 'Confirm your details', 5),
     entry(0, 'w2', 'Support', 'help@arnazon.com', 'Your order', 'Your order has shipped', 8),
     entry(0, 'w3', 'Boss', 'boss@arbitron.app', 'Wire today', 'Please handle this today', 11),
+    entry(0, 'w4', 'Boss', 'boss@arbitron.app', 'Wire tomorrow', 'Please handle this tomorrow', 12),
     entry(0, 'n1', 'GitHub', 'noreply@github.com', 'New sign-in', 'A new sign-in to your account', 14)
   ])];
   const nine = ['bychkovea@gmail.com', 'evgeny@arbitron.app', 'abrahamlincolncrypto@gmail.com', 'georgewashingtoncypto@gmail.com', 'knivesmagician@gmail.com', 'thomasjeffersoncrypto@gmail.com', 'codewithevgeny@gmail.com', 'cryptobychkov@gmail.com', 'eco.toplivo.msk@gmail.com'];
@@ -415,6 +416,8 @@
     w1: print('PayPal', 'service@paypal-billing.net', 'Confirm your details.'),
     w2: print('Support', 'help@arnazon.com', 'Your order has shipped.'),
     w3: print('Boss', 'boss@arbitron.app', 'Please handle this today.', '<div>Reply-To: Boss &lt;boss@arbltron.app&gt;</div>'),
+    // Gmail in a language whose word for Reply-To the reader does not know
+    w4: print('Boss', 'boss@arbitron.app', 'Please handle this tomorrow.', '<div>Yanıt adresi: Boss &lt;boss@arbltron.app&gt;</div>'),
     n1: print('GitHub', 'noreply@github.com', 'A new sign-in to your account.', '<div>Reply-To: noreply@github.com</div>')
   } : {};
   const realFetch = window.fetch;

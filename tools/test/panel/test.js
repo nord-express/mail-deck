@@ -1377,6 +1377,12 @@
       out.lookalike = lines();
       await open('w3');
       out.replyTo = lines();
+      // the same in a language the print view's line is not read in: the mail's header says it
+      window.__heads = {...window.__heads, w4: {messageId: '', unsubscribe: null,
+        people: {'from': ['boss@arbitron.app'], 'reply-to': ['boss@arbltron.app'], 'to': ['evgeny@arbitron.app'], 'cc': []}}};
+      await open('w4');
+      await wait(100);
+      out.replyToHeader = lines();
       await open('n1');
       out.normal = lines();
       out.notesHidden = document.getElementById('reader-notes').hidden;
