@@ -92,7 +92,7 @@ const server = http.createServer((req, res) => {
 const run = (port, scenario, query = '', frame = 0) => new Promise(resolve => {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mail-deck-chrome-'));
   const page = `scenario=${scenario}${query}`;
-  const args = ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+  const args = ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', '--disable-extensions',
     `--user-data-dir=${profile}`, '--window-size=1000,900',
     ...(process.platform === 'linux' ? ['--no-sandbox'] : []),
     frame ? `http://127.0.0.1:${port}/__frame.html?w=${frame}&q=${encodeURIComponent(page)}` : `http://127.0.0.1:${port}/__welcome.html?${page}`];
@@ -239,7 +239,7 @@ setTimeout(async () => {
 }, 2500);
 `);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mail-deck-welcome-profile-'));
-  const chrome = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`,
+  const chrome = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', `--user-data-dir=${profile}`,
     `--disable-extensions-except=${dir}`, `--load-extension=${dir}`, ...(process.platform === 'linux' ? ['--no-sandbox'] : []), 'about:blank'],
   {stdio: 'ignore'});
   const r = await Promise.race([result, new Promise(resolve => setTimeout(resolve, 30000, {error: 'no result in 30 s'}))]);

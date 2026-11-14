@@ -73,7 +73,7 @@ const server = http.createServer((req, res) => {
 const run = (port, scenario, query = '', frame = 0) => new Promise(resolve => {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mail-deck-chrome-'));
   const panel = `lang=en&scenario=${scenario}${query}`;
-  const args = ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+  const args = ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', '--disable-extensions',
     `--user-data-dir=${profile}`, '--window-size=800,600',
     ...(process.platform === 'linux' ? ['--no-sandbox'] : []),
     frame ? `http://127.0.0.1:${port}/__frame.html?w=${frame}&q=${encodeURIComponent(panel)}` : `http://127.0.0.1:${port}/__panel.html?${panel}`];

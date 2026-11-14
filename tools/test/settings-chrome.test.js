@@ -41,7 +41,7 @@ const NAMES = ['alice.long.address@gmail.com', 'bob@gmail.com', 'carol@example.o
 
 (async () => {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mail-deck-settings-profile-'));
-  const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`,
+  const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', `--user-data-dir=${profile}`,
     '--remote-debugging-port=0', '--window-size=1280,1400', `--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`,
     ...(process.platform === 'linux' ? ['--no-sandbox'] : []), 'about:blank'], {stdio: 'ignore'});
   const out = {};

@@ -47,7 +47,7 @@ const DOMAINS = ['figma.com', 'github.com', 'notion.so', 'linear.app', 'stripe.c
 (async () => {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mail-deck-open-profile-'));
   // no host resolves: the background's check of Gmail fails at once and leaves the mail below
-  const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`,
+  const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', `--user-data-dir=${profile}`,
     '--remote-debugging-port=0', '--window-size=420,600', `--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`,
     '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1',
     ...(process.platform === 'linux' ? ['--no-sandbox'] : []), 'about:blank'], {stdio: 'ignore'});

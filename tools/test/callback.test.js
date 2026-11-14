@@ -232,7 +232,7 @@ const SCOPES = 'openid profile email offline_access resource.invoke chatgpt.toke
 `);
 
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mail-deck-callback-profile-'));
-  const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`,
+  const chrome = spawn(CHROME, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', `--user-data-dir=${profile}`,
     `--disable-extensions-except=${dir}`, `--load-extension=${dir}`, ...(process.platform === 'linux' ? ['--no-sandbox'] : []), 'about:blank'],
   {stdio: 'ignore'});
   const r = await Promise.race([result, new Promise(resolve => setTimeout(resolve, 45000, {error: 'no result in 45 s'}))]);
