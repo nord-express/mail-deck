@@ -1836,6 +1836,12 @@
       const name = document.getElementById('reader-name').getBoundingClientRect();
       const date = document.getElementById('reader-date').getBoundingClientRect();
       out.dateBelow = date.top >= name.bottom - 1 && date.width > 0;
+      // a folded message says who and when: there is no room for half a word between them
+      const doc = document.getElementById('body').contentDocument;
+      await until(() => doc.querySelector('details.msg'));
+      out.folded = [...doc.querySelectorAll('details.msg:not([open]) > summary')].map(sum => [Math.round(sum.querySelector('.snippet').getBoundingClientRect().width),
+        sum.querySelector('.date').getBoundingClientRect().right <= sum.getBoundingClientRect().right + 1 &&
+          sum.querySelector('.who').getBoundingClientRect().right <= sum.querySelector('.date').getBoundingClientRect().left]);
     }
 
     if (scenario === 'cats' || scenario === 'catsearch') {

@@ -472,7 +472,9 @@ const checks = {
     'a 320px side panel: the reader\'s bar stays inside': r.barInside,
     'a 320px side panel: Gmail\'s categories say their count; narrowed to one, its name stays whole over its buttons':
       JSON.stringify(r.catShort) === '["none:1","none:1","none:2"]' && r.barWraps,
-    'a 320px side panel: the reader\'s date stands under the sender': r.dateBelow
+    'a 320px side panel: the reader\'s date stands under the sender': r.dateBelow,
+    'a 320px side panel: a folded message shows its sender and its date, no cut-off word between them':
+      r.folded?.length === 2 && r.folded.every(([snippet, inside]) => snippet === 0 && inside)
   })
 };
 

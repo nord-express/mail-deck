@@ -119,6 +119,22 @@ body.summary,
 .thread details[open] > summary .snippet {
   visibility: hidden;
 }
+/* a narrow side panel leaves a folded line no room for its first words: half a letter showed
+   between the sender and the date, and at 320px the date ran past the edge. There it is the
+   sender, cut short when it must be, and the whole date. */
+@media (max-width: 400px) {
+  .thread summary .snippet {
+    display: none;
+  }
+  .thread summary .who {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .thread summary .date {
+    margin-left: auto;
+  }
+}
 .thread details.msg:last-child {
   border-bottom: 0;
 }
