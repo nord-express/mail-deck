@@ -114,6 +114,7 @@ const checks = {
     'an attachment becomes a chip, Gmail\'s table goes': r.thread?.chips >= 1 && r.thread.attTableGone,
     'Google\'s redirect is taken off links': r.thread?.redirectUnwrapped,
     'a Gmail mail\'s links and chips open in a tab of their own, without a ping': r.thread?.linksExternal,
+    'a sender\'s logo stands alone in its circle, in the list and in the open mail': JSON.stringify(r.logoLetter) === '["0px","0px"]',
     'the mail\'s frame is sandboxed: nothing written in a mail runs': r.frame?.sandbox === 'allow-same-origin' && r.frame.ran === '',
     'a click on a mail\'s link opens it in a tab next to this one; Ctrl+click and the middle button behind it': r.frame?.kept &&
       JSON.stringify(r.frame.tabs) === JSON.stringify([['https://figma.com/file/x', true, 3], ['https://figma.com/file/x', false, 3], ['https://figma.com/file/x', false, 3]]),

@@ -892,6 +892,10 @@ h1 {
   height: 38px;
   font-size: var(--fs-xl);
 }
+/* with a logo the letter goes, here as in the list: the size above would bring it back */
+.reader-from .avatar.logo {
+  font-size: 0;
+}
 .reader-from .who {
   flex: 1;
   min-width: 0;

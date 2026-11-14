@@ -108,6 +108,18 @@
           .every(a => a.getAttribute('target') === '_blank' && a.getAttribute('rel') === 'noopener noreferrer' && !a.hasAttribute('ping'))
       };
       out.reading = document.getElementById('app').classList.contains('reading');
+      // a sender with a logo shows the logo alone, in the open mail as in the list: no letter over it
+      {
+        const sizes = ['#list .row .avatar', '#reader-avatar .avatar'].map(q => {
+          const el = document.querySelector(q);
+          const had = el.classList.contains('logo');
+          el.classList.add('logo');
+          const size = getComputedStyle(el).fontSize;
+          el.classList.toggle('logo', had);
+          return size;
+        });
+        out.logoLetter = sizes;
+      }
       // the mail's frame runs nothing of the mail's: a handler written into it, a script: link
       {
         const probe = doc.createElement('div');
