@@ -625,6 +625,13 @@ tests.push(
     assert.strictEqual(b.told[0].title, 'user0@gmail.com');
     assert.strictEqual(b.told[0].message, 'user0@gmail.com|a@x.com');
   }],
+  // a subject is put into the text as it is: "$$" and "$'" mean something to String.replace
+  ['a $ in a mail\'s subject, text or sender shows as it was written', async () => {
+    const b = boot({mail: {'0': [{id: 'a', title: 'Save $$$ today, $\' only', summary: 'From $$5', from: 'Cash $` Carry'}]},
+      local: {notificationFormat: '[title]|[summary]|[author_name]'}});
+    await b.run();
+    assert.strictEqual(b.told[0].message, 'Save $$$ today, $\' only|From $$5|Cash $` Carry');
+  }],
   ['a notification about several inboxes keeps the extension\'s name', async () => {
     const b = boot({mail: {'0': [{id: 'a'}], '1': [{id: 'b'}]}, local: {notificationFormat: '[account]'}});
     await b.run();

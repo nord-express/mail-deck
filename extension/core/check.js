@@ -1074,12 +1074,13 @@ if (typeof importScripts !== 'undefined') {
       const inboxes = [...new Set(reportArray.map(inboxOf))];
       const inboxTitle = inboxes.length === 1 ? inboxes[0] : '';
 
+      // each by a function, so a $ in a subject, a name or an address is taken as it is ("$$",
+      // "$'" and "$&" mean something to replace)
       let report = reportArray.map(e => prefs.notificationFormat
-        .replace('[author_name]', e.author_name)
-        .replace('[author_email]', e.author_email)
-        .replace('[summary]', shorten(e.summary, prefs.notificationTruncate))
-        .replace('[title]', shorten(e.title, prefs.notificationTruncate))
-        // a function, so a $ in the address is taken as it is
+        .replace('[author_name]', () => e.author_name)
+        .replace('[author_email]', () => e.author_email)
+        .replace('[summary]', () => shorten(e.summary, prefs.notificationTruncate))
+        .replace('[title]', () => shorten(e.title, prefs.notificationTruncate))
         .replace('[account]', () => inboxOf(e))
         .replace(/\[break\]/g, '\n'));
       if (prefs.combined) {
