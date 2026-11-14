@@ -1825,8 +1825,10 @@ const section = (o, keep) => {
         !serviceOf(o) && btn('meet', t('newMeeting'), () => openUrl(meetUrl(o)), 'meet'),
         btn('open', openInbox(o), () => openUrl(o.xml.link)))
     ),
+    // more of it only while the count says there is more: mail the search found a moment before
+    // the feed counts it is not offered as "0 more"
     entries.length > 0 && h('div', {class: 'cards'}, entries.map(e => row(e, o)),
-      !open && extra.length > 0 ? h('button', {class: 'more', type: 'button', onclick: () => {
+      !open && extra.length > 0 && rest > 0 ? h('button', {class: 'more', type: 'button', onclick: () => {
         state.expanded.add(accountName(o));
         // the button goes; the first mail it brought takes the focus
         state.focus = extra[0].link;

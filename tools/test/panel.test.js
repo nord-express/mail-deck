@@ -136,6 +136,7 @@ const checks = {
   services: r => ({
     'Meet is Gmail\'s alone': JSON.stringify(r.meet) === '[true,false,false]',
     'sender logos, asked of Google, show for Gmail mailboxes only': JSON.stringify(r.logos) === '[1,0]',
+    'an inbox whose count says nothing is left offers no more of it': JSON.stringify(r.moreButtons) === '[]',
     'a service mail says where it opens': r.openTitle?.includes('Yahoo Mail'),
     'a signed-out service mailbox signs in on its own site': r.signedOut?.some(s => s.includes('gone@yahoo.com')) && r.signInOpened?.startsWith('https://login.yahoo.com/'),
     'a service mail reads in the panel, older messages folded': r.bodyAsked?.startsWith('https://mail.yahoo.com/') && r.messages === 2,

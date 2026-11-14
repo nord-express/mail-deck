@@ -218,6 +218,8 @@
       out.meet = ['evgeny@example.com', 'ev@yahoo.com', 'ev@proton.me'].map(n => Boolean(head(n)?.querySelector('.section-head [class*="meet"], .section-head button[title*="Meet"]')));
       // sender logos come from Google: a Gmail mailbox's senders only
       out.logos = ['evgeny@example.com', 'ev@yahoo.com'].map(n => head(n)?.querySelectorAll('.row .avatar img').length);
+      // the search knows of more unread mail than the feed counts (one inbox, one mail): no "Show 0 more"
+      out.moreButtons = [...document.querySelectorAll('#list .more')].map(b => b.textContent);
       const yahooRow = head('ev@yahoo.com').querySelector('.row');
       out.openTitle = [...yahooRow.querySelectorAll('button')].map(label).find(t => t.includes('Yahoo')) || '';
       out.signedOut = [...document.querySelectorAll('#list .away .acc')].map(e => e.textContent);
