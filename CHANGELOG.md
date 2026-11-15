@@ -3,6 +3,20 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.8.3
+
+Mail Deck 1.8.3 shuts an open mail in tighter and fixes several small things in the panel and in notifications.
+
+**Changed**
+- An open mail is shown in a sandboxed frame: nothing written in a mail can run there, whatever its HTML says. Its links open as before: a click in a new tab, Ctrl+click (⌘+click) or the middle button in a tab behind, Shift+click in a new window.
+
+**Fixed**
+- A notification shows a `$` in a subject, a text or a sender's name as it was written: "Save $$$ today" came as "Save $$ today", and some pairs of signs repeated a part of the text.
+- The warning that replies to a mail would go to a lookalike address (Gmail) no longer depends on the language of your Gmail. It was read from a line Gmail writes in the account's language and was known in eight languages; the mail's own header now tells it in all of them.
+- An open mail shows its sender's logo alone, without the sender's letter over it.
+- An inbox no longer offers "Show 0 more".
+- In a narrow side panel a folded message of a conversation shows its sender and its whole date; the date ran past the edge.
+
 ## 1.8.2
 
 Mail Deck 1.8.2 opens its panel at once, however many inboxes you have.
