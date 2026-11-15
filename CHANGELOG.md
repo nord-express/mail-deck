@@ -3,6 +3,14 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.8.4
+
+Mail Deck 1.8.4 makes actions on Gmail mail go through again where they had stopped: mark as read, archive, delete, labels, sending and search. It includes everything of 1.8.3, which did not reach the store on its own.
+
+**Fixed**
+- Mail marked as read, archived or deleted came back to the list with "That did not go through", and a reply or a search did not go either. Gmail takes an action only with the account's token, which it keeps in a cookie, and a browser can hold two such cookies for one account, under two paths and with different values. Mail Deck read the one Gmail does not look at, or, with only the other kept, found none. It now takes the one Gmail reads, and when Gmail does not take a token, goes on to the account's other one before it gives up.
+- A Gmail search that finds nothing says "Nothing found"; with one inbox it said Gmail did not answer.
+
 ## 1.8.3
 
 Mail Deck 1.8.3 shuts an open mail in tighter and fixes several small things in the panel and in notifications.
