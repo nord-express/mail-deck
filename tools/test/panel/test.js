@@ -800,7 +800,7 @@
         out.times = {firstRow: window.__firstRow, firstCall: ai.calls[0], script: window.__aiScriptAt};
         out.replyWaited = calls('needsReply')[0]?.t - window.__firstRow >= 750;
         out.chip = $('chips').firstElementChild?.classList.contains('reply-chip') && $('chips').querySelector('.reply-chip').getAttribute('aria-label') === t('replyChip', 2);
-        out.asked = {calls: calls('needsReply').length, n: calls('needsReply')[0]?.n, own: calls('needsReply')[0]?.accounts.includes('work@arbitron.example')};
+        out.asked = {calls: calls('needsReply').length, n: calls('needsReply')[0]?.n, own: calls('needsReply')[0]?.accounts.includes('work@meridian.example')};
         // Gmail's categories name the digest bulk before any model is asked
         out.knownBulk = calls('needsReply')[0]?.known.length === 1 && calls('needsReply')[0].known[0].includes('|a4|') &&
           calls('needsReply')[0].threads.every(Boolean) && sent('gmail.search').some(m => m.query.includes('category:promotions'));
@@ -1018,12 +1018,12 @@
           last().querySelector('.found-empty .primary-btn')?.textContent === t('signInAgain') && !last().querySelector('.found-query');
         // a mail kept from before the accounts moved: it opens in its own account, under the number Gmail gives it now
         const moved = {...[...assist.turns].reverse().find(x => x.mail?.length).mail.find(m => m.account === 'evgeny@example.com'),
-          account: 'work@arbitron.example'};
+          account: 'work@meridian.example'};
         assist.turns.push({id: 'moved', q: 'moved', status: 'done', action: 'find', title: '', mail: [moved], cites: [], text: '', doubtful: []});
         paintAssist();
         document.querySelector('.turn[data-id="moved"] .ref').click();
         await until(() => $('app').classList.contains('reading'));
-        out.moved = state.reading.o.xml.title === 'work@arbitron.example' && state.reading.e.link.includes('/u/1?') && moved.link.includes('/u/0?');
+        out.moved = state.reading.o.xml.title === 'work@meridian.example' && state.reading.e.link.includes('/u/1?') && moved.link.includes('/u/0?');
         key(document, 'Escape');
         await wait(50);
         assist.turns = assist.turns.filter(x => x.id !== 'moved');
@@ -1379,7 +1379,7 @@
       out.replyTo = lines();
       // the same in a language the print view's line is not read in: the mail's header says it
       window.__heads = {...window.__heads, w4: {messageId: '', unsubscribe: null,
-        people: {'from': ['boss@arbitron.app'], 'reply-to': ['boss@arbltron.app'], 'to': ['evgeny@arbitron.app'], 'cc': []}}};
+        people: {'from': ['boss@meridian.example'], 'reply-to': ['boss@merldian.example'], 'to': ['evgeny@meridian.example'], 'cc': []}}};
       await open('w4');
       await wait(100);
       out.replyToHeader = lines();

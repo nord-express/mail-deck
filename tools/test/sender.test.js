@@ -16,13 +16,13 @@ const check = (name, fn) => {
   console.log('ok', name);
 };
 // what the reader would say, as plain data
-const said = (name, email, account = 'evgeny@arbitron.app') => JSON.parse(JSON.stringify(Sender.check({name, email, account})));
+const said = (name, email, account = 'evgeny@meridian.example') => JSON.parse(JSON.stringify(Sender.check({name, email, account})));
 
 // Ordinary mail: people, newsletters, shops, banks, services that send for others, and the
 // brands' own mail from the domains they really use
 const ORDINARY = [
   ['Anna Petrova', 'anna@figma.com'], ['Ivan', 'ivan@gmail.com'], ['Мария', 'maria@yandex.ru'], ['Bob Smith', 'bob.smith@outlook.com'],
-  ['Evgeny', 'evgeny@arbitron.app'], ['Kate', 'kate@arbitron.app'], ['Dr. Chase Miller', 'chase@clinic.example'], ['Chase', 'chase.lee@gmail.com'],
+  ['Evgeny', 'evgeny@meridian.example'], ['Kate', 'kate@meridian.example'], ['Dr. Chase Miller', 'chase@clinic.example'], ['Chase', 'chase.lee@gmail.com'],
   ['Apple Kim', 'apple.kim@naver.com'], ['Meta Jansen', 'meta@ziggo.nl'], ['Amazonas Turismo', 'info@amazonas.com.br'],
   ['PayPal', 'service@paypal.com'], ['PayPal', 'service@intl.paypal.com'], ['PayPal', 'paypal@mail.paypal.de'], ['PayPal', 'paypal@emails.paypal.co.uk'],
   ['PayPal Security', 'security@paypal.com'], ['Venmo', 'venmo@venmo.com'], ['Anna via PayPal', 'service@paypal.com'],
@@ -67,7 +67,7 @@ const ORDINARY = [
   ['Ymail user', 'someone@ymail.com'], ['Rocketmail', 'x@rocketmail.com'], ['Finance team', 'office@finance.ua'], ['Twister Ride', 'info@twister.example'],
   ['Bookings', 'hello@bookings.example'], ['Revolt TV', 'news@revolt.tv'], ['Apply Today', 'jobs@apply.example'], ['Appie', 'service@ah.nl'],
   ['Müller', 'service@mueller.de'], ['Müller', 'info@müller.de'], ['Почта', 'info@почта.рф'], ['Госуслуги', 'no-reply@госуслуги.рф'],
-  ['例え', 'info@例え.jp'], ['München', 'info@xn--mnchen-3ya.de'], ['IT Support', 'helpdesk@arbitron.app'], ['Support', 'support@zendesk.com'],
+  ['例え', 'info@例え.jp'], ['München', 'info@xn--mnchen-3ya.de'], ['IT Support', 'helpdesk@meridian.example'], ['Support', 'support@zendesk.com'],
   ['Security Team', 'security@cloudflare.com'], ['Customer Service', 'service@shop.example'], ['noreply', 'noreply@shop.example'],
   ['Google Forms', 'forms-receipts-noreply@google.com'], ['Microsoft Forms', 'no-reply@microsoft.com'], ['Office of the Dean', 'dean@university.edu'],
   ['Windows Central', 'newsletter@windowscentral.com'], ['The Outlook', 'editor@outlookindia.com'], ['Apple Valley Farm', 'hello@applevalley.example'],
@@ -121,32 +121,32 @@ check('a lookalike domain: another script, characters that read alike, a letter 
   assert.deepStrictEqual(said('', 'a@paypal.com.account-help.net'), {rule: 'lookalike', domain: 'account-help.net', like: 'paypal.com'});
   assert.deepStrictEqual(said('', 'a@login.microsoftonline.com.verify.example'), {rule: 'lookalike', domain: 'verify.example', like: 'microsoftonline.com'});
   // the reader's own domain
-  assert.deepStrictEqual(said('Kate', 'kate@arbltron.app'), {rule: 'lookalike', domain: 'arbltron.app', like: 'arbitron.app'});
-  assert.deepStrictEqual(said('Kate', 'kate@arbitronn.app'), {rule: 'lookalike', domain: 'arbitronn.app', like: 'arbitron.app'});
+  assert.deepStrictEqual(said('Kate', 'kate@merldian.example'), {rule: 'lookalike', domain: 'merldian.example', like: 'meridian.example'});
+  assert.deepStrictEqual(said('Kate', 'kate@meridiann.example'), {rule: 'lookalike', domain: 'meridiann.example', like: 'meridian.example'});
   // but never a free mailbox's own domain, nor the reader's when it is a free mailbox
   assert.strictEqual(said('Kate', 'kate@gmaill.com', 'evgeny@gmail.com')?.like, 'gmail.com');
   assert.strictEqual(said('Kate', 'kate@gmx.com', 'evgeny@gmx.de'), null);
 });
 
 check('replies to a lookalike of the sender\'s or the reader\'s domain, or a brand\'s mail asking for replies elsewhere', () => {
-  const reply = (name, email, replyTo, account = 'evgeny@arbitron.app') => JSON.parse(JSON.stringify(Sender.replyTo([{name, email, replyTo}], account)));
-  assert.deepStrictEqual(reply('Boss', 'boss@arbitron.app', 'Boss <boss@arbltron.app>'.match(/<(.+)>/)[1]), {rule: 'replyTo', replyTo: 'boss@arbltron.app', domain: 'arbitron.app'});
+  const reply = (name, email, replyTo, account = 'evgeny@meridian.example') => JSON.parse(JSON.stringify(Sender.replyTo([{name, email, replyTo}], account)));
+  assert.deepStrictEqual(reply('Boss', 'boss@meridian.example', 'Boss <boss@merldian.example>'.match(/<(.+)>/)[1]), {rule: 'replyTo', replyTo: 'boss@merldian.example', domain: 'meridian.example'});
   assert.deepStrictEqual(reply('Anna', 'anna@figma.com', 'anna@flgma.com'), {rule: 'replyTo', replyTo: 'anna@flgma.com', domain: 'figma.com'});
   assert.deepStrictEqual(reply('Shop', 'news@shop.example', 'refund@paypa1.com'), {rule: 'replyTo', replyTo: 'refund@paypa1.com', domain: 'shop.example'});
   assert.deepStrictEqual(reply('PayPal', 'service@paypal.com', 'refunds@gmail.com'), {rule: 'replyTo', replyTo: 'refunds@gmail.com', domain: 'paypal.com'});
   // ordinary: a form, a list, a notification relayed for a person, a support desk, the same domain
-  for (const [name, email, to] of [['Anna', 'anna@typeform.com', 'anna@gmail.com'], ['Website', 'website@arbitron.app', 'visitor@gmail.com'],
-    ['Anna (Google Docs)', 'comments-noreply@docs.google.com', 'anna@figma.com'], ['Google Calendar', 'calendar-notification@google.com', 'boss@arbitron.app'],
+  for (const [name, email, to] of [['Anna', 'anna@typeform.com', 'anna@gmail.com'], ['Website', 'website@meridian.example', 'visitor@gmail.com'],
+    ['Anna (Google Docs)', 'comments-noreply@docs.google.com', 'anna@figma.com'], ['Google Calendar', 'calendar-notification@google.com', 'boss@meridian.example'],
     ['Anna via DocuSign', 'dse@docusign.net', 'anna@figma.com'], ['GitHub', 'notifications@github.com', 'reply+abc@reply.github.com'],
     ['Shop', 'news@mail.shop.example', 'support@shop.example'], ['Shop', 'news@shop-mail.example', 'help@shop.example'],
     ['List', 'list@googlegroups.com', 'list@googlegroups.com'], ['Stripe', 'receipts@stripe.com', 'billing@merchant.example']]) {
-    assert.strictEqual(Sender.replyTo([{name, email, replyTo: to}], 'evgeny@arbitron.app'), null, email + ' -> ' + to);
+    assert.strictEqual(Sender.replyTo([{name, email, replyTo: to}], 'evgeny@meridian.example'), null, email + ' -> ' + to);
   }
   // the newest message not the reader's own; none at all, or none with a Reply-To
-  assert.strictEqual(Sender.replyTo([{name: 'Boss', email: 'boss@arbitron.app', replyTo: 'boss@arbltron.app'}, {name: 'Evgeny', email: 'evgeny@arbitron.app', replyTo: ''}],
-    'evgeny@arbitron.app').replyTo, 'boss@arbltron.app');
-  assert.strictEqual(Sender.replyTo([], 'evgeny@arbitron.app'), null);
-  assert.strictEqual(Sender.replyTo([{name: 'Anna', email: 'anna@figma.com', replyTo: ''}], 'evgeny@arbitron.app'), null);
+  assert.strictEqual(Sender.replyTo([{name: 'Boss', email: 'boss@meridian.example', replyTo: 'boss@merldian.example'}, {name: 'Evgeny', email: 'evgeny@meridian.example', replyTo: ''}],
+    'evgeny@meridian.example').replyTo, 'boss@merldian.example');
+  assert.strictEqual(Sender.replyTo([], 'evgeny@meridian.example'), null);
+  assert.strictEqual(Sender.replyTo([{name: 'Anna', email: 'anna@figma.com', replyTo: ''}], 'evgeny@meridian.example'), null);
 });
 
 check('a punycode name reads as it is written', () => {

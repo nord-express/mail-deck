@@ -168,8 +168,8 @@ const checks = {
     'a brand\'s name from another domain: one calm line, with what to take care of': JSON.stringify(r.brand) === JSON.stringify(['warn:' + T('warnBrand', 'PayPal', 'paypal-billing.net')]) &&
       r.warnTip === T('warnTip'),
     'a lookalike domain: one line': JSON.stringify(r.lookalike) === JSON.stringify(['warn:' + T('warnLookalike', 'arnazon.com', 'amazon.com')]),
-    'replies sent to a lookalike of the reader\'s own domain, from the print view\'s Reply-To': JSON.stringify(r.replyTo) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@arbltron.app', 'arbitron.app')]),
-    'and from the mail\'s own header, whatever language Gmail speaks': JSON.stringify(r.replyToHeader) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@arbltron.app', 'arbitron.app')]),
+    'replies sent to a lookalike of the reader\'s own domain, from the print view\'s Reply-To': JSON.stringify(r.replyTo) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@merldian.example', 'meridian.example')]),
+    'and from the mail\'s own header, whatever language Gmail speaks': JSON.stringify(r.replyToHeader) === JSON.stringify(['warn:' + T('warnReplyTo', 'boss@merldian.example', 'meridian.example')]),
     'an ordinary mail says nothing': JSON.stringify(r.normal) === '[]' && r.notesHidden,
     'nothing goes wrong unseen': r.consoleClean === true
   }),
@@ -423,7 +423,7 @@ const checks = {
   }),
   saved: r => ({
     'a saved search is a chip by its name, its search in its tooltip; none for an account signed out or an empty one':
-      JSON.stringify(r.chips) === '["cat","cat","cat","ai","Invoices","Work invoices","|","box","box","box"]' && r.tip === 'invoice · work@arbitron.example',
+      JSON.stringify(r.chips) === '["cat","cat","cat","ai","Invoices","Work invoices","|","box","box","box"]' && r.tip === 'invoice · work@meridian.example',
     'a click asks every Gmail account, shows the search in its field and keeps the focus on the chip':
       JSON.stringify(r.asked) === '["0","1","2"]' && r.field && r.pressed && r.found > 0,
     'a second click goes back to the list; a third shows what was found at once, asking nothing':

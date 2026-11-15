@@ -33,7 +33,7 @@
     entry(0, 'c4', 'GitHub', 'noreply@github.com', '[GitHub] Please verify your device', 'Verification code: 123-456', 4),
     entry(0, 'c5', 'Anna', 'anna@figma.com', 'Встреча', 'В 10:30, комната 4815', 5),
     // a code word far from the number, and numbers labelled as something else
-    entry(0, 'c6', 'Amazon Web Services', 'invoicing@aws.com', 'Amazon Web Services Invoice Available [Account: 762728162410] [Invoice ID: 2882561041]',
+    entry(0, 'c6', 'Amazon Web Services', 'invoicing@aws.com', 'Amazon Web Services Invoice Available [Account: 111122223333] [Invoice ID: 1029384756]',
       'Never share your password or verification code. Invoice Number: 0801. Tax code 0801, VAT code: 0802', 6)
   ])];
   // ?s=site: mail of github.com (one with a fresh code, one sent through a bulk sender, one in
@@ -50,29 +50,29 @@
       entry(0, 'g3', 'GitHub', 'noreply@github.com', '[GitHub] A new SSH key was added', 'A new public key was added', 60),
       entry(0, 'g4', 'GitHub', 'bounces+1@sendgrid.net', 'Your weekly digest', 'Trending repositories', 120)
     ]),
-    acc(1, 'work@arbitron.example', [entry(1, 'g6', 'GitHub', 'noreply@github.com', '[GitHub] Sign-in from a new device', 'We noticed a new sign-in.', 5)])
+    acc(1, 'work@meridian.example', [entry(1, 'g6', 'GitHub', 'noreply@github.com', '[GitHub] Sign-in from a new device', 'We noticed a new sign-in.', 5)])
   ];
   // ?s=privacy: a newsletter with trackers, a brand's name from another domain, a lookalike
   // domain, replies sent to a lookalike of the reader's own domain, and an ordinary mail
-  const privacy = q.get('s') === 'privacy' && [acc(0, 'evgeny@arbitron.app', [
+  const privacy = q.get('s') === 'privacy' && [acc(0, 'evgeny@meridian.example', [
     entry(0, 't1', 'Shop', 'news@shop.example', 'Weekly deals', 'This week only', 2),
     entry(0, 'w1', 'PayPal', 'service@paypal-billing.net', 'Your account is limited', 'Confirm your details', 5),
     entry(0, 'w2', 'Support', 'help@arnazon.com', 'Your order', 'Your order has shipped', 8),
-    entry(0, 'w3', 'Boss', 'boss@arbitron.app', 'Wire today', 'Please handle this today', 11),
-    entry(0, 'w4', 'Boss', 'boss@arbitron.app', 'Wire tomorrow', 'Please handle this tomorrow', 12),
+    entry(0, 'w3', 'Boss', 'boss@meridian.example', 'Wire today', 'Please handle this today', 11),
+    entry(0, 'w4', 'Boss', 'boss@meridian.example', 'Wire tomorrow', 'Please handle this tomorrow', 12),
     entry(0, 'n1', 'GitHub', 'noreply@github.com', 'New sign-in', 'A new sign-in to your account', 14)
   ])];
-  const nine = ['bychkovea@gmail.com', 'evgeny@arbitron.app', 'abrahamlincolncrypto@gmail.com', 'georgewashingtoncypto@gmail.com', 'knivesmagician@gmail.com', 'thomasjeffersoncrypto@gmail.com', 'codewithevgeny@gmail.com', 'cryptobychkov@gmail.com', 'eco.toplivo.msk@gmail.com'];
-  const objs = services || codes || site || privacy || (q.get('s') === 'nine' ? nine.map((m, i) => acc(i, m, [])) : caught ? [acc(0, 'evgeny@example.com', []), acc(1, 'work@arbitron.example', [])] : [
+  const nine = ['evgeny@example.com', 'work@meridian.example', 'newsletters.archive@example.com', 'side.project.signups@example.org', 'photo.studio@example.com', 'family.shared.box@example.net', 'code.reviews@example.org', 'old.account@example.com', 'garden.club@example.net'];
+  const objs = services || codes || site || privacy || (q.get('s') === 'nine' ? nine.map((m, i) => acc(i, m, [])) : caught ? [acc(0, 'evgeny@example.com', []), acc(1, 'work@meridian.example', [])] : [
     acc(0, 'evgeny@example.com', [
       entry(0, 'a1', 'Anna Petrova', 'anna@figma.com', 'Макеты на ревью', 'Посмотри, пожалуйста, до пятницы', 4),
       entry(0, 'a2', 'GitHub', 'noreply@github.com', 'New sign-in', 'A new sign-in to your account', 95)
     ], 5),
-    acc(1, 'work@arbitron.example', [entry(1, 'b1', 'Ivan', 'ivan@gmail.com', 'Созвон', 'Давай созвонимся сегодня?', 30)]),
+    acc(1, 'work@meridian.example', [entry(1, 'b1', 'Ivan', 'ivan@gmail.com', 'Созвон', 'Давай созвонимся сегодня?', 30)]),
     acc(2, 'old@example.org', [])
   ]);
   const local = {accounts: services ? {'evgeny@example.com': {}, 'ev@yahoo.com': {service: 'yahoo'}, 'ev@proton.me': {service: 'proton'}, 'gone@yahoo.com': {service: 'yahoo'}} :
-    privacy ? {'evgeny@arbitron.app': {}} : q.get('s') === 'nine' ? Object.fromEntries(nine.map(m => [m, {}])) : {'evgeny@example.com': {}, 'work@arbitron.example': {}, 'old@example.org': {}, 'gone@example.com': {}},
+    privacy ? {'evgeny@meridian.example': {}} : q.get('s') === 'nine' ? Object.fromEntries(nine.map(m => [m, {}])) : {'evgeny@example.com': {}, 'work@meridian.example': {}, 'old@example.org': {}, 'gone@example.com': {}},
     accountOrder: [], panelScale: Number(q.get('scale') || 1), readOnOpen: q.get('read') === '1', 'remind.links': [],
     autoAdvance: q.get('advance') === '1', 'badge.count': q.get('badge') || 'all', askPictures: q.get('ask') === '1',
     // ?ai=on|off|real: the assistant's engine (real: the real ai.js, loaded by the panel, with no key)
@@ -81,7 +81,7 @@
     // ?cats=off: Gmail's categories turned off in the settings
     ...(q.get('cats') === 'off' ? {gmailCategories: false} : {}),
     // ?saved=1: searches saved in the settings, one of them for an account not signed in, one empty
-    ...(q.get('saved') ? {savedSearches: [{name: 'Invoices', query: 'invoice', account: ''}, {name: 'Work invoices', query: ' invoice ', account: 'work@arbitron.example'},
+    ...(q.get('saved') ? {savedSearches: [{name: 'Invoices', query: 'invoice', account: ''}, {name: 'Work invoices', query: ' invoice ', account: 'work@meridian.example'},
       {name: '', query: 'from:gone', account: 'gone@example.com'}, {name: 'Empty', query: '  ', account: ''}]} : {}),
     // ?rate=due: the panel opened on twelve days since three weeks ago, nothing asked yet
     ...(q.get('rate') === 'due' ? {rate: {first: now - 21 * 24 * 60 * 60 * 1000, days: 12, day: '2026-1-1'}} : {})};
@@ -394,8 +394,8 @@
   const long = page.replace('— Аня', '— Аня<br>' + 'The final layout keeps the cards, the reader and the settings in one grid. '.repeat(30));
   // a newsletter 700px wide, with its picture loading a moment later
   const wide = `<html><body><table width=100% cellpadding=0 cellspacing=0 border=0 class="message">
-<tr><td><font size=-1><b>Московский транспорт </b>&lt;deptrans@transport.mos.ru&gt;</font></td><td align=right><font size=-1>Fri, Oct 30 at 20:32</font></td></tr>
-<tr><td colspan=2><font size=-1 class=recipient><div>To: bychkovea@gmail.com</div></font></td></tr>
+<tr><td><font size=-1><b>Городской транспорт </b>&lt;news@transport.example&gt;</font></td><td align=right><font size=-1>Fri, Oct 30 at 20:32</font></td></tr>
+<tr><td colspan=2><font size=-1 class=recipient><div>To: evgeny@example.com</div></font></td></tr>
 <tr><td colspan=2><table width=100% cellpadding=12 cellspacing=0 border=0><tr><td><div style="overflow: hidden;"><font size=-1>
 <table width="700" style="width:700px;background:#000" cellpadding=30><tr><td><img width="640" src="data:image/svg+xml,${encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'640\' height=\'420\'><rect width=\'640\' height=\'420\' fill=\'%23e98a2c\'/><circle cx=\'320\' cy=\'210\' r=\'150\' fill=\'%23234\'/></svg>')}"><p style="color:#fff;font:20px Arial">Пройдите опрос о самокатах</p></td></tr></table>
 </font></div></td></tr></table></td></tr></table></body></html>`;
@@ -415,9 +415,9 @@
       '<div style="background:url(https://emltrk.com/v2/abc?d=x)">&nbsp;</div>'),
     w1: print('PayPal', 'service@paypal-billing.net', 'Confirm your details.'),
     w2: print('Support', 'help@arnazon.com', 'Your order has shipped.'),
-    w3: print('Boss', 'boss@arbitron.app', 'Please handle this today.', '<div>Reply-To: Boss &lt;boss@arbltron.app&gt;</div>'),
+    w3: print('Boss', 'boss@meridian.example', 'Please handle this today.', '<div>Reply-To: Boss &lt;boss@merldian.example&gt;</div>'),
     // Gmail in a language whose word for Reply-To the reader does not know
-    w4: print('Boss', 'boss@arbitron.app', 'Please handle this tomorrow.', '<div>Yanıt adresi: Boss &lt;boss@arbltron.app&gt;</div>'),
+    w4: print('Boss', 'boss@meridian.example', 'Please handle this tomorrow.', '<div>Yanıt adresi: Boss &lt;boss@merldian.example&gt;</div>'),
     n1: print('GitHub', 'noreply@github.com', 'A new sign-in to your account.', '<div>Reply-To: noreply@github.com</div>')
   } : {};
   const realFetch = window.fetch;

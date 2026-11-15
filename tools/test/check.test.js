@@ -824,7 +824,7 @@ tests.push(
     const b = copying({'0': [{id: 'c', age: 40, ...CODE_MAIL}]}, {threatAsNew: 60});
     await b.run();
     assert.deepStrictEqual([b.told.length, b.told[0].title, 'contextMessage' in b.told[0], b.buttons()], [1, 'user0@gmail.com', false, ['Read', 'Archive']]);
-    const none = copying({'0': [{id: 'i', title: 'Invoice Available', summary: 'Invoice ID: 2882561041. Tax code 0801, VAT code: 0802', from: 'AWS'}]});
+    const none = copying({'0': [{id: 'i', title: 'Invoice Available', summary: 'Invoice ID: 1029384756. Tax code 0801, VAT code: 0802', from: 'AWS'}]});
     await none.run();
     assert.deepStrictEqual([none.told[0].title, none.buttons()], ['user0@gmail.com', ['Read', 'Archive']]);
   }],
