@@ -29,12 +29,13 @@ const stream = chunks => {
 };
 
 // answer(url, options) gives a Response (or a {stream} of one) for each request; requests lists them
-const start = answer => {
+// ats: the account's GMAIL_AT cookies as the background lists them, the one Gmail reads first
+const start = (answer, {ats = ['AT']} = {}) => {
   const requests = [];
   const chrome = {
     runtime: {
       sendMessage: (m, cb) => {
-        const r = m.method === 'ik-get' ? 'IK' : m.method === 'get-at' ? 'AT' : undefined;
+        const r = m.method === 'ik-get' ? 'IK' : m.method === 'get-at' ? (m.all ? ats : ats[0]) : undefined;
         cb?.(r);
         return Promise.resolve(r);
       }
@@ -53,6 +54,13 @@ const start = answer => {
   return {gmail: ctx.gmail, requests};
 };
 const ok = (text, type = 'text/plain') => new Response(text, {status: 200, headers: {'content-type': type}});
+// Gmail's answer to a call: its parts, each after its length
+const parts = (...list) => ")]}'\n" + list.map(o => JSON.stringify(o)).map(j => j.length + '&' + j).join('\n');
+const INVALID = parts([null, [[null, [null, 'Invalid action token', 10], null]], 2, 0, 'IK']);
+const LABELS = [null, [[null, null, null, null, null, null, null, [null, []]]], 2, 0, 'IK'];
+// a search's answer: the mail found (null for none), and the mark of the mailbox's state
+const searched = (mail, mark = '689d54') => parts(LABELS, [null, [[null, null, [null, 'q', 0, mail ? mail.length : 0, null, mail, null, null, 0, null, null, mark, null, 'q']]], 2, 0, 'IK']);
+const tokenOf = url => /[?&]at=([^&]*)/.exec(url)[1];
 const head = lines => lines.join('\r\n') + '\r\n\r\n';
 const fields = lines => start(() => ok('')).gmail.fields(lines.join('\r\n'));
 
@@ -191,6 +199,47 @@ const tests = [
     await assert.rejects(confirm.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), /permission_error/);
     const status = start(() => new Response('', {status: 500}));
     await assert.rejects(status.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), /send -> 500/);
+  }],
+  ['a token Gmail does not take is followed by the account\'s next one: an action is done, a mail is sent, once', async () => {
+    // two GMAIL_AT cookies (for /mail/u/N/ and /mail/u/N) with different values: Gmail takes one
+    const answer = url => ok(tokenOf(url) === 'NEW' ? parts([null, [[null, null, null, null, [], null]], 2, 0, 'IK']) : INVALID);
+    const g = start(answer, {ats: ['OLD', 'NEW']});
+    await g.gmail.action({links: [link(0, 't1')], cmd: 'rd', prefs: {}});
+    assert.deepStrictEqual(g.requests.map(q => [q.method, tokenOf(q.url)]), [['POST', 'OLD'], ['POST', 'NEW']]);
+    assert.deepStrictEqual(g.requests.map(q => JSON.parse(q.body.get('s_jr'))[1][0][3].slice(1, 3)), [[3, 't1'], [3, 't1']]);
+    assert.strictEqual(await g.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), true);
+    assert.deepStrictEqual(g.requests.slice(2).map(q => tokenOf(q.url)), ['OLD', 'NEW']);
+    // the one Gmail reads first is asked alone
+    const first = start(answer, {ats: ['NEW', 'OLD']});
+    await first.gmail.action({links: [link(0, 't1')], cmd: 'rd', prefs: {}});
+    assert.deepStrictEqual(first.requests.map(q => tokenOf(q.url)), ['NEW']);
+    // none taken: each is asked once, and the action is a failure that says why
+    const none = start(() => ok(INVALID), {ats: ['A', 'B']});
+    await assert.rejects(none.gmail.action({links: [link(0, 't1')], cmd: 'rd', prefs: {}}), /action -> Invalid action token/);
+    await assert.rejects(none.gmail.send({link: link(0, 'abc'), from: 'me@gmail.com', to: ['a@b.com'], text: 'x'}), /send -> Invalid action token/);
+    assert.deepStrictEqual(none.requests.map(q => tokenOf(q.url)), ['A', 'B', 'A', 'B']);
+    // another refusal is final: the next token is not tried
+    const other = start(() => ok(parts([null, [[null, [null, 'Unexpected action: X', 8], null]], 2, 0, 'IK'])), {ats: ['A', 'B']});
+    await assert.rejects(other.gmail.action({links: [link(0, 't1')], cmd: 'rd', prefs: {}}), /Unexpected action: X/);
+    assert.strictEqual(other.requests.length, 1);
+    // no cookie: the print view of the thread is asked for one, and without one nothing is sent
+    const bare = start(() => ok('ok'), {ats: []});
+    await assert.rejects(bare.gmail.action({links: [link(1, 't1')], cmd: 'rd', prefs: {}}), /open Gmail once/);
+    assert.deepStrictEqual(bare.requests.map(q => [q.method, q.url]), [['GET', 'https://mail.google.com/mail/u/1/?ui=2&view=pt&dsqt=1&search=all&msg=t1']]);
+  }],
+  ['a search that finds nothing finds nothing; one Gmail did not run for its token goes to the next, and fails with none left', async () => {
+    const mail = [[null, 't9', 2, 'Subject', 'Text', '<b>Anna</b>', 1, 2, ['^i'], 0, [null, 1, 1], 't9']];
+    const g = start(() => ok(searched(null)));
+    const none = await g.gmail.search({url: 'https://mail.google.com/mail/u/0', query: 'from:nobody'});
+    assert.deepStrictEqual([none.count, none.entries.length, g.requests.length], [0, 0, 1]);
+    // the first token is not the one Gmail reads: its answer has no mail and "0" for the mark
+    const two = start(url => ok(tokenOf(url) === 'NEW' ? searched(mail) : searched(null, '0')), {ats: ['OLD', 'NEW']});
+    const found = await two.gmail.search({url: 'https://mail.google.com/mail/u/0', query: 'is:unread'});
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(found.entries)), [{subject: 'Subject', thread: 't9', labels: ['^i', 'STARRED'], date: 2, from: '<b>Anna</b>', text: 'Text'}]);
+    assert.deepStrictEqual(two.requests.map(q => tokenOf(q.url)), ['OLD', 'NEW']);
+    const lost = start(() => ok(searched(null, '0')), {ats: ['A', 'B']});
+    await assert.rejects(lost.gmail.search({url: 'https://mail.google.com/mail/u/0', query: 'is:unread'}), /search -> token/);
+    assert.strictEqual(lost.requests.length, 2);
   }],
   ['the header gives the addresses a reply goes to: From, Reply-To, To and Cc, names and comments left out', async () => {
     const g = start(url => url.includes('view=att') ? ok(head(['From: "Doe, Jane" <jane@x.com>', 'Reply-To: list@x.com (the list)',

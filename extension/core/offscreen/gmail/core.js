@@ -55,31 +55,52 @@ gmail.fetchPage = n => {
 
   return next(page);
 };
-const cookie = n => new Promise(resolve => chrome.runtime.sendMessage({
+// The account's tokens, read from its cookies each time: a cookie of the place (/u/<n>) is the
+// account's that is there now. Gmail checks the token of a call against the GMAIL_AT cookie that
+// comes with it, and a browser may hold more than one, with different values (one for /mail/u/N,
+// one for /mail/u/N/): the background lists them as Gmail meets them, the one it reads first.
+const cookies = n => new Promise(resolve => chrome.runtime.sendMessage({
   method: 'get-at',
-  n
-}, resolve));
-// the account's token, read from its cookie each time: a cookie of the place (/u/<n>) is the
-// account's that is there now
-gmail.at = (n, thread) => {
-  return new Promise((resolve, reject) => cookie(n).then(async at => {
-    // the print view of a thread sets the cookie; the panel opens one before it
-    // acts, an action sent from a closed panel has only this
-    if (!at && thread) {
-      await fetch(`https://mail.google.com/mail/u/${n}/?ui=2&view=pt&dsqt=1&search=all&msg=${thread}`, {
-        credentials: 'include',
-        signal: wait()
-      }).catch(() => {});
-      at = await cookie(n);
+  n,
+  all: true
+}, r => resolve(Array.isArray(r) ? r.filter(Boolean) : r ? [r] : [])));
+gmail.tokens = async (n, thread) => {
+  let list = await cookies(n);
+  // the print view of a thread sets the cookie; the panel opens one before it
+  // acts, an action sent from a closed panel has only this
+  if (!list.length && thread) {
+    await fetch(`https://mail.google.com/mail/u/${n}/?ui=2&view=pt&dsqt=1&search=all&msg=${thread}`, {
+      credentials: 'include',
+      signal: wait()
+    }).catch(() => {});
+    list = await cookies(n);
+  }
+  // Gmail's basic HTML view, the old way to the token, is gone since 2024
+  if (!list.length) {
+    throw Error('core.js -> at; open Gmail once in this account to set the cookie');
+  }
+  return list;
+};
+/*
+ * Gmail's internal call for an account (v=or), with its key and its token. A token Gmail does
+ * not take does nothing and says so only in the answer, which is still a 200: refused(content)
+ * tells it, and the call goes again with the account's next token. The last answer is returned.
+ */
+const call = async ({n, ik, tokens, body, more = '', refused}) => {
+  let out;
+  for (const at of tokens) {
+    const r = await fetch(`https://mail.google.com/mail/u/${n}/s/?v=or&ik=${ik}&at=${at}&subui=chrome${more}&hl=en&ts=` + Date.now(), {
+      method: 'POST',
+      credentials: 'include',
+      body,
+      signal: wait()
+    });
+    out = {r, content: r.ok ? await r.text() : ''};
+    if (!r.ok || !refused(out.content)) {
+      break;
     }
-    if (at) {
-      resolve(at);
-    }
-    // Gmail's basic HTML view, the old way to the token, is gone since 2024
-    else {
-      reject(Error('core.js -> at; open Gmail once in this account to set the cookie'));
-    }
-  }));
+  }
+  return out;
 };
 
 
@@ -91,28 +112,30 @@ gmail.search = async ({url, query}) => {
     if (!ik) {
       throw Error('core.js -> ik -> empty');
     }
-    const at = await gmail.at(n);
-    if (!at) {
-      throw Error('core.js -> at -> empty');
-    }
+    const tokens = await gmail.tokens(n);
     const body = new URLSearchParams();
     body.append('s_jr', JSON.stringify([null, [
       [null, null, null, null, null, null, [null, true, false]],
       [null, [null, query, 0, null, 80, null, null, null, false, [], [], true]]
     ], 2, null, null, null, ik]));
 
-    const href = `https://mail.google.com/mail/u/${n}/s/?v=or&ik=${ik}&at=${at}&subui=chrome&hl=en&ts=` + Date.now();
-    const r = await fetch(href, {
-      method: 'POST',
-      credentials: 'include',
-      body,
-      signal: wait()
-    });
+    // The answer's search part: [null, query, start, total, null, the mail found, …]. A search
+    // that finds nothing has null for the mail. So has one Gmail did not run, the token not
+    // being the one it reads: its twelfth field, a mark of the mailbox's state otherwise, is "0".
+    const part = content => JSON.parse(content.split(/\d+&/)[2])[1][0][2];
+    const unserved = s => !s[5] && s[11] === '0';
+    const {r, content} = await call({n, ik, tokens, body, refused: content => {
+      try {
+        return unserved(part(content));
+      }
+      catch (e) {
+        return false;
+      }
+    }});
     if (!r.ok) {
       forget(n, r.status);
       throw Error('core.js -> body: ' + r.status);
     }
-    const content = await r.text();
     // Gmail asks to confirm the sign-in first (spreauth)
     if (!content || content.includes('/spreauth')) {
       const links = content.match(/\bhttps?:\/\/[^\s<>"'()]+/gi) || [];
@@ -122,11 +145,11 @@ gmail.search = async ({url, query}) => {
       throw e;
     }
 
-    const parts = content.split(/\d+&/);
-
-    const results = parts[2];
-    const j = JSON.parse(results);
-    const entries = j[1][0][2][5].map(a => {
+    const found = part(content);
+    if (unserved(found)) {
+      throw Error('core.js -> search -> token');
+    }
+    const entries = (found[5] || []).map(a => {
       const entry = {};
       entry.subject = a[3];
       entry.thread = a[11];
@@ -381,6 +404,9 @@ const refusal = content => {
   return m ? m[1] || 'refused' : '';
 };
 
+// the token was not the one Gmail reads: nothing was done, and another may be
+const invalid = content => /invalid action token/i.test(refusal(content));
+
 gmail.action = async ({links, cmd, prefs}) => {
   links = typeof links === 'string' ? [links] : links;
 
@@ -392,11 +418,7 @@ gmail.action = async ({links, cmd, prefs}) => {
   }).filter(o => o);
 
   if (a.length) {
-    const at = await gmail.at(a[0].n, a[0].thread);
-
-    if (!at) {
-      throw Error('core.js -> at');
-    }
+    const tokens = await gmail.tokens(a[0].n, a[0].thread);
     const {ik} = await gmail.page(a[0].n);
     if (!ik) {
       throw Error('core.js -> ik');
@@ -464,20 +486,13 @@ gmail.action = async ({links, cmd, prefs}) => {
       [null, null, null, null, null, null, [null, true, false]]
     ], 2, null, null, null, ik]));
 
-    const href = `https://mail.google.com/mail/u/${a[0].n}/s/?v=or&ik=${ik}&at=${at}&subui=chrome&hl=en&ts=` + Date.now();
-    const r = await fetch(href, {
-      method: 'POST',
-      credentials: 'include',
-      body,
-      signal: wait()
-    });
+    const {r, content} = await call({n: a[0].n, ik, tokens, body, refused: invalid});
     // an answer other than 200 is a refusal, though it carries no permission error
     if (!r.ok) {
       forget(a[0].n, r.status);
       throw Error('core.js -> action -> ' + r.status);
     }
     // do we have permission to do the action?
-    const content = await r.text();
     if (!content || content.includes('/spreauth')) {
       const links = content.match(/\bhttps?:\/\/[^\s<>"'()]+/gi) || [];
       const e = new Error('core.js -> permission_error');
@@ -517,9 +532,9 @@ gmail.send = async ({link, from, to = [], cc = [], subject = '', text = '', repl
     throw Error('core.js -> send -> reply');
   }
   const {n} = m.groups;
-  const at = await gmail.at(n, reply);
+  const tokens = await gmail.tokens(n, reply);
   const {ik} = await gmail.page(n);
-  if (!at || !ik) {
+  if (!ik) {
     throw Error('core.js -> send -> at');
   }
   const person = address => [null, address, '', null];
@@ -530,18 +545,12 @@ gmail.send = async ({link, from, to = [], cc = [], subject = '', text = '', repl
   body.append('s_jr', JSON.stringify([null, [[null, null, null, null, null, null, null, [null, [null,
     to.map(person), cc.map(person), [], [null, from, null, null], [], String(subject), html, reply ? 4 : 1, reply || null,
     null, null, true, null, own, false, []], null]]], 2, null, null, null, ik]));
-  const href = `https://mail.google.com/mail/u/${n}/s/?v=or&ik=${ik}&at=${at}&subui=chrome&suim=true&hl=en&ts=` + Date.now();
-  const r = await fetch(href, {
-    method: 'POST',
-    credentials: 'include',
-    body,
-    signal: wait()
-  });
+  // a token Gmail did not take sent nothing: the next one may
+  const {r, content} = await call({n, ik, tokens, body, more: '&suim=true', refused: invalid});
   if (!r.ok) {
     forget(n, r.status);
     throw Error('core.js -> send -> ' + r.status);
   }
-  const content = await r.text();
   if (!content || content.includes('/spreauth')) {
     const e = new Error('core.js -> permission_error');
     e.details = {links: content.match(/\bhttps?:\/\/[^\s<>"'()]+/gi) || []};

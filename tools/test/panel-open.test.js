@@ -4,6 +4,8 @@
 // photo asked for during that time keeps the window from opening until the slowest one comes.
 // Here nine inboxes with mail from as many domains, each with its photo; Google's pictures are
 // held unanswered until the page has loaded, then answered, so nothing goes to the network.
+// Also here, for the browser's own cookie store: which of an account's GMAIL_AT cookies the
+// background takes for its token.
 // Google Chrome no longer loads an unpacked extension from the command line: Chrome for
 // Testing (Playwright's) does. CHROME_EXT names one; without it the check is skipped.
 const fs = require('fs');
@@ -176,6 +178,14 @@ const DOMAINS = ['figma.com', 'github.com', 'notion.so', 'linear.app', 'stripe.c
     out.photos = await run(`[...document.querySelectorAll('.section-head > img.me')].filter(img => img.complete && img.naturalWidth > 0).length`);
     out.dots = await run(`document.querySelectorAll('.section-head > .dot').length`);
     out.errors = errors;
+    // An account's action token, from the browser's own cookies: Gmail's GMAIL_AT kept for
+    // /mail/u/N and for /mail/u/N/ with different values (the one Gmail reads with a call is the
+    // longer path's), and one kept for /mail/u/N/ alone
+    for (const [at, value] of [['/mail/u/0', 'old'], ['/mail/u/0/', 'new'], ['/mail/u/2/', 'only']]) {
+      await call('Network.setCookie', {name: 'GMAIL_AT', value, domain: 'mail.google.com', path: at, secure: true, sameSite: 'Lax'});
+    }
+    out.tokens = await run(`Promise.all([{n: '0'}, {n: '0', all: true}, {n: '2'}, {n: '5', all: true}].map(q =>
+      chrome.runtime.sendMessage({method: 'get-at', ...q})))`);
     ws.close();
   }
   catch (e) {
@@ -191,6 +201,8 @@ const DOMAINS = ['figma.com', 'github.com', 'notion.so', 'linear.app', 'stripe.c
     'no picture of the network is asked for before the page has loaded': out.askedBeforeStop === 0,
     'then every sender\'s logo is asked for once and shows': out.asked >= DOMAINS.length + NINE.length && out.logos === NINE.length * 2,
     'and every mailbox\'s photo shows, none is left a dot': out.photos === NINE.length && out.dots === 0,
+    'an account\'s action token is the cookie Gmail reads first, of the two the browser may hold; one for /mail/u/N/ alone is found':
+      JSON.stringify(out.tokens) === JSON.stringify(['new', ['new', 'old'], 'only', []]),
     'the page throws nothing': out.errors?.length === 0 && !out.error
   };
   let failed = false;

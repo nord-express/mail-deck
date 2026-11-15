@@ -19,7 +19,8 @@ const searchLink = (n, id) => `https://mail.google.com/mail/u/${n}?message_id=${
 // heads: a mail's header as the offscreen document reads it, by link; posts: the requests sent
 // to a sender, which fail with postFails
 // sent: what Gmail answers mail sent (true, or {message}); panels: the documents still open
-const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = false, sent = true, panels = []} = {}) => {
+// cookies: Gmail's cookies the browser holds, as chrome.cookies lists them
+const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = false, sent = true, panels = [], cookies = []} = {}) => {
   const copy = o => o === undefined ? o : JSON.parse(JSON.stringify(o));
   const area = store => ({
     get: async d => {
@@ -38,7 +39,7 @@ const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = fa
     set: async o => Object.assign(store, copy(o)),
     remove: async k => [].concat(k).forEach(k => delete store[k])
   });
-  const out = {local, session, dispatched: [], toasts: [], alarms: {}, listeners: [], refreshed: 0, posts: [], asked: [], mails: [], opened: []};
+  const out = {local, session, dispatched: [], toasts: [], alarms: {}, listeners: [], refreshed: 0, posts: [], asked: [], mails: [], opened: [], cookieUrls: []};
   const chrome = {
     i18n: {getMessage: () => 'x', getUILanguage: () => 'en'},
     runtime: {onMessage: {addListener: fn => out.listeners.push(fn)}, onInstalled: {addListener() {}}, getManifest: () => ({}),
@@ -47,7 +48,12 @@ const start = ({local = {}, session = {}, fails = [], heads = {}, postFails = fa
     notifications: {create: (o, cb) => out.toasts.push(o.message)},
     storage: {local: area(local), session: area(session)},
     alarms: {create: (name, o) => out.alarms[name] = o, clear: async name => delete out.alarms[name]},
-    cookies: {get() {}},
+    // the cookies of a name that go with a request to the URL (RFC 6265, path-match), in no order
+    cookies: {getAll: ({name, url}, cb) => {
+      out.cookieUrls.push(url);
+      const at = new URL(url).pathname;
+      cb(cookies.filter(c => c.name === name && (at === c.path || at.startsWith(c.path.endsWith('/') ? c.path : c.path + '/'))));
+    }},
     tabs: {create() {}}
   };
   const ctx = {chrome, console: {log() {}, info() {}, warn() {}, error() {}}, Date, Promise, Map, Set, JSON, out, AbortSignal,
@@ -110,6 +116,24 @@ const tests = [
     assert.deepStrictEqual(w.dispatched, [{cmd: 'rc_^i', links: [link]}]);
     assert.deepStrictEqual(w.local['actions.pending'], []);
     assert.ok(!w.alarms['actions.pending']);
+  }],
+  ['an account\'s token is the GMAIL_AT cookie Gmail reads first with a call: the longest path of those that go to its /s/', async () => {
+    // Gmail has set it for /mail/u/N and for /mail/u/N/; a browser may hold both, with different values
+    const w = start({cookies: [
+      {name: 'GMAIL_AT', path: '/mail/u/0', value: 'old'}, {name: 'GMAIL_AT', path: '/mail/u/0/', value: 'new'},
+      {name: 'GMAIL_AT', path: '/mail/u/1', value: 'other'}, {name: 'COMPASS', path: '/mail/u/0/', value: 'x'},
+      {name: 'GMAIL_AT', path: '/mail/u/2/', value: 'only'}, {name: 'GMAIL_AT', path: '/mail/u/3', value: 'same'}, {name: 'GMAIL_AT', path: '/mail/u/3/', value: 'same'}
+    ]});
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '0'}), {value: 'new'});
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '0', all: true}), {value: ['new', 'old']});
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '1'}), {value: 'other'});
+    // one kept for /mail/u/N/ alone, which a look at /mail/u/N would miss
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '2'}), {value: 'only'});
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '3', all: true}), {value: ['same']});
+    // none: no token, an empty list
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '4'}), {value: undefined});
+    assert.deepStrictEqual(await w.send({method: 'get-at', n: '4', all: true}), {value: []});
+    assert.strictEqual(w.cookieUrls[0], 'https://mail.google.com/mail/u/0/s/');
   }],
   ['an Undo stops it: nothing reaches Gmail and the mail shows again', async () => {
     const w = start();

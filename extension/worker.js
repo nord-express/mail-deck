@@ -465,9 +465,16 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     });
     return true;
   }
+  // An account's action token: Gmail's GMAIL_AT cookie. Gmail has set it for /mail/u/N and for
+  // /mail/u/N/, and a browser may hold both, with different values; Gmail takes the one that
+  // comes first with a call, which goes to /mail/u/N/s/: the longest path, the oldest of two as
+  // long. This answers with that one, or with all of them in that order (all), for the offscreen
+  // document to go on to the next when Gmail does not take one.
   else if (method === 'get-at') {
-    chrome.cookies.get({name: 'GMAIL_AT', url: 'https://mail.google.com/mail/u/' + request.n}, o => {
-      response(o?.value);
+    chrome.cookies.getAll({name: 'GMAIL_AT', url: 'https://mail.google.com/mail/u/' + request.n + '/s/'}, list => {
+      const values = chrome.runtime.lastError ? [] :
+        [...new Set([...list || []].sort((a, b) => b.path.length - a.path.length).map(o => o.value).filter(Boolean))];
+      response(request.all ? values : values[0]);
     });
     return true;
   }
