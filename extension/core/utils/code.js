@@ -1,12 +1,13 @@
 // One-time codes: a sign-in or verification code in a mail, which the panel shows on its line
 // and a notification in its title, a click from the clipboard.
 // This file is loaded by the background (importScripts) and by the panel (script tag), so it
-// must not rely on anything else; only codeOf is seen outside it.
+// must not rely on anything else; only codeOf (and codeOf.hint) is seen outside it.
 const codeOf = (() => {
   // a word that names a code, in the languages the panel speaks and a few more
   const CODE_WORDS = /code|passcode|\bpin\b|\botp\b|2fa|verif|one[- ]time|код|пароль|подтвержд|kod|código|codice|kód|κωδικ|קוד|رمز|验证码|驗證碼|認証|確認コード|인증/giu;
-  // what makes a code no sign-in code when it stands before the word: a tax code, a postal code, a promo code
-  const NOT_SIGN_IN = /(tax|vat|zip|postal|post|area|country|product|item|tariff|hs|sort|swift|bank|branch|promo|promotional|coupon|discount|gift|referral|invite|invitation|error|status|reason|qr|bar|source|dress|conduct|style|colou?r|booking|reservation|flight|voucher|почтовый|промо)\s*-?$/iu;
+  // what makes a code no sign-in code when it stands before the word: a tax code, a postal code, a
+  // promo code, the anti-phishing code a site puts in every mail of its own to prove it sent it
+  const NOT_SIGN_IN = /(anti[- ]?phishing|антифишинг\p{L}*|tax|vat|zip|postal|post|area|country|product|item|tariff|hs|sort|swift|bank|branch|promo|promotional|coupon|discount|gift|referral|invite|invitation|error|status|reason|qr|bar|source|dress|conduct|style|colou?r|booking|reservation|flight|voucher|почтовый|промо)\s*-?$/iu;
   // what names the number itself as something else: Invoice ID: 0801, Order #1234, заказ № 5512
   const LABEL = /(invoice|order|ticket|booking|reservation|reference|ref|tracking|receipt|transaction|case|claim|policy|customer|member|flight|room|account\s*(?:number|no|id)|ending\s*(?:in|with)|счёт|счет|заказ|номер|квитанц|договор|билет|рейс|бронь|комнат|rechnung|bestellung|factura|pedido|commande|fattura|ordine)\.?\s*(?:number|no\.?|id|#|№|nr\.?)?\s*[:#№-]?\s*$/iu;
   // 4-8 digits, or 3+3 split by a dash or a space, maybe after a prefix like G-; never part of a longer
@@ -16,10 +17,13 @@ const codeOf = (() => {
   // ("123456 is your code")
   const CODE_BEFORE = 60;
   const CODE_AFTER = 40;
+  // what a mail with a code says of itself, though its snippet may end before the code: a word
+  // for a code (an anti-phishing code's too), or for a sign-in, a new device, an activation
+  const HINT = /verif|authori[sz]|activat|confirm|sign[- ]?in|log[- ]?in|new device|two[- ]factor|подтвер|вход|авториз|активац|устройств/iu;
   // The one-time code a text names: {shown, copy}, shown as the mail writes it (G-482913, 123-456)
   // and copy its digits alone, or null. A year is no code, nor a number a label names as something
   // else; of several, six digits win, then the one nearest its word.
-  return text => {
+  const find = text => {
     text = String(text || '');
     // each word that names a code, and whether it names a sign-in code
     const words = [...text.matchAll(CODE_WORDS)]
@@ -47,4 +51,7 @@ const codeOf = (() => {
     }
     return best && {shown: best.shown, copy: best.copy};
   };
+  // whether the message itself may hold a code its title and snippet do not show
+  find.hint = text => String(text || '').search(CODE_WORDS) >= 0 || HINT.test(String(text || ''));
+  return find;
 })();

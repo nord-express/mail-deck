@@ -3,6 +3,18 @@
 Each version that reaches `main` is released on GitHub with the notes of its section here
 (`.github/workflows/release.yml`), and goes to the Chrome Web Store with `tools/publish.py submit`.
 
+## 1.8.5
+
+Mail Deck 1.8.5 finds the right sign-in code in more mail, and lists the mail of the site you're on once.
+
+**Changed**
+- The mail of the site you're on is no longer listed twice, once at the top and again in its inbox. Its newest three are moved up to the top as the lines they are, and the sign-in code is a copy button on its line instead of a separate large code over them.
+- A one-time code on a line shows a copy icon, so it reads as the button it is.
+
+**Fixed**
+- The anti-phishing code that some sites (exchanges among them) put in every mail of their own was taken for the sign-in code. It no longer is, on a line or in a notification.
+- When a mail's preview ends before its code ("Anti-Phishing Code: … Dear …", the code further down), the code is read from the message itself and comes onto the line. Only a Gmail mail from the last half hour that speaks of a code or a sign-in is read for it, and it stays unread.
+
 ## 1.8.4
 
 Mail Deck 1.8.4 makes actions on Gmail mail go through again where they had stopped: mark as read, archive, delete, labels, sending and search. It includes everything of 1.8.3, which did not reach the store on its own.

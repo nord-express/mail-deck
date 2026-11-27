@@ -259,6 +259,16 @@ gmail.get = {
     return files[key];
   };
 
+  // The newest message of a thread as plain text, for a one-time code its line's snippet ends
+  // before: from the print view its files are read from, so no second request, in line with them
+  gmail.text = (link, version = '') => {
+    link = link.replace('http://', 'https://');
+    if (!gmail.get.id(link)) {
+      return Promise.resolve('');
+    }
+    return page(link, version, false).then(got => gmail.render.lastText(got.content));
+  };
+
   // A mail of another service (core/services/): the background asks the service for its
   // messages, which stay for the session like a print view.
   gmail.serviceBody = (link, version = '') => {
@@ -738,6 +748,19 @@ gmail.get = {
       doc.head.prepend(base);
       return [...doc.querySelectorAll('table.message')].flatMap(table => collect(table))
         .map(f => ({name: f.name || '', view: f.view || '', download: f.download || ''}));
+    },
+    // the newest message's words, its cells and lines apart ("Code:</td><td>144976</td><td>Valid"
+    // is no "144976Valid"), its styles left out; the first few thousand characters
+    lastText(content) {
+      const doc = new DOMParser().parseFromString(content, 'text/html');
+      const rows = [...doc.querySelectorAll('table.message')].at(-1)?.rows || [];
+      const body = rows.length > 1 ? rows[rows.length - 1].cells[rows[rows.length - 1].cells.length - 1] : null;
+      if (!body) {
+        return '';
+      }
+      body.querySelectorAll('style, script, title').forEach(n => n.remove());
+      body.querySelectorAll('br, p, div, td, th, tr, li, h1, h2, h3, h4, h5, h6, table, blockquote, pre, hr').forEach(n => n.after('\n'));
+      return body.textContent.replace(/[^\S\n]+/g, ' ').replace(/ ?\n[\s]*/g, '\n').trim().slice(0, 4000);
     },
     held: node => Boolean(node.querySelector(HELD_SELECTOR)),
     // Show pictures: everything held loads now

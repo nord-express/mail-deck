@@ -572,7 +572,7 @@
     if (scenario === 'codes') {
       // a one-time code shows on its line; a click copies its digits and opens, reads or deletes nothing
       const list = () => [...document.querySelectorAll('#list .row')];
-      out.pills = list().map(r => r.querySelector('.code')?.textContent || '');
+      out.pills = list().slice(0, 6).map(r => r.querySelector('.code')?.textContent || '');
       const before = rows();
       list()[0].querySelector('.code')?.click();
       await wait(50);
@@ -600,6 +600,10 @@
       await wait(50);
       out.copiedInReader = window.__copied;
       out.actionsAfter = sent('gmail.action').length;
+      // a code the snippet ends before comes onto its line from the message; the anti-phishing code is none
+      key(document, 'Escape');
+      await until(() => list()[6]?.querySelector('.code'));
+      out.bodyPill = list()[6]?.querySelector('.code')?.textContent || '';
     }
 
     if (scenario === 'advance') {
@@ -667,34 +671,37 @@
       const $ = id => document.getElementById(id);
       const block = () => $('list').querySelector(':scope > .site');
       const id = link => link.match(/message_id=([^&]*)/)[1];
-      const pins = () => [...(block()?.querySelectorAll('.pin') || [])].map(p => id(p.dataset.focus));
+      const lifted = () => [...(block()?.querySelectorAll('.row') || [])].map(r => id(r.dataset.link));
       const goTo = async url => {
         window.__tabUrl = url;
         window.__tabEvents.updated?.(7, {url, status: 'complete'}, {id: 7, active: true, windowId: 1});
         await wait(80);
       };
+      const lines = () => [...document.querySelectorAll('#list .row')].map(r => id(r.dataset.link));
       await until(() => block());
       out.first = $('list').firstElementChild === block();
       out.head = block().querySelector('.site-head').textContent === t('fromSite', 'github.com');
-      // newest first, three of the five, the bulk sender's and the other mailbox's among them
-      out.pins = pins();
+      // newest first, three of the five, the bulk sender's and the other mailbox's among them, as lines
+      out.lifted = lifted();
       out.more = block().querySelector('.site-more')?.textContent === t('siteMore', 2);
-      out.pinsNamed = [...block().querySelectorAll('.pin')].every(p => p.tagName === 'BUTTON' && p.textContent.trim() && p.title);
-      out.noRows = block().querySelectorAll('.row, [data-link]').length === 0;
-      // the code, large and grouped; a click copies its digits, says so, and leaves the mail as it was
-      const code = block().querySelector('.site-code');
-      // in groups set apart by a margin: what is copied has no space in it
-      out.codeShown = [...code?.querySelector('.digits').children || []].map(g => g.textContent).join(' ') === '482 913';
+      // each mail once: the lifted ones are not in their mailboxes again, which still count them
+      out.once = lines().length === 10 && new Set(lines()).size === 10;
+      const box = key => $('list').querySelector(`.section[data-key="${key}"]`);
+      out.boxes = {work: box('work@meridian.example').querySelectorAll('.row').length, workCount: box('work@meridian.example').querySelector('.n')?.textContent,
+        mine: box('evgeny@example.com').querySelectorAll('.row').length, mineCount: box('evgeny@example.com').querySelector('.n')?.textContent};
+      // the code is on its line, a copy button; a click copies its digits and leaves the mail as it was
+      const code = block().querySelector('.row .code');
+      out.codeOnLine = id(code?.closest('.row').dataset.link) === 'g1' && code.querySelector('svg') && code.textContent === '482913';
       const acted = window.__sent.filter(m => m.method === 'gmail.action').length;
       code?.click();
       await wait(50);
-      out.codeCopied = window.__copied === '482913' && $('toast').textContent === t('codeCopied');
-      // C copies it: with no line focused, and from a line without a code of its own
+      out.codeCopied = window.__copied === '482913' && !state.reading;
+      // C copies it: with no line focused, and from a line without a code of its own, saying so
       window.__copied = null;
       document.activeElement.blur();
       key(document, 'KeyC');
       await wait(30);
-      out.keyNoFocus = window.__copied === '482913';
+      out.keyNoFocus = window.__copied === '482913' && $('toast').textContent === t('codeCopied');
       window.__copied = null;
       [...document.querySelectorAll('#list .row')].find(r => id(r.dataset.link) === 'f1').focus();
       key(document, 'KeyC');
@@ -718,33 +725,33 @@
       out.backAfterSearch = Boolean(block());
       out.noAction = window.__sent.filter(m => m.method === 'gmail.action').length === acted;
 
-      // a pin opens its mail in the reader; back, the pin has the focus again
-      block().querySelector('.pin').click();
+      // a lifted line opens its mail in the reader; back, it has the focus again
+      block().querySelector('.row').click();
       await wait(50);
-      out.pinReads = state.reading && id(state.reading.e.link) === 'g1';
+      out.lineReads = state.reading && id(state.reading.e.link) === 'g1';
       key(document, 'Escape');
       await wait(50);
-      out.pinFocusBack = document.activeElement?.dataset?.focus === block()?.querySelector('.pin').dataset.focus;
+      out.lineFocusBack = id(document.activeElement?.dataset?.link || 'message_id=-') === 'g1' && Boolean(document.activeElement.closest('.site'));
 
       // "2 more" narrows the list to the site's mail, in its mailboxes; Esc lets go
       block().querySelector('.site-more').click();
       await wait(50);
-      out.narrowed = [...document.querySelectorAll('#list .row')].map(r => id(r.dataset.link)).sort();
+      out.narrowed = lines().sort();
       out.narrowChip = $('chips').querySelector('.site-chip')?.textContent === 'github.com' && !block();
       key(document, 'Escape');
       await wait(50);
-      out.letGo = Boolean(block()) && !$('chips').querySelector('.site-chip') && document.querySelectorAll('#list .row').length === 10;
+      out.letGo = Boolean(block()) && !$('chips').querySelector('.site-chip') && lines().length === 10;
 
-      // the side panel follows its tab: chrome://, Gmail itself and a site without mail show nothing;
-      // another ending of the brand does (its code too old to show); a generic brand does not
+      // the side panel follows its tab: chrome://, Gmail itself and a site without mail show nothing,
+      // and their mail is back in its mailboxes; another ending of the brand does; a generic brand does not
       await goTo('chrome://extensions/');
-      out.chromePage = !block();
+      out.chromePage = !block() && box('work@meridian.example').querySelectorAll('.row').length === 1;
       await goTo('https://github.com/settings/keys');
       out.backOnGithub = Boolean(block());
       await goTo('https://mail.google.com/mail/u/0/#inbox');
       out.gmailHost = !block();
       await goTo('https://www.amazon.co.uk/gp/your-account');
-      out.amazon = {pins: pins(), code: Boolean(block()?.querySelector('.site-code')), head: block()?.querySelector('.site-head').textContent === t('fromSite', 'amazon.co.uk')};
+      out.amazon = {lifted: lifted(), head: block()?.querySelector('.site-head').textContent === t('fromSite', 'amazon.co.uk')};
       await goTo('https://www.store.com/checkout');
       out.generic = !block();
       await goTo('https://example.org/');

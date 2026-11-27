@@ -211,7 +211,8 @@ const checks = {
     'a one-time code shows on its line; numbers that are none show nothing': JSON.stringify(r.pills) === '["G-482913","7310","","123-456","",""]',
     'a click on it copies the digits, and opens, reads or deletes nothing': r.copied === '482913' && r.copiedShown && !r.opened && r.actions === 0 && r.rowsKept,
     'C copies the code of the focused line, and nothing from a line without one': r.copiedByKey === '7310' && r.copiedNone === null,
-    'the reader shows the code too, and C copies it there without an action': r.readerPill === '123-456' && r.copiedInReader === '123456' && r.actionsAfter === 0
+    'the reader shows the code too, and C copies it there without an action': r.readerPill === '123-456' && r.copiedInReader === '123456' && r.actionsAfter === 0,
+    'a code the snippet ends before comes onto its line from the message; an anti-phishing code is none': r.bodyPill === '144976'
   }),
   advance: r => ({
     'J and K move between the mails in the reader': r.first === 'Макеты на ревью' && r.afterJ === 'New sign-in' && r.afterK === 'Макеты на ревью' && r.prevDisabledAtFirst,
@@ -227,16 +228,16 @@ const checks = {
   }),
   site: r => ({
     'over github.com, its mail comes first: newest three, from both mailboxes, a bulk sender\'s in its name counted, "2 more"':
-      r.first && r.head && JSON.stringify(r.pins) === '["g1","g6","g2"]' && r.more,
-    'its pins are named buttons, not lines of the list': r.pinsNamed && r.noRows,
-    'a fresh code shows large and grouped; a click copies its digits, says so, and acts on no mail': r.codeShown && r.codeCopied && r.noAction,
-    'C copies it with no line focused and from a line without a code; a line with its own code keeps C': r.keyNoFocus && r.keyPlainLine && r.keyOwnCode,
+      r.first && r.head && JSON.stringify(r.lifted) === '["g1","g6","g2"]' && r.more,
+    'each mail is listed once: the lifted lines leave their mailboxes, which still count them':
+      r.once && JSON.stringify(r.boxes) === '{"work":0,"workCount":"1","mine":7,"mineCount":"9"}',
+    'the code is a copy button on its line; a click copies its digits and opens or acts on nothing': r.codeOnLine && r.codeCopied && r.noAction,
+    'C copies it with no line focused and from a line without a code, saying so; a line with its own code keeps C': r.keyNoFocus && r.keyPlainLine && r.keyOwnCode,
     'typing in the search copies nothing, and the search hides the block until it closes': r.keyInSearch && r.backAfterSearch,
-    'a pin opens its mail in the reader, and back gives it the focus again': r.pinReads && r.pinFocusBack,
+    'a lifted line opens its mail in the reader, and back gives it the focus again': r.lineReads && r.lineFocusBack,
     '"N more" narrows the list to the site\'s mail behind a chip; Esc lets go': JSON.stringify(r.narrowed) === '["g1","g2","g3","g4","g6"]' && r.narrowChip && r.letGo,
     'no block over chrome://, over Gmail itself, for a generic brand, or with no mail from the site': r.chromePage && r.gmailHost && r.generic && r.noMatch && r.backOnGithub,
-    'the brand matches across endings (amazon.de and .com on amazon.co.uk); a code past half an hour does not show':
-      JSON.stringify(r.amazon) === '{"pins":["z1","z0"],"code":false,"head":true}',
+    'the brand matches across endings (amazon.de and .com on amazon.co.uk)': JSON.stringify(r.amazon) === '{"lifted":["z1","z0"],"head":true}',
     'the block follows the tab: another one activated': r.onActivated,
     'a site is its registrable domain, never webmail, an address, people\'s mail or a file':
       JSON.stringify(r.sites) === '["bbc.co.uk","bmw.de","example.com.br",null,null,null,null,null]',

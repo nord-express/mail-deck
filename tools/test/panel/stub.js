@@ -34,7 +34,10 @@
     entry(0, 'c5', 'Anna', 'anna@figma.com', 'Встреча', 'В 10:30, комната 4815', 5),
     // a code word far from the number, and numbers labelled as something else
     entry(0, 'c6', 'Amazon Web Services', 'invoicing@aws.com', 'Amazon Web Services Invoice Available [Account: 111122223333] [Invoice ID: 1029384756]',
-      'Never share your password or verification code. Invoice Number: 0801. Tax code 0801, VAT code: 0802', 6)
+      'Never share your password or verification code. Invoice Number: 0801. Tax code 0801, VAT code: 0802', 6),
+    // the snippet ends at the site's anti-phishing code; the code itself is further on in the message
+    entry(0, 'c7', 'Exchange', 'no-reply@exchange.example', 'Action Required: Authorize Your New Device',
+      'Anti-Phishing Code: 5984907 Dear reader, We have detected a sign-in from a new device', 7)
   ])];
   // ?s=site: mail of github.com (one with a fresh code, one sent through a bulk sender, one in
   // another mailbox), of Amazon under two endings (its code too old), of a generic brand, and others
@@ -404,7 +407,10 @@
   // SendGrid's), a blank spacer, a background, a styled picture and a style's tracker (Litmus)
   const k = name => `${location.origin}/__pixel?k=${q.get('scenario')}-${name}`;
   const print = (name, email, body, to = '') => `<html><body>${msg(name, email, 'Mon, Nov 2 at 09:00', to, body)}</body></html>`;
-  const pages = privacy ? {
+  const pages = codes ? {
+    c7: print('Exchange', 'no-reply@exchange.example', 'Anti-Phishing Code: 5984907<br>Dear reader,<br>We have detected a sign-in from a new device.' +
+      '<style>.x{width:600px;color:#144976}</style><table><tr><td>Activation Code:</td><td><b>144976</b></td><td>Valid for 10 minutes</td></tr></table>')
+  } : privacy ? {
     t1: print('Shop', 'news@shop.example', '<p>Deals of the week</p>' +
       `<img width=40 height=20 alt="Deals" src="${k('pic')}"><img width=1 height=1 src="${k('tiny')}&uid=a1b2c3d4e5">` +
       `<img style="display:none" src="${k('hidden')}&r=zz9988">` +

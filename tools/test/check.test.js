@@ -819,7 +819,7 @@ tests.push(
     await c.run();
     assert.deepStrictEqual([c.told.length, c.told[0].type, c.told[0].title], [1, 'basic', '482913 · GitHub']);
   }],
-  ['a code too old to use, or a number that is no code, leaves the notification as it was', async () => {
+  ['a code too old to use, a number that is no code, or an anti-phishing code leaves the notification as it was', async () => {
     // mail told as new up to an hour old (threatAsNew): a code of 40 minutes has most likely expired
     const b = copying({'0': [{id: 'c', age: 40, ...CODE_MAIL}]}, {threatAsNew: 60});
     await b.run();
@@ -827,6 +827,10 @@ tests.push(
     const none = copying({'0': [{id: 'i', title: 'Invoice Available', summary: 'Invoice ID: 1029384756. Tax code 0801, VAT code: 0802', from: 'AWS'}]});
     await none.run();
     assert.deepStrictEqual([none.told[0].title, none.buttons()], ['user0@gmail.com', ['Read', 'Archive']]);
+    // the anti-phishing code a site puts in every mail of its own proves the sender, it signs no one in
+    const phishing = copying({'0': [{id: 'p', title: 'Action Required: Authorize Your New Device', summary: 'Anti-Phishing Code: 5984907 Dear reader, We have detected', from: 'Exchange'}]});
+    await phishing.run();
+    assert.deepStrictEqual([phishing.told[0].title, phishing.buttons()], ['user0@gmail.com', ['Read', 'Archive']]);
   }],
   ['a notification about several inboxes keeps no extension name below the code', async () => {
     const b = copying({'0': [{id: 'c', ...CODE_MAIL}], '1': [{id: 'b', age: 2}]});

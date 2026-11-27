@@ -100,6 +100,7 @@ const state = {
   replyError: null, // the assistant's last failure in that, shown as a dot on its chip
   rows: new Map(), // link -> {e, o}
   files: new Map(), // link#version -> [{name, view, download}]: a Gmail thread's attachments, read ahead
+  codes: new Map(), // link#version -> {shown, copy} or null: a code the snippet ends before, read in the message
   pending: null, // the action waiting for its Undo: {cmd, links, ready, timer}
   // threads with a star; the feed does not tell, Gmail's search does
   starred: new Set(),
@@ -217,7 +218,7 @@ const codePill = code => h('button', {
     ev.stopPropagation();
     copyCode(code, ev.currentTarget);
   }
-}, code.shown);
+}, icon('copy'), h('span', {class: 'digits'}, code.shown));
 
 const when = iso => {
   const d = new Date(iso);
@@ -1767,9 +1768,35 @@ const prefetch = (e, o) => {
     prefetchTimer = setTimeout(() => bodyOf(e, o).catch(() => {}), 120);
   }
 };
+// A one-time code the snippet ends before ("Anti-Phishing Code: 5984907 Dear…", the code itself
+// further on): a fresh Gmail mail that speaks of a code or a sign-in has its newest message read
+// for one, from the print view its line's files come from. It comes onto the line once known.
+const CODE_MS = 30 * 60 * 1000;
+const bodyCode = (e, o) => {
+  const key = fileKey(e);
+  if (state.codes.has(key)) {
+    return state.codes.get(key);
+  }
+  if (serviceOf(o) || quiet || !(Date.now() - Date.parse(e.modified) < CODE_MS) || !codeOf.hint(e.title + ' ' + e.summary)) {
+    return null;
+  }
+  state.codes.set(key, null);
+  gmail.text(e.link, e.modified).then(text => {
+    const code = codeOf(e.title + ' ' + text);
+    state.codes.set(key, code);
+    const subject = code && rowOf(e.link)?.querySelector('.subject:not(:has(.code))');
+    if (subject) {
+      const pill = codePill(code);
+      pill.classList.add('enter');
+      subject.insertBefore(pill, subject.lastChild);
+    }
+  }, () => state.codes.delete(key));
+  return null;
+};
+const codeFor = (e, o) => codeOf(e.title + ' ' + e.summary) || bodyCode(e, o);
 const row = (e, o) => {
   state.rows.set(e.link, {e, o});
-  const code = codeOf(e.title + ' ' + e.summary);
+  const code = codeFor(e, o);
   return h('article', {
     'class': 'row' + (e.unread === false ? ' seen' : ''),
     'tabIndex': 0,
@@ -1801,15 +1828,18 @@ const row = (e, o) => {
 };
 // every signed-in mailbox gets its line, with its unread mail under it; keep(e, o), when given,
 // narrows it to that mail, all of it at once (the site's, the mail waiting for a reply)
-const section = (o, keep) => {
+// lifted: the mail the site's block lists instead; it counts here still, and the mailbox's
+// "read all" and "archive all" take it too
+const section = (o, keep, lifted) => {
   // the mail past the feed's 20, from the search; what was acted on here leaves the count as well
   const all = state.extra.get(accountName(o)) || [];
   const extra = all.filter(e => !state.hidden.has(e.link));
   const open = Boolean(keep) || state.expanded.has(accountName(o));
-  const entries = (open ? [...o.xml.entries, ...extra] : o.xml.entries).filter(e => !keep || keep(e, o));
+  const mail = (open ? [...o.xml.entries, ...extra] : o.xml.entries).filter(e => !keep || keep(e, o));
+  const entries = lifted?.size ? mail.filter(e => !lifted.has(e.link)) : mail;
   const n = keep ? entries.length : Math.max(0, o.xml.fullcount - (all.length - extra.length));
-  const links = entries.map(e => e.link);
-  const rest = n - entries.length;
+  const links = mail.map(e => e.link);
+  const rest = n - mail.length;
   return h('section', {'class': 'section' + (n ? '' : ' idle'), 'style': `--c:${o.color}`, 'data-key': accountName(o)},
     h('header', {'class': 'section-head', 'data-tip': openInbox(o), 'draggable': true, 'onclick': () => openUrl(o.xml.link)},
       h('span', {class: 'grip', ...tipped(t('drag'), 'Alt+↑/↓')}, icon('grip')),
@@ -1820,14 +1850,15 @@ const section = (o, keep) => {
       h('span', {class: 'grow'}),
       // over the end of the line, with the pointer or the keys: at rest the address has its room
       h('span', {class: 'head-acts'},
-        entries.length > 0 && btn('readAll', t('markAllRead'), () => act('rd', links)),
-        entries.length > 0 && can(o, 'archive') && btn('archive', t('archiveAll'), () => act('rc_^i', links)),
+        links.length > 0 && btn('readAll', t('markAllRead'), () => act('rd', links)),
+        links.length > 0 && can(o, 'archive') && btn('archive', t('archiveAll'), () => act('rc_^i', links)),
         !serviceOf(o) && btn('meet', t('newMeeting'), () => openUrl(meetUrl(o)), 'meet'),
         btn('open', openInbox(o), () => openUrl(o.xml.link)))
     ),
     // more of it only while the count says there is more: mail the search found a moment before
     // the feed counts it is not offered as "0 more"
-    entries.length > 0 && h('div', {class: 'cards'}, entries.map(e => row(e, o)),
+    // (its mail all lifted to the site's block, what more there is still has its button)
+    (entries.length > 0 || (mail.length > 0 && rest > 0)) && h('div', {class: 'cards'}, entries.map(e => row(e, o)),
       !open && extra.length > 0 && rest > 0 ? h('button', {class: 'more', type: 'button', onclick: () => {
         state.expanded.add(accountName(o));
         // the button goes; the first mail it brought takes the focus
@@ -1957,8 +1988,6 @@ const GENERIC = new Set(['mail', 'email', 'info', 'news', 'shop', 'store', 'onli
   'services', 'support', 'account', 'accounts', 'secure', 'notify', 'notifications', 'login', 'auth', 'home', 'my', 'go', 'get']);
 // mail sent for many sites at once: only the sender's name tells whose it is
 const BULK = new Set(['sendgrid.net', 'mailchimpapp.net', 'amazonses.com', 'mailgun.org', 'sparkpostmail.com', 'mandrillapp.com', 'postmarkapp.com']);
-// a code this young is the one the page waits for
-const SITE_CODE_MS = 30 * 60 * 1000;
 // the site of a page, {domain, brand}: web pages only, not webmail, not a mailbox of people
 const siteOf = url => {
   let u;
@@ -2011,38 +2040,15 @@ const siteMail = (site, objs) => {
   }
   return found.sort((a, b) => (Date.parse(b.e.modified) || 0) - (Date.parse(a.e.modified) || 0));
 };
-// 482913 reads 482 913, set apart by a margin (index.css): it is copied as it came
-const grouped = digits => (digits.length === 6 || digits.length === 7 ? [digits.slice(0, 3), digits.slice(3)] :
-  digits.length === 8 ? [digits.slice(0, 4), digits.slice(4)] : [digits]).map(g => h('span', {}, g));
-// a mail of the site: opens as its line in the list does
-const pin = (e, o) => h('button', {
-  'class': 'pin',
-  'type': 'button',
-  'style': `--c:${o.color}`,
-  'title': e.title || t('noSubject'),
-  'data-focus': 'pin:' + e.link,
-  'onclick': ev => {
-    if (ev.metaKey || ev.ctrlKey || !can(o, 'body')) {
-      openEntry(e, o, ev);
-      return;
-    }
-    read(e, o);
-    // back from it, the focus comes back here
-    state.reading.from = 'pin:' + e.link;
-  },
-  'onauxclick': ev => ev.button === 1 && openEntry(e, o, ev),
-  'onmouseenter': () => prefetch(e, o),
-  'onfocus': () => prefetch(e, o)
-},
-h('span', {class: 'dot'}),
-h('span', {class: 'pin-from'}, e.author_name || e.author_email),
-h('span', {class: 'pin-subject'}, e.title || t('noSubject')),
-h('time', {class: 'when', dateTime: e.modified, title: fullDate(e.modified)}, when(e.modified)));
+// The site's newest mail, three at most, is lifted out of its mailboxes to the top of the list:
+// each one is listed once, as the line it is, with its code on it. [] when there is no site, or
+// the list is searched or narrowed.
+const SITE_TOP = 3;
+const siteTop = (objs = view()) => {
+  const site = !state.search && !state.siteOnly && !state.sortOnly ? state.site : null;
+  return site ? siteMail(site, state.only ? objs.filter(o => o.xml.link === state.only) : objs) : [];
+};
 const siteBlock = (site, found) => {
-  // the code of the newest mail young enough to be the one the page waits for, and how old it is
-  const coded = found.map(({e}) => Date.now() - Date.parse(e.modified) < SITE_CODE_MS && {e, code: codeOf(e.title + ' ' + e.summary)})
-    .find(x => x?.code);
-  const code = coded?.code;
   // the site's logo, once its senders' pictures have shown it has one: Google is asked nothing new
   const logo = state.senderLogos && logos.get(site.domain) === true;
   return h('section', {'class': 'site', 'aria-label': t('fromSite', site.domain)},
@@ -2050,55 +2056,23 @@ const siteBlock = (site, found) => {
       logo && afterLoad(h('img', {class: 'site-logo', alt: '', referrerPolicy: 'no-referrer'}),
         `https://www.google.com/s2/favicons?domain=${encodeURIComponent(site.domain)}&sz=64`),
       t('fromSite', site.domain)),
-    code && h('button', {
-      'class': 'site-code',
-      'type': 'button',
-      ...tipped(t('copyCode'), 'C'),
-      'aria-label': t('copyCode') + ' ' + code.copy,
-      'data-focus': 'site-code',
-      'onclick': ev => copyCode(code, ev.currentTarget, t('codeCopied'))
-    }, h('span', {class: 'digits'}, grouped(code.copy)), h('span', {'class': 'copy-pill', 'aria-hidden': 'true'}, icon('copy'), t('copyCode')),
-    h('time', {class: 'when', dateTime: coded.e.modified}, when(coded.e.modified))),
-    found.slice(0, 3).map(({e, o}) => pin(e, o)),
-    found.length > 3 && h('button', {
-      'class': 'site-more',
-      'type': 'button',
-      'data-focus': 'site-more',
-      'onclick': () => {
-        state.siteOnly = true;
-        state.sortOnly = null;
-        state.focus = FIRST;
-        render();
-      }
-    }, t('siteMore', found.length - 3))
+    h('div', {class: 'cards'}, found.slice(0, SITE_TOP).map(({e, o}) => row(e, o)),
+      found.length > SITE_TOP && h('button', {
+        'class': 'more site-more',
+        'type': 'button',
+        'data-focus': 'site-more',
+        'onclick': () => {
+          state.siteOnly = true;
+          state.sortOnly = null;
+          state.focus = FIRST;
+          render();
+        }
+      }, t('siteMore', found.length - SITE_TOP)))
   );
 };
-// The block is the list's first child. Drawn alone (not with the whole list), a tab switch in
-// the side panel or a code growing old redraws nothing else, and a list scrolled down keeps
-// showing what it showed. Searching, and the list narrowed to the site, go without.
-const paintSite = (objs = view(), alone = true) => {
-  const list = $('list');
-  const path = alone && focusPath();
-  const old = list.querySelector(':scope > .site');
-  const site = !state.search && !state.siteOnly ? state.site : null;
-  const found = site ? siteMail(site, state.only ? objs.filter(o => o.xml.link === state.only) : objs) : [];
-  const block = found.length ? siteBlock(site, found) : null;
-  const before = alone && list.scrollTop > 0 ? old?.offsetHeight || 0 : null;
-  if (old) {
-    old.replaceWith(...[block].filter(Boolean));
-  }
-  else if (block) {
-    list.prepend(block);
-  }
-  if (before !== null) {
-    list.scrollTop += (block?.offsetHeight || 0) - before;
-  }
-  if (path && document.activeElement === document.body) {
-    document.querySelector(path)?.focus({preventScroll: true});
-  }
-};
 // the open page's site, read again when the tab changes; an address the panel may not read
-// (another tab of the side panel, chrome://) shows nothing
+// (another tab of the side panel, chrome://) shows nothing. The list is drawn again only when
+// the site's mail comes to its top or leaves it.
 const followTab = async () => {
   let url = '';
   try {
@@ -2110,18 +2084,19 @@ const followTab = async () => {
   if (site?.domain === state.site?.domain) {
     return;
   }
+  const had = siteTop().length > 0;
   state.site = site;
   if (state.siteOnly) {
     state.siteOnly = false;
     render();
   }
-  else {
-    paintSite();
+  else if (had || siteTop().length) {
+    render();
   }
 };
 const renderList = objs => {
   const list = $('list');
-  const top = list.scrollTop;
+  const scrolled = list.scrollTop;
   // an action or its Undo names the line that takes the focus, and brings it into view; any
   // other drawing keeps the focused line where it is, scrolled to or not
   const wanted = state.focus;
@@ -2133,19 +2108,22 @@ const renderList = objs => {
 
   const shown = state.only ? objs.filter(o => o.xml.link === state.only) : objs;
   const keep = state.siteOnly ? e => ofSite(e, state.site) : state.sortOnly ? (e, o) => inKind(state.sortOnly, e, o) : null;
+  // the site's mail on top, and not again in its mailboxes
+  const top = !keep && !state.booting && objs.some(o => o.xml.fullcount) ? siteTop(objs) : [];
+  const lifted = new Set(top.slice(0, SITE_TOP).map(({e}) => e.link));
   list.ariaBusy = String(state.booting);
   list.replaceChildren(...(state.search ? searchList(objs, shown) : keep ? [
     state.sortOnly && sortBar(shown),
     ...shown.map(o => section(o, keep)).filter(s => s.querySelector('.row'))
   ].filter(Boolean) : state.booting ? [skeleton()] : [
-    ...(!objs.length ? [signIn()] : objs.some(o => o.xml.fullcount) ? shown.map(o => section(o)) : [caughtUp(objs)]),
+    top.length > 0 && siteBlock(state.site, top),
+    ...(!objs.length ? [signIn()] : objs.some(o => o.xml.fullcount) ? shown.map(o => section(o, null, lifted)) : [caughtUp(objs)]),
     !state.only && signedOut(),
     // one line of the kind at a time: pinning the button comes first
     objs.length > 0 && (pinHint() || rateLine()),
     objs.length > 0 && listFoot()
   ].filter(Boolean)));
-  paintSite(objs, false);
-  list.scrollTop = top;
+  list.scrollTop = scrolled;
   // The panel opens with its first mail under the keys, E, R or Delete act on it at once. It is
   // marked quietly (index.css), not with the keyboard's ring and the line's buttons
   if (firstFocus && list.querySelector('.row')) {
@@ -2269,6 +2247,7 @@ const prune = () => {
   const files = new Set(mail.map(({e}) => fileKey(e)));
   const ids = new Set(mail.map(({e, o}) => replyId(e, o)));
   [...state.files.keys()].filter(k => !files.has(k)).forEach(k => state.files.delete(k));
+  [...state.codes.keys()].filter(k => !files.has(k)).forEach(k => state.codes.delete(k));
   [...state.replies.keys()].filter(k => !ids.has(k)).forEach(k => state.replies.delete(k));
   [...replySeen].filter(k => !ids.has(k)).forEach(k => replySeen.delete(k));
 };
@@ -2296,8 +2275,6 @@ const update = objs => {
     for (const el of $('list').querySelectorAll('time.when')) {
       el.textContent = when(el.dateTime);
     }
-    // a code past its half hour leaves the site's block
-    paintSite();
   }
   else if (performance.now() >= foldUntil) {
     render();
@@ -2484,7 +2461,7 @@ const read = async (e, o, trail) => {
   let gotTexts;
   const texts = new Promise(resolve => gotTexts = resolve);
   // next: the line back() focuses should this mail's own leave the list meanwhile (read on open)
-  const r = state.reading = {e, o, next: neighbour([e.link])?.dataset.link, code: codeOf(e.title + ' ' + e.summary), ai: {ctl: null}, texts};
+  const r = state.reading = {e, o, next: neighbour([e.link])?.dataset.link, code: codeOf(e.title + ' ' + e.summary) || state.codes.get(fileKey(e)) || null, ai: {ctl: null}, texts};
   closeMenu();
   const walk = [...state.trail.keys()].filter(k => k === e.link || !state.hidden.has(k));
   // with several mailboxes the bar says which one the mail came to (in a narrow panel, the header)
@@ -2666,8 +2643,8 @@ const back = () => {
     ($('assist').querySelector(`[data-focus="${CSS.escape('ref:' + r.e.link)}"]`) || $('assist-input')).focus({preventScroll: true});
   }
   else if (r) {
-    // the site's pin it opened from, its line, or the line next to it
-    (r.from && $('list').querySelector(`[data-focus="${CSS.escape(r.from)}"]`) || rowOf(r.e.link) || (r.next && rowOf(r.next)) ||
+    // its line, or the line next to it
+    (rowOf(r.e.link) || (r.next && rowOf(r.next)) ||
       $('list').querySelector('.row, .acc'))?.focus({preventScroll: true});
   }
 };
@@ -4842,15 +4819,17 @@ const onKey = ev => {
     openSearch();
   }
   // The one-time code of the open mail, or of the focused line; a line without one leaves C to
-  // the code of the site's block. The reader, over the block, copies its mail's code only.
+  // the first code among the site's mail. The reader, over the list, copies its mail's code only.
   else if (ev.code === 'KeyC' && (target || !state.reading)) {
-    const code = state.reading ? state.reading.code : target && codeOf(target.e.title + ' ' + target.e.summary);
-    const site = !state.reading && $('list').querySelector(':scope > .site .site-code');
+    const code = state.reading ? state.reading.code : target && codeFor(target.e, target.o);
+    const site = !state.reading && $('list').querySelector(':scope > .site .code');
     if (code) {
       copyCode(code, (state.reading ? $('reader-subject') : rowEl).querySelector('.code'));
     }
+    // copied away from its line: a toast says so
     else if (site) {
-      site.click();
+      const r = state.rows.get(site.closest('.row').dataset.link);
+      copyCode(codeFor(r.e, r.o), site, t('codeCopied'));
     }
     else {
       return;
